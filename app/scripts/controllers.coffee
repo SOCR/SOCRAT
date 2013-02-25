@@ -34,11 +34,27 @@ angular.module('app.controllers', [])
       return ''
 ])
 
-.controller('MyCtrl1', [
+.controller('subMenuCtrl', [
   '$scope'
 
 ($scope) ->
-  $scope.onePlusOne = 2
+  $scope.state="show"
+  $scope.view=->
+    if $scope.state is "show"
+      true
+    else
+      false
+  $scope.toggle=->
+    if $scope.state is "hidden"
+      $scope.state="show"
+    else
+      $scope.state="hidden"
+
+  $scope.getClass=->
+    if $scope.state is "hidden"
+      "span1"
+    else
+      "span4"
 ])
 
 .controller('MyCtrl2', [

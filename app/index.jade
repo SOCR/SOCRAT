@@ -7,7 +7,7 @@ html(lang='en', ng-app='app')
     meta(name='description', content='')
     meta(name='author', content='')
     title(ng-bind-template='{{pageTitle}}')
-    link(rel='stylesheet', href='/css/app.css')
+    link(rel='stylesheet', href='css/app.css')
     //-script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
     //if lte IE 7
       script(src='http://cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js')
@@ -18,27 +18,40 @@ html(lang='en', ng-app='app')
       window.brunch['auto-reload'] = {
         enabled: true
       };
-    script(src='/js/vendor.js')
-    script(src='/js/app.js')
+    script(src='js/vendor.js')
+    script(src='js/app.js')
   body(ng-controller='AppCtrl')
     .wrapper
-      .navbar.navbar-static-top
+      .navbar.navbar-static-top.navbar-inverse
         .navbar-inner
-          .container
+          .container-fluid
             button.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
               span.icon-bar
               span.icon-bar
               span.icon-bar
-            a(href='/').brand Angular Brunch Seed
+            a(href='/').brand SOCR
             .nav-collapse
-              div(ng-include="'/partials/nav.html'")
-      .container.main-content
-        div(ng-view)
-        div Angular Brunch seed app: v<span app-version></span>
+              div(ng-include="'partials/nav.html'")
+              p.navbar-text.pull-right Logged in as&nbsp;
+                a(href='#').navbar-link Username
+      
+      //tooblar navigation for statistical analysis 
+      .navbar.navbar-static-top
+        .navbar-inner
+          .container
+            button.btn.btn-navbar(data-toggle='collapse',data-target='.analysis-toolbar')
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            a(href='/').brand Analysis
+            .nav-collapse.analysis-toolbar
+              div(ng-include="'partials/analysis-nav.html'")
+      
+      //Main content section
+      .main-content.container-fluid
+        .row-fluid
+          div(ng-include="'partials/sub-menu.html'")
+          div(ng-view).span8
       .push
 
-    footer.footer
-      .container
-        p
-          small
-            a(href='https://github.com/scotch/angular-brunch-seed') angular-brunch-seed | source
+    div(ng-include="'partials/footer.html'")

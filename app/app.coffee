@@ -17,13 +17,19 @@ App.config([
 ($routeProvider, $locationProvider, config) ->
 
   $routeProvider
-
-    .when('/todo', {templateUrl: '/partials/todo.html'})
-    .when('/view1', {templateUrl: '/partials/partial1.html'})
-    .when('/view2', {templateUrl: '/partials/partial2.html'})
-
+    .when('/todo', {templateUrl: 'partials/todo.html'})
+    .when('/home',{templateUrl:'partials/nav/home.html'})
+    .when('/guide',{templateUrl:'partials/nav/guide-me.html'})
+    .when('/contact',{templateUrl:'partials/nav/contact.html'})
+    
+    #analysis tools routes
+    .when('/raw-data', {templateUrl: 'partials/analysis/raw-data/main.html'})
+    .when('/derived-data',{
+      templateUrl:'partials/analysis/derived-data/main.html'})
+    #.when('/charts',{templateUrl:"partials/analysis/charts/main.html"})
+    #.when('/results',{templateUrl:"partials/analysis/results/main.html"})
     # Catch all
-    .otherwise({redirectTo: '/todo'})
+    .otherwise({redirectTo: '/home'})
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
