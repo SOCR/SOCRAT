@@ -12,6 +12,12 @@
         <li>
           <button class="btn btn-medium btn-danger">Create New &nbsp;<i class="icon-plus-sign"></i></button>
         </li>
+        <li><br/>
+          <input ng-model="message"/>
+          <button ng-click="sendMsg()" class="btn-small btn">send Message</button><br/><br/>
+          <input ng-model="messageReceived"/>
+          <button ng-click="unsubMsg()" class="btn-small btn">Stop Listener</button>
+        </li>
       </ul>
     </div>
   </div>

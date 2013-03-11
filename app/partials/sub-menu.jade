@@ -15,5 +15,12 @@ div(ng-controller="subMenuCtrl")
         li
           button.btn.btn-medium.btn-danger Create New &nbsp;
             i.icon-plus-sign
-
+        li
+          br
+          input(ng-model="message")
+          button(ng-click="sendMsg()").btn-small.btn send Message
+          br
+          br
+          input(ng-model="messageReceived")
+          button(ng-click="unsubMsg()").btn-small.btn Stop Listener
 
