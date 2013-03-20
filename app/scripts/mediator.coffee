@@ -2,7 +2,7 @@
 
 #app.core module contains services like error management , pub/sub
 
-core = angular.module('app.core', [
+mediator = angular.module('app.mediator', [
    'app.services'
 ])
 
@@ -19,25 +19,59 @@ core = angular.module('app.core', [
 
   #publish() - registers channel if not present already,
   # then executes all the callbacks.
-  _publish=(channel,data)->
+  _publish=(channel,data,cb)->
+
+    if cb is "undefined"
+      cb = ->
+    unless typeof channel == "string"
+      return false
+
+    if typeof data is "function"
+      cb = data
+      data = undefined
+
     if _channelList.hasOwnProperty(channel)
       subscribers=_channelList[channel]
       i = 0
       j = subscribers.length
       while i < j
         try
+          #util.runSeries implementation goes here
           subscribers[i].func channel, data
         catch e
           throw e
         i++
     else
       _channelList[channel]=[]
-    console.log(subscribers)
+  #  console.log(subscribers)
 
   #subscribe() - register a callback for an channel
   _subscribe=(channel,cb)->
+    if channel instanceof Array
+      _results=[]
+      i=0
+      j=channel.length
+      while i<j
+        id = channel[i]
+        _results.push _subscribe id, cb
+        i++
+      return _results
+    else if channel instanceof Object
+      _results=[]
+      for k of channel
+        v = channel[k]
+        _results.push _subscribe k, v
+      #console.log _channelList
+      return _results
+    else
+      unless typeof cb == "function"
+        return false
+      unless typeof channel == "string"
+        return false
     unless _channelList.hasOwnProperty(channel)
       _channelList[channel]=[]
+
+    #pushing the cb function into the list
     _channelList[channel].push
       token:++_lastUID
       func:cb
@@ -58,7 +92,16 @@ core = angular.module('app.core', [
             return token
           i++
 
+  #_installTo()
+  _installTo=(obj)->
+    if typeof obj == "object"
+      for k of this
+        v=this[k]
+        obj[k]=v
+    this
+
   publish:_publish
   subscribe:_subscribe
   unsubscribe:_unsubscribe
+  installTo:_installTo
 )

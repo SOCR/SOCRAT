@@ -2,7 +2,7 @@
 
 ### Controllers ###
 
-angular.module('app.controllers', ['app.core'])
+angular.module('app.controllers', ['app.mediator'])
 
 .controller('AppCtrl', [
   '$scope'

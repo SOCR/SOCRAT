@@ -2,7 +2,7 @@
 
 var App;
 
-App = angular.module('app', ['ngCookies', 'ngResource', 'app.controllers', 'app.directives', 'app.filters', 'app.services', 'app.core', 'ngSanitize']);
+App = angular.module('app', ['ngCookies', 'ngResource', 'app.controllers', 'app.directives', 'app.filters', 'app.services', 'app.mediator', 'ngSanitize']);
 
 App.config([
   '$routeProvider', '$locationProvider', function($routeProvider, $locationProvider, config) {
@@ -31,7 +31,7 @@ App.value("username", "keshavr7");
 /* Controllers
 */
 
-angular.module('app.controllers', ['app.core']).controller('AppCtrl', [
+angular.module('app.controllers', ['app.mediator']).controller('AppCtrl', [
   '$scope', '$location', '$resource', '$rootScope', 'pubSub', function($scope, $location, $resource, $rootScope, pubSub) {
     var updateUsername;
     $scope.$location = $location;
@@ -136,32 +136,96 @@ angular.module('app.controllers', ['app.core']).controller('AppCtrl', [
 ]);
 'use strict';
 
-var core;
 
-core = angular.module('app.core', ['app.services']).service("pubSub", function() {
-  var _channelList, _lastUID, _publish, _subscribe, _unsubscribe;
+'use strict';
+
+/* Directives
+*/
+
+angular.module('app.directives', ['app.services']).directive('appVersion', [
+  'version', function(version) {
+    return function(scope, elm, attrs) {
+      return elm.text(version);
+    };
+  }
+]);
+'use strict';
+
+/* Filters
+*/
+
+angular.module('app.filters', []).filter('interpolate', [
+  'version', function(version) {
+    return function(text) {
+      return String(text).replace(/\%VERSION\%/mg, version);
+    };
+  }
+]);
+'use strict';
+
+var mediator;
+
+mediator = angular.module('app.mediator', ['app.services']).service("pubSub", function() {
+  var _channelList, _installTo, _lastUID, _publish, _subscribe, _unsubscribe;
   _channelList = {};
   _lastUID = 14;
-  _publish = function(channel, data) {
-    var i, j, subscribers;
+  _publish = function(channel, data, cb) {
+    var i, j, subscribers, _results;
+    if (cb === "undefined") {
+      cb = function() {};
+    }
+    if (typeof channel !== "string") {
+      return false;
+    }
+    if (typeof data === "function") {
+      cb = data;
+      data = void 0;
+    }
     if (_channelList.hasOwnProperty(channel)) {
       subscribers = _channelList[channel];
       i = 0;
       j = subscribers.length;
+      _results = [];
       while (i < j) {
         try {
           subscribers[i].func(channel, data);
         } catch (e) {
           throw e;
         }
-        i++;
+        _results.push(i++);
       }
+      return _results;
     } else {
-      _channelList[channel] = [];
+      return _channelList[channel] = [];
     }
-    return console.log(subscribers);
   };
   _subscribe = function(channel, cb) {
+    var i, id, j, k, v, _results;
+    if (channel instanceof Array) {
+      _results = [];
+      i = 0;
+      j = channel.length;
+      while (i < j) {
+        id = channel[i];
+        _results.push(_subscribe(id, cb));
+        i++;
+      }
+      return _results;
+    } else if (channel instanceof Object) {
+      _results = [];
+      for (k in channel) {
+        v = channel[k];
+        _results.push(_subscribe(k, v));
+      }
+      return _results;
+    } else {
+      if (typeof cb !== "function") {
+        return false;
+      }
+      if (typeof channel !== "string") {
+        return false;
+      }
+    }
     if (!_channelList.hasOwnProperty(channel)) {
       _channelList[channel] = [];
     }
@@ -190,39 +254,23 @@ core = angular.module('app.core', ['app.services']).service("pubSub", function()
       }
     }
   };
+  _installTo = function(obj) {
+    var k, v;
+    if (typeof obj === "object") {
+      for (k in this) {
+        v = this[k];
+        obj[k] = v;
+      }
+    }
+    return this;
+  };
   return {
     publish: _publish,
     subscribe: _subscribe,
-    unsubscribe: _unsubscribe
+    unsubscribe: _unsubscribe,
+    installTo: _installTo
   };
 });
-'use strict';
-
-
-'use strict';
-
-/* Directives
-*/
-
-angular.module('app.directives', ['app.services']).directive('appVersion', [
-  'version', function(version) {
-    return function(scope, elm, attrs) {
-      return elm.text(version);
-    };
-  }
-]);
-'use strict';
-
-/* Filters
-*/
-
-angular.module('app.filters', []).filter('interpolate', [
-  'version', function(version) {
-    return function(text) {
-      return String(text).replace(/\%VERSION\%/mg, version);
-    };
-  }
-]);
 'use strict';
 
 /* Sevices
