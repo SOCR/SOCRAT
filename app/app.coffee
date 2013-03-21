@@ -8,7 +8,7 @@ App = angular.module('app', [
   'app.directives'
   'app.filters'
   'app.services'
-  'app.core'
+  'app.mediator'
   'ngSanitize'
 ])
 
@@ -43,4 +43,3 @@ App.config([
 ])
 
 App.value("username","keshavr7")
-
