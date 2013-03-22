@@ -2,9 +2,7 @@
 
 #app.core module contains services like error management , pub/sub
 
-mediator = angular.module('app.mediator', [
-   'app.services'
-])
+mediator = angular.module 'app.mediator', []
 
 #.service("sayHello", ["name", (name) ->
 #  console.log("sayHello service is instantiated")
@@ -13,17 +11,17 @@ mediator = angular.module('app.mediator', [
 #    null
 #])
 
-.service("pubSub", ()->
-  _channelList={}
-  _lastUID=14
+.service("pubSub", () ->
+  _channelList = {}
+  _lastUID = 14
 
   #publish() - registers channel if not present already,
   # then executes all the callbacks.
-  _publish=(channel,data,cb)->
+  _publish = (channel,data,cb) ->
 
     if cb is "undefined"
       cb = ->
-    unless typeof channel == "string"
+    unless typeof channel is "string"
       return false
 
     if typeof data is "function"
@@ -46,7 +44,7 @@ mediator = angular.module('app.mediator', [
   #  console.log(subscribers)
 
   #subscribe() - register a callback for an channel
-  _subscribe=(channel,cb)->
+  _subscribe = (channel,cb) ->
     if channel instanceof Array
       _results=[]
       i=0
@@ -92,16 +90,7 @@ mediator = angular.module('app.mediator', [
             return token
           i++
 
-  #_installTo()
-  _installTo=(obj)->
-    if typeof obj == "object"
-      for k of this
-        v=this[k]
-        obj[k]=v
-    this
-
   publish:_publish
   subscribe:_subscribe
   unsubscribe:_unsubscribe
-  installTo:_installTo
 )
