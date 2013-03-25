@@ -5,7 +5,6 @@
 sandbox = angular.module('app.sandbox', [])
 
   .factory 'Sandbox', ->
-
     (_core, _instanceId, _options = {}) ->
       @core = _core
       @instanceId = _instanceId
