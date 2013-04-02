@@ -46,8 +46,10 @@
       <!--Main content section-->
       <div class="main-content container-fluid">
         <div class="row-fluid">
-          <div ng-include="'partials/sub-menu.html'"></div>
-          <div ng-view class="span8"></div>
+          <div ng-include="'partials/sidebar.html'"></div>
+          <div ng-controller="mainCtrl">
+            <div ng-view class="{{width}}"></div>
+          </div>
         </div>
       </div>
       <div class="push"></div>

@@ -51,8 +51,9 @@ html(lang='en', ng-app='app')
       //Main content section
       .main-content.container-fluid
         .row-fluid
-          div(ng-include="'partials/sub-menu.html'")
-          div(ng-view).span8
+          div(ng-include="'partials/sidebar.html'")
+          div(ng-controller='mainCtrl')
+            div(ng-view,class="{{width}}")
       .push
 
     div(ng-include="'partials/footer.html'")

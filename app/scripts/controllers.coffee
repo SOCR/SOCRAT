@@ -1,8 +1,15 @@
 'use strict'
 
 ### Controllers ###
-
+###
+  This file contains the controllers that are generic
+  and not specific to any particular analysis(clean data or charts etc).
+###
 angular.module('app.controllers', ['app.mediator'])
+.config([
+    ()->
+      console.log "config block of app.controllers module"
+])
 
 .controller('AppCtrl', [
   '$scope'
@@ -10,13 +17,17 @@ angular.module('app.controllers', ['app.mediator'])
   '$resource'
   '$rootScope'
   'pubSub'
-
 ($scope, $location, $resource, $rootScope,pubSub) ->
-
+  console.log "controller block for AppCtrl"
   # Uses the url to determine if the selected
   # menu item should have the class active.
+
+  # Listening to all changes in the view
+  $scope.$on "change in view", ()->
+    $scope.$broadcast "update view", null
+
   $scope.$location = $location
-  $scope.username="Guest"
+  $scope.username = "Guest"
   $scope.$watch('$location.path()', (path) ->
     $scope.activeNavId = path || '/'
   )
@@ -35,7 +46,6 @@ angular.module('app.controllers', ['app.mediator'])
     else
       return ''
 
-
   #callback
   updateUsername=(event,data)->
     $scope.username=data
@@ -44,12 +54,24 @@ angular.module('app.controllers', ['app.mediator'])
 
 ])
 
-# SUBMENU CONTROLLER FUNCTIONS
-.controller('subMenuCtrl', [
+.controller('navCtrl', [
+    '$scope'
+    ($scope)->
+      console.log "controller block for navCtrl"
+])
+
+.controller('subNavCtrl', [
+    '$scope'
+    ($scope)->
+])
+
+.controller('sidebarCtrl', [
   '$scope'
   'pubSub'
+  'appConfig'
+($scope,pubSub,appConfig) ->
 
-($scope,pubSub) ->
+  console.log "controller block for sidebarCtrl"
   $scope.message = "Enter your name...."
   $scope.messageReceived=""
   $scope.state="show"
@@ -85,55 +107,54 @@ angular.module('app.controllers', ['app.mediator'])
   #toggle function
   $scope.toggle=->
     if $scope.state is "hidden"
-      $scope.state="show"
+      $scope.state = 'show'
+      appConfig.sidebar = 'visible'
     else
-      $scope.state="hidden"
+      $scope.state = 'hidden'
+      appConfig.sidebar = 'hidden'
+    $scope.$emit('change in view')
 
   $scope.getClass=->
     if $scope.state is "hidden"
       "span1"
     else
-      "span4"
+      "span3"
 ])
 
-#NAVBAR CONTROLLER
+.controller('mainCtrl', [
+  '$scope'
+  'appConfig'
+  '$document'
+  ($scope,appConfig,$doc)->
+    console.log $doc
+    #initial width is set span9
+    $scope.width = 'span9'
+    #updating main view
+    $scope.$on "update view", (e)->
+      if appConfig.sidebar is 'visible' and appConfig.history is 'hidden'
+        $scope.width = 'span9'
+      else
+        $scope.width = 'span11'
+])
+
+.controller('footerCtrl', [
+  '$scope'
+  ($scope)->
+])
+
 .controller('welcomeCtrl', [
   '$scope'
    ($scope)->
 ])
+#
+# appConfig - contains all the values for a dynamic UI
+#
+.value 'appConfig',
+  sidebar:'visible'
+  history:'hidden'
 
-.controller('TodoCtrl', [
-  '$scope'
-
-($scope) ->
-
-  $scope.todos = [
-    text: "learn angular"
-    done: true
-  ,
-    text: "build an angular app"
-    done: false
-  ]
-
-  $scope.addTodo = ->
-    $scope.todos.push
-      text: $scope.todoText
-      done: false
-
-    $scope.todoText = ""
-
-  $scope.remaining = ->
-    count = 0
-    angular.forEach $scope.todos, (todo) ->
-      count += (if todo.done then 0 else 1)
-
-    count
-
-  $scope.archive = ->
-    oldTodos = $scope.todos
-    $scope.todos = []
-    angular.forEach oldTodos, (todo) ->
-      $scope.todos.push todo  unless todo.done
+.run([()->
+  console.log "run block of app.controllers "
 
 ])
 
