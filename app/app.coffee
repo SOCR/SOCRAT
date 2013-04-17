@@ -1,6 +1,12 @@
 'use strict'
-
-# Declare app level module which depends on filters, and services
+###
+  NOTE: Order of the modules injected into "app" module decides
+  which module gets initialized first.
+  In this case, ngCookies config block is executed first, followed by
+  ngResource and so on. Finally config block of "app" is executed.
+  Then the run block is executed in the same order.
+  Run block of "app" is executed in the last.
+###
 App = angular.module('app', [
   'ngCookies'
   'ngResource'
@@ -44,10 +50,30 @@ App.config([
 
 ])
 
-#App.run(['core','getData', (core,getData)->
-#  console.log "run block of app module"
-#  sb = {}
-#  getData = new getData(sb)
-#  getData.setSb(sb)
-#
-#])
+App.run(['core','getData', (core,getData)->
+  console.log arguments
+####
+# Test code
+####
+  _modules =
+    0 :
+      id : 'getData'
+      creator: getData
+      opt:{}
+
+  _len = Object.keys(_modules).length
+  while(_len--)
+    core.register _modules[0].id, _modules[_len].creator
+
+  core.start 'getData'
+  _len = Object.keys(_modules).length
+  while(_len--)
+    console.log "module started"
+    #core.startAll ()->
+      # this will go as view update to show the app is ready.
+    #  console.log "all modules have been started"
+
+  console.log "run block of app module"
+
+])
+

@@ -10,10 +10,11 @@ core = angular.module('app.core', [
 ])
 
   .factory 'core', [
-    'mediator'
+    'pubSub'
     'Sandbox'
+    'utils'
     '$exceptionHandler'
-    (mediator, Sandbox, $exceptionHandler) ->
+    (mediator, Sandbox,util, $exceptionHandler) ->
 
       _modules = {}
       _instances = {}
@@ -50,13 +51,12 @@ core = angular.module('app.core', [
 
       _createInstance = (moduleId, instanceId = moduleId, opt) ->
         module = _modules[moduleId]
-
         return _instances[instanceId] if _instances[instanceId]?
-
         iOpts = _getInstanceOptions.apply @, [instanceId, module, opt]
         sb = new Sandbox @, instanceId, iOpts
-        mediator.installTo sb
-
+        util.installFromTo mediator sb
+        console.log "stop"
+        console.log sb
         for i,p of plugins when p.sandbox?
           plugin = new p.sandbox sb
           sb[k] = v for own k,v of plugin
@@ -81,7 +81,6 @@ core = angular.module('app.core', [
 
         # TODO: change module instance creating
         modObj = new creator()
-
         _checkType 'object', modObj, 'the return value of the creator'
         _checkType 'function', modObj.init, '"init" of the module'
         _checkType 'function', modObj.destroy, '"destroy" of the module '
@@ -100,6 +99,7 @@ core = angular.module('app.core', [
         try
           _addModule.apply @, [moduleId, creator, opt]
         catch e
+          console.log e
           console.error 'could not register module "#{moduleId}": #{e.message}'
           false
 
@@ -209,4 +209,7 @@ core = angular.module('app.core', [
           false
 
       lsModules: _modules
+      register : _register
+      startAll: startAll
+      start:start
   ]
