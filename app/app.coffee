@@ -8,6 +8,8 @@
   Run block of "app" is executed in the last.
 ###
 App = angular.module('app', [
+  'ui'
+  'ui.compat'
   'ngCookies'
   'ngResource'
   'app.core'
@@ -23,8 +25,7 @@ App = angular.module('app', [
 App.config([
   '$routeProvider'
   '$locationProvider'
-
-($routeProvider, $locationProvider, config) ->
+($routeProvider, $locationProvider) ->
 
   console.log "config block of app module"
   $routeProvider
@@ -43,7 +44,8 @@ App.config([
     #.when('/charts',{templateUrl:"partials/analysis/charts/main.html"})
     #.when('/results',{templateUrl:"partials/analysis/results/main.html"})
     # Catch all
-    .otherwise({redirectTo: '/welcome'})
+    #.otherwise({redirectTo: '/welcome'})
+
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
