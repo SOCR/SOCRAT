@@ -5,7 +5,7 @@
   This file contains the controllers that are generic
   and not specific to any particular analysis(clean data or charts etc).
 ###
-angular.module('app.controllers', ['app.mediator'])
+app= angular.module('app.controllers', ['app.mediator'])
 .config([
     ()->
       console.log "config block of app.controllers module"
@@ -67,36 +67,11 @@ angular.module('app.controllers', ['app.mediator'])
 
 .controller('sidebarCtrl', [
   '$scope'
-  'pubSub'
   'appConfig'
-($scope,pubSub,appConfig) ->
+($scope,appConfig) ->
 
   console.log "controller block for sidebarCtrl"
-  $scope.message = "Enter your name...."
-  $scope.messageReceived=""
   $scope.state="show"
-
-  #sendMsg
-  $scope.sendMsg=()->
-    console.log(this.token)
-    pubSub.publish("username changed",$scope.message)
-    console.log("published successfully")
-    null
-
-  #unsubMsg
-  $scope.unsubMsg=()->
-    console.log("unsubscribe initiated")
-    pubSub.unsubscribe($scope.token)
-    null
-
-  #callback function on event "message changed"
-  updateMsg=(event,msg)->
-    $scope.messageReceived=msg
-    console.log("message received successfully through pub/sub")
-    null
-
-  #register function x to event "message changed"
-  $scope.token=pubSub.subscribe("username changed",updateMsg)
 
   #view function
   $scope.view=->
@@ -121,6 +96,7 @@ angular.module('app.controllers', ['app.mediator'])
       "span3"
 ])
 
+
 .controller('mainCtrl', [
   '$scope'
   'appConfig'
@@ -130,7 +106,7 @@ angular.module('app.controllers', ['app.mediator'])
     #initial width is set span9
     $scope.width = 'span9'
     #updating main view
-    $scope.$on "update view", (e)->
+    $scope.$on "update view", ()->
       if appConfig.sidebar is 'visible' and appConfig.history is 'hidden'
         $scope.width = 'span9'
       else
@@ -145,6 +121,37 @@ angular.module('app.controllers', ['app.mediator'])
 .controller('welcomeCtrl', [
   '$scope'
    ($scope)->
+]).
+controller('projectCtrl',[
+  '$scope'
+  'pubSub'
+  ($scope,pubSub)->
+    console.log "Project Ctrl"
+    $scope.message = "Enter your name...."
+    $scope.messageReceived=""
+  #sendMsg
+    $scope.sendMsg=()->
+      console.log($scope.message)
+      pubSub.publish("username changed",$scope.message)
+      console.log("published successfully")
+      null
+
+    #unsubMsg
+    $scope.unsubMsg=()->
+      console.log("unsubscribe initiated")
+      pubSub.unsubscribe($scope.token)
+      null
+
+    #callback function on event "message changed"
+    updateMsg=(event,msg)->
+      $scope.messageReceived=msg
+      console.log("message received successfully through pub/sub")
+      null
+
+    #register function x to event "message changed"
+    $scope.token=pubSub.subscribe("username changed",updateMsg)
+
+
 ])
 #
 # appConfig - contains all the values for a dynamic UI

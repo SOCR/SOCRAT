@@ -17,22 +17,71 @@ getData = angular.module('app.getData', [
     ()->
       console.log "config block of getData"
 ])
-  # ###
-  # getDataViewCtrl is the ctrl that talks to the view.
-  # ###
-.controller('getDataViewCtrl', [
+# jsonParser gets json based on url
+#
+#
+.factory('jsonParser',[
+  '$http'
+  ($http)->
+    (opts)->
+      return null if not opts?
+      # test json : https://graph.facebook.com/search?q=ucla
+      $http.jsonp(opts.url+"&callback=JSON_CALLBACK")
+        .success((data,status) ->
+          #save the data in a tempCache
+          # db.save(response,'tempCache')
+          console.log data
+          console.log status
+
+
+          #execute any callbacks present
+          #opts.cb() ?opts.cb
+          #return the jsonp data
+          return data
+        ).error((data,status)->
+
+        )
+])
+
+# ###
+# getDataViewCtrl is the ctrl that talks to the view.
+# ###
+.controller('getDataSidebarCtrl', [
   '$scope'
   'getDataSb'
-  ($scope,getDataSb)->
-    $scope.msg=''
-    console.log "getDataViewCtrl executed"
-    sb = getDataSb.getSb()
-    console.log sb
+  'jsonParser'
+  ($scope,getDataSb,jsonParser)->
+
+    #get the sandbox made for this module
+    #sb = getDataSb.getSb()
+    console.log 'sandbox created'
+
+    #getJson
+    $scope.getJson=()->
+      console.log("test")
+      console.log $scope.jsonUrl
+      try
+        data = jsonParser
+          url:$scope.jsonUrl
+          cb:() ->
+            #sb.publish "json input successful", "local"
+      #send a message within the module
+        #sb.publish 'json url successfully parsed', data, 'local'
+      catch e
+        console.log e.message
+        console.log e.stack
+      return
+
+    $scope.getUrl = ()->
+
+    $scope.getGrid = ()->
+    return
   ])
 
-.controller('getDataCtrl', [
+.controller('getDataMainCtrl', [
   '$scope'
   ($scope)->
+    #$scope.msg = "selvam"
     console.log 'getDataCtrl executed'
 ])
 ####
@@ -64,4 +113,5 @@ getData = angular.module('app.getData', [
   getSb:()->
     _sb
 )
+
 

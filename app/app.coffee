@@ -23,29 +23,64 @@ App = angular.module('app', [
 ])
 
 App.config([
-  '$routeProvider'
   '$locationProvider'
-($routeProvider, $locationProvider) ->
+  '$urlRouterProvider'
+  '$stateProvider'
+
+( $locationProvider,$urlRouterProvider,$stateProvider) ->
 
   console.log "config block of app module"
-  $routeProvider
-    #main nav bar
-    .when('/home',{templateUrl:'partials/main.html'})
-    .when('/guide',{templateUrl:'partials/nav/guide-me.html'})
-    .when('/contact',{templateUrl:'partials/nav/contact.html'})
-    .when('/welcome',{templateUrl:'partials/welcome.html'})
-    
-    #analysis tools routes
-    .when('/getData', {
-      templateUrl: 'partials/analysis/getData/main.html'})
-    .when('/cleanData',{
-      templateUrl:'partials/analysis/cleanData/main.html'})
-    
-    #.when('/charts',{templateUrl:"partials/analysis/charts/main.html"})
-    #.when('/results',{templateUrl:"partials/analysis/results/main.html"})
-    # Catch all
-    #.otherwise({redirectTo: '/welcome'})
+  $urlRouterProvider.when('/','/')
+    .otherwise('/home')
 
+  $stateProvider
+    .state 'welcome'
+      url:'/welcome'
+      views:
+        'main':
+          templateUrl:'partials/welcome.html'
+
+    .state 'home'
+      url:'/home'
+      views:
+        'main':
+          templateUrl:'partials/nav/home.html'
+        'sidebar':
+          templateUrl:'partials/projects.html'
+          controller:'projectCtrl'
+
+    .state 'guide'
+      url:'/guide'
+      views:
+        'main':
+          templateUrl:'partials/nav/guide-me.html'
+        'sidebar':
+          templateUrl:'partials/projects.html'
+          controller:'projectCtrl'
+
+    .state 'contact'
+      url:'/contact'
+      views:
+        'main':
+          templateUrl:'partials/nav/contact.html'
+
+    .state 'getData'
+      url:'/getData'
+      views:
+        'main':
+          templateUrl:'partials/nav/guide-me.html'
+          controller:'getDataMainCtrl'
+        'sidebar':
+          templateUrl:'partials/analysis/getData/sidebar.html'
+          controller:'getDataSidebarCtrl'
+
+    .state 'cleanData'
+      url:'/cleanData'
+      views:
+        'main':
+          templateUrl:'partials/analysis/cleanData/main.html'
+        'sidebar':
+          templateUrl:'partials/analysis/cleanData/sidebar.html'
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)

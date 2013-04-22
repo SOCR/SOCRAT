@@ -51,9 +51,13 @@ html(lang='en', ng-app='app')
       //Main content section
       .main-content.container-fluid
         .row-fluid
-          div(ng-include="'partials/sidebar.html'")
+          div(ng-controller="sidebarCtrl")
+            div(ng-class="getClass()").sub-menu.well
+              i(ng-click="toggle()").icon-circle-arrow-left
+              div(ng-show="view()")
+                div(ui-view="sidebar",ng-animate="{enter:'fade-enter'}")
           div(ng-controller='mainCtrl')
-            div(ng-view,class="{{width}}")
+            div(ui-view="main",class="{{width}}").well
       .push
 
     div(ng-include="'partials/footer.html'")
