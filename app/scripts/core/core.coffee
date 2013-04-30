@@ -1,6 +1,6 @@
 'use strict'
 
-#app.core module contains services like error management , pub/sub
+#app.core module contains
 
 core = angular.module('app.core', [
   'app.mediator'
@@ -10,25 +10,27 @@ core = angular.module('app.core', [
 ])
 
   .factory 'core', [
-    'mediator'
+    'pubSub'
     'Sandbox'
-    '$exceptionHandler'
-    (mediator, Sandbox, $exceptionHandler) ->
+#    '$exceptionHandler'
+    'utils'
+#    (mediator, Sandbox, $exceptionHandler, utils) ->
+    (mediator, Sandbox, utils) ->
 
       _modules = {}
       _instances = {}
       _instanceOpts = {}
-      _plugins = {}
+#      _plugins = {}
 
       _checkType = (type, val, name) ->
         # TODO: change to $exceptionHandler
         if typeof val isnt type
-          throw new TypeError '#{name} has to be a #{type}'
+          throw new TypeError "#{name} has to be a #{type}"
 
-      # registers a function that gets executed when a module gets instantiated.
-      _onModuleState = (state, fn, moduleId = '_always') ->
-        checkType 'function', fn, 'parameter'
-        @moduleStates.on '#{state}/#{moduleId}', fn, @
+#      # registers a function that gets executed when a module instantiated.
+#      _onModuleState = (state, fn, moduleId = '_always') ->
+#        checkType 'function', fn, 'parameter'
+#        moduleStates.on '#{state}/#{moduleId}', fn, @
 
       _getInstanceOptions = (instanceId, module, opt) ->
         # Merge default options and instance options and start options,
@@ -55,31 +57,32 @@ core = angular.module('app.core', [
 
         iOpts = _getInstanceOptions.apply @, [instanceId, module, opt]
         sb = new Sandbox @, instanceId, iOpts
-        mediator.installTo sb
 
-        for i,p of plugins when p.sandbox?
-          plugin = new p.sandbox sb
-          sb[k] = v for own k,v of plugin
-          if typeof p.on is 'object'
-            for ev,cb of p.on when typeof cb is 'function'
-              _onModuleState ev, cb
+        utils.installFromTo mediator, sb
+
+#        for i,p of plugins when p.sandbox?
+#          plugin = new p.sandbox sb
+#          sb[k] = v for own k,v of plugin
+#          if typeof p.on is 'object'
+#            for ev,cb of p.on when typeof cb is 'function'
+#              _onModuleState ev, cb
 
         instance              = new module.creator sb
         instance.options      = iOpts
         instance.id           = instanceId
         _instances[instanceId] = instance
 
-        for n in [instanceId, '_always']
-          moduleStates.emit 'instantiate/#{n}'
+#        for n in [instanceId, '_always']
+#          moduleStates.emit 'instantiate/#{n}'
 
         instance
 
       _addModule = (moduleId, creator, opt) ->
+
         _checkType 'string', moduleId, 'module ID'
         _checkType 'function', creator, 'creator'
         _checkType 'object', opt, 'option parameter'
 
-        # TODO: change module instance creating
         modObj = new creator()
 
         _checkType 'object', modObj, 'the return value of the creator'
@@ -94,6 +97,7 @@ core = angular.module('app.core', [
           creator: creator
           options: opt
           id: moduleId
+
         true
 
       _register = (moduleId, creator, opt = {}) ->
@@ -103,13 +107,15 @@ core = angular.module('app.core', [
           console.error 'could not register module "#{moduleId}": #{e.message}'
           false
 
+      # unregisters module or plugin
       _unregister = (id, type) ->
         if type[id]?
           delete type[id]
           return true
         false
 
-      _unregisterAll = (type) -> unregister id, type for id of type
+      # unregisters all modules or plugins
+      _unregisterAll = (type) -> _unregister id, type for id of type
 
       _setInstanceOptions = (instanceId, opt) ->
         _checkType 'string', instanceId, 'instance ID'
@@ -117,7 +123,7 @@ core = angular.module('app.core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
-      start = (moduleId, opt={}) ->
+      _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
           _checkType 'object', opt, 'second parameter'
@@ -133,7 +139,7 @@ core = angular.module('app.core', [
             throw new Error 'module was already started'
 
           # if the module wants to init in an asynchronous way
-          if (util.getArgumentNames instance.init).length >= 2
+          if (utils.getArgumentNames instance.init).length >= 2
             # then define a callback
             instance.init instance.options, (err) -> opt.callback? err
           else
@@ -145,24 +151,24 @@ core = angular.module('app.core', [
           true
 
         catch e
-          console.error e
-          opt.callback? new Error 'could not start module: #{e.message}'
+          console.log "could not start module: #{e.message}"
+          opt.callback? new Error "could not start module: #{e.message}"
           false
 
-      startAll = (cb) ->
-        util.doForAll(
+      _startAll = (cb) ->
+        utils.doForAll(
           (id for id of _instances)
           (=> stop.apply @, arguments)
           cb
         )
 
-      stop = (id, cb) ->
+      _stop = (id, cb) ->
         if instance = _instances[id]
 
-          mediator.off instance
+#          mediator.off instance
 
           # if the module wants destroy in an asynchronous way
-          if (util.getArgumentNames instance.destroy).length >= 1
+          if (utils.getArgumentNames instance.destroy).length >= 1
             # then define a callback
             instance.destroy (err) ->
               cb? err
@@ -171,16 +177,16 @@ core = angular.module('app.core', [
             instance.destroy()
             cb? null
 
-          for n in [id, '_always']
-            @moduleStates.off 'instantiate/#{n}'
-            @moduleStates.emit 'destroy/#{n}'
+#          for n in [id, '_always']
+#            @moduleStates.off 'instantiate/#{n}'
+#            @moduleStates.emit 'destroy/#{n}'
 
           # remove
-          delete @instances[id]
+          delete _instances[id]
           true
         else false
 
-      stopAll = ->
+      _stopAll = ->
 
       _ls = (o) -> (id for id,m of o)
 
@@ -208,5 +214,15 @@ core = angular.module('app.core', [
           console.error e
           false
 
+      # External methods
       lsModules: _modules
+      register: _register
+      # wrapping for unregistering module
+      unregister: (id) -> _unregister id, _modules
+      # wrapping for unregistering all modules
+      unregisterAll: -> _unregisterAll _modules
+      start: -> _start.apply @, arguments
+      startAll: -> _startAll.apply @, arguments
+      stop: -> _stop.apply     @, arguments
+      stopAll: -> _stopAll.apply  @, arguments
   ]
