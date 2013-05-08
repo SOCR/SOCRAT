@@ -13,13 +13,14 @@ App = angular.module('app', [
   'ngCookies'
   'ngResource'
   'app.core'
+  'app.getData'
   'app.controllers'
   'app.directives'
   'app.filters'
   'app.services'
   'app.mediator'
   'ngSanitize'
-  'app.getData'
+
 ])
 
 App.config([
