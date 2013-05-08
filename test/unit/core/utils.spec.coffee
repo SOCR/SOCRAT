@@ -44,3 +44,4 @@ describe 'utils module', ->
 
       it 'should return unique id every time', ->
         (expect utils.getGuid()).not.toEqual(utils.getGuid())
+

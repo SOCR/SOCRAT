@@ -52,9 +52,7 @@ core = angular.module('app.core', [
 
       _createInstance = (moduleId, instanceId = moduleId, opt) ->
         module = _modules[moduleId]
-
         return _instances[instanceId] if _instances[instanceId]?
-
         iOpts = _getInstanceOptions.apply @, [instanceId, module, opt]
         sb = new Sandbox @, instanceId, iOpts
 
@@ -84,7 +82,6 @@ core = angular.module('app.core', [
         _checkType 'object', opt, 'option parameter'
 
         modObj = new creator()
-
         _checkType 'object', modObj, 'the return value of the creator'
         _checkType 'function', modObj.init, '"init" of the module'
         _checkType 'function', modObj.destroy, '"destroy" of the module '
@@ -104,6 +101,7 @@ core = angular.module('app.core', [
         try
           _addModule.apply @, [moduleId, creator, opt]
         catch e
+          console.log e
           console.error 'could not register module "#{moduleId}": #{e.message}'
           false
 
@@ -225,4 +223,5 @@ core = angular.module('app.core', [
       startAll: -> _startAll.apply @, arguments
       stop: -> _stop.apply     @, arguments
       stopAll: -> _stopAll.apply  @, arguments
+
   ]

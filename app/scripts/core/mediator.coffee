@@ -4,91 +4,180 @@
 
 mediator = angular.module('app.mediator', [])
 
-#.service("sayHello", ["name", (name) ->
-#  console.log("sayHello service is instantiated")
-#  log: () ->
-#    console.log "Hello" + name
-#    null
-#])
-
+# publish/subscribe angular service
 .service("pubSub", () ->
-  _channelList = {}
+  _msgList = []
+  _msgScopeList = []
+  _scopes = []
   _lastUID = 14
 
-  #publish() - registers channel if not present already,
+  # _publish() - registers msg if not present already,
   # then executes all the callbacks.
-  _publish = (channel,data,cb) ->
-
-    if cb is "undefined"
-      cb = ->
-    unless typeof channel is "string"
+  # @param {object}
+  _publish = (obj) ->
+    unless typeof obj.msg is "string"
+      return false
+    if obj.callback?
+      cb = obj.callback
+    else
+      cb = ()->
+    _flag = 1
+    if obj.msg?
+      msg = obj.msg
+      i=0
+      while i<_msgScopeList.length
+        if _msgList[_msgScopeList[i]].hasOwnProperty(msg) is true
+          _flag = 0
+          break
+        i++
+    if(_flag is 1)
+      # execute the callback and return false
+      console.log "message not present in the list. returning false"
+      cb()
       return false
 
-    if typeof data is "function"
-      cb = data
-      data = undefined
-
-    if _channelList.hasOwnProperty(channel)
-      subscribers=_channelList[channel]
-      i = 0
-      j = subscribers.length
-      while i < j
-        try
-          #util.runSeries implementation goes here
-          subscribers[i].func channel, data
-        catch e
-          throw e
-        i++
+    if obj.data?
+      data = obj.data
     else
-      _channelList[channel]=[]
-  #  console.log(subscribers)
+      data = undefined
+    if obj.msgScope?
+      msgScope = obj.msgScope
+      if msgScope instanceof Array
+        # search in the scopelist. if not there, move on
+        # search in msglist, if not found move on to next el
+        # if found, run all the listeners of that msg
+        # move on to next el
+        # adding the scope to the msgScope list if not present already
+        # take each element of msgScope
+        # if element is one, and = to "all" , search in all scopelists
+        i=0
+        _scopes =[]
+        while i < msgScope.length
+          if(msgScope[i] is "all")
+            _scopes = _msgScopeList
+            break
+          if _msgScopeList.indexOf(msgScope[i]) isnt -1
+            _scopes.push(msgScope[i])
+          i++
+        # Now we have the _scopes list, find messages and make calls
+        i=0
+        while i < Object.keys(_scopes).length
+          if _msgList[_scopes[i]].hasOwnProperty(msg)
+            subscribers=_msgList[_scopes[i]][msg]
+            j = 0
+            while j < subscribers.length
+              try
+              #
+              # util.runSeries implementation goes here
+              #
+                subscribers[j].func.apply subscribers[j].context, [msg, data]
+              catch e
+                throw e
+              j++
+          else
+            console.log "no cb's registered with this message"
+            _msgList[_scopes[i]][msg]=[]
+          i++
+      else
+        cb()
+        return false
+    else
+      cb()
+      return false
+    cb()
+    console.log "successfully published"
+    return @
 
-  #subscribe() - register a callback for an channel
-  _subscribe = (channel,cb) ->
-    if channel instanceof Array
+  # _subscribe() - registers a listener function for a msg
+  _subscribe = (obj) ->
+    if obj.msg?
+      msg = obj.msg
+    else
+      return false
+
+    if obj.listener?
+      cb = obj.listener
+    else
+      cb = ->
+
+    # not sure about this
+    if obj.context?
+      context = obj.context
+    else
+      context = this
+
+    if obj.msgScope?
+      msgScope = obj.msgScope
+      i=0
+      if msgScope instanceof Array
+        # adding the scope to the msgScope list if not present already
+        while i < msgScope.length
+          if _msgScopeList.indexOf(msgScope[i]) is -1
+            _msgScopeList.push msgScope[i]
+          i++
+      else
+        return false
+    else
+      return false
+    if msg instanceof Array
       _results=[]
       i=0
-      j=channel.length
+      j=msg.length
       while i<j
-        id = channel[i]
-        _results.push _subscribe id, cb
+        id = msg[i]
+        _results.push _subscribe
+          msg:id
+          listener:cb
+          context:context
+          msgScope:msgScope
         i++
-      return _results
-    else if channel instanceof Object
+      return @
+    else if msg instanceof Object
       _results=[]
-      for k of channel
-        v = channel[k]
-        _results.push _subscribe k, v
-      #console.log _channelList
+      for k of msg
+        v = msg[k]
+        _results.push _subscribe
+          msg:k
+          listener:v
+          context:context
+          msgScope:msgScope
+      #console.log _msgList
       return _results
     else
       unless typeof cb == "function"
         return false
-      unless typeof channel == "string"
+      unless typeof msg == "string"
         return false
-    unless _channelList.hasOwnProperty(channel)
-      _channelList[channel]=[]
 
-    #pushing the cb function into the list
-    _channelList[channel].push
-      token:++_lastUID
-      func:cb
-    console.log("successfully subscribed")
-    console.log(_channelList)
-    _lastUID
+    j=0
+    while j < msgScope.length
+      if not _msgList[msgScope[j]]?
+        _msgList[msgScope[j]] = {}
+      unless _msgList[msgScope[j]].hasOwnProperty(msg)
+        _msgList[msgScope[j]][msg]=[]
+      #pushing the cb function into the list
+      _msgList[msgScope[j]][msg].push
+        token:++_lastUID
+        func:cb
+        context:context
+      console.log("successfully subscribed")
+      j++
+
+    return @
 
   #_unsubscribe()
   _unsubscribe=(token)->
-    for m of _channelList
-      if _channelList.hasOwnProperty(m)
+    for m of _msgList
+      if _msgList.hasOwnProperty(m)
         i=0
-        j=_channelList[m].length
+        j=_msgList[m].length
         while i<j
-          if _channelList[m][i].token is token
-            _channelList[m].splice i, 1
+          if _msgList[m][i].token is token
+            _msgList[m].splice i, 1
             console.log("successfully unsubscribed")
             return token
           i++
+    return @
 
   publish:_publish
   subscribe:_subscribe

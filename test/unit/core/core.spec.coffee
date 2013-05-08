@@ -199,6 +199,7 @@ describe 'Core module', ->
           (expect core.start moduleId).toBeTruthy()
           (expect core.stop moduleId, -> end = true).toBeTruthy()
           (expect end).toEqual true
+
 #
 #    describe 'startAll function', ->
 #
@@ -460,8 +461,6 @@ describe 'Core module', ->
 #        core.start 'mod'
 #        core.stop 'mod'
 
-
-
 #    describe "list methods", ->
 #
 #      before ->
@@ -481,3 +480,4 @@ describe 'Core module', ->
 #        (expect @core.lsInstances()).toEqual ["myModule", "test"]
 #        (expect @core.stop "myModule").toBeTruthy()
 #        (expect @core.lsInstances()).toEqual ["test"]
+
