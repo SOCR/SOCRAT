@@ -101,7 +101,7 @@ core = angular.module('app.core', [
         try
           _addModule.apply @, [moduleId, creator, opt]
         catch e
-          console.log e
+#          console.log e
           console.error 'could not register module "#{moduleId}": #{e.message}'
           false
 
@@ -149,16 +149,41 @@ core = angular.module('app.core', [
           true
 
         catch e
-          console.log "could not start module: #{e.message}"
+#          console.log "could not start module: #{e.message}"
           opt.callback? new Error "could not start module: #{e.message}"
           false
 
-      _startAll = (cb) ->
-        utils.doForAll(
-          (id for id of _instances)
-          (=> stop.apply @, arguments)
-          cb
-        )
+      _startAll = (cb, opt) ->
+
+        if cb instanceof Array
+          mods = cb; cb = opt; opt = null
+          valid = (id for id in mods when _modules[id]?)
+        else
+          mods = valid = (id for id of _modules)
+
+        if valid.length is mods.length is 0
+          cb? null
+          return true
+        else if valid.length isnt mods.length
+          invalid = ("'#{id}'" for id in mods when not (id in valid))
+          invalidErr = new Error "these modules don't exist: #{invalid}"
+
+        startAction = (m, next) =>
+          o = {}
+          modOpts = _modules[m].options
+          o[k] = v for own k,v of modOpts when v
+          o.callback = (err) ->
+            modOpts.callback? err
+            next err
+          _start m, o
+
+        utils.doForAll valid, startAction, (err) ->
+          if err?.length > 0
+            e = new Error "errors occoured in the following modules: " +
+                          "#{("'#{valid[i]}'" for x,i in err when x?)}"
+          cb? e or invalidErr
+
+        not invalidErr?
 
       _stop = (id, cb) ->
         if instance = _instances[id]
@@ -184,7 +209,12 @@ core = angular.module('app.core', [
           true
         else false
 
-      _stopAll = ->
+      _stopAll = (cb) ->
+        utils.doForAll(
+          (id for id of _instances)
+          (=> _stop.apply @, arguments)
+          cb
+        )
 
       _ls = (o) -> (id for id,m of o)
 
@@ -209,19 +239,20 @@ core = angular.module('app.core', [
           true
 
         catch e
-          console.error e
+#          console.error e
           false
 
       # External methods
-      lsModules: _modules
-      register: _register
+      lsModules: -> _ls _modules
+      lsInstances: -> _ls _instances
+      register: -> _register.apply @, arguments
       # wrapping for unregistering module
       unregister: (id) -> _unregister id, _modules
       # wrapping for unregistering all modules
       unregisterAll: -> _unregisterAll _modules
       start: -> _start.apply @, arguments
       startAll: -> _startAll.apply @, arguments
-      stop: -> _stop.apply     @, arguments
+      stop: -> _stop.apply @, arguments
       stopAll: -> _stopAll.apply  @, arguments
 
   ]
