@@ -52,4 +52,3 @@ describe "getData", ->
           type:"worldBank"
         obj = jsonParser opts
         #returns a promise object
-

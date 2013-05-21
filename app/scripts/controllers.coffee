@@ -79,7 +79,7 @@ app= angular.module('app.controllers', ['app.mediator'])
 ($scope,appConfig) ->
 
   console.log "controller block for sidebarCtrl"
-  $scope.state="show"
+  $scope.state= "show"
 
   #view function
   $scope.view=->
@@ -136,7 +136,7 @@ controller('projectCtrl',[
   ($scope,pubSub)->
     console.log "Project Ctrl"
     $scope.message = "Enter your name...."
-    $scope.messageReceived=""
+    $scope.messageReceived= ""
   #sendMsg
     $scope.sendMsg=()->
       console.log($scope.message)
@@ -152,12 +152,12 @@ controller('projectCtrl',[
 
     #callback function on event "message changed"
     updateMsg=(event,msg)->
-      $scope.messageReceived=msg
+      $scope.messageReceived= msg
       console.log("message received successfully through pub/sub")
       null
 
     #register function x to event "message changed"
-    $scope.token=pubSub.subscribe("username changed",updateMsg)
+    $scope.token= pubSub.subscribe("username changed",updateMsg)
 
 
 ])
