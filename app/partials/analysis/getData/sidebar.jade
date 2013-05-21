@@ -1,13 +1,92 @@
 div(ng-controller="getDataSidebarCtrl")
-    h4 Grid
-    button(ng-click="getGrid()").btn.btn-info Grid
-    h4 Json
-    input(type="url",ng-model="jsonUrl").input-medium
-    button(ng-click="getJson()").btn.btn-info Json
-    h4 Generate
-    input(type="url",ng-model="").input-medium
-    button.btn.btn-info Generate
-    h4 Url
-    input(type="url",ng-model="").input-medium
-    button.btn.btn-info url
 
+
+    accordion(close-others="true")
+        accordion-group(heading="Grid")
+            p Traditional spreadsheet where you can copy-paste your data and edit it as you like!
+            button.btn.btn-info(ng-click="showGrid()") Show
+        accordion-group(heading="WorldBank")
+            p Use the exhaustive WorldBank data to fuel your analysis.
+            button.btn.btn-info(ng-click="showWBInterface()") Use
+        accordion-group(heading="Generate")
+            p Use the inbuilt experiment to generate data for your analysis.
+            button.btn.btn-info Generate
+        accordion-group(heading="JSON")
+            p Enter json url here. We will try to give the best output!
+        accordion-group(heading="SOCR Data")
+            p Enter SOCR Data url here. We will parse it for you!
+            input(type="url",ng-model="socr_url").input-medium
+//
+    table
+        tr
+            td
+                h4 Grid
+            td
+                i.icon-chevron-down(ng-click="gridCollapsed = !gridCollapsed")
+        tr
+            td
+                p(collapse="gridCollapsed") Traditional spreadsheet where you can copy-paste your data and edit it as you like!
+            td
+                p(collapse="gridCollapsed")
+                    button.btn.btn-info Show
+
+        tr
+            td
+                h4 WorldBank
+
+            td
+                i.icon-chevron-down(ng-click="wbCollapsed = !wbCollapsed")
+        tr
+            td
+                p(collapse="wbCollapsed") Enter json url here. We will try to give the best output!
+
+            td
+                p(collapse="wbCollapsed")
+                    button.btn.btn-info(ng-click="") Show
+
+
+        tr
+            td
+                h4 Generate
+
+            td
+                i.icon-chevron-down(ng-click="generateCollapsed = !generateCollapsed")
+        tr
+            td
+                p(collapse="generateCollapsed") Enter json url here. We will try to give the best output!
+                    input(type="url",ng-model="jsonUrl").input-medium
+
+            td
+                p(collapse="generateCollapsed")
+                    button.btn.btn-info(ng-click="getJson()") Go
+
+
+        tr
+            td
+                h4 URL
+
+            td
+                i.icon-chevron-down(ng-click="urlCollapsed = !urlCollapsed")
+        tr
+            td
+                p(collapse="urlCollapsed") Enter json url here. We will try to give the best output!
+                        input(type="url",ng-model="").input-medium
+
+            td
+                p(collapse="urlCollapsed")
+                    button.btn.btn-info url
+
+        tr
+            td
+                h4 Json
+
+            td
+                i.icon-chevron-down(ng-click="jsonCollapsed = !jsonCollapsed")
+        tr
+            td
+                p(collapse="jsonCollapsed") Enter json url here. We will try to give the best output!
+                    input(type="url",ng-model="jsonUrl").input-medium
+
+            td
+                p(collapse="jsonCollapsed")
+                    button.btn.btn-info(ng-click="getJson()") Show
