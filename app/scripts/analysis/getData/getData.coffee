@@ -153,7 +153,6 @@ getData = angular.module('app.getData', [
   #generate
     $scope.showGenerate = ->
       $scope.$emit("change in showStates","generate")
-
   ])
 
 .controller('getDataMainCtrl', [
@@ -323,5 +322,4 @@ getData = angular.module('app.getData', [
     # subscribing to handsontable update.
     scope.$on(attr.purpose+":load data to handsontable",scope.update)
     console.log "handsontable directive linked"
-
 
