@@ -26,6 +26,9 @@ app= angular.module('app.controllers', ['app.mediator'])
   $scope.$on "change in view", ()->
     $scope.$broadcast "update view", null
 
+  $scope.$on "change in showStates", (obj,data)->
+    console.log "change in showStates heard!"
+    $scope.$broadcast("update showStates",data)
   $scope.$location = $location
   $scope.username = "Guest"
   $scope.$watch('$location.path()', (path) ->
