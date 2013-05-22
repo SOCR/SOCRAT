@@ -15,10 +15,12 @@
     </accordion-group>
     <accordion-group heading="JSON">
       <p>Enter json url here. We will try to give the best output!</p>
+      <input ng-model="jsonUrl" type="text" class="input-medium"/>
+      <button ng-click="getJson()" class="btn btn-info">Use</button>
     </accordion-group>
     <accordion-group heading="SOCR Data">
       <p>Enter SOCR Data url here. We will parse it for you!</p>
-      <input type="url" ng-model="socr_url" class="input-medium"/>
+      <input type="url" ng-model="socrUrl" class="input-medium"/>
     </accordion-group>
   </accordion>
 </div><!--

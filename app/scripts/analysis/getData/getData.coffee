@@ -28,25 +28,75 @@ getData = angular.module('app.getData', [
   '$http'
   ($http)->
     (opts)->
-#      return null if not opts?
-#      # test json : https://graph.facebook.com/search?q=ucla
-#      $http.jsonp(
-#        "https://graph.facebook.com/search?q=ucla&callback=JSON_CALLBACK"
-#        )
-#        .success((data,status) ->
-#          #save the data in a tempCache
-#          # db.save(response,'tempCache')
-#          console.log data
-#          console.log status
-#
-#
-#          #execute any callbacks present
-#          #opts.cb() ?opts.cb
-#          #return the jsonp data
-#          return data
-#        ).error((data,status)->
-#            console.log data
-#        )
+      return null if not opts?
+      # test json : https://graph.facebook.com/search?q=ucla
+      opts.url ="http://api.worldbank.org/countries/indicators/2.4_OOSC.RATE?"+
+      "per_page=100&date=1960:2013&format=jsonp&prefix=JSON_CALLBACK"
+      #opts.url="http://api.worldbank.org/countries/indicators/4.2_BASIC.EDU"+
+      #".SPENDING?per_page=100&date=2011:2011&format=jsonp&prefix=JSON_CALLBACK"
+      switch opts.type
+        when "worldBank"
+          #create the callback
+          cb = (data,status)->
+            # obj[0] will contain meta deta.
+            #obj[1] will contain array
+            _col = []
+            _column = []
+            tree = []
+            count = (obj)->
+              try
+                if typeof obj is "object" and obj isnt null
+                  for key in Object.keys obj
+                    console.log tree
+                    tree.push key
+                    console.log key
+                    count obj[key]
+                    tree.pop()
+                else
+                  _col.push tree.join('.')
+                console.log _col
+                return _col
+              catch e
+                console.log e.message
+              return true
+            #generate titles and references
+            count data[1][0]
+            # format data
+            for c in _col
+              _column.push
+                data:c
+            console.log data
+            console.log _column
+            #returned object
+# Testing the results on a div
+#            container = $(".worldBank")
+#            try
+#              container.handsontable(
+#                data: data[1]
+#                startRows: Object.keys(data[1]).length
+#                startCols: _column.length
+#                colHeaders: _col
+#                columns:_column
+#                minSpareRows: 1
+#              )
+#            catch e
+#              console.log e.message
+
+        else
+          #default implementation
+          cb = (data,status)->
+            console.log data
+            return data
+
+      $http.jsonp(
+        opts.url
+        )
+        .success(cb)
+        .error((data,status)->
+            console.log data
+            console.log status
+        )
+      #.done(opts.cb)
 ])
 
 # ###
@@ -57,33 +107,46 @@ getData = angular.module('app.getData', [
   'getDataSb'
   'jsonParser'
   ($scope,getDataSb,jsonParser)->
-
     #get the sandbox made for this module
     #sb = getDataSb.getSb()
-    console.log 'sandbox created'
+    #console.log 'sandbox created'
 #    $scope.gridCollapsed = false
 #    $scope.wbCollapsed = false
 #    $scope.generateCollapsed = false
 #    $scope.urlCollapsed = false
 #    $scope.jsonCollapsed = false
+    $scope.jsonUrl = "url.."
+#    try
+#      $scope.$watch "jsonUrl", ->
+#        console.log "yo"
+#    catch e
+#      console.log e.message
 
   #showGrid
     $scope.showGrid = ->
-      console.log("showGrid called")
+      #console.log("showGrid called")
       $scope.$emit("change in showStates","grid")
       #hide all divs and show only grid
 
   #getJson
     $scope.getJson = ->
       #console.log("getJson called")
-      #console.log $scope.jsonUrl
+      console.log $scope.jsonUrl
+      if $scope.jsonUrl is ""
+        return false
       try
-        data = jsonParser
+        jsonParser
           url:$scope.jsonUrl
-          cb:() ->
-            #sb.publish "json input successful", "local"
-      #send a message within the module
-        #sb.publish 'json url successfully parsed', data, 'local'
+          type:"json"
+#         cb:(obj) ->
+#            sb.publish
+#              msg:"json input successful"
+#              msgScope:["local"]
+#              data:obj
+#              cb:()->
+#                console.log "callback executed successfully!"
+            #send a message within the module
+            #sb.publish 'json url successfully parsed', data, 'local'
       catch e
         console.log e.message
         #console.log e.stack
