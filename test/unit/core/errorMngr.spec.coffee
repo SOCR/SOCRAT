@@ -16,35 +16,35 @@ describe "errorMngr Module", ->
     cb2: ->
 # extending mock module created in core.spec.coffee and overriding services
   angular.module("app.mocks")
-    .factory 'pubSub', ->
-      _cbList = []
-      _addCb = (fn)->
-        _cbList.push fn
-      publish:(obj)->
-        if typeof obj is 'object'
-          for fn in _cbList
-            fn.call()
-          return true
-        else
-          return false
-      subscribe:(obj)->
-        if typeof obj is 'object'
-          _addCb(obj.cb)
-          return true
-        else
-          return false
-      unsubscribe:()->
-        #flushes the _cbList
-        _cbList=[]
-    .factory '$log', ->
-      error: (msg)->
-        foo.cb2()
-      log: (msg)->
-        foo.cb2()
-      info: (msg)->
-        foo.cb2()
-      warn: (msg)->
-        foo.cb2()
+  .factory 'pubSub', ->
+    _cbList = []
+    _addCb = (fn)->
+      _cbList.push fn
+    publish:(obj)->
+      if typeof obj is 'object'
+        for fn in _cbList
+          fn.call()
+        return true
+      else
+        return false
+    subscribe:(obj)->
+      if typeof obj is 'object'
+        _addCb(obj.cb)
+        return true
+      else
+        return false
+    unsubscribe:()->
+      #flushes the _cbList
+      _cbList=[]
+  .factory '$log', ->
+    error: (msg)->
+      foo.cb2()
+    log: (msg)->
+      foo.cb2()
+    info: (msg)->
+      foo.cb2()
+    warn: (msg)->
+      foo.cb2()
   beforeEach ->
     module "app.errorMngr"
     module "app.mocks"
