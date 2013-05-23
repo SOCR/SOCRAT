@@ -138,7 +138,6 @@ describe "Mediator", ->
   describe "subscribe function", ->
     it "is an accessible function", ->
       inject (pubSub)->
-        console.log "TEST -- it is an accessible function"
         (expect typeof pubSub.subscribe).toEqual "function"
 
     it "should return false when no msgScope is provided", ->
@@ -146,7 +145,6 @@ describe "Mediator", ->
         expect pubSub.subscribe
           msg:"test message"
           listener:()->
-            console.log "listener is getting executed!!"
         .toEqual(false)
 
     it "should should subscribe to a message", ->
@@ -161,7 +159,6 @@ describe "Mediator", ->
 
     it "returns false if callback is not a function", ->
       inject (pubSub) ->
-        console.log "TEST -- it returns false if callback is not a function"
         expect pubSub.subscribe
           msg:"test message"
           listener:345
@@ -170,7 +167,6 @@ describe "Mediator", ->
 
     it "subscribes a function to several messages", ->
       inject (pubSub) ->
-        console.log "TEST -- it subscribes a function to several messages"
         obj =
           cb1: ()->
         spyOn(obj,"cb1")
@@ -193,7 +189,6 @@ describe "Mediator", ->
 
     it "subscribes several functions to several messages", ->
       inject (pubSub) ->
-        console.log "TEST -- it subscribes several functions to several messages"
         obj =
           cb1 : ->
           cb2 : ->
