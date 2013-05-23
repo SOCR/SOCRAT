@@ -39,7 +39,57 @@ utils = angular.module('app.utils', [])
         v = (if c is 'x' then r else (r & 0x3 | 0x8))
         v.toString 16
 
+    _runSeries = (tasks = [], cb = (->), force) ->
+      count = tasks.length
+      results = []
+
+      return cb? null, results if count is 0
+
+      errors = []
+
+      checkEnd = ->
+        count--
+        if count is 0
+          if (e for e in errors when e?).length > 0
+            cb errors, results
+          else
+            cb null, results
+
+      for t, i in tasks then do (t, i) ->
+        next = (err, res...) ->
+          if err?
+            errors[i] = err
+            results[i] = undefined
+          else
+            results[i] = if res.length < 2 then res[0] else res
+          checkEnd()
+        try
+          t next
+        catch e
+          next e if force
+
+    _runWaterfall = (tasks, cb) ->
+      i = -1
+      return cb() if tasks.length is 0
+
+      next = (err, res...) ->
+        return cb err if err?
+        if ++i is tasks.length
+          cb null, res...
+        else
+          tasks[i] res..., next
+      next()
+
+    _doForAll = (args = [], fn, cb)->
+      tasks = for a in args then do (a) ->
+        (next) ->
+          fn a, next
+      _runSeries tasks, cb
+
     clone: _clone
     installFromTo: _installFromTo
     getArgumentNames: _getArgumentNames
     getGuid: _getGuid
+    doForAll: _doForAll
+    runSeries: _runSeries
+    runWaterfall: _runWaterfall
