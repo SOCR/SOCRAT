@@ -17,19 +17,19 @@ core = angular.module('app.core', [
 #    (mediator, Sandbox, $exceptionHandler, utils) ->
   (mediator, Sandbox, utils) ->
 
-      _modules = {}
-      _instances = {}
-      _instanceOpts = {}
-      _map = {}
+    _modules = {}
+    _instances = {}
+    _instanceOpts = {}
+    _map = {}
 #      _plugins = {}
 
-      _checkType = (type, val, name) ->
-        # TODO: change to $exceptionHandler
-        console.log 'checkType: ' + "#{name} has to be a #{type}"
-        if typeof val isnt type
-          console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
-          console.log 'BUT: ' + "#{name} is " + typeof val
-          throw new TypeError "#{name} has to be a #{type}"
+    _checkType = (type, val, name) ->
+      # TODO: change to $exceptionHandler
+      console.log 'checkType: ' + "#{name} has to be a #{type}"
+      if typeof val isnt type
+        console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
+        console.log 'BUT: ' + "#{name} is " + typeof val
+        throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
 #      _onModuleState = (state, fn, moduleId = '_always') ->
@@ -79,101 +79,101 @@ core = angular.module('app.core', [
 
       instance
 
-      _addModule = (moduleId, creator, opt) ->
-        _checkType 'string', moduleId, 'module ID'
-        _checkType 'function', creator, 'creator'
-        _checkType 'object', opt, 'option parameter'
+    _addModule = (moduleId, creator, opt) ->
+      _checkType 'string', moduleId, 'module ID'
+      _checkType 'function', creator, 'creator'
+      _checkType 'object', opt, 'option parameter'
 
-        modObj = new creator()
-        _checkType 'object', modObj, 'the return value of the creator'
-        _checkType 'function', modObj.init, '"init" of the module'
-        _checkType 'function', modObj.destroy, '"destroy" of the module'
-        _checkType 'object', modObj.msgList, 'message list of the module'
-        _checkType 'object', modObj.msgList.outcome,
-          'outcoming message list of the module'
+      modObj = new creator()
+      _checkType 'object', modObj, 'the return value of the creator'
+      _checkType 'function', modObj.init, '"init" of the module'
+      _checkType 'function', modObj.destroy, '"destroy" of the module'
+      _checkType 'object', modObj.msgList, 'message list of the module'
+      _checkType 'object', modObj.msgList.outcome,
+        'outcoming message list of the module'
 
-        # TODO: change to $exceptionHandler
-        if _modules[moduleId]?
-          throw new TypeError "module #{moduleId} was already registered"
+      # TODO: change to $exceptionHandler
+      if _modules[moduleId]?
+        throw new TypeError "module #{moduleId} was already registered"
 
       _modules[moduleId] =
         creator: creator
         options: opt
         id: moduleId
 
-        console.log 'Module added: ' + moduleId
+      console.log 'Module added: ' + moduleId
 
-        true
+      true
 
     _register = (moduleId, creator, opt = {}) ->
       try
         _addModule.apply @, [moduleId, creator, opt]
       catch e
 #          console.log e
-          console.error "could not register module #{moduleId}: #{e.message}"
-          false
-
-      # unregisters module or plugin
-      _unregister = (id, type) ->
-        if type[id]?
-          delete type[id]
-          return true
+        console.error "could not register module #{moduleId}: #{e.message}"
         false
 
-      # unregisters all modules or plugins
-      _unregisterAll = (type) -> _unregister id, type for id of type
+    # unregisters module or plugin
+    _unregister = (id, type) ->
+      if type[id]?
+        delete type[id]
+        return true
+      false
 
-      _setInstanceOptions = (instanceId, opt) ->
-        _checkType 'string', instanceId, 'instance ID'
-        _checkType 'object', opt, 'option parameter'
-        _instanceOpts[instanceId] ?= {}
-        _instanceOpts[instanceId][k] = v for k,v of opt
+    # unregisters all modules or plugins
+    _unregisterAll = (type) -> _unregister id, type for id of type
 
-      _subscribeForModuleEvents = (moduleId, msgList, API) ->
-        for msg in msgList
-          mediator.subscribe
-            msg: msg
-            listener: API
-            msgScope: [moduleId]
+    _setInstanceOptions = (instanceId, opt) ->
+      _checkType 'string', instanceId, 'instance ID'
+      _checkType 'object', opt, 'option parameter'
+      _instanceOpts[instanceId] ?= {}
+      _instanceOpts[instanceId][k] = v for k,v of opt
 
-      _start = (moduleId, opt = {}) ->
-        try
-          _checkType 'string', moduleId, 'module ID'
-          _checkType 'object', opt, 'second parameter'
-          unless _modules[moduleId]?
-            throw new Error "module doesn't exist: #{moduleId}"
+    _subscribeForModuleEvents = (moduleId, msgList, API) ->
+      for msg in msgList
+        mediator.subscribe
+          msg: msg
+          listener: API
+          msgScope: [moduleId]
 
-          instance = _createInstance.apply @, [
-            moduleId
-            opt.instanceId
-            opt.options
-          ]
+    _start = (moduleId, opt = {}) ->
+      try
+        _checkType 'string', moduleId, 'module ID'
+        _checkType 'object', opt, 'second parameter'
+        unless _modules[moduleId]?
+          throw new Error "module doesn't exist: #{moduleId}"
 
-          if instance.running is true
-            throw new Error 'module was already started'
+        instance = _createInstance.apply @, [
+          moduleId
+          opt.instanceId
+          opt.options
+        ]
 
-          # subscription for module events
-          if instance.msgList? and instance.msgList.outcome?
-            _subscribeForModuleEvents moduleId,
-              instance.msgList.outcome,
-              _eventsManager
+        if instance.running is true
+          throw new Error 'module was already started'
 
-          # if the module wants to init in an asynchronous way
-          if (utils.getArgumentNames instance.init).length >= 2
-            # then define a callback
-            instance.init instance.options, (err) -> opt.callback? err
-          else
-            # else call the callback directly after initialisation
-            instance.init instance.options
-            opt.callback? null
+        # subscription for module events
+        if instance.msgList? and instance.msgList.outcome?
+          _subscribeForModuleEvents moduleId,
+            instance.msgList.outcome,
+            _eventsManager
 
-          instance.running = true
-          true
+        # if the module wants to init in an asynchronous way
+        if (utils.getArgumentNames instance.init).length >= 2
+          # then define a callback
+          instance.init instance.options, (err) -> opt.callback? err
+        else
+          # else call the callback directly after initialisation
+          instance.init instance.options
+          opt.callback? null
 
-        catch e
-          console.log "could not start module: #{e.message}"
-          opt.callback? new Error "could not start module: #{e.message}"
-          false
+        instance.running = true
+        true
+
+      catch e
+        console.log "could not start module: #{e.message}"
+        opt.callback? new Error "could not start module: #{e.message}"
+        false
 
     # unregisters all modules or plugins
     _unregisterAll = (type) -> _unregister id, type for id of type
@@ -279,7 +279,7 @@ core = angular.module('app.core', [
         cb
       )
 
-      _ls = (o) -> (id for id, m of o)
+    _ls = (o) -> (id for id, m of o)
 
     _registerPlugin = (plugin) ->
       try
@@ -303,39 +303,39 @@ core = angular.module('app.core', [
 
       catch e
 #          console.error e
-          false
-
-      _setEventsMapping = (map) ->
-        _checkType 'object', map, 'event map'
-        _map = map
-        true
-
-      _sendMessage = (msg, data, scopeArray) ->
-        console.log 'core sends: ' + msg + ' data: ' + data +
-          ' scope: ' + scopeArray
-        mediator.publish
-          msg: msg
-          data: data
-          msgScope: scopeArray
-
-      _eventsManager = (msg, data) ->
-        for o in _map when o.msgFrom is msg
-          _sendMessage o.msgTo, data, o.scopeTo
-          return true
-        console.log 'No mapping in API for message: ' + msg
         false
 
-      # External methods
-      lsModules: -> _ls _modules
-      lsInstances: -> _ls _instances
-      register: -> _register.apply @, arguments
-      # wrapping for unregistering module
-      unregister: (id) -> _unregister id, _modules
-      # wrapping for unregistering all modules
-      unregisterAll: -> _unregisterAll _modules
-      start: -> _start.apply @, arguments
-      startAll: -> _startAll.apply @, arguments
-      stop: -> _stop.apply @, arguments
-      stopAll: -> _stopAll.apply  @, arguments
-      setEventsMapping: -> _setEventsMapping.apply @, arguments
-  ]
+    _setEventsMapping = (map) ->
+      _checkType 'object', map, 'event map'
+      _map = map
+      true
+
+    _sendMessage = (msg, data, scopeArray) ->
+      console.log 'core sends: ' + msg + ' data: ' + data +
+        ' scope: ' + scopeArray
+      mediator.publish
+        msg: msg
+        data: data
+        msgScope: scopeArray
+
+    _eventsManager = (msg, data) ->
+      for o in _map when o.msgFrom is msg
+        _sendMessage o.msgTo, data, o.scopeTo
+        return true
+      console.log 'No mapping in API for message: ' + msg
+      false
+
+    # External methods
+    lsModules: -> _ls _modules
+    lsInstances: -> _ls _instances
+    register: -> _register.apply @, arguments
+    # wrapping for unregistering module
+    unregister: (id) -> _unregister id, _modules
+    # wrapping for unregistering all modules
+    unregisterAll: -> _unregisterAll _modules
+    start: -> _start.apply @, arguments
+    startAll: -> _startAll.apply @, arguments
+    stop: -> _stop.apply @, arguments
+    stopAll: -> _stopAll.apply  @, arguments
+    setEventsMapping: -> _setEventsMapping.apply @, arguments
+]
