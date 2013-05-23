@@ -30,8 +30,8 @@ getData = angular.module('app.getData', [
     (opts)->
       return null if not opts?
       # test json : https://graph.facebook.com/search?q=ucla
-      opts.url ="http://api.worldbank.org/countries/indicators/2.4_OOSC.RATE?"+
-      "per_page=100&date=1960:2013&format=jsonp&prefix=JSON_CALLBACK"
+      #opts.url ="http://api.worldbank.org/countries/indicators/2.4_OOSC.RATE?"+
+      #"per_page=100&date=1960:2013&format=jsonp&prefix=JSON_CALLBACK"
       #opts.url="http://api.worldbank.org/countries/indicators/4.2_BASIC.EDU"+
       #".SPENDING?per_page=100&date=2011:2011&format=jsonp&prefix=JSON_CALLBACK"
       switch opts.type
