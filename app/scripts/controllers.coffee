@@ -29,6 +29,11 @@ app= angular.module('app.controllers', ['app.mediator'])
   $scope.$on "change in showStates", (obj,data)->
     console.log "change in showStates heard!"
     $scope.$broadcast("update showStates",data)
+
+  $scope.$on "update handsontable", (obj,data)->
+    console.log data
+    $scope.$broadcast(data.purpose+":load data to handsontable",data)
+
   $scope.$location = $location
   $scope.username = "Guest"
   $scope.$watch('$location.path()', (path) ->

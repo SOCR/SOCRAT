@@ -8,10 +8,12 @@ div(ng-controller="getDataSidebarCtrl")
             button.btn.btn-info(ng-click="showWBInterface()") Use
         accordion-group(heading="Generate")
             p Use the inbuilt experiment to generate data for your analysis.
-            button.btn.btn-info Generate
+            button.btn.btn-info(ng-click="showGenerate()") Generate
         accordion-group(heading="JSON")
             p Enter json url here. We will try to give the best output!
-            input(ng-model="jsonUrl",type="text").input-medium
+            input(ng-model="jsonUrl",type="text",
+            tooltip="See? Now click away...",tooltip-trigger="focus",
+            tooltip-placement="right").input-medium
             button.btn.btn-info(ng-click="getJson()") Use
         accordion-group(heading="SOCR Data")
             p Enter SOCR Data url here. We will parse it for you!

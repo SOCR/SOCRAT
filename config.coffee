@@ -49,6 +49,8 @@ exports.config =
           'vendor/scripts/bootstrap/bootstrap-tab.js'
           'vendor/scripts/bootstrap/bootstrap-typeahead.js'
           'vendor/scripts/bootstrap/bootstrap-affix.js'
+
+          'vendor/scripts/table2json/jquery.tabletojson.js'
         ]
 
     stylesheets:
