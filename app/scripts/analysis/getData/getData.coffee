@@ -26,20 +26,24 @@ getData = angular.module('app.getData', [
 #
 .factory('jsonParser',[
   '$http'
-  ($http)->
+  '$q'
+  '$rootScope'
+  ($http,$q,$rootScope)->
     (opts)->
       return null if not opts?
       # test json : https://graph.facebook.com/search?q=ucla
-      #opts.url ="http://api.worldbank.org/countries/indicators/2.4_OOSC.RATE?"+
-      #"per_page=100&date=1960:2013&format=jsonp&prefix=JSON_CALLBACK"
-      #opts.url="http://api.worldbank.org/countries/indicators/4.2_BASIC.EDU"+
-      #".SPENDING?per_page=100&date=2011:2011&format=jsonp&prefix=JSON_CALLBACK"
+      deferred = $q.defer()
+      console.log deferred.promise
+    # opts.url = "http://api.worldbank.org/countries/indicators/2.4_OOSC.RATE?"+
+    # "per_page=100&date=1960:2013&format=jsonp&prefix=JSON_CALLBACK"
+    #opts.url="http://api.worldbank.org/countries/indicators/4.2_BASIC.EDU"+
+    #".SPENDING?per_page=100&date=2011:2011&format=jsonp&prefix=JSON_CALLBACK"
       switch opts.type
         when "worldBank"
           #create the callback
           cb = (data,status)->
             # obj[0] will contain meta deta.
-            #obj[1] will contain array
+            # obj[1] will contain array
             _col = []
             _column = []
             tree = []
@@ -47,14 +51,11 @@ getData = angular.module('app.getData', [
               try
                 if typeof obj is "object" and obj isnt null
                   for key in Object.keys obj
-                    console.log tree
                     tree.push key
-                    console.log key
                     count obj[key]
                     tree.pop()
                 else
                   _col.push tree.join('.')
-                console.log _col
                 return _col
               catch e
                 console.log e.message
@@ -65,38 +66,33 @@ getData = angular.module('app.getData', [
             for c in _col
               _column.push
                 data:c
-            console.log data
-            console.log _column
-            #returned object
-# Testing the results on a div
-#            container = $(".worldBank")
-#            try
-#              container.handsontable(
-#                data: data[1]
-#                startRows: Object.keys(data[1]).length
-#                startCols: _column.length
-#                colHeaders: _col
-#                columns:_column
-#                minSpareRows: 1
-#              )
-#            catch e
-#              console.log e.message
-
+            #return object
+            data:data
+            columns:_column
+            columnHeader:_col
+            # purpose is helps in pin pointing which
+            # handsontable directive to update.
+            purpose:"json"
         else
           #default implementation
           cb = (data,status)->
             console.log data
             return data
-
+      #make the call using the cb we just created
       $http.jsonp(
         opts.url
         )
-        .success(cb)
-        .error((data,status)->
-            console.log data
-            console.log status
+        .success((data,status)->
+          console.log "deferred.promise"
+          formattedData = cb(data,status)
+          deferred.resolve(formattedData)
+          $rootScope.$apply()
         )
-      #.done(opts.cb)
+        .error((data,status)->
+            console.log "promise rejected"
+            deferred.reject("promise is rejected")
+        )
+      deferred.promise
 ])
 
 # ###
@@ -110,47 +106,38 @@ getData = angular.module('app.getData', [
     #get the sandbox made for this module
     #sb = getDataSb.getSb()
     #console.log 'sandbox created'
-#    $scope.gridCollapsed = false
-#    $scope.wbCollapsed = false
-#    $scope.generateCollapsed = false
-#    $scope.urlCollapsed = false
-#    $scope.jsonCollapsed = false
     $scope.jsonUrl = "url.."
-#    try
-#      $scope.$watch "jsonUrl", ->
-#        console.log "yo"
-#    catch e
-#      console.log e.message
 
   #showGrid
     $scope.showGrid = ->
       #console.log("showGrid called")
       $scope.$emit("change in showStates","grid")
       #hide all divs and show only grid
+      data =
+        default:true
+        purpose:"json"
+      $scope.$emit("update handsontable",data)
 
   #getJson
     $scope.getJson = ->
-      #console.log("getJson called")
       console.log $scope.jsonUrl
       if $scope.jsonUrl is ""
         return false
-      try
-        jsonParser
-          url:$scope.jsonUrl
-          type:"json"
-#         cb:(obj) ->
-#            sb.publish
-#              msg:"json input successful"
-#              msgScope:["local"]
-#              data:obj
-#              cb:()->
-#                console.log "callback executed successfully!"
-            #send a message within the module
-            #sb.publish 'json url successfully parsed', data, 'local'
-      catch e
-        console.log e.message
-        #console.log e.stack
-      return
+      jsonParser
+        url:$scope.jsonUrl
+        type:"worldBank"
+      .then(
+        (data)->
+          # Pass a message to update the handsontable div.
+          # data is the formatted data which plugs into the
+          # handontable.
+          $scope.$emit("update handsontable",data)
+          # Switch the accordion from getJson to grid.
+          $scope.$emit("change in showStates","grid")
+        ,
+        (msg)->
+          console.log "rejected"
+        )
 
   #show WorldBank interface
     $scope.showWBInterface = ->
@@ -163,38 +150,48 @@ getData = angular.module('app.getData', [
   #save state. For safety lets run it after every edit just like google docs.
     $scope.saveState = ->
 
+  #generate
+    $scope.showGenerate = ->
+      $scope.$emit("change in showStates","generate")
+
   ])
 
 .controller('getDataMainCtrl', [
   '$scope'
   'showState'
-  ($scope,showState)->
+  'jsonParser'
+  ($scope,showState,jsonParser)->
     console.log 'getDataMainCtrl executed'
+    
+    $scope.getWB = ->
+      #default value
+      if $scope.size is undefined
+        $scope.size = 100
+      #default option
+      if $scope.option is undefined
+        $scope.option = '4.2_BASIC.EDU.SPENDING'
+      url = "http://api.worldbank.org/countries/indicators/"+$scope.option+
+      "?per_page="+$scope.size+"&date=2011:2011&format=jsonp"+
+      "&prefix=JSON_CALLBACK"
+      jsonParser
+        url:url
+        type:"worldBank"
+      .then(
+        (data)->
+          console.log "resolved"
+          # Pass a message to update the handsontable div.
+          # data is the formatted data which plugs into the
+          # handontable.
+          $scope.$emit("update handsontable",data)
+          # Switch the accordion from getJson to grid.
+          $scope.$emit("change in showStates","grid")
+        ,
+        (msg)->
+          console.log "rejected"
+        )
 
-    $scope.defaultData = [
-      {name: "Moroni", age: 50}
-      {name: "Tiancum", age: 43}
-      {name: "Jacob", age: 27}
-      {name: "Nephi", age: 29}
-      {name: "Enos", age: 34}
-    ]
-
-    $scope.gridOptions =
-      data:"defaultData"
-      enableCellSelection: true
-      canSelectRows: false
-      enableCellEdit:true
-      displaySelectionCheckbox: false
-      enableFocusedCellEdit: true
-      columnDefs: [
-        field: 'name'
-        displayName: 'Name'
-      ,
-        field:'age'
-        displayName:'Age'
-      ]
     try
-      _showState = new showState(["grid","worldBank"],$scope)
+      _showState = new showState(["grid","worldBank","generate"],$scope)
     catch e
       console.log e.message
 
@@ -257,5 +254,74 @@ getData = angular.module('app.getData', [
         #console.log "final state"
         #console.log scope.showState
 )
+
+.factory("html2json", ($http)->
+  (url,cb)->
+    # Use url to get html.
+    # parse html to find tables
+    # use jQuery plugin to get jsons for all tables.
+    return false unless url?
+ 
+    $http.get(url).success(
+      #search for tables
+      (data)->
+        console.log "success"
+        parser = new DOMparser()
+        dom = parser.parseFromString(data)
+        tables = dom.getElementsByTagName("table")
+        #table-to-json
+        #returned data is used to compute data, coulumns, columnHeader
+        #compute the res obj
+        cb(res)
+      )
+ 
+)
+ 
+.directive "handsontable", ->
+  restrict: "E"
+  transclude:true
+  # to the name attribute on the directive element.
+  
+  #the template for the directive.
+  template: "<div></div>"
+  
+  #the controller for the directive
+  controller: ($scope,html2json) ->
+    # useful to identify which handsontable instance to update
+    #$scope.$on("load data to handsontable",$scope.update)
+  replace: true #replace the directive element with the output of the template.
+  
+  #the link method does the work of setting the directive
+  # up, things like bindings, jquery calls, etc are done in here
+  # It is run before the controller
+  link: (scope, elem, attr) ->
+    scope.purpose = attr.purpose
+
+    # Update the table with the scope values
+    scope.update = (evt,arg)->
+      console.log "update called"
+      #check if data is in the right format
+      if arg? and typeof arg.data is "object" and typeof arg.columns is "object"
+        elem.handsontable(
+          data: arg.data[1]
+          startRows: Object.keys(arg.data[1]).length
+          startCols: arg.columns.length
+          colHeaders: arg.columnHeader
+          columns:arg.columns
+          minSpareRows: 1
+        )
+      else if arg.default is true
+        elem.handsontable(
+          data: [
+            ["Copy", "paste", "your", "data", "here"],
+          ]
+          colHeaders: true
+          minSpareRows: 5
+        )
+      else
+        #raise a warning using exceptionhandler
+    # subscribing to handsontable update.
+    scope.$on(attr.purpose+":load data to handsontable",scope.update)
+    console.log "handsontable directive linked"
 
 

@@ -5,8 +5,23 @@
     To perform any analysis, you need data to begin with. Choose one of the available methods
     to get the data into the web-app.
   </p>
-  <div ng-grid="gridOptions" collapse="showState.grid" class="gridStyle"></div>
+  <handsontable purpose="json" collapse="showState.grid"></handsontable>
   <div collapse="showState.worldBank" class="worldBank">
-    <p>This is worldbank api interface div</p>
+    <h3>WorldBank Data</h3><span>Size:
+      <input type="text" ng-model="size" class="input-mini"/>
+      <select style="width:100%;margin:0px" ng-model="option">
+        <option value="4.2_BASIC.EDU.SPENDING">Education Spending</option>
+        <option value="2.4_OOSC.RATE">Out of School Children rate</option>
+      </select>
+      <button ng-click="getWB()" class="btn btn-medium">Go</button></span>
+  </div>
+  <div collapse="showState.generate" class="generate">
+    <ul class="nav nav-pills nav-stacked">
+      <li><a>Binomial Coin Toss</a></li>
+      <li><a>Ball and Urn</a></li>
+      <li><a>Card Experiment</a></li>
+      <li><a>Beta Binomial Experiment</a></li>
+      <li><a>The Beta Distribution Experiment</a></li>
+    </ul>
   </div>
 </div>

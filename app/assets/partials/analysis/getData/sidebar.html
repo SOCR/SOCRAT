@@ -11,11 +11,11 @@
     </accordion-group>
     <accordion-group heading="Generate">
       <p>Use the inbuilt experiment to generate data for your analysis.</p>
-      <button class="btn btn-info">Generate</button>
+      <button ng-click="showGenerate()" class="btn btn-info">Generate</button>
     </accordion-group>
     <accordion-group heading="JSON">
       <p>Enter json url here. We will try to give the best output!</p>
-      <input ng-model="jsonUrl" type="text" class="input-medium"/>
+      <input ng-model="jsonUrl" type="text" tooltip="See? Now click away..." tooltip-trigger="focus" tooltip-placement="right" class="input-medium"/>
       <button ng-click="getJson()" class="btn btn-info">Use</button>
     </accordion-group>
     <accordion-group heading="SOCR Data">
