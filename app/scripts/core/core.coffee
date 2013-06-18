@@ -20,6 +20,7 @@ core = angular.module('app.core', [
       _modules = {}
       _instances = {}
       _instanceOpts = {}
+      _map = {}
 #      _plugins = {}
 
       _checkType = (type, val, name) ->
@@ -84,7 +85,12 @@ core = angular.module('app.core', [
         modObj = new creator()
         _checkType 'object', modObj, 'the return value of the creator'
         _checkType 'function', modObj.init, '"init" of the module'
-        _checkType 'function', modObj.destroy, '"destroy" of the module '
+        _checkType 'function', modObj.destroy, '"destroy" of the module'
+        _checkType 'object', modObj.msgList, 'message list of the module'
+        _checkType 'object', modObj.msgList.income,
+          'incoming message list of the module'
+        _checkType 'object', modObj.msgList.outcome,
+          'outcoming message list of the module'
 
         # TODO: change to $exceptionHandler
         if _modules[moduleId]?
@@ -102,7 +108,7 @@ core = angular.module('app.core', [
           _addModule.apply @, [moduleId, creator, opt]
         catch e
 #          console.log e
-          console.error 'could not register module "#{moduleId}": #{e.message}'
+          console.error "could not register module #{moduleId}: #{e.message}"
           false
 
       # unregisters module or plugin
@@ -121,6 +127,13 @@ core = angular.module('app.core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
+      _subscribeForModuleEvents = (moduleId, msgList, API) ->
+        for msg in msgList
+          mediator.subscribe
+            msg: msg
+            listener: API
+            msgScope: [moduleId]
+
       _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
@@ -136,6 +149,12 @@ core = angular.module('app.core', [
           if instance.running is true
             throw new Error 'module was already started'
 
+          # subscription for module events
+          if instance.msgList? and instance.msgList.outcome?
+            _subscribeForModuleEvents moduleId,
+              instance.msgList.outcome,
+              _eventsManager
+
           # if the module wants to init in an asynchronous way
           if (utils.getArgumentNames instance.init).length >= 2
             # then define a callback
@@ -149,7 +168,7 @@ core = angular.module('app.core', [
           true
 
         catch e
-#          console.log "could not start module: #{e.message}"
+          console.log "could not start module: #{e.message}"
           opt.callback? new Error "could not start module: #{e.message}"
           false
 
@@ -216,7 +235,7 @@ core = angular.module('app.core', [
           cb
         )
 
-      _ls = (o) -> (id for id,m of o)
+      _ls = (o) -> (id for id, m of o)
 
       _registerPlugin = (plugin) ->
         try
@@ -242,6 +261,21 @@ core = angular.module('app.core', [
 #          console.error e
           false
 
+      _setMapping = (map) ->
+        _map = map
+
+      _eventsManager = (msg, data) ->
+        console.log _map
+        for k, v of _map
+          if k is msg
+            mediator.publish
+              msg: v
+              data: data
+              msgScope: ['qualRobEst']
+            return true
+        console.log 'No mapping in API'
+        false
+
       # External methods
       lsModules: -> _ls _modules
       lsInstances: -> _ls _instances
@@ -254,5 +288,5 @@ core = angular.module('app.core', [
       startAll: -> _startAll.apply @, arguments
       stop: -> _stop.apply @, arguments
       stopAll: -> _stopAll.apply  @, arguments
-
+      setMapping: -> _setMapping.apply @, arguments
   ]
