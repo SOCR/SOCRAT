@@ -26,13 +26,28 @@ getData = angular.module('app.qualRobEst', [
   '$scope'
   'qualRobEstSb'
   ($scope, qualRobEstSb) ->
-   console.log 'sandbox created'
+    console.log 'qualRobEstSidebarCtrl executed'
+    _sb = qualRobEstSb.getSb()
+    $scope.firstNumber = '1'
+    $scope.secondNumber = '2'
+    $scope.sumNumbers = () ->
+      console.log '123'
+      _sb.publish
+        msg: '123'
+        data: $scope.firstNumber + $scope.secondNumber
+        msgScope: ['qualRobEst']
 ])
 
 .controller('qualRobEstMainCtrl', [
  '$scope'
- ($scope) ->
-   console.log 'qualRobEstCtrl executed'
+ 'qualRobEstSb'
+ ($scope, qualRobEstSb) ->
+   console.log 'qualRobEstMainCtrl executed'
+   _sb = qualRobEstSb.getSb()
+   _sb.subscribe
+     msg: '234'
+     listener: (m, data) -> $scope.sum = data
+     msgScope: ['qualRobEst']
 ])
 ####
 #  Every module is supposed have a factory method
@@ -46,15 +61,22 @@ getData = angular.module('app.qualRobEst', [
 .factory('qualRobEst', ['qualRobEstSb', (qualRobEstSb) ->
   (sb) ->
     qualRobEstSb.setSb(sb) unless !sb?
-    init: () ->
+
+    init: (opt) ->
+      console.log 'init called'
+
     destroy: () ->
+
+    msgList:
+      outcome: ['123']
+      income: ['234']
 ])
 ####
 # Every module will have a MODULE_NAMESb() service
 # For the module methods to access the sandbox object.
 ####
 .service('qualRobEstSb', () ->
-  console.log "sb"
+  console.log "sb in estimator"
   _sb = null
   setSb: (sb) ->
     return false if sb is undefined

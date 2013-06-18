@@ -17,9 +17,10 @@ core = angular.module('app.core', [
 #    (mediator, Sandbox, $exceptionHandler, utils) ->
   (mediator, Sandbox, utils) ->
 
-    _modules = {}
-    _instances = {}
-    _instanceOpts = {}
+      _modules = {}
+      _instances = {}
+      _instanceOpts = {}
+      _map = {}
 #      _plugins = {}
 
     _checkType = (type, val, name) ->
@@ -81,10 +82,15 @@ core = angular.module('app.core', [
       _checkType 'function', creator, 'creator'
       _checkType 'object', opt, 'option parameter'
 
-      modObj = new creator()
-      _checkType 'object', modObj, 'the return value of the creator'
-      _checkType 'function', modObj.init, '"init" of the module'
-      _checkType 'function', modObj.destroy, '"destroy" of the module '
+        modObj = new creator()
+        _checkType 'object', modObj, 'the return value of the creator'
+        _checkType 'function', modObj.init, '"init" of the module'
+        _checkType 'function', modObj.destroy, '"destroy" of the module'
+        _checkType 'object', modObj.msgList, 'message list of the module'
+        _checkType 'object', modObj.msgList.income,
+          'incoming message list of the module'
+        _checkType 'object', modObj.msgList.outcome,
+          'outcoming message list of the module'
 
       # TODO: change to $exceptionHandler
       if _modules[moduleId]?
@@ -102,15 +108,69 @@ core = angular.module('app.core', [
         _addModule.apply @, [moduleId, creator, opt]
       catch e
 #          console.log e
-        console.error 'could not register module "#{moduleId}": #{e.message}'
+          console.error "could not register module #{moduleId}: #{e.message}"
+          false
+
+      # unregisters module or plugin
+      _unregister = (id, type) ->
+        if type[id]?
+          delete type[id]
+          return true
         false
 
-    # unregisters module or plugin
-    _unregister = (id, type) ->
-      if type[id]?
-        delete type[id]
-        return true
-      false
+      # unregisters all modules or plugins
+      _unregisterAll = (type) -> _unregister id, type for id of type
+
+      _setInstanceOptions = (instanceId, opt) ->
+        _checkType 'string', instanceId, 'instance ID'
+        _checkType 'object', opt, 'option parameter'
+        _instanceOpts[instanceId] ?= {}
+        _instanceOpts[instanceId][k] = v for k,v of opt
+
+      _subscribeForModuleEvents = (moduleId, msgList, API) ->
+        for msg in msgList
+          mediator.subscribe
+            msg: msg
+            listener: API
+            msgScope: [moduleId]
+
+      _start = (moduleId, opt = {}) ->
+        try
+          _checkType 'string', moduleId, 'module ID'
+          _checkType 'object', opt, 'second parameter'
+          throw new Error 'module doesn\'t exist' unless _modules[moduleId]?
+
+          instance = _createInstance.apply @, [
+            moduleId
+            opt.instanceId
+            opt.options
+          ]
+
+          if instance.running is true
+            throw new Error 'module was already started'
+
+          # subscription for module events
+          if instance.msgList? and instance.msgList.outcome?
+            _subscribeForModuleEvents moduleId,
+              instance.msgList.outcome,
+              _eventsManager
+
+          # if the module wants to init in an asynchronous way
+          if (utils.getArgumentNames instance.init).length >= 2
+            # then define a callback
+            instance.init instance.options, (err) -> opt.callback? err
+          else
+            # else call the callback directly after initialisation
+            instance.init instance.options
+            opt.callback? null
+
+          instance.running = true
+          true
+
+        catch e
+          console.log "could not start module: #{e.message}"
+          opt.callback? new Error "could not start module: #{e.message}"
+          false
 
     # unregisters all modules or plugins
     _unregisterAll = (type) -> _unregister id, type for id of type
@@ -216,7 +276,7 @@ core = angular.module('app.core', [
         cb
       )
 
-    _ls = (o) -> (id for id,m of o)
+      _ls = (o) -> (id for id, m of o)
 
     _registerPlugin = (plugin) ->
       try
@@ -240,19 +300,34 @@ core = angular.module('app.core', [
 
       catch e
 #          console.error e
+          false
+
+      _setMapping = (map) ->
+        _map = map
+
+      _eventsManager = (msg, data) ->
+        console.log _map
+        for k, v of _map
+          if k is msg
+            mediator.publish
+              msg: v
+              data: data
+              msgScope: ['qualRobEst']
+            return true
+        console.log 'No mapping in API'
         false
 
-    # External methods
-    lsModules: -> _ls _modules
-    lsInstances: -> _ls _instances
-    register: -> _register.apply @, arguments
-    # wrapping for unregistering module
-    unregister: (id) -> _unregister id, _modules
-    # wrapping for unregistering all modules
-    unregisterAll: -> _unregisterAll _modules
-    start: -> _start.apply @, arguments
-    startAll: -> _startAll.apply @, arguments
-    stop: -> _stop.apply @, arguments
-    stopAll: -> _stopAll.apply  @, arguments
-
-]
+      # External methods
+      lsModules: -> _ls _modules
+      lsInstances: -> _ls _instances
+      register: -> _register.apply @, arguments
+      # wrapping for unregistering module
+      unregister: (id) -> _unregister id, _modules
+      # wrapping for unregistering all modules
+      unregisterAll: -> _unregisterAll _modules
+      start: -> _start.apply @, arguments
+      startAll: -> _startAll.apply @, arguments
+      stop: -> _stop.apply @, arguments
+      stopAll: -> _stopAll.apply  @, arguments
+      setMapping: -> _setMapping.apply @, arguments
+  ]
