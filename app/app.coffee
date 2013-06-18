@@ -94,6 +94,11 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
           controller: 'qualRobEstViewSidebarCtrl'
+          templateUrl: 'partials/analysis/tools/qualRobEst/main.html'
+          controller: 'qualRobEstMainCtrl'
+        'sidebar':
+          templateUrl: 'partials/analysis/tools/qualRobEst/sidebar.html'
+          controller: 'qualRobEstSidebarCtrl'
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
@@ -137,6 +142,4 @@ App.run([
     core.start 'db'
 
     console.log 'run block of app module'
-
 ])
-
