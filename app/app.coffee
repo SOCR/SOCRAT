@@ -14,7 +14,7 @@ App = angular.module('app', [
   'ngResource'
   'app.core'
   'app.getData'
-  'app.qualRobEst'
+  'app.qualRobEstView'
   'app.controllers'
   'app.directives'
   'app.filters'
@@ -87,26 +87,33 @@ App.config([
       url: '/tools'
       views:
         'main':
-          templateUrl: 'partials/analysis/tools/qualRobEst/main.html'
-          controller: 'qualRobEstMainCtrl'
+          templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
+          controller: 'qualRobEstViewMainCtrl'
         'sidebar':
-          templateUrl: 'partials/analysis/tools/qualRobEst/sidebar.html'
-          controller: 'qualRobEstSidebarCtrl'
+          templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
+          controller: 'qualRobEstViewSidebarCtrl'
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
 
 ])
 
-App.run(['core', 'getData', 'qualRobEst', (core, getData, qualRobEst) ->
+App.run(['core', 'getData', 'qualRobEstView', (core, getData, qualRobEstView) ->
 
-  map =
-    '123': '234'
+  map = [
+    msgFrom: '123'
+    msgTo: '234'
+    scope: 'qualRobEst'
+  ,
+    msgFrom: '000'
+    msgTo: '111'
+    scope: 'qualRobEstView'
+  ]
 
-  core.setMapping map
+  core.setEventsMapping map
 
-  core.register 'qualRobEst', qualRobEst
-  core.start 'qualRobEst'
+  core.register 'qualRobEstView', qualRobEstView
+  core.start 'qualRobEstView'
 
   console.log 'run block of app module'
 ])

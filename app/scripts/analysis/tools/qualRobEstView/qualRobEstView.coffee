@@ -1,6 +1,6 @@
 'use strict'
 
-getData = angular.module('app.qualRobEst', [
+getData = angular.module('app.qualRobEstView', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
@@ -16,38 +16,37 @@ getData = angular.module('app.qualRobEst', [
   # config block is run before their initialization.
   # ###
   () ->
-    console.log "config block of qualRobEst"
+    console.log "config block of qualRobEstView"
 ])
 
 # ###
 # getDataViewCtrl is the ctrl that talks to the view.
 # ###
-.controller('qualRobEstSidebarCtrl', [
+.controller('qualRobEstViewSidebarCtrl', [
   '$scope'
-  'qualRobEstSb'
-  ($scope, qualRobEstSb) ->
-    console.log 'qualRobEstSidebarCtrl executed'
-    _sb = qualRobEstSb.getSb()
+  'qualRobEstViewSb'
+  ($scope, qualRobEstViewSb) ->
+    console.log 'qualRobEstViewSidebarCtrl executed'
+    _sb = qualRobEstViewSb.getSb()
     $scope.firstNumber = '1'
     $scope.secondNumber = '2'
     $scope.sumNumbers = () ->
-      console.log '123'
       _sb.publish
-        msg: '123'
+        msg: '000'
         data: $scope.firstNumber + $scope.secondNumber
-        msgScope: ['qualRobEst']
+        msgScope: ['qualRobEstView']
 ])
 
-.controller('qualRobEstMainCtrl', [
+.controller('qualRobEstViewMainCtrl', [
   '$scope'
-  'qualRobEstSb'
-  ($scope, qualRobEstSb) ->
-   console.log 'qualRobEstMainCtrl executed'
-   _sb = qualRobEstSb.getSb()
-   _sb.subscribe
-     msg: '234'
-     listener: (m, data) -> $scope.sum = data
-     msgScope: ['qualRobEst']
+  'qualRobEstViewSb'
+  ($scope, qualRobEstViewSb) ->
+    console.log 'qualRobEstViewMainCtrl executed'
+    _sb = qualRobEstViewSb.getSb()
+    _sb.subscribe
+      msg: '111'
+      listener: (m, data) -> $scope.sum = data
+      msgScope: ['qualRobEstView']
 ])
 ####
 #  Every module is supposed have a factory method
@@ -58,9 +57,9 @@ getData = angular.module('app.qualRobEst', [
 #  init() and destroy() methods should be present in
 #  returned object.
 ####
-.factory('qualRobEst', ['qualRobEstSb', (qualRobEstSb) ->
+.factory('qualRobEstView', ['qualRobEstViewSb', (qualRobEstViewSb) ->
   (sb) ->
-    qualRobEstSb.setSb(sb) unless !sb?
+    qualRobEstViewSb.setSb(sb) unless !sb?
 
     init: (opt) ->
       console.log 'init called'
@@ -68,14 +67,14 @@ getData = angular.module('app.qualRobEst', [
     destroy: () ->
 
     msgList:
-      outcome: ['123']
-      income: ['234']
+      outcome: ['000']
+      income: ['111']
 ])
 ####
 # Every module will have a MODULE_NAMESb() service
 # For the module methods to access the sandbox object.
 ####
-.service('qualRobEstSb', () ->
+.service('qualRobEstViewSb', () ->
   console.log "sb in estimator"
   _sb = null
   setSb: (sb) ->

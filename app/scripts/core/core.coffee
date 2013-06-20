@@ -261,18 +261,23 @@ core = angular.module('app.core', [
 #          console.error e
           false
 
-      _setMapping = (map) ->
+      _setEventsMapping = (map) ->
         _map = map
+
+      _sendMessage = (msg, data, scopeArray) ->
+        console.log 'core sends: ' + msg + ' data: ' + data +
+          ' scope: ' + scopeArray
+        mediator.publish
+          msg: msg
+          data: data
+          msgScope: scopeArray
 
       _eventsManager = (msg, data) ->
         console.log _map
-        for k, v of _map
-          if k is msg
-            mediator.publish
-              msg: v
-              data: data
-              msgScope: ['qualRobEst']
-            return true
+        for o in _map when o.msgFrom is msg
+          console.log o.msgTo + '-' + data + '-' + o.scope
+          _sendMessage o.msgTo, data, [o.scope]
+          return true
         console.log 'No mapping in API'
         false
 
@@ -288,5 +293,5 @@ core = angular.module('app.core', [
       startAll: -> _startAll.apply @, arguments
       stop: -> _stop.apply @, arguments
       stopAll: -> _stopAll.apply  @, arguments
-      setMapping: -> _setMapping.apply @, arguments
+      setEventsMapping: -> _setEventsMapping.apply @, arguments
   ]
