@@ -143,3 +143,4 @@ App.run([
 
     console.log 'run block of app module'
 ])
+

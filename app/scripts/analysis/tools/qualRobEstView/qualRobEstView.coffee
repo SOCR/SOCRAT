@@ -42,7 +42,6 @@ qualRobEstView = angular.module('app.qualRobEstView', [
         $scope.firstNumber
         $scope.secondNumber
       )
-
 ])
 
 .controller('qualRobEstViewMainCtrl', [
