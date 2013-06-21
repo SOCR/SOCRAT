@@ -6,6 +6,12 @@ qualRobEstView = angular.module('app.qualRobEstView', [
   #Try to keep it as loosely coupled as possible
 ])
 
+.constant(
+  'msgList'
+  outcome: ['000']
+  income: ['111']
+)
+
 .config([
   # ###
   # Config block is for module initialization work.
