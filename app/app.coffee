@@ -101,11 +101,11 @@ App.config([
 App.run(['core', 'getData', 'qualRobEstView', (core, getData, qualRobEstView) ->
 
   map = [
-    msgFrom: '123'
-    msgTo: '234'
+    msgFrom: '000'
+    msgTo: '123'
     scope: 'qualRobEst'
   ,
-    msgFrom: '000'
+    msgFrom: '234'
     msgTo: '111'
     scope: 'qualRobEstView'
   ]

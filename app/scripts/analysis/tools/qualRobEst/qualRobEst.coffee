@@ -6,6 +6,12 @@ getData = angular.module('app.qualRobEst', [
   #Try to keep it as loosely coupled as possible
 ])
 
+.constant(
+  'msgList'
+  outcome: ['123']
+  income: ['234']
+)
+
 .config([
   # ###
   # Config block is for module initialization work.
@@ -19,36 +25,6 @@ getData = angular.module('app.qualRobEst', [
     console.log "config block of qualRobEst"
 ])
 
-# ###
-# getDataViewCtrl is the ctrl that talks to the view.
-# ###
-.controller('qualRobEstSidebarCtrl', [
-  '$scope'
-  'qualRobEstSb'
-  ($scope, qualRobEstSb) ->
-    console.log 'qualRobEstSidebarCtrl executed'
-    _sb = qualRobEstSb.getSb()
-    $scope.firstNumber = '1'
-    $scope.secondNumber = '2'
-    $scope.sumNumbers = () ->
-      console.log '123'
-      _sb.publish
-        msg: '123'
-        data: $scope.firstNumber + $scope.secondNumber
-        msgScope: ['qualRobEst']
-])
-
-.controller('qualRobEstMainCtrl', [
-  '$scope'
-  'qualRobEstSb'
-  ($scope, qualRobEstSb) ->
-   console.log 'qualRobEstMainCtrl executed'
-   _sb = qualRobEstSb.getSb()
-   _sb.subscribe
-     msg: '234'
-     listener: (m, data) -> $scope.sum = data
-     msgScope: ['qualRobEst']
-])
 ####
 #  Every module is supposed have a factory method
 #  by its name. For example, "app.charts" module will
@@ -58,18 +34,33 @@ getData = angular.module('app.qualRobEst', [
 #  init() and destroy() methods should be present in
 #  returned object.
 ####
-.factory('qualRobEst', ['qualRobEstSb', (qualRobEstSb) ->
-  (sb) ->
-    qualRobEstSb.setSb(sb) unless !sb?
+.factory('qualRobEst', [
+  'qualRobEstSb'
+  'msgList'
+  'estimator'
+  (qualRobEstSb, msgList, estimator) ->
+    (sb) ->
 
-    init: (opt) ->
-      console.log 'init called'
+      qualRobEstSb.setSb sb unless !sb?
 
-    destroy: () ->
+      eventManager = (msg, data) ->
+        sb.publish
+          msg: msgList.outcome[0]
+          data: estimator.estimate data.a, data.b
+          msgScope: ['qualRobEstView']
 
-    msgList:
-      outcome: ['123']
-      income: ['234']
+      init: (opt) ->
+        console.log 'init called'
+
+        _sb = qualRobEstSb.getSb()
+        _sb.subscribe
+          msg: msgList.income[0]
+          listener: eventManager
+          msgScope: ['qualRobEstView']
+
+      destroy: () ->
+
+      msgList: msgList
 ])
 ####
 # Every module will have a MODULE_NAMESb() service
@@ -84,4 +75,10 @@ getData = angular.module('app.qualRobEst', [
 
   getSb: () ->
     _sb
+)
+
+.service('estimator', () ->
+  console.log '--- parameters estimation --> return concatenation ---'
+  estimate: (a, b) ->
+    a + b
 )

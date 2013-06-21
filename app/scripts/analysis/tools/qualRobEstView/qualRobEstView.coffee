@@ -6,6 +6,12 @@ getData = angular.module('app.qualRobEstView', [
   #Try to keep it as loosely coupled as possible
 ])
 
+.constant(
+  'msgList'
+  outcome: ['000']
+  income: ['111']
+)
+
 .config([
   # ###
   # Config block is for module initialization work.
@@ -24,27 +30,30 @@ getData = angular.module('app.qualRobEstView', [
 # ###
 .controller('qualRobEstViewSidebarCtrl', [
   '$scope'
+  'msgList'
   'qualRobEstViewSb'
-  ($scope, qualRobEstViewSb) ->
+  ($scope, msgList, qualRobEstViewSb) ->
     console.log 'qualRobEstViewSidebarCtrl executed'
     _sb = qualRobEstViewSb.getSb()
     $scope.firstNumber = '1'
     $scope.secondNumber = '2'
     $scope.sumNumbers = () ->
       _sb.publish
-        msg: '000'
+        msg: msgList.outcome[0]
         data: $scope.firstNumber + $scope.secondNumber
         msgScope: ['qualRobEstView']
 ])
 
 .controller('qualRobEstViewMainCtrl', [
   '$scope'
+  'msgList'
   'qualRobEstViewSb'
-  ($scope, qualRobEstViewSb) ->
+  ($scope, msgList, qualRobEstViewSb) ->
     console.log 'qualRobEstViewMainCtrl executed'
     _sb = qualRobEstViewSb.getSb()
+
     _sb.subscribe
-      msg: '111'
+      msg: msgList.income[0]
       listener: (m, data) -> $scope.sum = data
       msgScope: ['qualRobEstView']
 ])
@@ -57,18 +66,20 @@ getData = angular.module('app.qualRobEstView', [
 #  init() and destroy() methods should be present in
 #  returned object.
 ####
-.factory('qualRobEstView', ['qualRobEstViewSb', (qualRobEstViewSb) ->
-  (sb) ->
-    qualRobEstViewSb.setSb(sb) unless !sb?
+.factory('qualRobEstView', [
+  'qualRobEstViewSb'
+  'msgList'
+  (qualRobEstViewSb, msgList) ->
+    (sb) ->
 
-    init: (opt) ->
-      console.log 'init called'
+      qualRobEstViewSb.setSb sb unless !sb?
 
-    destroy: () ->
+      init: (opt) ->
+        console.log 'init called'
 
-    msgList:
-      outcome: ['000']
-      income: ['111']
+      destroy: () ->
+
+      msgList: msgList
 ])
 ####
 # Every module will have a MODULE_NAMESb() service
