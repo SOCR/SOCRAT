@@ -1,8 +1,10 @@
 ## SOCR One Framework
-A scalable and highly flexible HTML5/JS framework for the [SOCR](http://socr.ucla.edu) tools to perform statistical analysis .
+A scalable and highly flexible HTML5/JS framework for the [SOCR](http://socr.ucla.edu) tools to perform statistical analysis.
 
+* Web site: http://socr.ucla.edu/
+* Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
 
- Motivation 
+Motivation 
 --------------
 [SOCR](http://socr.ucla.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
 As far as the technology is concerned, currently all the applications are written in `java` and are presented as java applets. The reach of these applications is bottlenecked by technology.
@@ -23,13 +25,12 @@ We intend to create new framework which will serve users across all platforms. W
  [`D3.js`](http://d3js.org) 
 
 
-
 Copyright and License 
 ----------------------
 
-**The LGPL License**
+**The LGPL v3.0 License**
 
-Copyright (c) 2012 Statistics Online Computational Resource (SOCR) &lt;http://www.StatisticsResource.org&gt;
+Copyright (c) 2013 Statistics Online Computational Resource (SOCR) &lt;http://www.StatisticsResource.org&gt;
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License
@@ -39,4 +40,4 @@ factually correct, useful, portable and extensible resource all available in all
 SOCR resources are distributed in the hope that they will be useful, but without
 any warranty; without any explicit, implicit or implied warranty for merchantability or
 fitness for a particular purpose. See the GNU Lesser General Public License for
-more details see http://opensource.org/licenses/lgpl-license.php.
+more details see http://opensource.org/licenses/LGPL-3.0.
