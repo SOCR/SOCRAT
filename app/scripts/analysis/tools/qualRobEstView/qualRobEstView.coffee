@@ -1,16 +1,10 @@
 'use strict'
 
-getData = angular.module('app.qualRobEstView', [
+qualRobEstView = angular.module('app.qualRobEstView', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
 ])
-
-.constant(
-  'msgList'
-  outcome: ['000']
-  income: ['111']
-)
 
 .config([
   # ###
@@ -30,32 +24,29 @@ getData = angular.module('app.qualRobEstView', [
 # ###
 .controller('qualRobEstViewSidebarCtrl', [
   '$scope'
-  'msgList'
-  'qualRobEstViewSb'
-  ($scope, msgList, qualRobEstViewSb) ->
+  'qualRobEstViewEventMngr'
+  ($scope, qualRobEstViewEventMngr) ->
     console.log 'qualRobEstViewSidebarCtrl executed'
-    _sb = qualRobEstViewSb.getSb()
+
     $scope.firstNumber = '1'
     $scope.secondNumber = '2'
+
     $scope.sumNumbers = () ->
-      _sb.publish
-        msg: msgList.outcome[0]
-        data: $scope.firstNumber + $scope.secondNumber
-        msgScope: ['qualRobEstView']
+      qualRobEstViewEventMngr.sendNumbers(
+        $scope.firstNumber
+        $scope.secondNumber
+      )
+
 ])
 
 .controller('qualRobEstViewMainCtrl', [
   '$scope'
-  'msgList'
-  'qualRobEstViewSb'
-  ($scope, msgList, qualRobEstViewSb) ->
+  'qualRobEstViewEventMngr'
+  ($scope, qualRobEstViewEventMngr) ->
     console.log 'qualRobEstViewMainCtrl executed'
-    _sb = qualRobEstViewSb.getSb()
-
-    _sb.subscribe
-      msg: msgList.income[0]
-      listener: (m, data) -> $scope.sum = data
-      msgScope: ['qualRobEstView']
+#    $scope.sum = qualRobEstViewEventMngr.sum
+    $scope.$on 'newSum', (event, pushData) ->
+      $scope.sum = pushData
 ])
 ####
 #  Every module is supposed have a factory method
@@ -67,31 +58,60 @@ getData = angular.module('app.qualRobEstView', [
 #  returned object.
 ####
 .factory('qualRobEstView', [
-  'qualRobEstViewSb'
-  'msgList'
-  (qualRobEstViewSb, msgList) ->
+  'qualRobEstViewEventMngr'
+  (qualRobEstViewEventMngr) ->
     (sb) ->
 
-      qualRobEstViewSb.setSb sb unless !sb?
+      msgList = qualRobEstViewEventMngr.getMsgList()
+      qualRobEstViewEventMngr.setSb sb unless !sb?
 
       init: (opt) ->
-        console.log 'init called'
+        console.log 'qualRobEstView init called'
+        qualRobEstViewEventMngr.listenToIncomeEvents()
 
       destroy: () ->
 
       msgList: msgList
 ])
 ####
-# Every module will have a MODULE_NAMESb() service
-# For the module methods to access the sandbox object.
+# Every module will have a MODULE_NAMEEventMngr() service
+# which provides messaging with core
 ####
-.service('qualRobEstViewSb', () ->
-  console.log "sb in estimator"
-  _sb = null
-  setSb: (sb) ->
-    return false if sb is undefined
-    _sb = sb
+.service('qualRobEstViewEventMngr', [
+  '$rootScope'
+  ($rootScope) ->
+    sb = null
+    sum = ''
 
-  getSb: () ->
-    _sb
-)
+    msgList =
+      outcome: ['111']
+      income: ['000']
+      scope: ['qualRobEstView']
+
+    eventManager = (msg, data) ->
+      $rootScope.$broadcast 'newSum', data
+
+    sendNumbers: (a, b) ->
+      sb.publish
+        msg: msgList.outcome[0]
+        data:
+          a: a
+          b: b
+        msgScope: msgList.scope
+
+    setSb: (_sb) ->
+      return false if _sb is undefined
+      sb = _sb
+
+    getMsgList: () ->
+      msgList
+
+    listenToIncomeEvents: () ->
+      console.log 'subscribed for ' + msgList.income[0]
+      sb.subscribe
+        msg: msgList.income[0]
+        listener: eventManager
+        msgScope: msgList.scope
+
+    sum: sum
+])

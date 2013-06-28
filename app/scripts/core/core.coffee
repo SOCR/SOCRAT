@@ -275,10 +275,10 @@ core = angular.module('app.core', [
 
       _eventsManager = (msg, data) ->
         for o in _map when o.msgFrom is msg
-          console.log o.msgTo + '-' + data + '-' + o.scope
-          _sendMessage o.msgTo, data, [o.scope]
+          _sendMessage o.msgTo, data, o.scopeTo
           return true
         console.log 'No mapping in API for message: ' + msg
+        console.log _map
         false
 
       # External methods
