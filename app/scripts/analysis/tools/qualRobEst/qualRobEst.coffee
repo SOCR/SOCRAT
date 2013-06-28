@@ -1,16 +1,10 @@
 'use strict'
 
-getData = angular.module('app.qualRobEst', [
+qualRobEst = angular.module('app.qualRobEst', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
 ])
-
-.constant(
-  'msgList'
-  outcome: ['123']
-  income: ['234']
-)
 
 .config([
   # ###
@@ -35,50 +29,59 @@ getData = angular.module('app.qualRobEst', [
 #  returned object.
 ####
 .factory('qualRobEst', [
-  'qualRobEstSb'
-  'msgList'
-  'estimator'
-  (qualRobEstSb, msgList, estimator) ->
+  'qualRobEstEventMngr'
+  (qualRobEstEventMngr) ->
     (sb) ->
 
-      qualRobEstSb.setSb sb unless !sb?
-
-      eventManager = (msg, data) ->
-        sb.publish
-          msg: msgList.outcome[0]
-          data: estimator.estimate data.a, data.b
-          msgScope: ['qualRobEstView']
+      msgList = qualRobEstEventMngr.getMsgList()
+      qualRobEstEventMngr.setSb sb unless !sb?
 
       init: (opt) ->
-        console.log 'init called'
-
-        _sb = qualRobEstSb.getSb()
-        _sb.subscribe
-          msg: msgList.income[0]
-          listener: eventManager
-          msgScope: ['qualRobEstView']
+        console.log 'qualRobEst init called'
+        qualRobEstEventMngr.listenToIncomeEvents()
 
       destroy: () ->
 
       msgList: msgList
 ])
 ####
-# Every module will have a MODULE_NAMESb() service
-# For the module methods to access the sandbox object.
+# Every module will have a MODULE_NAMEEventMngr() service
+# which provides messaging with core
 ####
-.service('qualRobEstSb', () ->
-  console.log "sb in estimator"
-  _sb = null
-  setSb: (sb) ->
-    return false if sb is undefined
-    _sb = sb
+.service('qualRobEstEventMngr', [
+  'estimator'
+  (estimator) ->
+    sb = null
 
-  getSb: () ->
-    _sb
-)
+    msgList =
+      outcome: ['234']
+      income: ['123']
+      scope: ['qualRobEst']
+
+    eventManager = (msg, data) ->
+      sb.publish
+        msg: msgList.outcome[0]
+        data: estimator.estimate data.a, data.b
+        msgScope: msgList.scope
+
+    setSb: (_sb) ->
+      return false if _sb is undefined
+      sb = _sb
+
+    getMsgList: () ->
+      msgList
+
+    listenToIncomeEvents: () ->
+      console.log 'subscribed for ' + msgList.income[0]
+      sb.subscribe
+        msg: msgList.income[0]
+        listener: eventManager
+        msgScope: msgList.scope
+        context: console
+])
 
 .service('estimator', () ->
-  console.log '--- parameters estimation --> return concatenation ---'
   estimate: (a, b) ->
+    console.log '--- parameters estimation --> return concatenation ---'
     a + b
 )

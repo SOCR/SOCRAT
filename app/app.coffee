@@ -15,6 +15,7 @@ App = angular.module('app', [
   'app.core'
   'app.getData'
   'app.qualRobEstView'
+  'app.qualRobEst'
   'app.controllers'
   'app.directives'
   'app.filters'
@@ -98,23 +99,33 @@ App.config([
 
 ])
 
-App.run(['core', 'getData', 'qualRobEstView', (core, getData, qualRobEstView) ->
+App.run([
+  'core'
+  'getData'
+  'qualRobEstView'
+  'qualRobEst'
+  (core, getData, qualRobEstView, qualRobEst) ->
 
-  map = [
-    msgFrom: '000'
-    msgTo: '123'
-    scope: 'qualRobEst'
-  ,
-    msgFrom: '234'
-    msgTo: '111'
-    scope: 'qualRobEstView'
-  ]
+    map = [
+      msgFrom: '111'
+      scopeFrom: ['qualRobEstView']
+      msgTo: '123'
+      scopeTo: ['qualRobEst']
+    ,
+      msgFrom: '234'
+      scopeFrom: ['qualRobEst']
+      msgTo: '000'
+      scopeTo: ['qualRobEstView']
+    ]
 
-  core.setEventsMapping map
+    core.setEventsMapping map
 
-  core.register 'qualRobEstView', qualRobEstView
-  core.start 'qualRobEstView'
+    core.register 'qualRobEstView', qualRobEstView
+    core.start 'qualRobEstView'
 
-  console.log 'run block of app module'
+    core.register 'qualRobEst', qualRobEst
+    core.start 'qualRobEst'
+
+    console.log 'run block of app module'
 ])
 
