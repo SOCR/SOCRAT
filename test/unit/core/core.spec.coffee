@@ -8,6 +8,10 @@ describe 'Core module', ->
   validModule = (sb) ->
     init: (opt, done) -> setTimeout (-> done()), 0
     destroy: (done) -> setTimeout (-> done()), 0
+    msgList:
+      outcome: ['0']
+      income: ['1']
+      scope: ['validModuleScope']
 
 # Create mock module and overriding services
   angular.module('app.mocks', [])
@@ -127,6 +131,10 @@ describe 'Core module', ->
               (expect opt.foo).toEqual 'bar'
               done()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
           core.register 'foo', mod
           core.start 'foo', options:
             {foo: 'bar'}
@@ -141,6 +149,10 @@ describe 'Core module', ->
               setTimeout (-> x = 2; fini()), 0
               x = 1
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['idScope']
 
           core.start 'anId', { callback: cb }
 
@@ -150,6 +162,10 @@ describe 'Core module', ->
           mod1 = (sb) ->
             init: (opt) ->
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['idScope']
           (expect core.register 'anId', mod1).toBeTruthy()
           core.start 'anId', { callback: foo.cb1 }
           (expect foo.cb1).toHaveBeenCalled()
@@ -162,6 +178,10 @@ describe 'Core module', ->
               foo.cb1()
               thisWillProduceAnError()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
           (expect core.register 'anId', mod1).toBeTruthy()
           (expect core.start 'anId', { callback: (err) ->
             (expect foo.cb1).toHaveBeenCalled()
@@ -176,6 +196,10 @@ describe 'Core module', ->
           mod1 = (sb) ->
             init: -> foo.cb1()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           (expect core.register 'separate', mod1).toBeTruthy()
           core.start 'separate', { instanceId: 'instance' }
@@ -194,6 +218,10 @@ describe 'Core module', ->
           mod = (sb) ->
             init: ->
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
           end = false
           (expect core.register moduleId, mod).toBeTruthy()
           (expect core.start moduleId).toBeTruthy()
@@ -223,10 +251,18 @@ describe 'Core module', ->
           mod1 = (sb) ->
             init: -> foo.cb1()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           mod2 = (sb) ->
             init: -> foo.cb2()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           (expect core.register 'first', mod1 ).toBeTruthy()
           (expect core.register 'second', mod2).toBeTruthy()
@@ -247,14 +283,26 @@ describe 'Core module', ->
           mod1 = (sb) ->
             init: -> foo.cb1()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           mod2 = (sb) ->
             init: -> foo.cb2()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           mod3 = (sb) ->
             init: -> foo.cb3()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           core.stopAll()
           core.unregisterAll()
@@ -281,6 +329,10 @@ describe 'Core module', ->
               (expect foo.cb1).not.toHaveBeenCalled()
               foo.cb1()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           pseudoAsync = (sb) ->
             init: (opt, done)->
@@ -288,6 +340,10 @@ describe 'Core module', ->
               foo.cb1()
               done()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           async = (sb) ->
             init: (opt, done)->
@@ -297,6 +353,10 @@ describe 'Core module', ->
                 done()
               ), 0
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           core.register 'first', sync
           core.register 'second', async
@@ -318,12 +378,20 @@ describe 'Core module', ->
               setTimeout (->done()), 0
               (expect foo.finished).not.toHaveBeenCalled()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           mod2 = (sb) ->
             init: (opt, done) ->
               setTimeout (-> done()), 0
               (expect foo.finished).not.toHaveBeenCalled()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           core.register 'first', mod1, { callback: foo.cb1 }
           core.register 'second', mod2, { callback: foo.cb2 }
@@ -342,9 +410,17 @@ describe 'Core module', ->
           mod1 = (sb) ->
             init: -> foo.cb1(); thisIsAnInvalidMethod()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
           mod2 = (sb) ->
             init: -> foo.cb2()
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
           core.register 'invalid', mod1
           core.register 'valid', mod2
           core.startAll ['invalid', 'valid'], (err) ->
@@ -361,6 +437,10 @@ describe 'Core module', ->
               foo.cb2()
               setTimeout (-> done()), 0
             destroy: ->
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
           core.register 'valid', validModule
           core.register 'x', mod
           finished = (err) ->
@@ -399,6 +479,10 @@ describe 'Core module', ->
           mod1 = (sb) ->
             init: ->
             destroy: -> foo.cb1()
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
 
           core.register moduleId, mod1
 
@@ -421,6 +505,10 @@ describe 'Core module', ->
           mod = (sb) ->
             init: ->
             destroy: -> foo.cb1()
+            msgList:
+              outcome: ['0']
+              income: ['1']
+              scope: ['fooScope']
           (expect core.register 'syncDestroy', mod).toBeTruthy()
           (expect core.start 'syncDestroy').toBeTruthy()
           (expect core.start 'syncDestroy', instanceId: 'second').toBeTruthy()

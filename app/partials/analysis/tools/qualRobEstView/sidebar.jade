@@ -1,6 +1,23 @@
 div(ng-controller="qualRobEstViewSidebarCtrl")
-    h4 Estimator Parameters
-    input(ng-model="firstNumber").input-medium
-    h4 Model Parameters
-    input(ng-model="secondNumber").input-medium
-    input(type="button", ng-click="sumNumbers()", class="btn", value="Send").input-medium
+    form
+        fieldset
+            legend Model
+            label Real parameters&nbsp;
+                input(ng-model="realParams").input-small
+            label Dimension of outcome&nbsp;
+                input(ng-model="outcomeDim").input-small
+            label Levels of outcome&nbsp;
+                input(ng-model="outcomeLevels").input-small
+            legend Data
+            label Number of observations&nbsp;
+                input(ng-model="numObserv").input-small
+            label Noise level&nbsp;
+                input(ng-model="noiseLevel").input-small
+            legend Estimator
+            select(id="estimatorType")
+                option(value="1") Generalized Radical
+                option(value="2") Conditionally Optimal
+            label Estimator parameter&nbsp;
+                input(ng-model="estParam").input-small
+            div
+            button(type="submit", ng-click="sumNumbers()").btn.btn-primary Estimate
