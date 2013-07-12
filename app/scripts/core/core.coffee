@@ -25,7 +25,10 @@ core = angular.module('app.core', [
 
       _checkType = (type, val, name) ->
         # TODO: change to $exceptionHandler
+        console.log 'checkType: ' + "#{name} has to be a #{type}"
         if typeof val isnt type
+          console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
+          console.log 'BUT: ' + "#{name} is " + typeof val
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
@@ -77,7 +80,6 @@ core = angular.module('app.core', [
         instance
 
       _addModule = (moduleId, creator, opt) ->
-
         _checkType 'string', moduleId, 'module ID'
         _checkType 'function', creator, 'creator'
         _checkType 'object', opt, 'option parameter'
@@ -87,19 +89,21 @@ core = angular.module('app.core', [
         _checkType 'function', modObj.init, '"init" of the module'
         _checkType 'function', modObj.destroy, '"destroy" of the module'
         _checkType 'object', modObj.msgList, 'message list of the module'
-        _checkType 'object', modObj.msgList.income,
-          'incoming message list of the module'
         _checkType 'object', modObj.msgList.outcome,
           'outcoming message list of the module'
 
+        console.log 'types checked REGISTER!!!'
+
         # TODO: change to $exceptionHandler
         if _modules[moduleId]?
-          throw new TypeError 'module #{moduleId} was already registered'
+          throw new TypeError "module #{moduleId} was already registered"
 
         _modules[moduleId] =
           creator: creator
           options: opt
           id: moduleId
+
+        console.log 'Module added: ' + moduleId
 
         true
 
@@ -138,7 +142,8 @@ core = angular.module('app.core', [
         try
           _checkType 'string', moduleId, 'module ID'
           _checkType 'object', opt, 'second parameter'
-          throw new Error 'module doesn\'t exist' unless _modules[moduleId]?
+          unless _modules[moduleId]?
+            throw new Error "module doesn't exist: #{moduleId}"
 
           instance = _createInstance.apply @, [
             moduleId

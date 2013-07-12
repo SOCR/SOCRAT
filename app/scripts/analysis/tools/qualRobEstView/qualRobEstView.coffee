@@ -28,8 +28,14 @@ qualRobEstView = angular.module('app.qualRobEstView', [
   ($scope, qualRobEstViewEventMngr) ->
     console.log 'qualRobEstViewSidebarCtrl executed'
 
-    $scope.firstNumber = '1'
-    $scope.secondNumber = '2'
+    $scope.realParams = '[1,1,1]'
+    $scope.outcomeDim = '1'
+    $scope.outcomeLevels = '3'
+    $scope.numObserv = '1000'
+    $scope.noiseLevel = '0.2'
+    $scope.estParam = '0.5'
+
+
 
     $scope.sumNumbers = () ->
       qualRobEstViewEventMngr.sendNumbers(
