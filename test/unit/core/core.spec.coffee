@@ -20,7 +20,12 @@ describe 'Core module', ->
         @core = @
         @instanceId = _instanceId
         @options = {}
-    .service('pubSub', ->)
+    .service 'mediator', ->
+      @events = [];
+      @publish = (event) ->
+        result = (item.cb() for item in @events when item.name is event.name)
+      @subscribe = (event) ->
+        @events.push event
 
   beforeEach ->
     module 'app.core'
@@ -203,6 +208,25 @@ describe 'Core module', ->
 
           (expect core.register 'separate', mod1).toBeTruthy()
           core.start 'separate', { instanceId: 'instance' }
+          (expect foo.cb1).toHaveBeenCalled()
+
+      it 'should fire event in response to registered module according to event map', ->
+        inject (core, mediator) ->
+          spyOn foo, 'cb1'
+
+          map = [
+            msgFrom: '0'
+            scopeFrom: ['validModuleScope']
+            msgTo: '1'
+            scopeTo: ['validModuleScope']
+          ]
+          core.setEventsMapping map
+          mediator.subscribe
+            name: '1'
+            cb: foo.cb1
+          mediator.publish
+            name: '0'
+
           (expect foo.cb1).toHaveBeenCalled()
 
     describe 'stop function', ->
@@ -513,6 +537,27 @@ describe 'Core module', ->
           (expect core.start 'syncDestroy').toBeTruthy()
           (expect core.start 'syncDestroy', instanceId: 'second').toBeTruthy()
           (expect core.stopAll done).toBeTruthy()
+
+    describe 'setEventsMapping function', ->
+
+      it 'should set event map if it\'s an object', ->
+        inject (core) ->
+
+          invalidMap = 5;
+          validMap = [
+            msgFrom: '111'
+            scopeFrom: ['0']
+            msgTo: '123'
+            scopeTo: ['1']
+          ,
+            msgFrom: '234'
+            scopeFrom: ['1']
+            msgTo: '000'
+            scopeTo: ['0']
+          ]
+
+          (expect core.setEventsMapping invalidMap).toBeFalsy()
+          (expect core.setEventsMapping validMap).toBeTruthy()
 
 #
 #    describe 'onModuleState function', ->

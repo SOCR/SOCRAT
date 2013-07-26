@@ -37,7 +37,6 @@ describe "Mediator", ->
       inject (pubSub)->
         foo =
           cb : ()->
-            console.log "callback called!!!!!!!!!!"
           name: ""
           cb2:()->
             2
