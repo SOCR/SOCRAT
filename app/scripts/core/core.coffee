@@ -92,8 +92,6 @@ core = angular.module('app.core', [
         _checkType 'object', modObj.msgList.outcome,
           'outcoming message list of the module'
 
-        console.log 'types checked REGISTER!!!'
-
         # TODO: change to $exceptionHandler
         if _modules[moduleId]?
           throw new TypeError "module #{moduleId} was already registered"
@@ -308,8 +306,9 @@ core = angular.module('app.core', [
           false
 
       _setEventsMapping = (map) ->
-        console.log map
+        _checkType 'object', map, 'event map'
         _map = map
+        true
 
       _sendMessage = (msg, data, scopeArray) ->
         console.log 'core sends: ' + msg + ' data: ' + data +
@@ -324,7 +323,6 @@ core = angular.module('app.core', [
           _sendMessage o.msgTo, data, o.scopeTo
           return true
         console.log 'No mapping in API for message: ' + msg
-        console.log _map
         false
 
       # External methods
