@@ -22,6 +22,7 @@ App = angular.module('app', [
   'app.services'
   'app.mediator'
   'ngSanitize'
+  'app.db'
 ])
 
 App.config([
@@ -101,10 +102,11 @@ App.config([
 
 App.run([
   'core'
+  'database'
   'getData'
   'qualRobEstView'
   'qualRobEst'
-  (core, getData, qualRobEstView, qualRobEst) ->
+  (core, database, getData, qualRobEstView, qualRobEst) ->
 
     map = [
       msgFrom: '111'
@@ -127,5 +129,27 @@ App.run([
     core.start 'qualRobEst'
 
     console.log 'run block of app module'
+
+    colA = ["a","a","b","b","c"]
+    colB = [0,1,2,3,4]
+    tab1 = [
+      {name:"A", values:colA, type:"nominal"}
+      {name:"B", values:colB, type:"numeric"}
+    ]
+    database.create tab1,"test"
+
+    test = database.getTable "test"
+    console.log test
+
+    database.addListener
+      "table": "test"
+      "fn":(msg,data)->
+        console.log msg
+        console.log data
+        console.log "Eureka"
+
+    setTimeout ->
+        database.addColumn "C", colA, "nominal", "test"
+      ,4000
 ])
 
