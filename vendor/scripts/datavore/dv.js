@@ -10,26 +10,6 @@ var dv = (function() {
  */
 var dv = {version: "1.0.0"};
 
-// associative array holding references to the created tables
-_registry = []
-
-_register = function(name,ref){
-    if(_registry[name] !== undefined){
-        //name already exists. Create an alternate name.
-        name = "_"+name;
-        _register(name,ref);
-    }
-    _registry[name] = ref
-    return name;
-}
-
-dv.getTable = function(name){
-    if(_registry[name] !== undefined){
-        return _registry[name]
-    }
-    else
-        return false
-}
 dv.array = function(n) {
     var a = Array(n);
     for (var i = n; --i >= 0;) { a[i] = 0; }
@@ -89,52 +69,10 @@ dv.type = {
     unknown: "unknown"
 };
 
-dv.table = function(input,name)
+dv.table = function(input)
 {
     var table = []; // the data table
-
-    var _listeners = {
-        "table":[]
-    }
-
-    //event firer
-    _fireEvent = function(name){
-        //trigger all listeners attached to the column `name`
-        if(name !== undefined && _listeners.name !== undefined){
-            for (var i = _listeners[name].length - 1; i >= 0; i--) {
-                _listeners[name][i](table.get(name))
-            }
-        }
-        // trigger all listeners attached to the table.
-        if(_listeners.table.length !== 0){
-            for (var i = _listeners.table.length - 1; i >= 0; i--) {
-                _listeners.table[i](table);
-            }
-        }
-    }
-
-    //if only parameter passed is a name{string}
-    if(typeof input === "string"){
-        name = input
-        input = false
-    }
-    // register the table
-    _register(name,table);
-   
-    table.addListener = function(opts,fn){
-        if(typeof opts === "function"){
-            fn = opts
-            _listeners.table.push(fn)
-            return table
-        }
-        else{
-            if(opts.col !== undefined && table[opts.col] !== undefined){
-                _listeners[opts.col] = _listeners[opts.col] || [];
-                _listeners[opts.col].push(fn);
-            }
-        }
-    }
-
+    
     table.addColumn = function(name, values, type, iscolumn) {
         type = type || dv.type.unknown;
         var compress = (type === dv.type.nominal || type === dv.type.ordinal);
@@ -156,8 +94,6 @@ dv.table = function(input,name)
 
         table.push(vals);
         table[name] = vals;
-        // fire listeners
-        _fireEvent(name);
     };
     
     table.removeColumn = function(col) {
@@ -165,7 +101,6 @@ dv.table = function(input,name)
         if (col != null) {
             delete table[col.name];
             table.splice(col.index, 1);
-            _fireEvent(name);
         }
         return col;
     };
