@@ -56,8 +56,10 @@ db.service "database",[
           "msg" : tname
           "msgScope" : ["database"]
 
-    _db.removeColumn = ()->
-
+    _db.removeColumn = (cname,tname)->
+      if _registry[tname]?[cname]?
+        delete _registry[tname][cname]
+      _db
 
     _db.addListener = (opts)->
       if opts?
@@ -77,12 +79,28 @@ db.service "database",[
 
     # destroy any table
     _db.destroy = (tname)->
+      if _registry[tname]?
+        delete _registry[tname]
+      _db
 
     _db.rows = (tname)->
 
     _db.cols = (tname)->
 
-    _db.get = (col,row,tname)->
+    _db.get = (tname,col,row)->
+
+      if _registry[tname]?
+        if col?
+          if row?
+            _registry[tname][col].get row
+          else
+            _registry[tname][col]
+        else
+          _registry[tname]
+      else
+        false
+
+
 
     _db.getTable = (tname)->
       _registry[tname]
