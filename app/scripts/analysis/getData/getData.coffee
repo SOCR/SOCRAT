@@ -4,7 +4,6 @@ getData = angular.module('app.getData', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
-  'ngGrid'
   'ui.bootstrap'
 ])
 
@@ -96,13 +95,13 @@ getData = angular.module('app.getData', [
 ])
 
 # ###
-# getDataViewCtrl is the ctrl that talks to the view.
+# getDataSidebarCtrl is the ctrl that talks to the view.
 # ###
 .controller('getDataSidebarCtrl', [
   '$scope'
-  'getDataSb'
+  'getDataEventMngr'
   'jsonParser'
-  ($scope,getDataSb,jsonParser)->
+  ($scope,getDataEventMngr,jsonParser,$stateParams)->
     #get the sandbox made for this module
     #sb = getDataSb.getSb()
     #console.log 'sandbox created'
@@ -211,26 +210,63 @@ getData = angular.module('app.getData', [
 #  init() and destroy() methods should be present in
 #  returned object.
 ####
-.factory('getData',['getDataSb', (getDataSb)->
-  (sb) ->
-    getDataSb.setSb(sb) unless !sb?
-    init: ()->
-    destroy: ()->
-])
-####
-# Every module will have a MODULE_NAMESb() service
-# For the module methods to access the sandbox object.
-####
-.service('getDataSb', ()->
-  console.log "sb"
-  _sb = null
-  setSb:(sb)->
-    return false if sb is undefined
-    _sb = sb
+.factory('getData',[
+  'getDataEventMngr'
+  (getDataEventMngr)->
+    (sb)->
+      msgList = getDataEventMngr.getMsgList()
+      getDataEventMngr.setSb sb unless !sb?
+      init: (opt)->
+        console.log "getData init called"
+        getDataEventMngr.listenToIncomeEvents()
+      
+      destroy: ()->
 
-  getSb:()->
-    _sb
-)
+      msgList:msgList
+])
+
+####
+# Every module will have a MODULE_NAMEEventMngr() service
+# which provides messaging with core
+####
+.service('getDataEventMngr', [
+  '$rootScope'
+  ($rootScope) ->
+    sb = null
+    sum = ''
+
+    msgList =
+      outcome: ['get111']
+      income: ['get000']
+      scope: ['getData']
+
+    eventManager = (msg, data) ->
+      $rootScope.$broadcast 'newSum', data
+
+    sendNumbers: (a, b) ->
+      sb.publish
+        msg: msgList.outcome[0]
+        data:
+          a: a
+          b: b
+        msgScope: msgList.scope
+
+    setSb: (_sb) ->
+      return false if _sb is undefined
+      sb = _sb
+
+    getMsgList: () ->
+      msgList
+
+    listenToIncomeEvents: () ->
+      console.log 'subscribed for ' + msgList.income[0]
+      sb.subscribe
+        msg: msgList.income[0]
+        listener: eventManager
+        msgScope: msgList.scope
+
+    sum: sum
+])
 
 .factory("showState", ->
   (obj,scope)->
@@ -286,7 +322,6 @@ getData = angular.module('app.getData', [
   
   #the controller for the directive
   controller: ($scope,html2json) ->
-    # useful to identify which handsontable instance to update
     #$scope.$on("load data to handsontable",$scope.update)
   replace: true #replace the directive element with the output of the template.
   
@@ -294,21 +329,22 @@ getData = angular.module('app.getData', [
   # up, things like bindings, jquery calls, etc are done in here
   # It is run before the controller
   link: (scope, elem, attr) ->
+    # useful to identify which handsontable instance to update
     scope.purpose = attr.purpose
 
     # Update the table with the scope values
-    scope.update = (evt,arg)->
+    scope.update = (evt,arg) ->
       console.log "update called"
       #check if data is in the right format
       if arg? and typeof arg.data is "object" and typeof arg.columns is "object"
-        elem.handsontable(
+        elem.handsontable
           data: arg.data[1]
           startRows: Object.keys(arg.data[1]).length
           startCols: arg.columns.length
           colHeaders: arg.columnHeader
           columns:arg.columns
           minSpareRows: 1
-        )
+        
       else if arg.default is true
         elem.handsontable(
           data: [

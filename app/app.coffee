@@ -67,7 +67,7 @@ App.config([
           templateUrl: 'partials/nav/contact.html'
 
     .state 'getData'
-      url: '/getData'
+      url: '/getData/:projectId/:forkId'
       views:
         'main':
           templateUrl:'partials/analysis/getData/main.html'
@@ -116,6 +116,11 @@ App.run([
       scopeFrom: ['qualRobEst']
       msgTo: '000'
       scopeTo: ['qualRobEstView']
+    ,
+      msgFrom: '200'
+      scopeFrom: ['getData']
+      msgTo: '142'
+      scopeTo: ['getData']
     ]
 
     core.setEventsMapping map
@@ -125,6 +130,9 @@ App.run([
 
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
+
+    core.register 'getData', getData
+    core.start 'getData'
 
     console.log 'run block of app module'
 ])
