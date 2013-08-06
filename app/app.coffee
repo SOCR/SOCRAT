@@ -138,12 +138,9 @@ App.run([
     ]
     database.create tab1,"test"
 
-    test = database.getTable "test"
-    console.log test
-
     database.addListener
-      "table": "test"
-      "fn":(msg,data)->
+      table: "test"
+      listener:(msg,data)->
         console.log msg
         console.log data
         console.log "Eureka"
@@ -151,5 +148,10 @@ App.run([
     setTimeout ->
         database.addColumn "C", colA, "nominal", "test"
       ,4000
+
+    t = database.where (table,row)->
+        table.get("B",row) > 3
+      ,"test"
+    console.log t
 ])
 

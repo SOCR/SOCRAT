@@ -15,12 +15,14 @@ db.service "database",[
     _registry = []
 
     _db = {}
-
+    ###
+      @returns {string|boolean}
+    ###
     _register = (tname,ref)->
-      if _registry[tname]?
-    		#name already exists. Create an alternate name.
-        tname = "_" + tname
-        _register tname,ref
+      return false if _registry[tname]?
+    		# #name already exists. Create an alternate name.
+      #   tname = "_" + tname
+      #   _register tname,ref
       _registry[tname] = ref
       tname
 
@@ -42,6 +44,7 @@ db.service "database",[
           i++
 
     _db.create = (input,tname)->
+      return false if _registry[tname]?
       #create table
       _ref = dv.table(input)
       # register the reference to the table
@@ -55,11 +58,16 @@ db.service "database",[
         pubSub.publish
           "msg" : tname
           "msgScope" : ["database"]
+        pubSub.publish
+          msg: tname+":"+cname
+          msgScope:["database"]
 
     _db.removeColumn = (cname,tname)->
       if _registry[tname]?[cname]?
         delete _registry[tname][cname]
-      _db
+        true
+      else
+        false
 
     _db.addListener = (opts)->
       if opts?
@@ -67,13 +75,16 @@ db.service "database",[
           return false
         else
           if opts.table?
-            opts.col = opts.col || ""
+            if opts.column?
+              msg = opts.table+":"+opts.column
+            else
+              msg = opts.table
             if _registry[opts.table]?
               #_listeners[table][col] = _listeners[table][col] || []
               #_listeners[table][col].push fn
               pubSub.subscribe
-                "msg" : opts.table
-                "listener": opts.fn
+                "msg" : msg
+                "listener": opts.listener
                 "msgScope": ["database"]
 
 
@@ -81,14 +92,19 @@ db.service "database",[
     _db.destroy = (tname)->
       if _registry[tname]?
         delete _registry[tname]
-      _db
+        true
+      else
+        false
 
     _db.rows = (tname)->
+      if _registry[tname]?
+        _registry[tname].rows()
 
     _db.cols = (tname)->
+      if _registry[tname]?
+        _registry[tname].cols()
 
     _db.get = (tname,col,row)->
-
       if _registry[tname]?
         if col?
           if row?
@@ -96,20 +112,30 @@ db.service "database",[
           else
             _registry[tname][col]
         else
+          #TODO : returned object is dv object.
+          # need to return only the table content
           _registry[tname]
       else
         false
 
+    _db.exists = (tname)->
+      if _registry[tname]?
+        true
+      else
+        false
 
-
-    _db.getTable = (tname)->
-      _registry[tname]
 
     _db.dense_query = (q,tname)->
+      if _registry[tname]?
+        _registry[tname].dense_query(q)
 
     _db.sparse_query = (q,tname)->
+      if _registry[tname]?
+        _registry[tname].sparse_query(q)
 
     _db.where = (q,tname)->
+      if _registry[tname]?
+        _registry[tname].where(q)
 
     _db
 ]
