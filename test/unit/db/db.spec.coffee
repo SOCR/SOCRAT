@@ -117,6 +117,49 @@ describe "app.db module", ->
         expect(database.exists "tab1").toBeFalsy()
         
     it "append data to column.", ->
+      # method doesnt exist yet. Will do this when the method is implemented.
+
+    it "performs (SQL like)filtering queries using where", ->
+      inject (database)->
+        database.create table, "tab1"
+        tab2 = database.where (table,row)->
+            table.get("B", row) > 1
+          , "tab1"
+        expect(tab2[0]).toMatch [1,1,2]
+        expect(tab2[1]).toMatch [2,3,4]
+
+    it "performs (SQL like)aggregating queries using query(same as dense_query)", ->
+      inject (database)->
+        database.create table, "tab1"
+        tab2 = database.dense_query
+            dims:[0]
+            vals:[dv.count(), dv.sum(1)]
+          , "tab1"
+        expect(tab2).toMatch [["a","b","c"], [2,2,1], [1,5,4]]
+        tab3 = database.dense_query
+            dims:[0]
+            vals:[dv.count(), dv.sum(1)]
+            code:true
+          , "tab1"
+        expect(tab3).toMatch [[0,1,2], [2,2,1], [1,5,4]]
+        filter = database.dense_query
+            dims: [0]
+            vals: [dv.count()]
+            where: (table, row) ->
+              table.get("A", row) isnt "a"
+          , "tab1"
+        expect(filter).toMatch [["a","b","c"], [0,2,1]]
+
+    it "performs (SQL like)filtering queries using where", ->
+      inject (database)->
+        database.create table, "tab1"
+        filter = database.sparse_query
+            dims: [0]
+            vals: [dv.count()]
+            where: (table, row) ->
+              table.get("A", row) isnt "a"
+          , "tab1"
+        expect(filter).toMatch [["b","c"], [2,1]]
 
 
 

@@ -51,7 +51,6 @@ db.service "database",[
       _register(tname,_ref)
       _db
 
-
     _db.addColumn = (cname, values, type, iscolumn...,tname)->
       if _registry[tname]?
         _registry[tname].addColumn(cname, values, type, iscolumn)
@@ -124,6 +123,9 @@ db.service "database",[
       else
         false
 
+    # Query methods
+    _db.query = (q,name)->
+      _db.dense_query(q,name)
 
     _db.dense_query = (q,tname)->
       if _registry[tname]?
