@@ -102,11 +102,11 @@ App.config([
 
 App.run([
   'core'
-  'database'
+  'db'
   'getData'
   'qualRobEstView'
   'qualRobEst'
-  (core, database, getData, qualRobEstView, qualRobEst) ->
+  (core, db, getData, qualRobEstView, qualRobEst) ->
 
     map = [
       msgFrom: '111'
@@ -118,6 +118,11 @@ App.run([
       scopeFrom: ['qualRobEst']
       msgTo: '000'
       scopeTo: ['qualRobEstView']
+    ,
+      msgFrom:'save table'
+      scopeFrom: ['getData']
+      msgTo:'save table'
+      scopeTo:['db']
     ]
 
     core.setEventsMapping map
@@ -128,30 +133,10 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
+    core.register 'db', db
+    core.start 'db'
+
     console.log 'run block of app module'
 
-    colA = ["a","a","b","b","c"]
-    colB = [0,1,2,3,4]
-    tab1 = [
-      {name:"A", values:colA, type:"nominal"}
-      {name:"B", values:colB, type:"numeric"}
-    ]
-    database.create tab1,"test"
-
-    database.addListener
-      table: "test"
-      listener:(msg,data)->
-        console.log msg
-        console.log data
-        console.log "Eureka"
-
-    setTimeout ->
-        database.addColumn "C", colA, "nominal", "test"
-      ,4000
-
-    t = database.where (table,row)->
-        table.get("B",row) > 3
-      ,"test"
-    console.log t
 ])
 
