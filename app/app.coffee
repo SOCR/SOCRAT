@@ -16,6 +16,8 @@ App = angular.module('app', [
   'app.getData'
   'app.qualRobEstView'
   'app.qualRobEst'
+  'app.dataModelerView'
+  'app.dataModeler'
   'app.controllers'
   'app.directives'
   'app.filters'
@@ -71,7 +73,7 @@ App.config([
       url: '/getData'
       views:
         'main':
-          templateUrl: 'partials/nav/guide-me.html'
+          templateUrl: 'partials/analysis/getData/main.html'
           controller: 'getDataMainCtrl'
         'sidebar':
           templateUrl: 'partials/analysis/getData/sidebar.html'
@@ -85,15 +87,27 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/cleanData/sidebar.html'
 
-    .state 'tools'
-      url: '/tools'
+    .state 'robustEstimator'
+      url: '/tools/robustEstimator'
       views:
         'main':
           templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-          controller: 'qualRobEstViewMainCtrl'
+          controller: 'qualRobEstMainCtrl'
         'sidebar':
           templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
           controller: 'qualRobEstViewSidebarCtrl'
+
+    .state 'dataModeler'
+      url: '/tools/dataModeler'
+      views:
+        'main':
+          templateUrl: 'partials/analysis/tools/dataModelerView/main.html'
+          controller: 'dataModelerViewMainCtrl'
+        'sidebar':
+          templateUrl: 'partials/analysis/tools/dataModelerView/sidebar.html'
+          controller: 'dataModelerViewSidebarCtrl'
+
+
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
@@ -106,7 +120,9 @@ App.run([
   'getData'
   'qualRobEstView'
   'qualRobEst'
-  (core, db, getData, qualRobEstView, qualRobEst) ->
+  'dataModelerView'
+  'dataModeler'
+  (core,db,getData,qualRobEstView,qualRobEst,dataModelerView,dataModeler)->
 
     map = [
       msgFrom: '111'
@@ -123,6 +139,11 @@ App.run([
       scopeFrom: ['getData']
       msgTo:'save table'
       scopeTo:['db']
+    ,
+      msgFrom:'model data'
+      scopeFrom: ['dataModelerView']
+      msgTo:'model data'
+      scopeTo:['dataModeler']
     ]
 
     core.setEventsMapping map
@@ -133,6 +154,12 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
+    core.register 'dataModelerView', dataModelerView
+    core.start 'dataModelerView'
+
+    core.register 'dataModeler', dataModeler
+    core.start 'dataModeler'
+    
     core.register 'db', db
     core.start 'db'
 
