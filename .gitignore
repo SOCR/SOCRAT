@@ -1,5 +1,6 @@
 .idea/
 node_modules/
-_public/
 test/test-results.xml
 *.log
+_public/
+app/assets/

@@ -102,7 +102,6 @@ core = angular.module('app.core', [
         id: moduleId
 
       console.log 'Module added: ' + moduleId
-
       true
 
     _register = (moduleId, creator, opt = {}) ->
@@ -279,7 +278,11 @@ core = angular.module('app.core', [
         cb
       )
 
+<<<<<<< HEAD
     _ls = (o) -> (id for id, m of o)
+=======
+      _ls = (o) -> (id for id, m of o)
+>>>>>>> db
 
     _registerPlugin = (plugin) ->
       try

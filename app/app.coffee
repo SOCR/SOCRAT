@@ -22,6 +22,7 @@ App = angular.module('app', [
   'app.services'
   'app.mediator'
   'ngSanitize'
+  'app.db'
 ])
 
 App.config([
@@ -113,10 +114,11 @@ App.config([
 App.run([
   '$rootScope'
   'core'
+  'db'
   'getData'
   'qualRobEstView'
   'qualRobEst'
-  ($rootScope, core, getData, qualRobEstView, qualRobEst) ->
+  ($rootScope, core, db, getData, qualRobEstView, qualRobEst) ->
 
     map = [
       msgFrom: '111'
@@ -133,6 +135,11 @@ App.run([
       scopeFrom: ['getData']
       msgTo: '142'
       scopeTo: ['getData']
+    ,
+      msgFrom:'save table'
+      scopeFrom: ['getData']
+      msgTo:'save table'
+      scopeTo:['db']
     ]
 
     core.setEventsMapping map
@@ -146,9 +153,13 @@ App.run([
     core.register 'getData', getData
     core.start 'getData'
 
-    console.log 'run block of app module'
+    core.register 'db', db
+    core.start 'db'
 
     $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
       console.log "teststestse"
+
+    console.log 'run block of app module'
+
 ])
 
