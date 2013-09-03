@@ -1,0 +1,23 @@
+div(ng-controller="dataModelerViewSidebarCtrl")
+    form
+        fieldset
+            legend Model
+            label Available SOCR models &nbsp;
+                select(ng-model="selectedModel")
+                    option(ng-repeat="model in socrModels")
+                        {{model}}
+            legend Data
+            label Dataset:
+                input(ng-model="forkName").input-small
+                i.icon-remove 
+                i.icon-info-sign 
+            legend Options
+            input(type="radio",name="parameters",value="Estimate Parameters")
+            |  Estimate Parameters
+            br
+            input(type="radio",name="parameters",value="User Parameters")
+            | User Parameters
+            br
+            br
+            div
+            button(type="submit", ng-click="model()").btn.btn-primary Model

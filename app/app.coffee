@@ -144,6 +144,11 @@ App.run([
       scopeFrom: ['dataModelerView']
       msgTo:'model data'
       scopeTo:['dataModeler']
+    ,
+      msgFrom:'data modeled'
+      scopeFrom:['dataModeler']
+      msgTo:'data modeled'
+      scopeTo:['results']
     ]
 
     core.setEventsMapping map
