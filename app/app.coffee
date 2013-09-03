@@ -27,6 +27,7 @@ App = angular.module('app', [
 
 App.config([
   '$locationProvider'
+  #urlRouterProvider is not required
   '$urlRouterProvider'
   '$stateProvider'
 
@@ -68,7 +69,17 @@ App.config([
           templateUrl: 'partials/nav/contact.html'
 
     .state 'getData'
-      url: '/getData/:projectId/:forkId'
+      url: '/getData'
+      views:
+        'main':
+          templateUrl:'partials/analysis/getData/main.html'
+          controller:'getDataMainCtrl'
+        'sidebar':
+          templateUrl: 'partials/analysis/getData/sidebar.html'
+          controller: 'getDataSidebarCtrl'
+
+    .state 'getData.project'
+      url: '/:projectId/:forkId'
       views:
         'main':
           templateUrl:'partials/analysis/getData/main.html'
@@ -106,12 +117,13 @@ App.config([
 ])
 
 App.run([
+  '$rootScope'
   'core'
   'db'
   'getData'
   'qualRobEstView'
   'qualRobEst'
-  (core, db, getData, qualRobEstView, qualRobEst) ->
+  ($rootScope, core, getData, qualRobEstView, qualRobEst) ->
 
     map = [
       msgFrom: '111'
@@ -142,5 +154,8 @@ App.run([
     core.start 'getData'
 
     console.log 'run block of app module'
+
+    $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
+      console.log "teststestse"
 ])
 

@@ -2,5 +2,3 @@
 node_modules/
 test/test-results.xml
 *.log
-_public/
-app/assets/

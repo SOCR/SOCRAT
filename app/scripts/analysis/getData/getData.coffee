@@ -152,6 +152,15 @@ getData = angular.module('app.getData', [
   #generate
     $scope.showGenerate = ->
       $scope.$emit("change in showStates","generate")
+
+  #save data
+    $scope.save = (data)->
+      if $stateParams.projectId? and $stateParams.forkId?
+        tname = $stateParams.projectId+":"+$stateParams.forkId+":"+"default"
+        # if data?
+        #   database.create data,tname
+      else
+        #sent error message
   ])
 
 .controller('getDataMainCtrl', [
@@ -160,7 +169,7 @@ getData = angular.module('app.getData', [
   'jsonParser'
   ($scope,showState,jsonParser)->
     console.log 'getDataMainCtrl executed'
-    
+
     $scope.getWB = ->
       #default value
       if $scope.size is undefined
@@ -193,13 +202,12 @@ getData = angular.module('app.getData', [
     catch e
       console.log e.message
 
-    $scope.$on("update showStates",(obj,data)->
-      #console.log "start state:"
-      #console.log $scope.showState
-      #console.log data
+    # Adding Listeners
+    $scope.$on "update showStates", (obj,data)->
       _showState.set(data)
-    )
 
+    $scope.$on "$viewContentLoaded", ->
+      console.log "get data main div loaded"
 ])
 ####
 #  Every module is supposed have a factory method
@@ -268,6 +276,7 @@ getData = angular.module('app.getData', [
     sum: sum
 ])
 
+# Helps sidebar accordion to keep in sync with the main div.
 .factory("showState", ->
   (obj,scope)->
     if arguments.length is 0
@@ -301,9 +310,13 @@ getData = angular.module('app.getData', [
       #search for tables
       (data)->
         console.log "success"
-        parser = new DOMparser()
-        dom = parser.parseFromString(data)
-        tables = dom.getElementsByTagName("table")
+        # parser = new DOMparser()
+        # dom = parser.parseFromString(data)
+        # tables = dom.getElementsByTagName("table")
+        if data? and typeof data is "string"
+          obj = $(data)
+          res = obj.tableToJSON()
+
         #table-to-json
         #returned data is used to compute data, coulumns, columnHeader
         #compute the res obj
