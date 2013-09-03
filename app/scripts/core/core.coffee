@@ -278,11 +278,7 @@ core = angular.module('app.core', [
         cb
       )
 
-<<<<<<< HEAD
     _ls = (o) -> (id for id, m of o)
-=======
-      _ls = (o) -> (id for id, m of o)
->>>>>>> db
 
     _registerPlugin = (plugin) ->
       try
