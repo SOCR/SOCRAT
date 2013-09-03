@@ -31,6 +31,8 @@
     "uglify-js-brunch": ">= 1.0 < 1.5",
     "clean-css-brunch": ">= 1.0 < 1.5",
 
+    "bower":"~1.0",
+    
     "jade-brunch": ">= 1.4.1 < 1.5",
     "static-jade-brunch": ">= 1.4.0 <= 1.4.5 || >= 1.4.8 < 1.5"
   },

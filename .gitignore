@@ -3,5 +3,3 @@ node_modules/
 _public/
 test/test-results.xml
 *.log
-_public/
-test/test-results.xml

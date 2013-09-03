@@ -1,114 +1,37 @@
 
 <div ng-controller="getDataSidebarCtrl">
-  <accordion close-others="true">
-    <accordion-group heading="Grid">
-      <p>Traditional spreadsheet where you can copy-paste your data and edit it as you like!</p>
-      <button ng-click="showGrid()" class="btn btn-info">Show</button>
-    </accordion-group>
-    <accordion-group heading="WorldBank">
-      <p>Use the exhaustive WorldBank data to fuel your analysis.</p>
-      <button ng-click="showWBInterface()" class="btn btn-info">Use</button>
-    </accordion-group>
-    <accordion-group heading="Generate">
-      <p>Use the inbuilt experiment to generate data for your analysis.</p>
-      <button ng-click="showGenerate()" class="btn btn-info">Generate</button>
-    </accordion-group>
-    <accordion-group heading="JSON">
-      <p>Enter json url here. We will try to give the best output!</p>
-      <input ng-model="jsonUrl" type="text" tooltip="See? Now click away..." tooltip-trigger="focus" tooltip-placement="right" class="input-medium"/>
-      <button ng-click="getJson()" class="btn btn-info">Use</button>
-    </accordion-group>
-    <accordion-group heading="SOCR Data">
-      <p>Enter SOCR Data url here. We will parse it for you!</p>
-      <input type="url" ng-model="socrUrl" class="input-medium"/>
-    </accordion-group>
-  </accordion>
+  <p>Traditional spreadsheet where you can copy-paste your data and edit it as you like!</p>
+  <button ng-click="showGrid()" class="btn btn-info">Show</button>
+  <p>Use the exhaustive WorldBank data to fuel your analysis.</p>
+  <button ng-click="showWBInterface()" class="btn btn-info">Use</button>
+  <p>Use the inbuilt experiment to generate data for your analysis.</p>
+  <button ng-click="showGenerate()" class="btn btn-info">Generate</button>
+  <p>Enter json url here. We will try to give the best output!</p>
+  <input ng-model="jsonUrl" type="text" tooltip="See? Now click away..." tooltip-trigger="focus" tooltip-placement="right" class="input-medium"/>
+  <button ng-click="getJson()" class="btn btn-info">Use</button>
+  <p>Enter SOCR Data url here. We will parse it for you!</p>
+  <input type="url" ng-model="socrUrl" class="input-medium"/>
 </div><!--
-<table>
-  <tr>
-    <td>
-      <h4>Grid</h4>
-    </td>
-    <td><i ng-click="gridCollapsed = !gridCollapsed" class="icon-chevron-down"></i></td>
-  </tr>
-  <tr>
-    <td>
-      <p collapse="gridCollapsed">Traditional spreadsheet where you can copy-paste your data and edit it as you like!</p>
-    </td>
-    <td>
-      <p collapse="gridCollapsed">
-        <button class="btn btn-info">Show</button>
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h4>WorldBank</h4>
-    </td>
-    <td><i ng-click="wbCollapsed = !wbCollapsed" class="icon-chevron-down"></i></td>
-  </tr>
-  <tr>
-    <td>
-      <p collapse="wbCollapsed">Enter json url here. We will try to give the best output!</p>
-    </td>
-    <td>
-      <p collapse="wbCollapsed">
-        <button ng-click="" class="btn btn-info">Show</button>
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h4>Generate</h4>
-    </td>
-    <td><i ng-click="generateCollapsed = !generateCollapsed" class="icon-chevron-down"></i></td>
-  </tr>
-  <tr>
-    <td>
-      <p collapse="generateCollapsed">Enter json url here. We will try to give the best output!
-        <input type="url" ng-model="jsonUrl" class="input-medium"/>
-      </p>
-    </td>
-    <td>
-      <p collapse="generateCollapsed">
-        <button ng-click="getJson()" class="btn btn-info">Go</button>
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h4>URL</h4>
-    </td>
-    <td><i ng-click="urlCollapsed = !urlCollapsed" class="icon-chevron-down"></i></td>
-  </tr>
-  <tr>
-    <td>
-      <p collapse="urlCollapsed">Enter json url here. We will try to give the best output!
-        <input type="url" ng-model="" class="input-medium"/>
-      </p>
-    </td>
-    <td>
-      <p collapse="urlCollapsed">
-        <button class="btn btn-info">url</button>
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h4>Json</h4>
-    </td>
-    <td><i ng-click="jsonCollapsed = !jsonCollapsed" class="icon-chevron-down"></i></td>
-  </tr>
-  <tr>
-    <td>
-      <p collapse="jsonCollapsed">Enter json url here. We will try to give the best output!
-        <input type="url" ng-model="jsonUrl" class="input-medium"/>
-      </p>
-    </td>
-    <td>
-      <p collapse="jsonCollapsed">
-        <button ng-click="getJson()" class="btn btn-info">Show</button>
-      </p>
-    </td>
-  </tr>
-</table>-->
+<accordion close-others="true">
+  <accordion-group heading="Grid">
+    <p>Traditional spreadsheet where you can copy-paste your data and edit it as you like!</p>
+    <button ng-click="showGrid()" class="btn btn-info">Show</button>
+  </accordion-group>
+  <accordion-group heading="WorldBank">
+    <p>Use the exhaustive WorldBank data to fuel your analysis.</p>
+    <button ng-click="showWBInterface()" class="btn btn-info">Use</button>
+  </accordion-group>
+  <accordion-group heading="Generate">
+    <p>Use the inbuilt experiment to generate data for your analysis.</p>
+    <button ng-click="showGenerate()" class="btn btn-info">Generate</button>
+  </accordion-group>
+  <accordion-group heading="JSON">
+    <p>Enter json url here. We will try to give the best output!</p>
+    <input ng-model="jsonUrl" type="text" tooltip="See? Now click away..." tooltip-trigger="focus" tooltip-placement="right" class="input-medium"/>
+    <button ng-click="getJson()" class="btn btn-info">Use</button>
+  </accordion-group>
+  <accordion-group heading="SOCR Data">
+    <p>Enter SOCR Data url here. We will parse it for you!</p>
+    <input type="url" ng-model="socrUrl" class="input-medium"/>
+  </accordion-group>
+</accordion>-->
