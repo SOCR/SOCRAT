@@ -183,38 +183,6 @@ core = angular.module('app.core', [
       _instanceOpts[instanceId] ?= {}
       _instanceOpts[instanceId][k] = v for k,v of opt
 
-    _start = (moduleId, opt = {}) ->
-      try
-        _checkType 'string', moduleId, 'module ID'
-        _checkType 'object', opt, 'second parameter'
-        throw new Error 'module doesn\'t exist' unless _modules[moduleId]?
-
-        instance = _createInstance.apply @, [
-          moduleId
-          opt.instanceId
-          opt.options
-        ]
-
-        if instance.running is true
-          throw new Error 'module was already started'
-
-        # if the module wants to init in an asynchronous way
-        if (utils.getArgumentNames instance.init).length >= 2
-          # then define a callback
-          instance.init instance.options, (err) -> opt.callback? err
-        else
-          # else call the callback directly after initialisation
-          instance.init instance.options
-          opt.callback? null
-
-        instance.running = true
-        true
-
-      catch e
-#          console.log "could not start module: #{e.message}"
-        opt.callback? new Error "could not start module: #{e.message}"
-        false
-
     _startAll = (cb, opt) ->
 
       if cb instanceof Array
