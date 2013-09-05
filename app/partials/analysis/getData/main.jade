@@ -3,9 +3,8 @@ div(ng-controller='getDataMainCtrl')
     br
     p To perform any analysis, you need data to begin with. Choose one of the available methods
       |to get the data into the web-app.
- 
-    handsontable(purpose="json",collapse="showState.grid")
- 
+    
+
     div.worldBank(collapse="showState.worldBank")
         h3 WorldBank Data
         span Size:
@@ -14,6 +13,7 @@ div(ng-controller='getDataMainCtrl')
                 option(value='4.2_BASIC.EDU.SPENDING') Education Spending
                 option(value='2.4_OOSC.RATE') Out of School Children rate
             button.btn.btn-medium(ng-click="getWB()") Go
+    
 
     div.generate(collapse="showState.generate")
         ul.nav.nav-pills.nav-stacked
@@ -27,6 +27,8 @@ div(ng-controller='getDataMainCtrl')
             a Beta Binomial Experiment
           li
             a The Beta Distribution Experiment
+    handsontable(purpose="json")
+    
 
 
 
