@@ -1,7 +1,13 @@
 "use strict"
 
 describe "app.db module", ->
-
+  colA = ["a","a","b","b","c"]
+  colB = [0,1,2,3,4]
+  colC = [12,3,42,4]
+  table = [
+    {name:"A", values:colA, type:"nominal"}
+    {name:"B", values:colB, type:"numeric"}
+  ]
 # Create mock module and overriding services
   angular.module('app.mocks', [])
     .factory 'Sandbox', ->
@@ -12,7 +18,7 @@ describe "app.db module", ->
     .service 'mediator', ->
       @events = [];
       @publish = (event) ->
-        result = (item.cb() for item in @events when item.name is event.name)
+        result = (item.listener(event.msg,event.data) for item in @events when item.msg is event.msg)
       @subscribe = (event) ->
         @events.push event
 
@@ -22,14 +28,6 @@ describe "app.db module", ->
 
   describe "database service", ->
 
-    colA = ["a","a","b","b","c"]
-    colB = [0,1,2,3,4]
-    colC = [12,3,42,4]
-    table = [
-      {name:"A", values:colA, type:"nominal"}
-      {name:"B", values:colB, type:"numeric"}
-    ]
-    
     it "creates a table and returned object contains crud API", ->
       inject (database)->
         obj = database.create table,"test"
@@ -160,6 +158,36 @@ describe "app.db module", ->
               table.get("A", row) isnt "a"
           , "tab1"
         expect(filter).toMatch [["b","c"], [2,1]]
+
+  describe 'dbEventMngr',->
+
+    it "executes registered methods on publishing of registered msgs in the msgList", ->
+      inject (database,db,dbEventMngr,mediator,$q)->
+        db = new db()
+        #creating the sandbox
+        dbEventMngr.setSb(mediator)
+        #instantiating the app
+        db.init()
+        #create a promise
+        deferred = $q.defer()
+        _data = [table,'test',deferred]
+        foo = 
+          cb : ->
+        spyOn(foo,'cb')
+        #subscribing to the outcome msg for 'save table'
+        mediator.subscribe
+          msg:'table saved'
+          listener:foo.cb
+          msgScope:['database']
+        #manually publishing the msg 'save table'
+        mediator.publish
+          msg:'save table'
+          data: _data
+          msgScope:['database']
+        #expect the eventManager in the database service
+        #to process and publish 'table saved' msg  
+        expect(foo.cb).toHaveBeenCalled()
+
 
 
 
