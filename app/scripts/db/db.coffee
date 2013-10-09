@@ -30,13 +30,27 @@ db.service 'dbEventMngr', [
 
     msgList =
       outcome: ['table saved']
-      income: ['save table']
+      income:
+        'save table':
+          method: database.create
+          outcome: 'table saved'
+        'get table':
+          method: database.get
+          outcome:null
       scope: ['database']
 
     eventManager = (msg, data) ->
+      try
+        _data = msgList.income[msg].method.apply null,data
+        #last item in data is a promise.
+        data[data.length - 1].resolve _data if _data isnt false
+      catch e
+        console.log e.message
+        alert 'error in database'
+
       sb.publish
-        msg: msgList.outcome[0]
-        data: database.create data.table, data.tname
+        msg: msgList.income[msg].outcome
+        data: _data
         msgScope: msgList.scope
 
     setSb: (_sb) ->
@@ -47,12 +61,13 @@ db.service 'dbEventMngr', [
       msgList
 
     listenToIncomeEvents: () ->
-      console.log 'subscribed for ' + msgList.income[0]
-      sb.subscribe
-        msg: msgList.income[0]
-        listener: eventManager
-        msgScope: msgList.scope
-        context: console
+      for msg of msgList.income
+        console.log 'subscribed for ' + msg
+        sb.subscribe
+          msg: msg
+          listener: eventManager
+          msgScope: msgList.scope
+          context: console
 ]
 
 db.service 'database',[
