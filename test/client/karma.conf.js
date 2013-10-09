@@ -28,8 +28,8 @@ files = [
   // Specs //
 
   // CoffeeScript //
-  // 'test/unit/**/*.spec.coffee'
-  'test/unit/db/db.spec.coffee'
+  'test/unit/**/*.spec.coffee'
+  // 'test/unit/db/db.spec.coffee'
 
   // Javascript //
   // 'test/unit/**/*.spec.js'
