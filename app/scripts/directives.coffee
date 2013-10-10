@@ -64,3 +64,28 @@ angular.module('app.directives', [
 
     scope.$on 'app:push notification', scope.update
 
+.directive 'message', ->
+  restrict:'EA'
+  transclude:true
+  template:'<div></div>'
+
+  controller:($scope)->
+
+
+  link:(scope,elem,attr)->
+
+    scope.update = (evt,args)->
+      if args?.msg?
+        elem.addClass 'alert'
+        elem.addClass args.type
+        elem.html args.msg
+        for o in args.options
+          elem.html '<button>'+o.text+'</button>'
+          scope.$broadcast o.msg, o.data
+        
+        elem.css 'display','block'
+        elem.css 'z-index','9999'
+        elem.css 'position','fixed'
+
+    scope.$on 'app:push message',scope.update
+

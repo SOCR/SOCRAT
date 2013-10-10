@@ -34,6 +34,9 @@ app= angular.module('app.controllers', ['app.mediator'])
     console.log data
     $scope.$broadcast(data.purpose+":load data to handsontable",data)
 
+  # $scope.$on "get Data from handsontable", ->
+    # $scope.$broadcast "get Data from handsontable"
+
   $scope.$location = $location
   $scope.username = "Guest"
   $scope.$watch('$location.path()', (path) ->

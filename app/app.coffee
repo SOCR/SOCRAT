@@ -23,6 +23,7 @@ App = angular.module('app', [
   'app.mediator'
   'ngSanitize'
   'app.db'
+  'app.utils.importer'
 ])
 
 App.config([
@@ -80,6 +81,11 @@ App.config([
 
     .state 'getData.project'
       url: '/:projectId/:forkId'
+      resolve:
+        checkDb:($stateParams,database)->
+          res = database.exists $stateParams.projectId+":"+$stateParams.forkId
+          console.log database
+          # alert res
       views:
         'main':
           templateUrl:'partials/analysis/getData/main.html'
@@ -105,11 +111,6 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
           controller: 'qualRobEstViewSidebarCtrl'
-          templateUrl: 'partials/analysis/tools/qualRobEst/main.html'
-          controller: 'qualRobEstMainCtrl'
-        'sidebar':
-          templateUrl: 'partials/analysis/tools/qualRobEst/sidebar.html'
-          controller: 'qualRobEstSidebarCtrl'
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
@@ -123,7 +124,8 @@ App.run([
   'getData'
   'qualRobEstView'
   'qualRobEst'
-  ($rootScope, core, getData, qualRobEstView, qualRobEst) ->
+  'app.utils.importer'
+  ($rootScope, core, db, getData, qualRobEstView, qualRobEst,importer) ->
 
     map = [
       msgFrom: '111'
@@ -136,10 +138,20 @@ App.run([
       msgTo: '000'
       scopeTo: ['qualRobEstView']
     ,
-      msgFrom: '200'
+      msgFrom:'save table'
+      scopeFrom: ['getData','app.utils.importer']
+      msgTo:'save table'
+      scopeTo:['database']
+    ,
+      msgFrom:'table saved'
+      scopeFrom: ['database']
+      msgTo:'get000'
+      scopeTo:['getData']
+    ,
+      msgFrom:'upload csv'
       scopeFrom: ['getData']
-      msgTo: '142'
-      scopeTo: ['getData']
+      msgTo:'upload csv'
+      scopeTo:['app.utils.importer']
     ]
 
     core.setEventsMapping map
@@ -153,9 +165,17 @@ App.run([
     core.register 'getData', getData
     core.start 'getData'
 
+    core.register 'db', db
+    core.start 'db'
+
     console.log 'run block of app module'
 
+    core.register 'importer', importer
+    core.start 'importer'
+
     $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
+      console.log arguments
       console.log "teststestse"
+
 ])
 

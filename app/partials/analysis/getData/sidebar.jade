@@ -10,14 +10,14 @@ div(ng-controller="getDataSidebarCtrl")
             hr
             span Enter json url here. We will try to give the best output!
             input(ng-model="jsonUrl",type="text",
-            tooltip="See? Now click away...",tooltip-trigger="focus",
+            tooltip="Enter url here...",tooltip-trigger="focus",
             tooltip-placement="right").input-medium
             button.btn.btn-info(ng-click="getJson()") Use
             hr
             span Enter SOCR Data url here. We will parse it for you!
             input(type="url",ng-model="socrUrl").input-medium
-
-            button.btn.btn-success(ng-click="save()") SAVE
+            div
+                button.btn.btn-success(ng-click="save()") SAVE
 //
     accordion(close-others="true")
         accordion-group(heading="Grid")

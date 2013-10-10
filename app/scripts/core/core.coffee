@@ -99,7 +99,7 @@ core = angular.module('app.core', [
       _modules[moduleId] =
         creator: creator
         options: opt
-        id: moduleIdg
+        id: moduleId
 
       console.log 'Module added: ' + moduleId
 

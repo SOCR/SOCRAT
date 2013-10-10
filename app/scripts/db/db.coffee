@@ -32,7 +32,11 @@ db.service 'dbEventMngr', [
       outcome: ['table saved']
       income:
         'save table':
-          method: database.create
+          method: ->
+            alert "yo"
+            #tname = data.projectId+':'+data.forkId
+            # data.deferred.resolve()
+            #database.create data.data, tname
           outcome: 'table saved'
         'get table':
           method: database.get
@@ -40,17 +44,17 @@ db.service 'dbEventMngr', [
       scope: ['database']
 
     eventManager = (msg, data) ->
-      try
-        _data = msgList.income[msg].method.apply null,data
-        #last item in data is a promise.
-        data[data.length - 1].resolve _data if _data isnt false
-      catch e
-        console.log e.message
-        alert 'error in database'
+      # setTimeout ->
+      #     data.deferred.resolve()
+      # ,2000
+      tname = data.projectId+':'+data.forkId
+      data.deferred.resolve()
+      database.create data.data, tname
+      window['db'] = database
 
       sb.publish
-        msg: msgList.income[msg].outcome
-        data: _data
+        msg: msgList.outcome[0]
+        data: ''
         msgScope: msgList.scope
 
     setSb: (_sb) ->
