@@ -196,6 +196,9 @@ getData = angular.module('app.getData', [
           success:
             msg:"Successfully loaded data into database."
             type:"alert-success"
+          failure:
+            msg:"Error in Database."
+            type:"alert-error"
           promise: deferred.promise
         getDataEventMngr.save a,b,d,deferred
 
@@ -281,23 +284,22 @@ getData = angular.module('app.getData', [
   ($rootScope) ->
     sb = null
     sum = ''
-
     msgList =
-      outcome: ['upload csv']
-      income: ['get000']
+      outcome: ['save table']
+      income:
+        'get000':
+          method: (args...)->
+            console.log args
+          outcome: null
       scope: ['getData']
 
     eventManager = (msg, data) ->
       $rootScope.$broadcast 'newSum', data
 
-    save: (a, b, d, deferred) ->
+    save: (projectId, forkId, data, deferred) ->
       sb.publish
         msg: msgList.outcome[0]
-        data:
-          projectId: a
-          forkId: b
-          data: d
-          deferred:deferred
+        data:[data,projectId,forkId,deferred]
         msgScope: msgList.scope
 
     setSb: (_sb) ->
@@ -451,9 +453,3 @@ getData = angular.module('app.getData', [
     scope.$on attr.purpose+":load data to handsontable",scope.update
     console.log "handsontable directive linked"
 ]
-
-# @name : csvUpload
-# @type: factory
-getData.factory 'csvUpload', ->
-
-
