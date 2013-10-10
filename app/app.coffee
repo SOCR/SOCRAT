@@ -138,6 +138,11 @@ App.run([
       msgTo: '000'
       scopeTo: ['qualRobEstView']
     ,
+      msgFrom: '200'
+      scopeFrom: ['getData']
+      msgTo: '142'
+      scopeTo: ['getData']
+    ,
       msgFrom:'save table'
       scopeFrom: ['getData','app.utils.importer']
       msgTo:'save table'
@@ -167,6 +172,9 @@ App.run([
 
     core.register 'db', db
     core.start 'db'
+
+    $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
+      console.log "teststestse"
 
     console.log 'run block of app module'
 

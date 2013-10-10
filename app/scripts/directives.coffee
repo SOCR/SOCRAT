@@ -95,4 +95,3 @@ angular.module('app.directives', [
         elem.css 'position','fixed'
 
     scope.$on 'app:push message',scope.update
-

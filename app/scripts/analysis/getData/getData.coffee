@@ -41,7 +41,6 @@ getData = angular.module('app.getData', [
 
 # jsonParser parses the json url input by the user.
 # @dependencies : $q, $rootscope, $http
-
 .factory('jsonParser',[
   '$http'
   '$q'
@@ -84,7 +83,6 @@ getData = angular.module('app.getData', [
             for c in _col
               _column.push
                 data:c
-
             #return object
             data:data
             columns:_column
@@ -146,9 +144,6 @@ getData = angular.module('app.getData', [
           $scope.$emit("change in showStates","worldBank")
         when  "generate"
           $scope.$emit("change in showStates","generate")
-
-
-
   #getJson
     $scope.getJson = ->
       console.log $scope.jsonUrl
@@ -168,7 +163,6 @@ getData = angular.module('app.getData', [
         (msg)->
           console.log "rejected"
         )
-
 
   #get url data
     $scope.getUrl = ->
@@ -359,7 +353,6 @@ getData = angular.module('app.getData', [
         if data? and typeof data is "string"
           obj = $(data)
           res = obj.tableToJSON()
-
         #table-to-json
         #returned data is used to compute data, coulumns, columnHeader
         #compute the res obj
