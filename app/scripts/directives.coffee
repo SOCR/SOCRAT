@@ -54,13 +54,20 @@ angular.module('app.directives', [
           return false
         if (i = args.initial)?
           _change(i)
-          # once the promise is resolved
-          args.promise.then ->
+          successCallback = ->
             _change(args.success)
             setTimeout ->
               elem.html('')
               elem.css 'display','none'
             ,duration
+          failureCallback = ->
+            _change(args.failure)
+            setTimeout ->
+              elem.html('')
+              elem.css 'display','none'
+            ,duration
+          # once the promise is resolved
+          args.promise.then successCallback, failureCallback
 
     scope.$on 'app:push notification', scope.update
 
