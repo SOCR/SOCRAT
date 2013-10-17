@@ -71,7 +71,7 @@ App.config([
       url: '/getData'
       views:
         'main':
-          templateUrl: 'partials/nav/guide-me.html'
+          templateUrl: 'partials/analysis/getData/main.html'
           controller: 'getDataMainCtrl'
         'sidebar':
           templateUrl: 'partials/analysis/getData/sidebar.html'
