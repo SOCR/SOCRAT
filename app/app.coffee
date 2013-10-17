@@ -14,6 +14,7 @@ App = angular.module('app', [
   'ngResource'
   'app.core'
   'app.getData'
+  'app.analysis.charts'
   'app.qualRobEstView'
   'app.qualRobEst'
   'app.controllers'
@@ -94,6 +95,16 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
           controller: 'qualRobEstViewSidebarCtrl'
+
+    .state 'charts'
+      url: '/charts'
+      views:
+        'main':
+          templateUrl: 'partials/analysis/charts/main.html'
+          controller: 'chartsMainCtrl'
+        'sidebar':
+          templateUrl: 'partials/analysis/charts/sidebar.html'
+          controller: 'chartsSidebarCtrl'
 
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
