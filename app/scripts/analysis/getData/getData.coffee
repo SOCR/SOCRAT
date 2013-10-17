@@ -22,24 +22,56 @@ getData = angular.module('app.getData', [
 
 # ###
 # @type : service
-# @description:Caches the data entered here.
-# on save, data from here going into the database. 
+# @description:Caches data. Changes to handsontable is stored here
+# and synced after some time. Changes in db is heard and reflected on 
+# handsontable.
 # ###
-.service('getData.inputCache',()->
-  _data = []
-  ret = {}
-  ret.get = ->
-    _data
+.service('getData.inputCache',[
+  'getDataEventMngr'
+  '$q'
+  '$stateParams'
+  '$rootScope'
+  '$timeout'
+  (getDataEventMngr,$q,$stateParams,$rootScope,$timeout)->
+    _data = []
+    _timer = null
+    ret = {}
+    ret.ht = null
+    ret.get = ->
+      _data
 
-  ret.set = (data)->
-    if data?
-      _data = data
-    else
-      false
-  ret
-)
+    ret.set = (data)->
+      console.log '%c inputCache set called','color:steelblue'
+      if data?
+        _data = data unless data is 'edit'
+        clearTimeout _timer
+        deferred = $q.defer()
+        _timer =  $timeout (->
+          $rootScope.$broadcast "app:push notification",
+            initial:
+              msg:"Data is being saved in the database..."
+              type:"alert-info"
+            success:
+              msg:"Successfully loaded data into database."
+              type:"alert-success"
+            failure:
+              msg:"Error in Database."
+              type:"alert-error"
+            promise: deferred.promise
+          getDataEventMngr.getSb().publish
+            msg:'handsontable updated'
+            data:[_data,$stateParams.projectId,$stateParams.forkId,deferred]
+            msgScope:['getData']
+        ),4000
+      else
+        false
+    ret.push = (data)->
+      this.ht.loadData(data)
+    ret
+])
 
-# jsonParser parses the json url input by the user.
+# @type: factory
+# @description: jsonParser parses the json url input by the user.
 # @dependencies : $q, $rootscope, $http
 .factory('jsonParser',[
   '$http'
@@ -83,6 +115,7 @@ getData = angular.module('app.getData', [
             for c in _col
               _column.push
                 data:c
+
             #return object
             data:data
             columns:_column
@@ -95,6 +128,19 @@ getData = angular.module('app.getData', [
           cb = (data,status)->
             console.log data
             return data
+        
+      # using broadcast because msg sent from rootScope.
+      $rootScope.$broadcast "app:push notification",
+        initial:
+          msg:"Asking worldbank..."
+          type:"alert-info"
+        success:
+          msg:"Successfully loaded data."
+          type:"alert-success"
+        failure:
+          msg:"Error in the call."
+          type:"alert-error"
+        promise: deferred.promise
       #make the call using the cb we just created
       $http.jsonp(
         opts.url
@@ -103,7 +149,7 @@ getData = angular.module('app.getData', [
           console.log "deferred.promise"
           formattedData = cb(data,status)
           deferred.resolve(formattedData)
-          $rootScope.$apply()
+          #$rootScope.$apply()
         )
         .error((data,status)->
             console.log "promise rejected"
@@ -144,6 +190,7 @@ getData = angular.module('app.getData', [
           $scope.$emit("change in showStates","worldBank")
         when  "generate"
           $scope.$emit("change in showStates","generate")
+
   #getJson
     $scope.getJson = ->
       console.log $scope.jsonUrl
@@ -167,35 +214,6 @@ getData = angular.module('app.getData', [
   #get url data
     $scope.getUrl = ->
 
-  #save state. For safety lets run it after every edit just like google docs.
-    $scope.saveState = ->
-
-
-  #save data
-    $scope.save = ->
-      #It is more like syncing with db.
-      console.log inputCache.get()
-      
-      if (d = inputCache.get()).length is 0
-        $scope.$emit "app:push notification",
-          final:
-            msg:"There is no data loaded in the App to Save!"
-            type:"alert-error"
-      else if (a = $stateParams.projectId)? and (b = $stateParams.forkId)?
-        deferred = $q.defer()
-        $scope.$emit "app:push notification",
-          initial:
-            msg:"Data is being saved in the database..."
-            type:"alert-info"
-          success:
-            msg:"Successfully loaded data into database."
-            type:"alert-success"
-          failure:
-            msg:"Error in Database."
-            type:"alert-error"
-          promise: deferred.promise
-        getDataEventMngr.save a,b,d,deferred
-
 ])
 
 .controller('getDataMainCtrl', [
@@ -205,7 +223,6 @@ getData = angular.module('app.getData', [
   '$state'
   ($scope,showState,jsonParser,state)->
     console.log 'getDataMainCtrl executed'
-    console.log state
     $scope.getWB = ->
       #default value
       if $scope.size is undefined
@@ -230,7 +247,7 @@ getData = angular.module('app.getData', [
           #$scope.$emit("change in showStates","grid")
         ,
         (msg)->
-          console.log "rejected"
+          console.log "rejected:"+msg
         )
 
     try
@@ -281,19 +298,25 @@ getData = angular.module('app.getData', [
     msgList =
       outcome: ['save table']
       income:
-        'get000':
+        'handsontable updated':
           method: (args...)->
-            console.log args
-          outcome: null
+            args
+          outcome: 'save table'
       scope: ['getData']
 
     eventManager = (msg, data) ->
-      $rootScope.$broadcast 'newSum', data
+      try
+        _data = msgList.income[msg].method.apply null,data
+        #last item in data is a promise. #TODO: need to add a check
+        promise = data[data.length - 1]
+        promise.resolve _data if _data isnt false
+      catch e
+        console.log e.message
+        promise.reject e.message
 
-    save: (projectId, forkId, data, deferred) ->
       sb.publish
-        msg: msgList.outcome[0]
-        data:[data,projectId,forkId,deferred]
+        msg: msgList.income[msg].outcome
+        data: _data
         msgScope: msgList.scope
 
     setSb: (_sb) ->
@@ -303,14 +326,17 @@ getData = angular.module('app.getData', [
     getMsgList: () ->
       msgList
 
+    getSb: ->
+      sb
     listenToIncomeEvents: () ->
-      console.log 'subscribed for ' + msgList.income[0]
-      sb.subscribe
-        msg: msgList.income[0]
-        listener: eventManager
-        msgScope: msgList.scope
+      for msg of msgList.income
+        console.log 'subscribed for ' + msg
+        sb.subscribe
+          msg: msg
+          listener: eventManager
+          msgScope: msgList.scope
+          context: console
 
-    sum: sum
 ])
 
 # Helps sidebar accordion to keep in sync with the main div.
@@ -321,7 +347,7 @@ getData = angular.module('app.getData', [
       return false
     _obj = obj
     # create a showState variable and attach it to supplied scope
-    scope.showState = new Array()
+    scope.showState = []
     for i in obj
       scope.showState[i] = true
     # index is the array key.
@@ -361,88 +387,96 @@ getData = angular.module('app.getData', [
  
 )
  
-.directive "handsontable",['getData.inputCache', (inputCache)->
-  restrict: "E"
-  transclude:true
-  # to the name attribute on the directive element.
+.directive "handsontable",[
+  'getData.inputCache'
+  '$exceptionHandler'
+  (inputCache,$exceptionHandler)->
+    restrict: "E"
+    transclude:true
+    # to the name attribute on the directive element.
 
-  #the template for the directive.
-  template: "<div></div>"
-  #the controller for the directive
-  controller: ($scope,html2json) ->
+    #the template for the directive.
+    template: "<div></div>"
+    #the controller for the directive
+    controller: ($scope) ->
 
-  replace: true #replace the directive element with the output of the template.
-  
-  #the link method does the work of setting the directive
-  # up, things like bindings, jquery calls, etc are done in here
-  # It is run before the controller
-  link: (scope, elem, attr) ->
-    # useful to identify which handsontable instance to update
-    scope.purpose = attr.purpose
-    # Update the table with the scope values
-    _format = (data,cols)->
-      if arguments.length is 2
-        table = []
-        for c in cols
-          obj = {}
-          obj.name = c.data
-          obj.values = []
-          path = c.data.split '.'
-          for d in data
-            i = 1
-            temp = d[path[0]]
-            while i < path.length
-              if temp[path[i]]?
-                temp = temp[path[i]]
-                i++
-              else
-                temp = null
-                break
-            if temp?
-              if typeof temp is "number"
-                obj.type = "numeric"
-              obj.values.push temp
-          #save the column obj in the table.
-          table.push obj
-      table
-        
-    scope.update = (evt,arg) ->
-      console.log "update called"
-      #check if data is in the right format
-      if arg? and typeof arg.data is "object" and typeof arg.columns is "object"
-        ht = elem.handsontable
-          #plugin hook
-          'change':true
-          data: arg.data[1]
-          startRows: Object.keys(arg.data[1]).length
-          startCols: arg.columns.length
-          colHeaders: arg.columnHeader
-          columns:arg.columns
-          minSpareRows: 1
-          afterChange: (change,source)->
-            if source is "loadData"
-              window['test'] = $(this)[0].getData
-              inputCache.set _format($(this)[0].getData(),arg.columns)
-            #saving data to be globally accessible.
-            # only place from where data is saved into cache.
-            # onSave, data is picked up from inputCache.
-            else
-              inputCache.set _format(change)
+    replace: true #replace the directive element with the output of the template.
+    
+    #the link method does the work of setting the directive
+    # up, things like bindings, jquery calls, etc are done in here
+    # It is run before the controller
+    link: (scope, elem, attr) ->
+      # useful to identify which handsontable instance to update
+      scope.purpose = attr.purpose
+      # Update the table with the scope values
+      _format = (data,cols)->
+        if arguments.length is 2
+          table = []
+          cols = cols || []
+          for c in cols
+            obj = {}
+            obj.name = c.data
+            obj.values = []
+            path = c.data.split '.'
+            for d in data
+              i = 1
+              temp = d[path[0]]
+              while i < path.length
+                if temp[path[i]]?
+                  temp = temp[path[i]]
+                  i++
+                else
+                  temp = null
+                  break
+              if temp?
+                if typeof temp is "number"
+                  obj.type = "numeric"
+                obj.values.push temp
+            #save the column obj in the table.
+            table.push obj
+        table
+          
+      scope.update = (evt,arg) ->
+        console.log "handsontable: update called"
+        #check if data is in the right format
+        if arg? and typeof arg.data is "object" and typeof arg.columns is "object"
+          obj = 
+            data: arg.data[1]
+            startRows: Object.keys(arg.data[1]).length
+            startCols: arg.columns.length
+            colHeaders: arg.columnHeader
+            columns:arg.columns
+            minSpareRows: 1
 
-      else if arg.default is true
-        ht = elem.handsontable(
-          data: [
-            ["Copy", "paste", "your", "data", "here"],
-          ]
-          colHeaders: true
-          minSpareRows: 5
-        )
-        inputCache.set ''
-      else
-        #raise a warning using exceptionhandler
-      if ht?
-        scope.ht = ht
-    # subscribing to handsontable update.
-    scope.$on attr.purpose+":load data to handsontable",scope.update
-    console.log "handsontable directive linked"
+        else if arg.default is true
+          obj = 
+            data: [
+              ["Copy", "paste", "your", "data", "here"]
+            ]
+            colHeaders: true
+            minSpareRows: 5
+        else
+          $exceptionHandler 
+            message: 'handsontable configuration is missing'
+
+        obj['change'] = true
+        obj['afterChange'] =  (change,source)->
+          #saving data to be globally accessible.
+          # only place from where data is saved before DB: inputCache.
+          # onSave, data is picked up from inputCache.
+          if source is "loadData"
+            inputCache.set _format($(this)[0].getData(),arg.columns)
+          else
+            inputCache.set source
+        try
+          #hook for pushing data changes to handsontable.
+          #Tight coupling :-/
+          ht = elem.handsontable obj
+          window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
+        catch e
+          $exceptionHandler e
+
+      # subscribing to handsontable update.
+      scope.$on attr.purpose+":load data to handsontable",scope.update
+      console.log "handsontable directive linked"
 ]

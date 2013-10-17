@@ -138,11 +138,6 @@ App.run([
       msgTo: '000'
       scopeTo: ['qualRobEstView']
     ,
-      msgFrom: '200'
-      scopeFrom: ['getData']
-      msgTo: '142'
-      scopeTo: ['getData']
-    ,
       msgFrom:'save table'
       scopeFrom: ['getData','app.utils.importer']
       msgTo:'save table'
@@ -150,8 +145,8 @@ App.run([
     ,
       msgFrom:'table saved'
       scopeFrom: ['database']
-      msgTo:'get000'
-      scopeTo:['getData']
+      msgTo:'234'
+      scopeTo:['qualRobEst']
     ,
       msgFrom:'upload csv'
       scopeFrom: ['getData']
@@ -173,17 +168,14 @@ App.run([
     core.register 'db', db
     core.start 'db'
 
-    $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
-      console.log "teststestse"
-
-    console.log 'run block of app module'
-
     core.register 'importer', importer
     core.start 'importer'
 
     $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
       console.log arguments
       console.log "teststestse"
+
+    console.log 'run block of app module'
 
 ])
 

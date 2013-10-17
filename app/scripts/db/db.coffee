@@ -25,6 +25,7 @@ db.factory 'db', [
 ]
 db.service 'dbEventMngr', [
   'database'
+  '$exceptionHandler'
   (database)->
     sb = null
 
@@ -45,15 +46,15 @@ db.service 'dbEventMngr', [
     eventManager = (msg, data) ->
       try
         #FOR CONSOLE ACCESS#
-        window['test'] = database
+        window['db'] = database
         _data = msgList.income[msg].method.apply null,data
         #last item in data is a promise. #TODO: need to add a check
         promise = data[data.length - 1]
-        promise.resolve _data if _data isnt false
+        promise.resolve _data 
       catch e
-        console.log e.message
         promise.reject e.message
-
+        $exceptionHandler e
+      # if promise was resolved successfully, publish outcome msg with results.
       sb.publish
         msg: msgList.income[msg].outcome
         data: _data
@@ -88,7 +89,7 @@ db.service 'database',[
     ###
     _register = (tname,ref)->
       return false if _registry[tname]?
-    		# #name already exists. Create an alternate name.
+        # #name already exists. Create an alternate name.
       #   tname = '_' + tname
       #   _register tname,ref
       _registry[tname] = ref
