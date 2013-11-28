@@ -1,0 +1,10 @@
+div(ng-controller='chartsMainCtrl')
+    h2 Charts
+    div(ng-switch='currentPlot')
+
+      nvd3-line-chart#exampleId(ng-switch-when='line',data='data', width='{{width}}', height='{{height}}', showxaxis='true', showyaxis='true')
+        svg
+
+      nvd3-cumulative-line-chart#showXAxisExample(ng-switch-when='cumulativeLine',data='data', width='550', height='350', showxaxis='false', showyaxis='true', x='xFunction()', y='yFunction()', xaxistickformat='xAxisTickFormatFunction()', margin='{left:50,top:50,bottom:50,right:50}')
+        svg
+

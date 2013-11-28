@@ -1,0 +1,15 @@
+div(ng-controller="chartsSidebarCtrl")
+    form
+        fieldset
+            legend Project
+            label fork&nbsp;
+                input(ng-model="currentFork",disabled = true).input-small
+            legend Plots
+            label Choose one&nbsp;
+                select(ng-model="currentPlot")
+                    option(ng-repeat='p in plots') {{p.label}}
+            legend Variables
+            label X&nbsp;
+            select#x
+            label Y&nbsp;
+            select#y
