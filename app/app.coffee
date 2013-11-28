@@ -14,7 +14,7 @@ App = angular.module('app', [
   'ngResource'
   'app.core'
   'app.getData'
-  'app.analysis.charts'
+  'app_analysis_charts'
   'app.qualRobEstView'
   'app.qualRobEst'
   'app.controllers'
@@ -97,7 +97,7 @@ App.config([
           controller: 'qualRobEstViewSidebarCtrl'
 
     .state 'charts'
-      url: '/charts'
+      url: '/charts/:projectId/:forkId'
       views:
         'main':
           templateUrl: 'partials/analysis/charts/main.html'
@@ -117,7 +117,8 @@ App.run([
   'getData'
   'qualRobEstView'
   'qualRobEst'
-  (core, db, getData, qualRobEstView, qualRobEst) ->
+  'app_analysis_charts_construct'
+  (core, db, getData, qualRobEstView, qualRobEst,charts) ->
 
     map = [
       msgFrom: '111'
@@ -146,6 +147,9 @@ App.run([
 
     core.register 'db', db
     core.start 'db'
+
+    core.register 'charts', charts
+    core.start 'charts'
 
     console.log 'run block of app module'
 
