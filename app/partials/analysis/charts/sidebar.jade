@@ -10,6 +10,8 @@ div(ng-controller="chartsSidebarCtrl")
                     option(ng-repeat='p in plots') {{p.label}}
             legend Variables
             label X&nbsp;
-            select#x
+            select(ng-model="xVariable")
+                option(ng-repeat="v in variables") {{v}}
             label Y&nbsp;
-            select#y
+            select(ng-model="yVariable")
+                option(ng-repeat="v in variables") {{v}}

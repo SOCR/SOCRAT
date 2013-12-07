@@ -1,6 +1,43 @@
 charts = angular.module 'app_analysis_charts', ['nvd3ChartDirectives']
 
+###
+  @description: All default values specific to charts module.
+  @type: constant
+###
+charts.constant 'app_analysis_charts_defaults',
+  defaultPlot: 'line'
+  plots:
+    'line':
+      disabled:false
+      label:'Line'
+    'bar':
+      disabled:false
+      label:'Bar'
+    'cumulativeLine':
+      disabled:false
+      label:'Cumulative Line'
+    'stackedArea':
+      disabled:false
+      label:'Stacked Area'
 
+###
+  @description: Get list of variables from db.
+  @type: factory
+###
+charts.factory 'app_analysis_charts_variables',[
+  ()->
+    _list = null
+    get:->
+      _list
+    set:(id)->
+      # get list from db for the id [projectId:forkId]
+      _list = ['a','b','c','d']
+]
+
+###
+  @description: Constructor for this module.
+  @type: factory
+###
 charts.factory 'app_analysis_charts_construct', [
   'app_analysis_charts_eventMngr'
   (chartsEventMngr)->
@@ -17,6 +54,11 @@ charts.factory 'app_analysis_charts_construct', [
       msgList: msgList
 ]
 
+###
+  @description: Manager for all communication b/w modules.
+    Only this service inside this module, has access to sandbox.
+  @type: service
+###
 charts.service 'app_analysis_charts_eventMngr', [
   'app_analysis_charts_compute'
   (app_analysis_charts_compute)->
@@ -68,20 +110,47 @@ charts.service 'app_analysis_charts_eventMngr', [
 charts.controller('chartsSidebarCtrl',[
   '$scope'
   '$stateParams'
-  'app_analysis_charts_plots'
   '$rootScope'
-  ($scope,$stateParams,plots,$rootScope)->
-    #setting the fork name
-    if $stateParams?.forkId?
+  'app_analysis_charts_defaults'
+  'app_analysis_charts_variables'
+  ($scope,$stateParams,$rootScope,defaults,variables)->
+    
+    $scope.plots = defaults.plots
+    $scope.currentPlot = defaults.defaultPlot
+    
+    #set the fork name
+    #TODO : Cross check with projectMngr module,
+    # if the projectid and forkid exist.
+    if (_c = $stateParams).projectId? or _c.forkId?
       $scope.currentFork = $stateParams.projectId+':'+$stateParams.forkId
     
-    $scope.plots = plots
-    $scope.currentPlot = 'line'
+    #NOTE: since all plots that socr supports [as of now] are only 1 or 2
+    # dimensionals, there are only 2 variable dropdowns.
 
+    # get all chartable variables in the CURRENT fork.
+    # datasets, analysis output, time.
+    # call db get the list of variables. then save it in defaults.
+    variables.set(_c.projectId+':'+_c.forkId)
+    $scope.variables = variables.get()
+    
+    #watch forkname for change.
+    $scope.$watch 'currentFork', (newVal,oldVal)->
+      # redirect page
+    
+    # watch xVariable, yVariable, plotType for change.
+    # send broadcast message to update chart.
     $scope.$watch 'currentPlot', (newVal,oldVal)->
       $rootScope.$broadcast 'chartsMainCtrl:update currentPlot',
         newVal
-
+    $scope.$watch 'xVariable', (newVal,oldVal)->
+      $rootScope.$broadcast 'chartsMainCtrl:update variable',
+        type:'xVariable'
+        value:newVal
+    $scope.$watch 'yVariable', (newVal,oldVal)->
+      $rootScope.$broadcast 'chartsMainCtrl:update variable',
+        type:'yVariable'
+        value:newVal
+  
 ])
 
 ###
@@ -89,19 +158,26 @@ charts.controller('chartsSidebarCtrl',[
 ###
 charts.controller('chartsMainCtrl' ,[
   '$scope'
-  'app_analysis_charts_plots'
-  ($scope,app_analysis_charts_plots)->
+  'app_analysis_charts_defaults'
+  'app_analysis_charts_variables'
+  ($scope,defaults,variables)->
     #directive config.
     $scope.width = 900
     $scope.height = 400
 
     #plot type changed in sidebar.
     $scope.$on 'chartsMainCtrl:update currentPlot', (args...)->
-      for k, v of app_analysis_charts_plots
+      for k, v of defaults.plots
         if v.label is args[1]
           $scope.currentPlot = k
+    $scope.$on 'chartsMainCtrl:update variable', (args...)->
+      for d in variables.get()
+        if d is args[1].value
+          # edit the values in the #scope.data depending on the xvariable.
+          console.log $scope.data[0].values
+
     #default value.
-    $scope.currentPlot = 'line'
+    $scope.currentPlot = 'none'
     #plotData
     $scope.data = [
       key: 'Series 1'
@@ -164,27 +240,7 @@ charts.controller('chartsMainCtrl' ,[
     $scope.yFunction = ->
       (d)->
         d[1]
-
 ])
-###
-  @description: All supported plots inside socr-framework
-  @type:constant
-  @return: {Object}
-###
-charts.constant('app_analysis_charts_plots',
-  'line':
-    disabled:false
-    label:'Line'
-  'bar':
-    disabled:false
-    label:'Bar'
-  'cumulativeLine':
-    disabled:false
-    label:'Cumulative Line'
-  'stackedArea':
-    disabled:false
-    label:'Stacked Area'
-  )
 
 
 charts.factory 'app_analysis_charts_compute',[

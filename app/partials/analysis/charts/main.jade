@@ -1,6 +1,8 @@
 div(ng-controller='chartsMainCtrl')
     h2 Charts
     div(ng-switch='currentPlot')
+      div(ng-switch-when='none')
+        span.alert Please choose variables and plot type.
 
       nvd3-line-chart#exampleId(ng-switch-when='line',data='data', width='{{width}}', height='{{height}}', showxaxis='true', showyaxis='true')
         svg
