@@ -14,6 +14,8 @@ App = angular.module('app', [
   'ngResource'
   'app.core'
   'app.getData'
+  #charts analysis
+  'app_analysis_chartsView'
   'app_analysis_charts'
   'app.qualRobEstView'
   'app.qualRobEst'
@@ -117,8 +119,9 @@ App.run([
   'getData'
   'qualRobEstView'
   'qualRobEst'
+  'app_analysis_chartsView_construct'
   'app_analysis_charts_construct'
-  (core, db, getData, qualRobEstView, qualRobEst,charts) ->
+  (core, db, getData, qualRobEstView, qualRobEst, chartsView, charts) ->
 
     map = [
       msgFrom: '111'
@@ -147,6 +150,9 @@ App.run([
 
     core.register 'db', db
     core.start 'db'
+
+    core.register 'chartsView', chartsView
+    core.start 'chartsView'
 
     core.register 'charts', charts
     core.start 'charts'
