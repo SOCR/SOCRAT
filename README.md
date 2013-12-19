@@ -24,17 +24,39 @@ We intend to create new framework which will serve users across all platforms. W
  [`Twitter Bootstrap`](twitter.github.com/bootstrap/) 
  [`D3.js`](http://d3js.org) 
 
+Installation
+------------
+Incase you wish to contribute to the project, please follow these steps to setup your enviroment.
+First, Install [nodejs](http://nodejs.org/) and npm if you havent. [gist](https://gist.github.com/isaacs/579814)
+
+Go ahead and clone the repository.
+
+    $> git clone https://github.com/SOCRedu/SOCR-framework.git FOLDER_NAME/
+
+Now, lets install all the dependent node packages for this project. Go into the FOLDER_NAME/ folder and run,
+
+    $> npm install
+
+This will install all the dependencies mentioned in package.json file.
+
+We are almost there! All the dependencies have been installed now. The only task left is to build the project.
+
+    $> grunt build
+    
+Start the server! See the application running at localhost:3000!
+
+    $> scripts/server.sh
 
 Copyright and License 
 ----------------------
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013 Statistics Online Computational Resource (SOCR) &lt;http://www.StatisticsResource.org&gt;
+Copyright (c) 2013 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License
-as published by the Open Source Initiative http://opensource.org/licenses/. All efforts should be made to develop and distribute
+as published by the [Open Source Initiative](http://opensource.org/licenses/). All efforts should be made to develop and distribute
 factually correct, useful, portable and extensible resource all available in all digital formats for free over the Internet.
 
 SOCR resources are distributed in the hope that they will be useful, but without
