@@ -61,5 +61,12 @@ exports.config =
     jade:
       pretty: yes # Adds pretty-indentation whitespaces to output (false by default)
 
+  coffeelint:
+    pattern: /^app\/.*\.coffee$/
+    options:
+      no_trailing_semicolons:
+        level: "ignore"
+      max_line_length:
+        value:1000
   # Enable or disable minifying of result js / css files.
   # minify: true
