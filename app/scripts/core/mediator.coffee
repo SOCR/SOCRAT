@@ -85,7 +85,7 @@ mediator = angular.module('app.mediator', [])
       cb()
       return false
     cb()
-    console.log "successfully published"
+    console.log 'successfully published:'+obj.msg
     return @
 
   # _subscribe() - registers a listener function for a msg
@@ -160,7 +160,7 @@ mediator = angular.module('app.mediator', [])
         token:++_lastUID
         func:cb
         context:context
-      console.log("successfully subscribed")
+      console.log('successfully subscribed:'+obj.msg)
       j++
 
     return @
@@ -174,7 +174,7 @@ mediator = angular.module('app.mediator', [])
         while i<j
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
-            console.log("successfully unsubscribed")
+            console.log('successfully unsubscribed:'+m)
             return token
           i++
     return @
