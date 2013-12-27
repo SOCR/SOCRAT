@@ -190,7 +190,7 @@ core = angular.module('app.core', [
           invalid = ("'#{id}'" for id in mods when not (id in valid))
           invalidErr = new Error "these modules don't exist: #{invalid}"
 
-        startAction = (m, next) =>
+        startAction = (m, next) ->
           o = {}
           modOpts = _modules[m].options
           o[k] = v for own k,v of modOpts when v
