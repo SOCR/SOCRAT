@@ -39,9 +39,7 @@ Now, lets install all the dependent node packages for this project. Go into the 
 
 This will install all the dependencies mentioned in package.json file.
 
-We are almost there! All the dependencies have been installed now. The only task left is to build the project.
-
-    $> grunt build
+We are almost there! All the dependencies have been installed now. 
     
 Start the server! See the application running at localhost:3000!
 
