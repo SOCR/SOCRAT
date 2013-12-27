@@ -3,11 +3,14 @@
 #jasmine specs
 
 describe "Mediator", ->
+
   #load the module
   beforeEach module "app.mediator"
+
 #  Alternate implementation for including the module and injecting the service.
-####  $injector = angular.injector ["app.mediator"]
-####  serviceMediator = $injector.get 'pubSub'
+#  $injector = angular.injector ["app.mediator"]
+#  serviceMediator = $injector.get 'pubSub'
+
   describe "publish function" , ->
     it "should have a pubSub service",->
       inject (pubSub)->
@@ -143,11 +146,11 @@ describe "Mediator", ->
 
     it "should return false when no msgScope is provided", ->
       inject (pubSub)->
-        expect pubSub.subscribe
+        res = pubSub.subscribe
           msg:"test message"
           listener:()->
             console.log "listener is getting executed!!"
-        .toEqual(false)
+        expect(res).toEqual(false)
 
     it "should should subscribe to a message", ->
       inject (pubSub)->
@@ -162,11 +165,11 @@ describe "Mediator", ->
     it "returns false if callback is not a function", ->
       inject (pubSub) ->
         console.log "TEST -- it returns false if callback is not a function"
-        expect pubSub.subscribe
+        res = pubSub.subscribe
           msg:"test message"
           listener:345
           msgScope:["test"]
-        .toEqual false
+        expect(res).toEqual false
 
     it "subscribes a function to several messages", ->
       inject (pubSub) ->
