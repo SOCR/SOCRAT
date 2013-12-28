@@ -40,13 +40,13 @@ App.config([
     .otherwise('/home')
 
   $stateProvider
-    .state 'welcome'
+    .state('welcome'
       url: '/welcome'
       views:
         'main':
           templateUrl: 'partials/welcome.html'
-
-    .state 'home'
+    )
+    .state('home'
       url:'/home'
       views:
         'main':
@@ -54,8 +54,8 @@ App.config([
         'sidebar':
           templateUrl: 'partials/projects.html'
           controller: 'projectCtrl'
-
-    .state 'guide'
+    )
+    .state('guide'
       url: '/guide'
       views:
         'main':
@@ -63,14 +63,15 @@ App.config([
         'sidebar':
           templateUrl: 'partials/projects.html'
           controller: 'projectCtrl'
+    )
 
-    .state 'contact'
+    .state('contact'
       url: '/contact'
       views:
         'main':
           templateUrl: 'partials/nav/contact.html'
-
-    .state 'getData'
+    )
+    .state('getData'
       url: '/getData'
       views:
         'main':
@@ -79,16 +80,16 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/getData/sidebar.html'
           controller: 'getDataSidebarCtrl'
-
-    .state 'cleanData'
+    )
+    .state('cleanData'
       url: '/cleanData'
       views:
         'main':
           templateUrl: 'partials/analysis/cleanData/main.html'
         'sidebar':
           templateUrl: 'partials/analysis/cleanData/sidebar.html'
-
-    .state 'tools'
+    )
+    .state('tools'
       url: '/tools'
       views:
         'main':
@@ -97,8 +98,8 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
           controller: 'qualRobEstViewSidebarCtrl'
-
-    .state 'charts'
+    )
+    .state('charts'
       url: '/charts/:projectId/:forkId'
       views:
         'main':
@@ -107,7 +108,7 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/charts/sidebar.html'
           controller: 'chartsSidebarCtrl'
-
+    )
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
 
