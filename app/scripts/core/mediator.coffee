@@ -80,11 +80,11 @@ mediator = angular.module('app.mediator', [])
           i++
       else
         console.log 'msgScope is not an Array instance'
-        throw 
+        throw
           message:'msgScope is not an Array instance'
           type:'error'
     else
-      throw 
+      throw
         message:'msgScope is not defined'
         type:'error'
     cb()
