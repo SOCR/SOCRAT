@@ -1,20 +1,33 @@
 'use strict'
 
 ### Controllers ###
-
-angular.module('app.controllers', [])
+###
+  This file contains the controllers that are generic
+  and not specific to any particular analysis(clean data or charts etc).
+###
+app= angular.module('app.controllers', ['app.mediator'])
+.config([
+    ()->
+      console.log "config block of app.controllers module"
+])
 
 .controller('AppCtrl', [
   '$scope'
   '$location'
   '$resource'
   '$rootScope'
-
-($scope, $location, $resource, $rootScope) ->
-
+  'pubSub'
+($scope, $location, $resource, $rootScope,pubSub) ->
+  console.log "controller block for AppCtrl"
   # Uses the url to determine if the selected
   # menu item should have the class active.
+
+  # Listening to all changes in the view
+  $scope.$on "change in view", ()->
+    $scope.$broadcast "update view", null
+
   $scope.$location = $location
+  $scope.username = "Guest"
   $scope.$watch('$location.path()', (path) ->
     $scope.activeNavId = path || '/'
   )
@@ -32,70 +45,123 @@ angular.module('app.controllers', [])
       return 'active'
     else
       return ''
+
+  #callback
+  updateUsername=(event,data)->
+    $scope.username=data
+
+  pubSub.subscribe("username changed",updateUsername)
+
 ])
 
-.controller('subMenuCtrl', [
-  '$scope'
+.controller('navCtrl', [
+    '$scope'
+    ($scope)->
+      console.log "controller block for navCtrl"
+])
 
-($scope) ->
+.controller('subNavCtrl', [
+    '$scope'
+    ($scope)->
+])
+
+.controller('sidebarCtrl', [
+  '$scope'
+  'appConfig'
+($scope,appConfig) ->
+
+  console.log "controller block for sidebarCtrl"
   $scope.state="show"
+
+  #view function
   $scope.view=->
     if $scope.state is "show"
       true
     else
       false
+  #toggle function
   $scope.toggle=->
     if $scope.state is "hidden"
-      $scope.state="show"
+      $scope.state = 'show'
+      appConfig.sidebar = 'visible'
     else
-      $scope.state="hidden"
+      $scope.state = 'hidden'
+      appConfig.sidebar = 'hidden'
+    $scope.$emit('change in view')
 
   $scope.getClass=->
     if $scope.state is "hidden"
       "span1"
     else
-      "span4"
+      "span3"
 ])
 
-.controller('MyCtrl2', [
-  '$scope'
 
-($scope) ->
-  $scope
+.controller('mainCtrl', [
+  '$scope'
+  'appConfig'
+  '$document'
+  ($scope,appConfig,$doc)->
+    console.log $doc
+    #initial width is set span9
+    $scope.width = 'span9'
+    #updating main view
+    $scope.$on "update view", ()->
+      if appConfig.sidebar is 'visible' and appConfig.history is 'hidden'
+        $scope.width = 'span9'
+      else
+        $scope.width = 'span11'
 ])
 
-.controller('TodoCtrl', [
+.controller('footerCtrl', [
   '$scope'
+  ($scope)->
+])
 
-($scope) ->
+.controller('welcomeCtrl', [
+  '$scope'
+   ($scope)->
+]).
+controller('projectCtrl',[
+  '$scope'
+  'pubSub'
+  ($scope,pubSub)->
+    console.log "Project Ctrl"
+    $scope.message = "Enter your name...."
+    $scope.messageReceived=""
+  #sendMsg
+    $scope.sendMsg=()->
+      console.log($scope.message)
+      pubSub.publish("username changed",$scope.message)
+      console.log("published successfully")
+      null
 
-  $scope.todos = [
-    text: "learn angular"
-    done: true
-  ,
-    text: "build an angular app"
-    done: false
-  ]
+    #unsubMsg
+    $scope.unsubMsg=()->
+      console.log("unsubscribe initiated")
+      pubSub.unsubscribe($scope.token)
+      null
 
-  $scope.addTodo = ->
-    $scope.todos.push
-      text: $scope.todoText
-      done: false
+    #callback function on event "message changed"
+    updateMsg=(event,msg)->
+      $scope.messageReceived=msg
+      console.log("message received successfully through pub/sub")
+      null
 
-    $scope.todoText = ""
+    #register function x to event "message changed"
+    $scope.token=pubSub.subscribe("username changed",updateMsg)
 
-  $scope.remaining = ->
-    count = 0
-    angular.forEach $scope.todos, (todo) ->
-      count += (if todo.done then 0 else 1)
 
-    count
+])
+#
+# appConfig - contains all the values for a dynamic UI
+#
+.value 'appConfig',
+  sidebar:'visible'
+  history:'hidden'
 
-  $scope.archive = ->
-    oldTodos = $scope.todos
-    $scope.todos = []
-    angular.forEach oldTodos, (todo) ->
-      $scope.todos.push todo  unless todo.done
+.run([()->
+  console.log "run block of app.controllers "
 
 ])
 

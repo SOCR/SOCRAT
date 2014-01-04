@@ -14,11 +14,28 @@ exports.config =
       order:
         before: [
           'vendor/scripts/console-helper.js'
+          # ###
+          #   jQuery 1.8.3
+          # ###
           'vendor/scripts/jquery-1.8.3.js'
+
           'vendor/scripts/angular/angular.js'
+
+          # ###
+          #   AngularJs support libraries
+          # ###
           'vendor/scripts/angular/angular-resource.js'
           'vendor/scripts/angular/angular-cookies.js'
+          'vendor/script/angular/angular-ui-states.js'
+          'vendor/scripts/angular-ui/angular-ui.js'
+          'vendor/scripts/angular-ui/angular-ui-ieshiv.js'
+          'vendor/scripts/angular-ui/ng-grid/ng-grid.js'
+          'vendor/scripts/angular-ui/bootstrap/ui-bootstrap-tpls-0.2.0.js'
 
+          # ###
+          #    Twitter Bootstrap js files.
+          #    Replace it with one bootstrap.js file.
+          # ###
           'vendor/scripts/bootstrap/bootstrap-transition.js'
           'vendor/scripts/bootstrap/bootstrap-alert.js'
           'vendor/scripts/bootstrap/bootstrap-button.js'
