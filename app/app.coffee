@@ -79,8 +79,8 @@ App.config([
         'sidebar':
           templateUrl: 'partials/analysis/getData/sidebar.html'
           controller: 'getDataSidebarCtrl'
-
-    .state 'getData.project'
+    )
+    .state('getData.project'
       url: '/:projectId/:forkId'
       resolve:
         checkDb:($stateParams,database)->
