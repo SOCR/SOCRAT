@@ -1,0 +1,34 @@
+
+<div ng-controller="qualRobEstViewSidebarCtrl">
+  <form>
+    <fieldset>
+      <legend>Model</legend>
+      <label>Real parameters&nbsp;
+        <input ng-model="realParams" class="input-small"/>
+      </label>
+      <label>Dimension of outcome&nbsp;
+        <input ng-model="outcomeDim" class="input-small"/>
+      </label>
+      <label>Levels of outcome&nbsp;
+        <input ng-model="outcomeLevels" class="input-small"/>
+      </label>
+      <legend>Data</legend>
+      <label>Number of observations&nbsp;
+        <input ng-model="numObserv" class="input-small"/>
+      </label>
+      <label>Noise level&nbsp;
+        <input ng-model="noiseLevel" class="input-small"/>
+      </label>
+      <legend>Estimator</legend>
+      <select id="estimatorType">
+        <option value="1">Generalized Radical</option>
+        <option value="2">Conditionally Optimal</option>
+      </select>
+      <label>Estimator parameter&nbsp;
+        <input ng-model="estParam" class="input-small"/>
+      </label>
+      <div></div>
+      <button type="submit" ng-click="sumNumbers()" class="btn btn-primary">Estimate</button>
+    </fieldset>
+  </form>
+</div>
