@@ -8,6 +8,7 @@ describe "app.db module", ->
     {name:"A", values:colA, type:"nominal"}
     {name:"B", values:colB, type:"numeric"}
   ]
+
 # Create mock module and overriding services
   angular.module('app.mocks', [])
     .factory 'Sandbox', ->
@@ -15,7 +16,7 @@ describe "app.db module", ->
         @core = @
         @instanceId = _instanceId
         @options = {}
-    .service 'mediator', ->
+    .service 'pubSub', ->
       @events = [];
       @publish = (event) ->
         result = (item.listener(event.msg,event.data) for item in @events when item.msg is event.msg)
@@ -162,10 +163,10 @@ describe "app.db module", ->
   describe 'dbEventMngr',->
 
     it "executes registered methods on publishing of registered msgs in the msgList", ->
-      inject (database,db,dbEventMngr,mediator,$q)->
+      inject (database,db,dbEventMngr,pubSub,$q)->
         db = new db()
         #creating the sandbox
-        dbEventMngr.setSb(mediator)
+        dbEventMngr.setSb(pubSub)
         #instantiating the app
         db.init()
         #create a promise
@@ -175,12 +176,12 @@ describe "app.db module", ->
           cb : ->
         spyOn(foo,'cb')
         #subscribing to the outcome msg for 'save table'
-        mediator.subscribe
+        pubSub.subscribe
           msg:'table saved'
           listener:foo.cb
           msgScope:['database']
         #manually publishing the msg 'save table'
-        mediator.publish
+        pubSub.publish
           msg:'save table'
           data: _data
           msgScope:['database']

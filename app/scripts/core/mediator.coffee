@@ -79,11 +79,14 @@ mediator = angular.module('app.mediator', [])
             _msgList[_scopes[i]][msg]=[]
           i++
       else
-        cb()
-        return false
+        console.log 'msgScope is not an Array instance'
+        throw
+          message:'msgScope is not an Array instance'
+          type:'error'
     else
-      cb()
-      return false
+      throw
+        message:'msgScope is not defined'
+        type:'error'
     cb()
     console.log '%c'+obj.msg+':successfully published','color: blue'
     return @

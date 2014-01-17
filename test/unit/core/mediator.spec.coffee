@@ -3,12 +3,15 @@
 #jasmine specs
 
 describe "Mediator", ->
+
   #load the module
   beforeEach module "app.mediator"
+
 #  Alternate implementation for including the module and injecting the service.
-####  $injector = angular.injector ["app.mediator"]
-####  serviceMediator = $injector.get 'pubSub'
-  describe "publish function" , ->
+#  $injector = angular.injector ["app.mediator"]
+#  serviceMediator = $injector.get 'pubSub'
+
+  describe "publish method" , ->
     it "should have a pubSub service",->
       inject (pubSub)->
         expect(pubSub).toBeDefined()
@@ -33,7 +36,7 @@ describe "Mediator", ->
           msgScope:["test"]
         expect(foo.cb).toHaveBeenCalledWith("test message",12)
 
-    it "calls the callback if defined", ->
+    it "calls the callback passed, if defined", ->
       inject (pubSub)->
         foo =
           cb : ()->
@@ -57,37 +60,7 @@ describe "Mediator", ->
 
         expect(foo.cb).toHaveBeenCalled()
 
-    it "publishes a message locally within the angular module ", ()->
-      inject (pubSub)->
-        foo=
-          cb1: ()->
-          cb2: ()->
-        # implement the module initialization
-        # pass sandbox to a mock module
-        # publish a test message locally
-        spyOn(foo,"cb2")
-        spyOn(foo,"cb1")
-        pubSub.subscribe
-          msg:"test message for amazingModule"
-          listener:foo.cb1
-          msgScope:["amazingModule"]
-        #now that we have a listener subscribed to the message
-
-        pubSub.subscribe
-          msg:"test message for notSoAmazingModule"
-          listener:foo.cb2
-          msgScope:["notSoAmazingModule"]
-
-        pubSub.publish
-          msg:"test message for amazingModule"
-          data:12
-          msgScope:["amazingModule"]
-
-        expect(foo.cb1).toHaveBeenCalledWith("test message for amazingModule",12)
-        expect(foo.cb2).not.toHaveBeenCalled()
-
-
-    it "returns false if there is no matching msg in the list", ->
+    it "returns false if there is no matching msg in the mediator msg list", ->
       inject (pubSub)->
         pubSub.publish
           msg : "test message"
@@ -105,7 +78,7 @@ describe "Mediator", ->
         expect(result).toBe(false)
 
 
-    it "passes the message to only scopes mentioned in the messageScope of publish", ->
+    it "publishes message only to scopes mentioned in the msgScope passed with publish call", ->
       inject (pubSub)->
         foo =
           cb1 : ()->
@@ -135,6 +108,54 @@ describe "Mediator", ->
         expect(foo.cb2).toHaveBeenCalled()
         expect(foo.cb3).not.toHaveBeenCalled()
 
+    it "returns false if msg is not string", ->
+      inject (pubSub)->
+        res = pubSub.subscribe
+          msg:"String!"
+          msgScope:['test']
+          listener:()->
+            console.log "listener is getting executed!!"
+        res = pubSub.publish
+          msg:['not a string']
+          msgScope:['test']
+        expect(res).toEqual false 
+        res = pubSub.publish
+          msg:'String!'
+          msgScope:['test']
+        expect(typeof res).toEqual 'object' 
+
+    it "throws error if msgScope is absent or not an Array", ->
+      inject (pubSub)->
+        res = pubSub.subscribe
+          msg:"test message"
+          msgScope:['test']
+          listener:()->
+            console.log "listener is getting executed!!"
+        
+        expect(->
+          pubSub.publish
+            msg: "test message"
+        ).toThrow new Error("msgScope is not defined")
+
+        expect(->
+          pubSub.publish
+            msg: "test message"
+            msgScope: null
+        ).toThrow new Error("msgScope is not defined")
+        
+        expect(->
+          pubSub.publish
+            msg: "test message"
+            msgScope: 'string'
+        ).toThrow new Error("msgScope is not an Array instance")
+
+        res = pubSub.publish
+          msg: 'test message'
+          msgScope:['test']
+        expect(typeof res).toEqual 'object'
+                  
+
+
   describe "subscribe function", ->
     it "is an accessible function", ->
       inject (pubSub)->
@@ -142,10 +163,11 @@ describe "Mediator", ->
 
     it "should return false when no msgScope is provided", ->
       inject (pubSub)->
-        expect pubSub.subscribe
+        res = pubSub.subscribe
           msg:"test message"
           listener:()->
-        .toEqual(false)
+            console.log "listener is getting executed!!"
+        expect(res).toEqual(false)
 
     it "should should subscribe to a message", ->
       inject (pubSub)->
@@ -159,11 +181,12 @@ describe "Mediator", ->
 
     it "returns false if callback is not a function", ->
       inject (pubSub) ->
-        expect pubSub.subscribe
+        console.log "TEST -- it returns false if callback is not a function"
+        res = pubSub.subscribe
           msg:"test message"
           listener:345
           msgScope:["test"]
-        .toEqual false
+        expect(res).toEqual false
 
     it "subscribes a function to several messages", ->
       inject (pubSub) ->
