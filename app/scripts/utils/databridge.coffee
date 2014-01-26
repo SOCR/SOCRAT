@@ -1,1 +1,1 @@
-test
+greet "test"
