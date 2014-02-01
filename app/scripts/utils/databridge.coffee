@@ -4,11 +4,41 @@ Convert json returns to chart input format
 
 ###
 
+colA = [1,2,3,4,5];
+colB = [1,3,5,3,1];
 
+tab1 = dv.table([
+    {name:"A", values:colA, type:dv.type.numeric},
+    {name:"B", values:colB, type:dv.type.numeric}
+]);
+
+chart = nv.models.lineChart();
+lineRet = [];
+
+i = 0;
+
+while i < tab1[0].length
+	lineRet.push({x: tab1[0][i], y: tab1[1][i]});
+	i++;
+
+retChart = [
+  	values: lineRet
+  	key: "lineChart"
+  	color: "#ff7f0e"
+]
+###
+ERROR: IF SAME DATA POINT OCCURS MORE THAN ONCE (https://github.com/novus/nvd3/issues/330)
+
+Can i place chart in index.html from databridge.coffee
+Are we given just the data to convert? (they deal with x-axis, y-axis and other stuff)
+Better way to run loop?
+	for each in tab1[0].length
+	lineRet.push({x: tab1[0][each], y: tab1[1][each]});
+
+What other charts?
 ###
 
-Import datavore
-
+###
 Import datavore chart
 
 Take the input as datavore json object
@@ -16,56 +46,6 @@ Take the input as datavore json object
 	-Get response as json object (need to understand json object)
 	-Pull parameters out from json object and put variables in some array to be modified
 
-Start with simple line chart
--Sample line chart code for reference
- 1 nv.addGraph(function() {  
- 2   var chart = nv.models.lineChart();
- 3 
- 4   chart.xAxis
- 5       .axisLabel('Time (ms)')
- 6       .tickFormat(d3.format(',r'));
- 7 
- 8   chart.yAxis
- 9       .axisLabel('Voltage (v)')
-10       .tickFormat(d3.format('.02f'));
-11 
-12   d3.select('#chart svg')
-13       .datum(sinAndCos())
-14     .transition().duration(500)
-15       .call(chart);
-16 
-17   nv.utils.windowResize(function() { d3.select('#chart svg').call(chart) });
-18 
-19   return chart;
-20 });
-21 
-22 
-23 
-24 
-28 
-29 
-30 function sinAndCos() {
-31   var sin = [],
-32       cos = [];
-33 
-34   for (var i = 0; i < 100; i++) {
-35     sin.push({x: i, y: Math.sin(i/10)});
-36     cos.push({x: i, y: .5 * Math.cos(i/10)});
-37   }
-38 
-39   return [
-40     {
-41       values: sin,
-42       key: 'Sine Wave',
-43       color: '#ff7f0e'
-44     },
-45     {
-46       values: cos,
-47       key: 'Cosine Wave',
-48       color: '#2ca02c'
-49     }
-50   ];
-51 }
 
 ###
 
