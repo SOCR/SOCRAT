@@ -1,5 +1,5 @@
 ###
-JIRA COMMIT
+
 Convert json returns to chart input format
 
 ###
@@ -12,7 +12,10 @@ tab1 = dv.table([
     {name:"B", values:colB, type:dv.type.numeric}
 ]);
 
-chart = nv.models.lineChart();
+#Input type: line chart, scatter, cumulative line, discrete bar
+#Data: tab1
+#Create function
+
 lineRet = [];
 
 i = 0;
@@ -26,14 +29,65 @@ retChart = [
   	key: "lineChart"
   	color: "#ff7f0e"
 ]
+
+###
+function (chart,label)->
+
+# code to get data from datavore.
+-------------------
+colA = [1,2,3,4,5];
+colB = [1,3,5,3,1];
+
+tab1 = dv.table([
+    {name:"A", values:colA, type:dv.type.numeric},
+    {name:"B", values:colB, type:dv.type.numeric}
+]);
+-------------------
+data = tab1
+
+# generic computation
+
+retobj = {}
+
+mand = ['value','color','key']
+
+case chart
+    when "line"
+        chart = nv.models.lineChart();
+        i = 0;
+        _color = "#eee"   
+        _val = [] 
+        _x = "we"
+        retobj.push ("x":_x)
+
+        while i < data[0].length
+            _val.push({x: tab1[0][i], y: tab1[1][i]});
+           i++;
+
+         
+    when "bubble"
+        chart = nv.models.lineChart();
+        _color = "#eee"
+        
+        
+        
+
+# 
+for (i in mand)
+    retobj.push (i:_val);
+
+
+
+return retobj;
+###
+
 ###
 ERROR: IF SAME DATA POINT OCCURS MORE THAN ONCE (https://github.com/novus/nvd3/issues/330)
 
-Can i place chart in index.html from databridge.coffee
 Are we given just the data to convert? (they deal with x-axis, y-axis and other stuff)
-Better way to run loop?
-	for each in tab1[0].length
-	lineRet.push({x: tab1[0][each], y: tab1[1][each]});
+
+which graph, which data to use, project::fork 
+given graph type, project::fork (gives data using this key)
 
 What other charts?
 ###
