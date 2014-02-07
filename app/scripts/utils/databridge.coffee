@@ -4,109 +4,72 @@ Convert json returns to chart input format
 
 ###
 
-colA = [1,2,3,4,5];
-colB = [1,3,5,3,1];
-
-tab1 = dv.table([
-    {name:"A", values:colA, type:dv.type.numeric},
-    {name:"B", values:colB, type:dv.type.numeric}
-]);
-
-#Input type: line chart, scatter, cumulative line, discrete bar
+#Input type: line chart (x values, y values), scatter (x value, y value, size), cumulative line (x value, y value), discrete bar ()
 #Data: tab1
 #Create function
+#Date : http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
 
-lineRet = [];
-
-i = 0;
-
-while i < tab1[0].length
-	lineRet.push({x: tab1[0][i], y: tab1[1][i]});
-	i++;
-
-retChart = [
-  	values: lineRet
-  	key: "lineChart"
-  	color: "#ff7f0e"
-]
-
-###
-function (chart,label)->
+factory = (chart,labels,numCharts)->
 
 # code to get data from datavore.
--------------------
-colA = [1,2,3,4,5];
-colB = [1,3,5,3,1];
+
+colA = [1,2,3,4,5]
+colB = [1,3,5,3,1]
 
 tab1 = dv.table([
     {name:"A", values:colA, type:dv.type.numeric},
     {name:"B", values:colB, type:dv.type.numeric}
-]);
--------------------
+])
+
 data = tab1
 
 # generic computation
 
-retobj = {}
+retobj = []
 
-mand = ['value','color','key']
+for i in numCharts
+    retobj.push({
+        key: labels[i]
+        values: []
+    })
 
-case chart
+switch chart
     when "line"
-        chart = nv.models.lineChart();
-        i = 0;
-        _color = "#eee"   
-        _val = [] 
-        _x = "we"
-        retobj.push ("x":_x)
-
-        while i < data[0].length
-            _val.push({x: tab1[0][i], y: tab1[1][i]});
-           i++;
-
+        for i in numCharts
+            for j in data[2*i].length
+                retobj[i].values.push(
+                    [data[2*i][j], data[2*i + 1][j]]
+                )
+        #Javascript required ({x: val,y: val})
          
-    when "bubble"
-        chart = nv.models.lineChart();
-        _color = "#eee"
-        
-        
-        
+    when "cumulative"
+        for i in numCharts
+            for j in data[2*i].length
+                retobj[i].values.push(
+                    [data[2*i][j], data[2*i + 1][j]]
+                )
 
-# 
-for (i in mand)
-    retobj.push (i:_val);
-
-
+    when "scatter"
+        for i in numCharts
+            for j in data[3*i].length
+                retobj[i].values.push({
+                    x: data[3*i]
+                    y: data[3*i + 1]
+                    size: data[3*i + 2]
+                })
 
 return retobj;
-###
+
 
 ###
 ERROR: IF SAME DATA POINT OCCURS MORE THAN ONCE (https://github.com/novus/nvd3/issues/330)
 
-Are we given just the data to convert? (they deal with x-axis, y-axis and other stuff)
-
 which graph, which data to use, project::fork 
 given graph type, project::fork (gives data using this key)
-
-What other charts?
-###
-
-###
-Import datavore chart
-
-Take the input as datavore json object
-	-Call datavore
-	-Get response as json object (need to understand json object)
-	-Pull parameters out from json object and put variables in some array to be modified
-
-
 ###
 
 ###
 function to extract the data from datavore
-
-
 
 different function for each type of graph
 ###
