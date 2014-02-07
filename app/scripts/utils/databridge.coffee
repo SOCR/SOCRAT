@@ -23,6 +23,8 @@ tab1 = dv.table([
 
 data = tab1
 
+# charts to implement: https://github.com/mbostock/d3/wiki/Gallery#wiki-basic-charts
+
 # generic computation
 
 retobj = []
@@ -58,6 +60,21 @@ switch chart
                     size: data[3*i + 2]
                 })
 
+    when "area"
+        for i in numCharts
+            for j in data[3*i].length
+                retobj[i].values.push({
+                    x: data[3*i]
+                    y: data[3*i + 1]
+                    area: data[3*i + 2]
+                })
+    
+    when "stackedbar"
+        for i in numCharts
+            for j in data[2*i].length
+                retobj[i].values.push(
+                    [data[2*i][j], data[2*i + 1][j]]
+                )
 return retobj;
 
 
