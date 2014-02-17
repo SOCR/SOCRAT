@@ -1,6 +1,6 @@
 'use strict'
 
-getData = angular.module('app.getData', [
+getData = angular.module('app_analysis_getData', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
@@ -21,13 +21,14 @@ getData = angular.module('app.getData', [
 ])
 
 # ###
+# @name : app_analysis_getData_inputCache
 # @type : service
 # @description:Caches data. Changes to handsontable is stored here
 # and synced after some time. Changes in db is heard and reflected on 
 # handsontable.
 # ###
-.service('getData.inputCache',[
-  'getDataEventMngr'
+.service('app_analysis_getData_inputCache',[
+  'app_analysis_getData_eventMngr'
   '$q'
   '$stateParams'
   '$rootScope'
@@ -44,9 +45,13 @@ getData = angular.module('app.getData', [
       console.log '%c inputCache set called','color:steelblue'
       if data?
         _data = data unless data is 'edit'
+        
         clearTimeout _timer
+        
         deferred = $q.defer()
+        
         _timer =  $timeout (->
+          
           $rootScope.$broadcast "app:push notification",
             initial:
               msg:"Data is being saved in the database..."
@@ -58,13 +63,16 @@ getData = angular.module('app.getData', [
               msg:"Error in Database."
               type:"alert-error"
             promise: deferred.promise
+          
           getDataEventMngr.getSb().publish
             msg:'handsontable updated'
             data:[_data,$stateParams.projectId,$stateParams.forkId,deferred]
             msgScope:['getData']
         ),4000
+      
       else
         false
+    
     ret.push = (data)->
       this.ht.loadData(data)
     ret
@@ -83,10 +91,6 @@ getData = angular.module('app.getData', [
       # test json : https://graph.facebook.com/search?q=ucla
       deferred = $q.defer()
       console.log deferred.promise
-    # opts.url = "http://api.worldbank.org/countries/indicators/2.4_OOSC.RATE?"+
-    # "per_page=100&date=1960:2013&format=jsonp&prefix=JSON_CALLBACK"
-    #opts.url="http://api.worldbank.org/countries/indicators/4.2_BASIC.EDU"+
-    #".SPENDING?per_page=100&date=2011:2011&format=jsonp&prefix=JSON_CALLBACK"
       switch opts.type
         when "worldBank"
           #create the callback
@@ -164,10 +168,10 @@ getData = angular.module('app.getData', [
 .controller('getDataSidebarCtrl', [
   '$q'
   '$scope'
-  'getDataEventMngr'
+  'app_analysis_getData_eventMngr'
   'jsonParser'
   '$stateParams'
-  'getData.inputCache'
+  'app_analysis_getData_inputCache'
   ($q,$scope,getDataEventMngr,jsonParser,$stateParams,inputCache)->
     #get the sandbox made for this module
     #sb = getDataSb.getSb()
@@ -264,15 +268,15 @@ getData = angular.module('app.getData', [
 ])
 ####
 #  Every module is supposed have a factory method
-#  by its name. For example, "app.charts" module will
-#  have "charts" factory method.
+#  by its name. For example, "app_analysis_getData" module will
+#  have "app_analysis_getData_construct" factory method.
 #
 #  This method helps in module initialization.
 #  init() and destroy() methods should be present in
 #  returned object.
 ####
-.factory('getData',[
-  'getDataEventMngr'
+.factory('app_analysis_getData_construct',[
+  'app_analysis_getData_eventMngr'
   (getDataEventMngr)->
     (sb)->
       msgList = getDataEventMngr.getMsgList()
@@ -290,7 +294,7 @@ getData = angular.module('app.getData', [
 # Every module will have a MODULE_NAMEEventMngr() service
 # which provides messaging with core
 ####
-.service('getDataEventMngr', [
+.service('app_analysis_getData_eventMngr', [
   '$rootScope'
   ($rootScope) ->
     sb = null
@@ -388,7 +392,7 @@ getData = angular.module('app.getData', [
 )
  
 .directive "handsontable",[
-  'getData.inputCache'
+  'app_analysis_getData_inputCache'
   '$exceptionHandler'
   (inputCache,$exceptionHandler)->
     restrict: "E"
