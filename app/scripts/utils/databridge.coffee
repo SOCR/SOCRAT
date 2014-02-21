@@ -9,57 +9,67 @@ Convert json returns to chart input format
 #Create function
 #Date : http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
 
-factory = (chart,labels,numCharts)->
+databridge = angular.module "app_utils", []
 
-# code to get data from datavore.
 
-colA = [1,2,3,4,5]
-colB = [1,3,5,3,1]
+databridge.factory "app_utils_databridge",[
 
-tab1 = dv.table([
+ (chart,labels,numCharts)->
+
+  # code to get data from datavore.
+
+  colA = [1,2,3,4,5]
+  colB = [1,3,5,3,1]
+
+  tab1 = dv.table([
     {name:"A", values:colA, type:dv.type.numeric},
     {name:"B", values:colB, type:dv.type.numeric}
-])
+  ])
 
-data = tab1
+  data = tab1
 
+<<<<<<< HEAD
 # charts to implement: https://github.com/mbostock/d3/wiki/Gallery#wiki-basic-charts
 
 # generic computation
+=======
+  # generic computation
+>>>>>>> a5e02d1d404e522b78aba315bbbe0d47070db1b3
 
-retobj = []
+  retobj = []
 
-for i in numCharts
+  for i in numCharts
     retobj.push({
-        key: labels[i]
-        values: []
+      key: labels[i]
+      values: []
     })
 
-switch chart
+  switch chart
     when "line"
-        for i in numCharts
-            for j in data[2*i].length
-                retobj[i].values.push(
-                    [data[2*i][j], data[2*i + 1][j]]
-                )
-        #Javascript required ({x: val,y: val})
-         
+      for i in numCharts
+        for j in data[2*i].length
+          retobj[i].values.push(
+            [data[2*i][j], data[2*i + 1][j]]
+          )
+      #Javascript required ({x: val,y: val})
+       
     when "cumulative"
-        for i in numCharts
-            for j in data[2*i].length
-                retobj[i].values.push(
-                    [data[2*i][j], data[2*i + 1][j]]
-                )
+      for i in numCharts
+        for j in data[2*i].length
+          retobj[i].values.push(
+            [data[2*i][j], data[2*i + 1][j]]
+          )
 
     when "scatter"
-        for i in numCharts
-            for j in data[3*i].length
-                retobj[i].values.push({
-                    x: data[3*i]
-                    y: data[3*i + 1]
-                    size: data[3*i + 2]
-                })
+      for i in numCharts
+        for j in data[3*i].length
+          retobj[i].values.push({
+            x: data[3*i]
+            y: data[3*i + 1]
+            size: data[3*i + 2]
+          })
 
+<<<<<<< HEAD
     when "area"
         for i in numCharts
             for j in data[3*i].length
@@ -76,12 +86,16 @@ switch chart
                     [data[2*i][j], data[2*i + 1][j]]
                 )
 return retobj;
+=======
+  return retobj;
+>>>>>>> a5e02d1d404e522b78aba315bbbe0d47070db1b3
 
+]
 
 ###
 ERROR: IF SAME DATA POINT OCCURS MORE THAN ONCE (https://github.com/novus/nvd3/issues/330)
 
-which graph, which data to use, project::fork 
+which graph, which data to use, project::fork
 given graph type, project::fork (gives data using this key)
 ###
 
