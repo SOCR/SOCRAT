@@ -6,7 +6,7 @@ A scalable and highly flexible HTML5/JS framework for the [SOCR](http://socr.ucl
 
 Motivation 
 --------------
-[SOCR](http://socr.ucla.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
+[SOCR](http://socr.umich.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
 As far as the technology is concerned, currently all the applications are written in `java` and are presented as java applets. The reach of these applications is bottlenecked by technology.
 
 Goal
