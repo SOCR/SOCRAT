@@ -39,8 +39,8 @@ qualRobEstView = angular.module('app.qualRobEstView', [
 
     $scope.sumNumbers = () ->
       qualRobEstViewEventMngr.sendNumbers(
-        $scope.firstNumber
-        $scope.secondNumber
+        $scope.outcomeDim
+        $scope.outcomeLevels
       )
 
 ])
