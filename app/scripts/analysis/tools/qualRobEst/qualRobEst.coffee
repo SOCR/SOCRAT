@@ -30,6 +30,7 @@ qualRobEst = angular.module('app.qualRobEst', [
 ####
 .factory('qualRobEst', [
   'qualRobEstEventMngr'
+  'estimator'
   (qualRobEstEventMngr) ->
     (sb) ->
 
@@ -37,7 +38,7 @@ qualRobEst = angular.module('app.qualRobEst', [
       qualRobEstEventMngr.setSb sb unless !sb?
 
       init: (opt) ->
-        console.log 'qualRobEst init called'
+        console.log 'qualRobEst init invoked'
         qualRobEstEventMngr.listenToIncomeEvents()
 
       destroy: () ->
@@ -49,8 +50,7 @@ qualRobEst = angular.module('app.qualRobEst', [
 # which provides messaging with core
 ####
 .service('qualRobEstEventMngr', [
-  'estimator'
-  (estimator) ->
+  () ->
     sb = null
 
     msgList =
@@ -58,10 +58,13 @@ qualRobEst = angular.module('app.qualRobEst', [
       income: ['123']
       scope: ['qualRobEst']
 
+    incomeCallbacks = {}
+
     eventManager = (msg, data) ->
+      console.log incomeCallbacks
       sb.publish
         msg: msgList.outcome[0]
-        data: estimator.estimate data.a, data.b
+        data: incomeCallbacks[msg] data
         msgScope: msgList.scope
 
     setSb: (_sb) ->
@@ -78,10 +81,18 @@ qualRobEst = angular.module('app.qualRobEst', [
         listener: eventManager
         msgScope: msgList.scope
         context: console
-])
 
-.service('estimator', () ->
-  estimate: (a, b) ->
-    console.log '--- parameters estimation --> return concatenation ---'
-    a + b
-)
+    setLocalListener: (msg, cb) ->
+      if msg in msgList.income
+        incomeCallbacks[msg] = cb
+])
+####
+# Service for parameters estimation
+####
+.service('estimator', [
+  'qualRobEstEventMngr'
+  (qualRobEstEventMngr) ->
+    qualRobEstEventMngr.setLocalListener '123', (data) ->
+      console.log '--- parameters estimation --> just return concatenation ---'
+      data.a + data.b
+])
