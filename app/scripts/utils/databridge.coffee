@@ -11,10 +11,9 @@ Convert json returns to chart input format
 
 databridge = angular.module "app_utils", []
 
-
 databridge.factory "app_utils_databridge",[
 
- (chart,labels,numCharts)->
+ (chart,labels)->
 
   # code to get data from datavore.
 
@@ -28,13 +27,9 @@ databridge.factory "app_utils_databridge",[
 
   data = tab1
 
-<<<<<<< HEAD
 # charts to implement: https://github.com/mbostock/d3/wiki/Gallery#wiki-basic-charts
 
 # generic computation
-=======
-  # generic computation
->>>>>>> a5e02d1d404e522b78aba315bbbe0d47070db1b3
 
   retobj = []
 
@@ -69,7 +64,6 @@ databridge.factory "app_utils_databridge",[
             size: data[3*i + 2]
           })
 
-<<<<<<< HEAD
     when "area"
         for i in numCharts
             for j in data[3*i].length
@@ -85,11 +79,7 @@ databridge.factory "app_utils_databridge",[
                 retobj[i].values.push(
                     [data[2*i][j], data[2*i + 1][j]]
                 )
-return retobj;
-=======
   return retobj;
->>>>>>> a5e02d1d404e522b78aba315bbbe0d47070db1b3
-
 ]
 
 ###
