@@ -1,3 +1,3 @@
 #!/bin/bash
 
-node_modules/.bin/karma start test/client/karma.conf.js
+node_modules/karma/bin/karma start test/client/karma.conf.js

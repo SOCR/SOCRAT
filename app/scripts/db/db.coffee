@@ -73,7 +73,7 @@ db.service 'dbEventMngr', [
 db.service 'database',[
   'pubSub'
   (pubSub)->
-    #contains refrences to all the tables created.
+    #contains references to all the tables created.
     _registry = []
 
     _db = {}
