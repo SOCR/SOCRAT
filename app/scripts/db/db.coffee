@@ -24,8 +24,7 @@ db.factory 'db', [
       msgList: msgList
 ]
 db.service 'dbEventMngr', [
-  'database'
-  (database)->
+  ()->
     sb = null
 
     msgList =
@@ -39,9 +38,12 @@ db.service 'dbEventMngr', [
           outcome:null
       scope: ['database']
 
+    incomeCallbacks = {}
+
     eventManager = (msg, data) ->
       try
-        _data = msgList.income[msg].method.apply null,data
+        #_data = msgList.income[msg].method.apply null,data
+        incomeCallbacks[msg] data
         #last item in data is a promise.
         data[data.length - 1].resolve _data if _data isnt false
       catch e
@@ -68,11 +70,25 @@ db.service 'dbEventMngr', [
           listener: eventManager
           msgScope: msgList.scope
           context: console
+
+    setLocalListener: (msg, cb) ->
+      if msg in msgList.income
+        incomeCallbacks[msg] = cb
 ]
 
 db.service 'database',[
-  'pubSub'
-  (pubSub)->
+  'dbEventMngr'
+  (dbEventMngr) ->
+
+    #set listeners to messages
+    dbEventMngr.setLocalListener 'save table', (data) ->
+      console.log 'db.create invoked'
+      _db.create null, data
+
+    dbEventMngr.setLocalListener 'get table', (data) ->
+      console.log 'db.get invoked'
+      _db.get data
+
     #contains references to all the tables created.
     _registry = []
 
