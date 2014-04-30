@@ -46,16 +46,24 @@ describe "app.db module", ->
         expect(database.exists "test").toBeTruthy()
         expect(database.create table,"test").toBeFalsy()
 
-    it "creates table and retrieves data", ->
+    it "creates table and retrieves a real dataset", ->
       inject (database)->
-        database.create table, "test"
-        expect(database.get("test", "A").length).toEqual 5
+        # 2 columns picked up from http://wiki.stat.ucla.edu/socr/index.php/SOCR_Data_AMI_NY_1993_HeartAttacks. Restricted the dataset to 265 rows for brevity.
+        _sex = ['F','F','F','F','M','M','F','F','M','F','F','M','F','F','M','M','M','M','F','M','M','F','M','M','M','F','F','M','M','M','M','M','M','M','F','F','F','M','M','F','F','F','F','M','M','M','M','M','F','M','F','M','F','M','M','F','M','F','M','M','M','M','M','M','M','F','F','M','F','F','M','M','M','M','F','F','M','M','F','M','M','M','M','M','M','M','M','M','F','F','M','M','F','M','F','F','M','F','M','F','F','M','F','M','M','M','M','M','M','M','F','M','M','M','F','M','F','F','M','M','F','F','M','F','M','M','M','F','F','M','M','F','F','M','M','M','M','M','M','M','F','M','F','F','F','F','M','F','M','F','M','M','M','M','M','M','M','F','M','F','F','F','M','M','F','M','M','F','F','F','F','M','M','M','M','M','M','F','M','M','M','M','M','M','F','M','F','F','F','M','M','F','M','F','F','F','M','M','F','F','M','M','M','M','F','M','M','M','F','M','M','M','M','M','M','M','F','F','M','F','F','M','M','F','F','M','M','M','M','M','M','M','M','F','M','F','F','F','F','F','M','M','F','M','F','F','M','F','M','F','M','M','M','M','M','M','M','F','M','F','M','M','M','F']
+        _died = [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0]
+        _table = [
+          {name:"sex",values:_sex,type:"numeric"}
+          {name:"died",values:_died,type:"numeric"}
+        ]
+        database.create _table, "heart attack data"
+        expect(database.get("heart attack data", "sex").length).toEqual 264
+        expect(database.get("heart attack data", "died").length).toEqual 264
         #getting columns
-        expect(database.get "test", "A").toMatch [0,0,1,1,2]
-        expect(database.get "test", "B").toMatch [0,1,2,3,4]
+        expect(database.get "heart attack data", "sex").toMatch _sex
+        expect(database.get "heart attack data", "died").toMatch _died
         #getting whole table
-        expect(database.get("test")[0]).toMatch [0,0,1,1,2]
-        expect(database.get("test")[1]).toMatch [0,1,2,3,4]
+        expect(database.get("heart attack data")[0]).toMatch _sex
+        expect(database.get("heart attack data")[1]).toMatch _died
 
     it "append column to existing table and read it from the returned obj", ->
       inject (database)->
