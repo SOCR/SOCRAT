@@ -31,10 +31,8 @@ db.service 'dbEventMngr', [
       outcome: ['table saved']
       income:
         'save table':
-          method: database.create
           outcome: 'table saved'
         'get table':
-          method: database.get
           outcome:null
       scope: ['database']
 
@@ -43,7 +41,7 @@ db.service 'dbEventMngr', [
     eventManager = (msg, data) ->
       try
         #_data = msgList.income[msg].method.apply null,data
-        incomeCallbacks[msg] data
+        _data = incomeCallbacks[msg] data
         #last item in data is a promise.
         data[data.length - 1].resolve _data if _data isnt false
       catch e
@@ -87,7 +85,7 @@ db.service 'database',[
 
     dbEventMngr.setLocalListener 'get table', (data) ->
       console.log 'db.get invoked'
-      _db.get data
+      _db.get null, data
 
     #contains references to all the tables created.
     _registry = []
