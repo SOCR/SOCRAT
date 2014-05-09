@@ -44,6 +44,10 @@ We are almost there! All the dependencies have been installed now.
 Start the server! See the application running at localhost:3000!
 
     $> scripts/server.sh
+    
+To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
+
+    $> scripts/test.sh
 
 Copyright and License 
 ----------------------
