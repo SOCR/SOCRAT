@@ -1,12 +1,12 @@
 ## SOCR One Framework
 A scalable and highly flexible HTML5/JS framework for the [SOCR](http://socr.ucla.edu) tools to perform statistical analysis.
 
-* Web site: http://socr.ucla.edu/
+* Web site: http://socr.umich.edu
 * Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
 
 Motivation 
 --------------
-[SOCR](http://socr.ucla.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
+[SOCR](http://socr.umich.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
 As far as the technology is concerned, currently all the applications are written in `java` and are presented as java applets. The reach of these applications is bottlenecked by technology.
 
 Goal
@@ -44,6 +44,10 @@ We are almost there! All the dependencies have been installed now.
 Start the server! See the application running at localhost:3000!
 
     $> scripts/server.sh
+    
+To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
+
+    $> scripts/test.sh
 
 Copyright and License 
 ----------------------
