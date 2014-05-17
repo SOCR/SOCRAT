@@ -45,14 +45,14 @@ charts.factory 'app_analysis_chartsView_variables',[
 ###
 charts.factory 'app_analysis_chartsView_construct', [
   'app_analysis_chartsView_eventMngr'
-  (chartsEventMngr)->
+  (eventManager)->
     (sb)->
-      msgList = chartsEventMngr.getMsgList()
+      msgList = eventManager.getMsgList()
       chartsEventMngr.setSb sb unless !sb?
 
       init: (opt) ->
         console.log 'db init called'
-        chartsEventMngr.listenToIncomeEvents()
+        eventManager.listenToIncomeEvents()
 
       destroy: () ->
 
@@ -69,14 +69,11 @@ charts.service 'app_analysis_chartsView_eventMngr', [
     sb = null
 
     msgList =
-      outcome: ['chart plotted']
-      income:
-        'plot chart':
-          method: ->
-            console.log 'plot chart'
-          outcome: 'chart plotted'
-      scope: ['charts']
+      outcome : ['get table']
+      income  : ['take table']
+      scope   : ['charts']
 
+    #rename to run.
     eventManager = (msg, data) ->
       try
         _data = msgList.income[msg].method.apply null,data
@@ -95,6 +92,12 @@ charts.service 'app_analysis_chartsView_eventMngr', [
       return false if _sb is undefined
       sb = _sb
 
+    sendMessage:(msg,data)->
+      sb.publish
+        msg: msg
+        data: data
+        msgScope: msgList.scope
+
     getMsgList: () ->
       msgList
 
@@ -106,6 +109,12 @@ charts.service 'app_analysis_chartsView_eventMngr', [
           listener: eventManager
           msgScope: msgList.scope
           context: console
+
+    #register a callback to a message.
+    setLocalListener: (msg, cb, outcome) ->
+      if msg in msgList.income
+        msgList.income[msg]['method'] = cb
+        msgList.income[msg]['outcome'] = outcome
 ]
 
 ###
@@ -161,13 +170,37 @@ charts.controller('chartsSidebarCtrl',[
   @type:controller
 ###
 charts.controller('chartsMainCtrl' ,[
+  '$q'
   '$scope'
   'app_analysis_chartsView_defaults'
   'app_analysis_chartsView_variables'
-  ($scope,defaults,variables)->
+  'app_analysis_chartsView_eventMngr'
+  ($q,$scope,defaults,variables,eventManager)->
+
     #directive config.
     $scope.width = 900
     $scope.height = 400
+
+    eventManager.setLocalListener 'chartsMainCtrl:update plot type', (args...)->
+       a = 1
+    , 'chartsMainCtrl->:updated '
+
+    eventManager.setLocalListener 'chartsMainCtrl:update plot variable', (args...)->
+      
+      #create promise object
+      deferred = $q.defer()
+
+      #make db call.
+      promise = eventManager.sendMessage 'get table', ['charts_test_db',deferred]
+      
+      #onsucess, update $scope.data
+      promise.then (data)->
+        console.info 'SELVAM', data
+        #update the plot with data.
+        $scope.data = data
+      
+    , 'chartsMainCtrl->:updated '
+
 
     #plot type changed in sidebar.
     $scope.$on 'chartsMainCtrl:update currentPlot', (args...)->
@@ -179,9 +212,21 @@ charts.controller('chartsMainCtrl' ,[
         if d is args[1].value
           # edit the values in the #scope.data depending on the xvariable.
           console.log 'changed variable ' + args[1].type
+      #create promise object
+      deferred = $q.defer()
 
+      #make db call.
+      promise = eventManager.sendMessage 'get table', ['charts_test_db',deferred]
+      console.log promise, 'Palanimalai'
+      #onsucess, update $scope.data
+      promise.then (data)->
+        console.log 'SELVAM', data
+        #update the plot with data.
+        $scope.data = data
+    
     #default value.
     $scope.currentPlot = 'none'
+
     #plotData
     $scope.data = [
       key: 'Series 1'

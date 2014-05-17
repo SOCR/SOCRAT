@@ -13,10 +13,12 @@ App = angular.module('app', [
   'ngCookies'
   'ngResource'
   'app.core'
+#getData module
   'app.getData'
-  #charts analysis
+#charts module
   'app_analysis_chartsView'
   'app_analysis_charts'
+#Robust estimator module
   'app.qualRobEstView'
   'app.qualRobEst'
   'app.controllers'
@@ -121,8 +123,7 @@ App.run([
   'qualRobEstView'
   'qualRobEst'
   'app_analysis_chartsView_construct'
-  'app_analysis_charts_construct'
-  (core, db, getData, qualRobEstView, qualRobEst, chartsView, charts) ->
+  (core, db, getData, qualRobEstView, qualRobEst, chartsView) ->
 
     map = [
       msgFrom: '111'
@@ -139,6 +140,11 @@ App.run([
       scopeFrom: ['getData']
       msgTo:'save table'
       scopeTo:['db']
+    ,
+      msgFrom:'get table'
+      scopeFrom:['chartsView']
+      msgTo:'take table'
+      scopeTo:['chartsView']
     ]
 
     core.setEventsMapping map
@@ -155,8 +161,8 @@ App.run([
     core.register 'chartsView', chartsView
     core.start 'chartsView'
 
-    core.register 'charts', charts
-    core.start 'charts'
+    # core.register 'charts', charts
+    # core.start 'charts'
 
     console.log 'run block of app module'
 
