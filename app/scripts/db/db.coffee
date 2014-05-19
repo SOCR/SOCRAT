@@ -6,86 +6,28 @@
     or memory of the tables created using it.
 ###
 
-db = angular.module 'app.db', ['app.mediator']
+db = angular.module 'app_database', ['app.mediator']
 
-db.factory 'db', [
-  'dbEventMngr'
-  (dbEventMngr)->
-    (sb)->
-      msgList = dbEventMngr.getMsgList()
-      dbEventMngr.setSb sb unless !sb?
-
-      init: (opt) ->
-        console.log 'db init called'
-        dbEventMngr.listenToIncomeEvents()
-
-      destroy: () ->
-
-      msgList: msgList
-]
-db.service 'dbEventMngr', [
-  ()->
-    sb = null
-
-    msgList =
-      outcome: ['table saved']
-      income:
-        'save table':
-          outcome: 'table saved'
-        'get table':
-          outcome:null
+db.factory 'app_database_manager', []
+  (sb)->
+    _msgList =
+      msgs:['save table','table saved',database.create],
+        ['get table', '',database.get]
       scope: ['database']
+    
+    init: (opt) ->
+      console.log 'db init called'
+      dbEventMngr.listenToIncomeEvents()
 
-    incomeCallbacks = {}
+    destroy: () ->
 
-    eventManager = (msg, data) ->
-      try
-        #_data = msgList.income[msg].method.apply null,data
-        _data = incomeCallbacks[msg] data
-        #last item in data is a promise.
-        data[data.length - 1].resolve _data if _data isnt false
-      catch e
-        console.log e.message
-        alert 'error in database'
+    msgList: _msgList
 
-      sb.publish
-        msg: msgList.income[msg].outcome
-        data: _data
-        msgScope: msgList.scope
-
-    setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
-
-    getMsgList: () ->
-      msgList
-
-    listenToIncomeEvents: () ->
-      for msg of msgList.income
-        console.log 'subscribed for ' + msg
-        sb.subscribe
-          msg: msg
-          listener: eventManager
-          msgScope: msgList.scope
-          context: console
-
-    setLocalListener: (msg, cb) ->
-      if msg in msgList.income
-        incomeCallbacks[msg] = cb
-]
+    sb:sb
 
 db.service 'database',[
-  'dbEventMngr'
-  (dbEventMngr) ->
-
-    #set listeners to messages
-    dbEventMngr.setLocalListener 'save table', (data) ->
-      console.log 'db.create invoked'
-      _db.create null, data
-
-    dbEventMngr.setLocalListener 'get table', (data) ->
-      console.log 'db.get invoked'
-      _db.get null, data
+  'app_database_manager'
+  (manager) ->
 
     #contains references to all the tables created.
     _registry = []
