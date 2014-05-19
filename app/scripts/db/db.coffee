@@ -8,13 +8,13 @@
 
 db = angular.module 'app_database', ['app.mediator']
 
-db.factory 'app_database_manager', []
+db.factory 'app_database_manager', [
   (sb)->
     _msgList =
       msgs:['save table','table saved',database.create],
-        ['get table', '',database.get]
-      scope: ['database']
-    
+    ['get table', '',database.get]
+    scope: ['database']
+
     init: (opt) ->
       console.log 'db init called'
       dbEventMngr.listenToIncomeEvents()
@@ -24,6 +24,7 @@ db.factory 'app_database_manager', []
     msgList: _msgList
 
     sb:sb
+]
 
 db.service 'database',[
   'app_database_manager'
