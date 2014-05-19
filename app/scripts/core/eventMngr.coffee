@@ -1,15 +1,17 @@
 'use strict'
 
-#app.core module contains services like error management , pub/sub
+eventMngr = angular.module('app.eventMngr', [])
 
-mediator = angular.module('app.eventMngr', [])
-
-# publish/subscribe angular service
 .service("eventMngr", () ->
   ()->
+    sb = null
     msgList = null
 
     incomeCallbacks = {}
+
+    _setSb: (_sb) ->
+      return false if _sb is undefined
+      sb = _sb
 
     _eventManager = (msg, data) ->
       try
@@ -21,10 +23,11 @@ mediator = angular.module('app.eventMngr', [])
         console.log e.message
         alert 'error in database'
 
-      sb.publish
-        msg: msgList.income[msg].outcome
-        data: _data
-        msgScope: msgList.scope
+      if sb?
+        sb.publish
+          msg: msgList.income[msg].outcome
+          data: _data
+          msgScope: msgList.scope
 
 #   Getter and setter for mgsList
     _getMsgList: () ->
@@ -34,7 +37,7 @@ mediator = angular.module('app.eventMngr', [])
       return false if _msgList is undefined
       sb = _msgList
 
-    listenToIncomeEvents: () ->
+    _listenToIncomeEvents: () ->
       for msg of msgList.income
         console.log 'subscribed for ' + msg
         sb.subscribe
@@ -43,11 +46,14 @@ mediator = angular.module('app.eventMngr', [])
           msgScope: msgList.scope
           context: console
 
-    setLocalListeners: (msg, cb) ->
-      if msg in msgList.income
-        incomeCallbacks[msg] = cb
+    _setLocalListeners: (localMsgListeners) ->
+      for event in localMsgListeners
+        if event.msg in msgList.income
+          incomeCallbacks[event.msg] = event.cb
 
-    getMsgList:_getMsgList
-    setMsgList:_setMsgList
-    unsubscribe:_unsubscribe
-  )
+    setSb: _setSb
+    getMsgList: _getMsgList
+    setMsgList: _setMsgList
+    setLocalListeners: _setLocalListeners
+    listenToIncomeEvents: _listenToIncomeEvents
+)
