@@ -54,8 +54,8 @@ qualRobEst = angular.module('app.qualRobEst', [
     sb = null
 
     msgList =
-      outcome: ['234']
-      income: ['123']
+      outgoing: ['234']
+      incoming: ['123']
       scope: ['qualRobEst']
 
     incomeCallbacks = {}
@@ -75,15 +75,15 @@ qualRobEst = angular.module('app.qualRobEst', [
       msgList
 
     listenToIncomeEvents: () ->
-      console.log 'subscribed for ' + msgList.income[0]
+      console.log 'subscribed for ' + msgList.incoming[0]
       sb.subscribe
-        msg: msgList.income[0]
+        msg: msgList.incoming[0]
         listener: eventManager
         msgScope: msgList.scope
         context: console
 
     setLocalListener: (msg, cb) ->
-      if msg in msgList.income
+      if msg in msgList.incoming
         incomeCallbacks[msg] = cb
 ])
 ####

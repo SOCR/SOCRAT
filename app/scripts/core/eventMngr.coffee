@@ -25,7 +25,7 @@ eventMngr = angular.module('app.eventMngr', [])
 
       if sb?
         sb.publish
-          msg: msgList.income[msg].outcome
+          msg: msgList.incoming[msg].outgoing
           data: _data
           msgScope: msgList.scope
 
@@ -38,7 +38,7 @@ eventMngr = angular.module('app.eventMngr', [])
       sb = _msgList
 
     _listenToIncomeEvents: () ->
-      for msg of msgList.income
+      for msg of msgList.incoming
         console.log 'subscribed for ' + msg
         sb.subscribe
           msg: msg
@@ -48,8 +48,10 @@ eventMngr = angular.module('app.eventMngr', [])
 
     _setLocalListeners: (localMsgListeners) ->
       for event in localMsgListeners
-        if event.msg in msgList.income
-          incomeCallbacks[event.msg] = event.cb
+        if event.inMsg in msgList.incoming
+          if event.outMsg? and event.outMsg in msgList.outgoing
+            incomeCallbacks[event.msg] = event.cb
+
 
     setSb: _setSb
     getMsgList: _getMsgList

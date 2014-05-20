@@ -89,7 +89,7 @@ core = angular.module('app.core', [
         _checkType 'function', modObj.init, '"init" of the module'
         _checkType 'function', modObj.destroy, '"destroy" of the module'
         _checkType 'object', modObj.msgList, 'message list of the module'
-        _checkType 'object', modObj.msgList.outcome,
+        _checkType 'object', modObj.msgList.outgoing,
           'outcoming message list of the module'
 
         # TODO: change to $exceptionHandler
@@ -153,9 +153,9 @@ core = angular.module('app.core', [
             throw new Error 'module was already started'
 
           # subscription for module events
-          if instance.msgList? and instance.msgList.outcome?
+          if instance.msgList? and instance.msgList.outgoing?
             _subscribeForModuleEvents moduleId,
-              instance.msgList.outcome,
+              instance.msgList.outgoing,
               _eventsManager
 
           # if the module wants to init in an asynchronous way

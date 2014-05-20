@@ -90,8 +90,8 @@ qualRobEstView = angular.module('app.qualRobEstView', [
     sum = ''
 
     msgList =
-      outcome: ['111']
-      income: ['000']
+      outgoing: ['111']
+      incoming: ['000']
       scope: ['qualRobEstView']
 
     eventManager = (msg, data) ->
@@ -113,9 +113,9 @@ qualRobEstView = angular.module('app.qualRobEstView', [
       msgList
 
     listenToIncomeEvents: () ->
-      console.log 'subscribed for ' + msgList.income[0]
+      console.log 'subscribed for ' + msgList.incoming[0]
       sb.subscribe
-        msg: msgList.income[0]
+        msg: msgList.incoming[0]
         listener: eventManager
         msgScope: msgList.scope
 
