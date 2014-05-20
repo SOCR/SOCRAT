@@ -43,79 +43,21 @@ charts.factory 'app_analysis_chartsView_variables',[
   @description: Constructor for this module.
   @type: factory
 ###
-charts.factory 'app_analysis_chartsView_construct', [
-  'app_analysis_chartsView_eventMngr'
-  (eventManager)->
+charts.factory 'app_analysis_chartsView_manager', [
     (sb)->
-      msgList = eventManager.getMsgList()
-      chartsEventMngr.setSb sb unless !sb?
-
+      msgList = 
+        outgoing:['get table']
+        incoming:['take table']
+        scope:['chartsView']
+      
       init: (opt) ->
         console.log 'db init called'
-        eventManager.listenToIncomeEvents()
 
       destroy: () ->
 
       msgList: msgList
 ]
 
-###
-  @description: Manager for all communication b/w modules.
-    Only this service inside this module, has access to sandbox.
-  @type: service
-###
-charts.service 'app_analysis_chartsView_eventMngr', [
-  ()->
-    sb = null
-
-    msgList =
-      outcome : ['get table']
-      income  : ['take table']
-      scope   : ['charts']
-
-    #rename to run.
-    eventManager = (msg, data) ->
-      try
-        _data = msgList.income[msg].method.apply null,data
-        #last item in data is a promise.
-        data[data.length - 1].resolve _data if _data isnt false
-      catch e
-        console.log e.message
-        alert 'error in database'
-
-      sb.publish
-        msg: msgList.income[msg].outcome
-        data: _data
-        msgScope: msgList.scope
-
-    setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
-
-    sendMessage:(msg,data)->
-      sb.publish
-        msg: msg
-        data: data
-        msgScope: msgList.scope
-
-    getMsgList: () ->
-      msgList
-
-    listenToIncomeEvents: () ->
-      for msg of msgList.income
-        console.log 'subscribed for ' + msg
-        sb.subscribe
-          msg: msg
-          listener: eventManager
-          msgScope: msgList.scope
-          context: console
-
-    #register a callback to a message.
-    setLocalListener: (msg, cb, outcome) ->
-      if msg in msgList.income
-        msgList.income[msg]['method'] = cb
-        msgList.income[msg]['outcome'] = outcome
-]
 
 ###
   @type:controller
@@ -174,53 +116,39 @@ charts.controller('chartsMainCtrl' ,[
   '$scope'
   'app_analysis_chartsView_defaults'
   'app_analysis_chartsView_variables'
-  'app_analysis_chartsView_eventMngr'
-  ($q,$scope,defaults,variables,eventManager)->
+  'app_analysis_chartsView_manager'
+  ($q,$scope,defaults,variables,manager)->
 
     #directive config.
     $scope.width = 900
     $scope.height = 400
-
-    eventManager.setLocalListener 'chartsMainCtrl:update plot type', (args...)->
-       a = 1
-    , 'chartsMainCtrl->:updated '
-
-    eventManager.setLocalListener 'chartsMainCtrl:update plot variable', (args...)->
-      
-      #create promise object
-      deferred = $q.defer()
-
-      #make db call.
-      promise = eventManager.sendMessage 'get table', ['charts_test_db',deferred]
-      
-      #onsucess, update $scope.data
-      promise.then (data)->
-        console.info 'SELVAM', data
-        #update the plot with data.
-        $scope.data = data
-      
-    , 'chartsMainCtrl->:updated '
-
 
     #plot type changed in sidebar.
     $scope.$on 'chartsMainCtrl:update currentPlot', (args...)->
       for k, v of defaults.plots
         if v.label is args[1]
           $scope.currentPlot = k
+    
     $scope.$on 'chartsMainCtrl:update variable', (args...)->
       for d in variables.get()
         if d is args[1].value
           # edit the values in the #scope.data depending on the xvariable.
           console.log 'changed variable ' + args[1].type
+      
       #create promise object
       deferred = $q.defer()
 
       #make db call.
-      promise = eventManager.sendMessage 'get table', ['charts_test_db',deferred]
-      console.log promise, 'Palanimalai'
+      promise = manager.sb.send 
+        msg:'get table',
+        data:['charts_test_db',deferred]
+        msgScope:['chartsView']
+
+      console.log promise
+      
       #onsucess, update $scope.data
       promise.then (data)->
-        console.log 'SELVAM', data
+        console.log 'data returned promise', data
         #update the plot with data.
         $scope.data = data
     
