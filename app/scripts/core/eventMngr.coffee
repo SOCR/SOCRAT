@@ -32,12 +32,11 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator'])
 #        return false if _msgList is undefined
 #        sb = _msgList
 
-      _listenToIncomeEvents: () ->
-        for msg of msgList.incoming
-          console.log 'subscribed for ' + msg
+      _subscribeForEvents: (msgList, listener=eventManager) ->
+        for msg of msgList
           mediator.subscribe
             msg: msg
-            listener: eventManager
+            listener: listener
             msgScope: msgList.scope
             context: console
 
@@ -51,5 +50,5 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator'])
       getMsgList: _getMsgList
       setMsgList: _setMsgList
       setLocalListeners: _setLocalListeners
-      listenToIncomeEvents: _listenToIncomeEvents
+      subscribeForEvents: _subscribeForEvents
 ])

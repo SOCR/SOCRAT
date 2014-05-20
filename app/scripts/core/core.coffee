@@ -130,13 +130,16 @@ core = angular.module('app.core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
+      # subscribe for outgoing events from module
       _subscribeForModuleEvents = (moduleId, msgList, API) ->
-        for msg in msgList
-#          mediator.subscribe
-          eventMngr.send
-            msg: msg
-            listener: API
-            msgScope: [moduleId]
+        msgList.scope = moduleId
+        eventMngr.subscribeForEvents msgList, API
+#        for msg in msgList
+##          mediator.subscribe
+#          eventMngr.subscribe
+#            msg: msg
+#            listener: API
+#            msgScope: [moduleId]
 
       _start = (moduleId, opt = {}) ->
         try
