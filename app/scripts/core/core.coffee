@@ -3,19 +3,19 @@
 #app.core module contains
 
 core = angular.module('app.core', [
-  'app.mediator'
+  'app.eventMngr'
   'app.sandbox'
   'app.errorMngr'
   'app.utils'
 ])
 
   .factory 'core', [
-    'pubSub'
+    'eventMngr'
     'Sandbox'
 #    '$exceptionHandler'
     'utils'
 #    (mediator, Sandbox, $exceptionHandler, utils) ->
-    (mediator, Sandbox, utils) ->
+    (eventMngr, Sandbox, utils) ->
 
       _modules = {}
       _instances = {}
@@ -58,9 +58,10 @@ core = angular.module('app.core', [
         module = _modules[moduleId]
         return _instances[instanceId] if _instances[instanceId]?
         iOpts = _getInstanceOptions.apply @, [instanceId, module, opt]
-        sb = new Sandbox @, instanceId, iOpts
 
-        utils.installFromTo mediator, sb
+
+        sb = new Sandbox @, instanceId, iOpts
+        utils.installFromTo eventMngr, sb
 
 #        for i,p of plugins when p.sandbox?
 #          plugin = new p.sandbox sb
@@ -131,7 +132,8 @@ core = angular.module('app.core', [
 
       _subscribeForModuleEvents = (moduleId, msgList, API) ->
         for msg in msgList
-          mediator.subscribe
+#          mediator.subscribe
+          eventMngr.send
             msg: msg
             listener: API
             msgScope: [moduleId]
@@ -156,7 +158,7 @@ core = angular.module('app.core', [
           if instance.msgList? and instance.msgList.outgoing?
             _subscribeForModuleEvents moduleId,
               instance.msgList.outgoing,
-              _eventsManager
+              _API
 
           # if the module wants to init in an asynchronous way
           if (utils.getArgumentNames instance.init).length >= 2
@@ -272,12 +274,14 @@ core = angular.module('app.core', [
       _sendMessage = (msg, data, scopeArray) ->
         console.log 'core sends: ' + msg + ' data: ' + data +
           ' scope: ' + scopeArray
-        mediator.publish
+#        mediator.publish
+        eventMngr.send
           msg: msg
           data: data
           msgScope: scopeArray
 
-      _eventsManager = (msg, data) ->
+#     TODO: abstract it to eventMngr
+      _API = (msg, data) ->
         for o in _map when o.msgFrom is msg
           _sendMessage o.msgTo, data, o.scopeTo
           return true

@@ -1,61 +1,55 @@
 'use strict'
 
-eventMngr = angular.module('app.eventMngr', [])
+eventMngr = angular.module('app.eventMngr', ['app.mediator'])
 
-.service("eventMngr", () ->
-  ()->
-    sb = null
-    msgList = null
+.service("eventMngr", [
+  'pubSub'
+  (mediator) ->
+    ()->
 
-    incomeCallbacks = {}
+      incomeCallbacks = {}
 
-    _setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
+      _eventManager = (msg, data) ->
+        try
+        #_data = msgList.income[msg].method.apply null,data
+          _data = incomeCallbacks[msg] data
+          #last item in data is a promise.
+          data[data.length - 1].resolve _data if _data isnt false
+        catch e
+          console.log e.message
+          alert 'error in database'
 
-    _eventManager = (msg, data) ->
-      try
-      #_data = msgList.income[msg].method.apply null,data
-        _data = incomeCallbacks[msg] data
-        #last item in data is a promise.
-        data[data.length - 1].resolve _data if _data isnt false
-      catch e
-        console.log e.message
-        alert 'error in database'
-
-      if sb?
-        sb.publish
+        mediator.publish
           msg: msgList.incoming[msg].outgoing
           data: _data
           msgScope: msgList.scope
 
-#   Getter and setter for mgsList
-    _getMsgList: () ->
-      msgList
+#  #   Getter and setter for mgsList
+#      _getMsgList: () ->
+#        msgList
+#
+#      _setMsgList: (_msgList) ->
+#        return false if _msgList is undefined
+#        sb = _msgList
 
-    _setMsgList: (_msgList) ->
-      return false if _msgList is undefined
-      sb = _msgList
+      _listenToIncomeEvents: () ->
+        for msg of msgList.incoming
+          console.log 'subscribed for ' + msg
+          mediator.subscribe
+            msg: msg
+            listener: eventManager
+            msgScope: msgList.scope
+            context: console
 
-    _listenToIncomeEvents: () ->
-      for msg of msgList.incoming
-        console.log 'subscribed for ' + msg
-        sb.subscribe
-          msg: msg
-          listener: eventManager
-          msgScope: msgList.scope
-          context: console
+      _setLocalListeners: (localMsgListeners) ->
+        for event in localMsgListeners
+          if event.inMsg in msgList.incoming
+            if event.outMsg? and event.outMsg in msgList.outgoing
+              incomeCallbacks[event.msg] = event.cb
 
-    _setLocalListeners: (localMsgListeners) ->
-      for event in localMsgListeners
-        if event.inMsg in msgList.incoming
-          if event.outMsg? and event.outMsg in msgList.outgoing
-            incomeCallbacks[event.msg] = event.cb
-
-
-    setSb: _setSb
-    getMsgList: _getMsgList
-    setMsgList: _setMsgList
-    setLocalListeners: _setLocalListeners
-    listenToIncomeEvents: _listenToIncomeEvents
-)
+      setSb: _setSb
+      getMsgList: _getMsgList
+      setMsgList: _setMsgList
+      setLocalListeners: _setLocalListeners
+      listenToIncomeEvents: _listenToIncomeEvents
+])
