@@ -8,11 +8,12 @@
 
 db = angular.module 'app_database', ['app.mediator']
 
+
 db.factory 'app_database_manager', [
   (sb)->
     _msgList =
-      msgs:['save table','table saved',database.create],
-    ['get table', '',database.get]
+      msgs:['save table','table saved'],
+    ['get table', 'take table']
     scope: ['database']
 
     init: (opt) ->
@@ -29,7 +30,7 @@ db.factory 'app_database_manager', [
 db.service 'database',[
   'app_database_manager'
   (manager) ->
-
+    
     #contains references to all the tables created.
     _registry = []
 
@@ -158,5 +159,12 @@ db.service 'database',[
       if _registry[tname]?
         _registry[tname].where(q)
 
+    # registering database callbacks for all possible incoming messages. 
+  	manager.sb.eventMngr.setLocalListeners [
+  		{incoming:'save table',outgoing:'table saved',event:_db.create}
+  		{incoming:'get table',outgoing:'take table',event:_db.get}
+  	]
+
+    #returns the database object.
     _db
 ]
