@@ -1,6 +1,13 @@
 ###
   Angular wrapper for datavore.js
 
+  app_database module serves as the in-memory database for SOCR framework. The module lets
+  you perform create, read, update and delete operations on all the tables created by the 
+  application.
+  
+  "database" service is the single point access for all the CRUD operations.To make DB calls 
+  from another module, publish messages using the "sb" object.
+  
   Notes:
     Datavore doesnt have inbuilt event system
     or memory of the tables created using it.
@@ -12,13 +19,13 @@ db = angular.module 'app_database', ['app.mediator']
 db.factory 'app_database_manager', [
   (sb)->
     _msgList =
-      msgs:['save table','table saved'],
-    ['get table', 'take table']
-    scope: ['database']
+      incoming:['save table','get table','delete table'],
+      outgoing:['table saved','take table','table deleted'],
+      scope: ['database']
 
     init: (opt) ->
       console.log 'db init called'
-      dbEventMngr.listenToIncomeEvents()
+      sb.listenToIncomeEvents()
 
     destroy: () ->
 
@@ -27,7 +34,7 @@ db.factory 'app_database_manager', [
     sb:sb
 ]
 
-db.service 'database',[
+db.service 'app_database_dv',[
   'app_database_manager'
   (manager) ->
     
@@ -74,10 +81,11 @@ db.service 'database',[
     _db.addColumn = (cname, values, type, iscolumn...,tname)->
       if _registry[tname]?
         _registry[tname].addColumn(cname, values, type, iscolumn)
-        pubSub.publish
+        manager.sb.send
           'msg' : tname
           'msgScope' : ['database']
-        pubSub.publish
+        #@todo: Why sending 2 different messages?
+        manager.sb.send
           msg: tname+':'+cname
           msgScope:['database']
 
@@ -101,7 +109,7 @@ db.service 'database',[
             if _registry[opts.table]?
               #_listeners[table][col] = _listeners[table][col] || []
               #_listeners[table][col].push fn
-              pubSub.subscribe
+              manager.sb.send
                 'msg' : msg
                 'listener': opts.listener
                 'msgScope': ['database']
@@ -160,7 +168,7 @@ db.service 'database',[
         _registry[tname].where(q)
 
     # registering database callbacks for all possible incoming messages. 
-  	manager.sb.eventMngr.setLocalListeners [
+  	manager.sb.setLocalListeners [
   		{incoming:'save table',outgoing:'table saved',event:_db.create}
   		{incoming:'get table',outgoing:'take table',event:_db.get}
   	]
