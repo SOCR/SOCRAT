@@ -35,7 +35,7 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator'])
       # serialized subscription for arbitrary list of events
       _subscribeForEvents: (msgList, listener) ->
         # if listener parameter is missing, set up default callback
-        liquid ?= _eventManager
+        listener ?= _eventManager
 
         for msg of msgList
           mediator.subscribe

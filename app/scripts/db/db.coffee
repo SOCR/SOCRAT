@@ -2,10 +2,10 @@
   Angular wrapper for datavore.js
 
   app_database module serves as the in-memory database for SOCR framework. The module lets
-  you perform create, read, update and delete operations on all the tables created by the 
+  you perform create, read, update and delete operations on all the tables created by the
   application.
   
-  "database" service is the single point access for all the CRUD operations.To make DB calls 
+  "database" service is the single point access for all the CRUD operations.To make DB calls
   from another module, publish messages using the "sb" object.
   
   Notes:
@@ -42,7 +42,7 @@ db.factory 'app_database_manager',->
   setSb:(sb)->
     if sb?
       _sb = sb
-  sb:_sb  
+  sb:_sb
 
 db.service 'app_database_dv',[
   'app_database_manager'
@@ -176,7 +176,7 @@ db.service 'app_database_dv',[
       if _registry[tname]?
         _registry[tname].where(q)
 
-    # registering database callbacks for all possible incoming messages. 
+    # registering database callbacks for all possible incoming messages.
   	# manager.sb.setLocalListeners [
   	# 	{incoming:'save table',outgoing:'table saved',event:_db.create}
   	# 	{incoming:'get table',outgoing:'take table',event:_db.get}
