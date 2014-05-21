@@ -23,9 +23,9 @@ qualRobEstView = angular.module('app.qualRobEstView', [
 # getDataViewCtrl is the ctrl that talks to the view.
 # ###
 .controller('qualRobEstViewSidebarCtrl', [
-  '$scope'
-  'qualRobEstViewEventMngr'
-  ($scope, qualRobEstViewEventMngr) ->
+#  '$scope'
+  'qualRobEstViewMngr'
+  ($scope, qualRobEstViewMngr) ->
     console.log 'qualRobEstViewSidebarCtrl executed'
 
     $scope.realParams = '[1,1,1]'
@@ -35,24 +35,22 @@ qualRobEstView = angular.module('app.qualRobEstView', [
     $scope.noiseLevel = '0.2'
     $scope.estParam = '0.5'
 
-
-
-    $scope.sumNumbers = () ->
-      qualRobEstViewEventMngr.sendNumbers(
-        $scope.outcomeDim
-        $scope.outcomeLevels
-      )
+#    $scope.sumNumbers = () ->
+#      qualRobEstViewMngr.sendNumbers(
+#        $scope.outcomeDim
+#        $scope.outcomeLevels
+#      )
 
 ])
 
 .controller('qualRobEstViewMainCtrl', [
-  '$scope'
-  'qualRobEstViewEventMngr'
-  ($scope, qualRobEstViewEventMngr) ->
+#  '$scope'
+  'qualRobEstViewMngr'
+  ($scope, qualRobEstViewMngr) ->
     console.log 'qualRobEstViewMainCtrl executed'
 #    $scope.sum = qualRobEstViewEventMngr.sum
-    $scope.$on 'newSum', (event, pushData) ->
-      $scope.sum = pushData
+#    $scope.$on 'newSum', (event, pushData) ->
+#      $scope.sum = pushData
 ])
 ####
 #  Every module is supposed have a factory method
@@ -64,60 +62,43 @@ qualRobEstView = angular.module('app.qualRobEstView', [
 #  returned object.
 ####
 .factory('qualRobEstView', [
-  'qualRobEstViewEventMngr'
-  (qualRobEstViewEventMngr) ->
+  'qualRobEstView_manager'
+  (qualRobEstViewMngr) ->
     (sb) ->
-
-      msgList = qualRobEstViewEventMngr.getMsgList()
-      qualRobEstViewEventMngr.setSb sb unless !sb?
+      qualRobEstViewMngr.setSb sb unless !sb?
 
       init: (opt) ->
-        console.log 'qualRobEstView init called'
-        qualRobEstViewEventMngr.listenToIncomeEvents()
+        console.log 'qualRobEstView init invoked'
+        # TODO: need to use this or just setLocalListener (which will subscribe automatically inside eventMngr)?
+        # TODO: i.e. does module listen for incoming events if components didn't ask about it?
+        #        sb.subscribeForEvents(
+        #          qualRobEstViewMngr.msgList.incoming
+        #          qualRobEstViewMngr.eventManager
+        #        ) unless !sb?
 
-      destroy: () ->
+        destroy: () ->
 
-      msgList: msgList
+      msgList: qualRobEstViewMngr.msgList
 ])
 ####
 # Every module will have a MODULE_NAMEEventMngr() service
 # which provides messaging with core
 ####
-.service('qualRobEstViewEventMngr', [
-  '$rootScope'
-  ($rootScope) ->
-    sb = null
-    sum = ''
+.service('qualRobEstViewMngr', [
+  () ->
+    _sb = null
 
-    msgList =
-      outgoing: ['111']
-      incoming: ['000']
+    _msgList =
+      outgoing: ['add numbers']
+      incoming: ['numbers added']
       scope: ['qualRobEstView']
 
-    eventManager = (msg, data) ->
-      $rootScope.$broadcast 'newSum', data
-
-    sendNumbers: (a, b) ->
-      sb.publish
-        msg: msgList.outcome[0]
-        data:
-          a: a
-          b: b
-        msgScope: msgList.scope
-
-    setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
+    setSb: (sb) ->
+      return false if sb is undefined
+      _sb = sb
 
     getMsgList: () ->
-      msgList
+      _msgList
 
-    listenToIncomeEvents: () ->
-      console.log 'subscribed for ' + msgList.incoming[0]
-      sb.subscribe
-        msg: msgList.incoming[0]
-        listener: eventManager
-        msgScope: msgList.scope
-
-    sum: sum
+    sb: _sb
 ])
