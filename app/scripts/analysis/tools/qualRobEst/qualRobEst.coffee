@@ -28,71 +28,54 @@ qualRobEst = angular.module('app.qualRobEst', [
 #  init() and destroy() methods should be present in
 #  returned object.
 ####
-.factory('qualRobEst', [
-  'qualRobEstEventMngr'
-  'estimator'
-  (qualRobEstEventMngr) ->
+.factory('qualRobEst_constructor', [
+  'qualRobEst_manager'
+  (qualRobEstMngr) ->
     (sb) ->
-
-      msgList = qualRobEstEventMngr.getMsgList()
-      qualRobEstEventMngr.setSb sb unless !sb?
+      qualRobEstMngr.setSb sb unless !sb?
 
       init: (opt) ->
         console.log 'qualRobEst init invoked'
-        qualRobEstEventMngr.listenToIncomeEvents()
+        # TODO: need to use this or just setLocalListener (which will subscribe automatically inside eventMngr)?
+        # TODO: i.e. does module listen for incoming events if components didn't ask about it?
+#        sb.subscribeForEvents(
+#          qualRobEstMngr.msgList.incoming
+#          qualRobEstMngr.eventManager
+#        ) unless !sb?
 
-      destroy: () ->
+        destroy: () ->
 
-      msgList: msgList
+      msgList: qualRobEstMngr.msgList
 ])
 ####
 # Every module will have a MODULE_NAMEEventMngr() service
 # which provides messaging with core
 ####
-.service('qualRobEstEventMngr', [
+.service('qualRobEst_manager', [
   () ->
-    sb = null
+    _sb = null
 
-    msgList =
-      outgoing: ['234']
-      incoming: ['123']
+    _msgList =
+      outgoing: ['numbers added']
+      incoming: ['add numbers']
       scope: ['qualRobEst']
 
-    incomeCallbacks = {}
-
-    eventManager = (msg, data) ->
-      console.log incomeCallbacks
-      sb.publish
-        msg: msgList.outcome[0]
-        data: incomeCallbacks[msg] data
-        msgScope: msgList.scope
-
-    setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
+    setSb: (sb) ->
+      return false if sb is undefined
+      _sb = sb
 
     getMsgList: () ->
-      msgList
+      _msgList
 
-    listenToIncomeEvents: () ->
-      console.log 'subscribed for ' + msgList.incoming[0]
-      sb.subscribe
-        msg: msgList.incoming[0]
-        listener: eventManager
-        msgScope: msgList.scope
-        context: console
-
-    setLocalListener: (msg, cb) ->
-      if msg in msgList.incoming
-        incomeCallbacks[msg] = cb
+    sb: _sb
 ])
 ####
 # Service for parameters estimation
 ####
 .service('estimator', [
-  'qualRobEstEventMngr'
+  'qualRobEst_manager'
   (qualRobEstEventMngr) ->
-    qualRobEstEventMngr.setLocalListener '123', (data) ->
+    qualRobEstEventMngr.sb.setLocalListener 'add numbers', (data) ->
       console.log '--- parameters estimation --> just return concatenation ---'
       data.a + data.b
 ])
