@@ -135,8 +135,7 @@ core = angular.module('app.core', [
         msgList.scope = moduleId
         eventMngr.subscribeForEvents msgList, API
 #        for msg in msgList
-##          mediator.subscribe
-#          eventMngr.subscribe
+#          mediator.subscribe
 #            msg: msg
 #            listener: API
 #            msgScope: [moduleId]
@@ -283,7 +282,7 @@ core = angular.module('app.core', [
           data: data
           msgScope: scopeArray
 
-#     TODO: abstract it to eventMngr
+#     TODO: abstract it to eventMngr module
       _API = (msg, data) ->
         for o in _map when o.msgFrom is msg
           _sendMessage o.msgTo, data, o.scopeTo

@@ -32,7 +32,11 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator'])
 #        return false if _msgList is undefined
 #        sb = _msgList
 
-      _subscribeForEvents: (msgList, listener=eventManager) ->
+      # serialized subscription for arbitrary list of events
+      _subscribeForEvents: (msgList, listener) ->
+        # if listener parameter is missing, set up default callback
+        liquid ?= _eventManager
+
         for msg of msgList
           mediator.subscribe
             msg: msg
@@ -46,9 +50,8 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator'])
             if event.outMsg? and event.outMsg in msgList.outgoing
               incomeCallbacks[event.msg] = event.cb
 
-      setSb: _setSb
-      getMsgList: _getMsgList
-      setMsgList: _setMsgList
+#      getMsgList: _getMsgList
+#      setMsgList: _setMsgList
       setLocalListeners: _setLocalListeners
       subscribeForEvents: _subscribeForEvents
 ])
