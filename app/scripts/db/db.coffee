@@ -13,31 +13,40 @@
     or memory of the tables created using it.
 ###
 
-db = angular.module 'app_database', ['app.mediator']
+db = angular.module 'app_database', []
 
 
-db.factory 'app_database_manager', [
-  (sb)->
-    _msgList =
-      incoming:['save table','get table','delete table'],
-      outgoing:['table saved','take table','table deleted'],
-      scope: ['database']
+db.factory 'app_database_construct', [
+  'app_database_manager'
+  (manager)->
+    (sb)->
+      init: (opt) ->
+        console.log 'db init called'
+        sb.listenToIncomeEvents(manager.msgList.incoming)
 
-    init: (opt) ->
-      console.log 'db init called'
-      sb.listenToIncomeEvents()
+      destroy: () ->
 
-    destroy: () ->
+      msgList: _msgList
 
-    msgList: _msgList
-
-    sb:sb
+      sb:sb
 ]
+
+db.factory 'app_database_manager',->
+  _sb = null
+  _msgList =
+        incoming:['save table','get table','delete table'],
+        outgoing:['table saved','take table','table deleted'],
+        scope: ['database']
+
+  msgList:_msgList
+  setSb:(sb)->
+    if sb?
+      _sb = sb
+  sb:_sb  
 
 db.service 'app_database_dv',[
   'app_database_manager'
   (manager) ->
-    
     #contains references to all the tables created.
     _registry = []
 
@@ -168,10 +177,10 @@ db.service 'app_database_dv',[
         _registry[tname].where(q)
 
     # registering database callbacks for all possible incoming messages. 
-  	manager.sb.setLocalListeners [
-  		{incoming:'save table',outgoing:'table saved',event:_db.create}
-  		{incoming:'get table',outgoing:'take table',event:_db.get}
-  	]
+  	# manager.sb.setLocalListeners [
+  	# 	{incoming:'save table',outgoing:'table saved',event:_db.create}
+  	# 	{incoming:'get table',outgoing:'take table',event:_db.get}
+  	# ]
 
     #returns the database object.
     _db
