@@ -1,10 +1,11 @@
 'use strict'
 
-eventMngr = angular.module('app.eventMngr', ['app.mediator'])
+eventMngr = angular.module('app.eventMngr', ['app.mediator', 'app.utils'])
 
 .service("eventMngr", [
   'pubSub'
-  (mediator) ->
+  'utils'
+  (mediator, utils) ->
     ()->
 
       incomeCallbacks = {}
@@ -33,16 +34,17 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator'])
 #        sb = _msgList
 
       # serialized subscription for arbitrary list of events
-      _subscribeForEvents: (msgList, listener) ->
+      _subscribeForEvents: (msgList, listnrList, ...) ->
         # if listener parameter is missing, set up default callback
-        listener ?= _eventManager
+        listnrList ?= _eventManager
 
-        for msg of msgList
+        for msg, i of msgList
           mediator.subscribe
             msg: msg
-            listener: listener
+            # checking if array of listeners was passes as a parameter
+            listener: if utils.typeIsArray listnrList then listnrList[i] else listnrList
             msgScope: msgList.scope
-            context: console
+            context: msgList.context
 
       _setLocalListeners: (localMsgListeners) ->
         for event in localMsgListeners
@@ -54,4 +56,6 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator'])
 #      setMsgList: _setMsgList
       setLocalListeners: _setLocalListeners
       subscribeForEvents: _subscribeForEvents
+      publish: mediator.publish
+      subscribe: mediator.subscribe
 ])

@@ -133,6 +133,8 @@ core = angular.module('app.core', [
       # subscribe for outgoing events from module
       _subscribeForModuleEvents = (moduleId, msgList, API) ->
         msgList.scope = moduleId
+        # TODO: change context
+        msgList.scope = console
         eventMngr.subscribeForEvents msgList, API
 #        for msg in msgList
 #          mediator.subscribe
@@ -277,7 +279,7 @@ core = angular.module('app.core', [
         console.log 'core sends: ' + msg + ' data: ' + data +
           ' scope: ' + scopeArray
 #        mediator.publish
-        eventMngr.send
+        eventMngr.publish
           msg: msg
           data: data
           msgScope: scopeArray
