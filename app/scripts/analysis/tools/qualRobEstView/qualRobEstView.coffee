@@ -35,12 +35,13 @@ qualRobEstView = angular.module('app.qualRobEstView', [
     $scope.noiseLevel = '0.2'
     $scope.estParam = '0.5'
 
-#    $scope.sumNumbers = () ->
-#      qualRobEstViewMngr.sendNumbers(
-#        $scope.outcomeDim
-#        $scope.outcomeLevels
-#      )
-
+    $scope.sumNumbers = () ->
+      qualRobEstViewMngr.sb.publish
+        msg: 'add numbers'
+        data:
+          a: $scope.outcomeDim
+          b: $scope.outcomeLevels
+        msgScope: 'qualRobEstView'
 ])
 
 .controller('qualRobEstViewMainCtrl', [
@@ -48,9 +49,13 @@ qualRobEstView = angular.module('app.qualRobEstView', [
   'qualRobEstViewMngr'
   ($scope, qualRobEstViewMngr) ->
     console.log 'qualRobEstViewMainCtrl executed'
+    qualRobEstViewMngr.sb.subscribe
+      msg: 'numbers added'
+      listener: (msg, data) -> $scope.sum = data
+      msgScope: 'qualRobEstView'
 #    $scope.sum = qualRobEstViewEventMngr.sum
 #    $scope.$on 'newSum', (event, pushData) ->
-#      $scope.sum = pushData
+#
 ])
 ####
 #  Every module is supposed have a factory method

@@ -74,8 +74,13 @@ qualRobEst = angular.module('app.qualRobEst', [
 ####
 .service('estimator', [
   'qualRobEst_manager'
-  (qualRobEstEventMngr) ->
-    qualRobEstEventMngr.sb.setLocalListener 'add numbers', (data) ->
+  (qualRobEstMngr) ->
+#    qualRobEstMngr.sb.setLocalListener 'add numbers', (data) ->
+      qualRobEstMngr.sb.subscribe 'add numbers', (data) ->
       console.log '--- parameters estimation --> just return concatenation ---'
-      data.a + data.b
+      sum = data.a + data.b
+      qualRobEstMngr.sb.publish
+        msg: 'numbers added'
+        data: sum
+        msgScope: qualRobEst
 ])
