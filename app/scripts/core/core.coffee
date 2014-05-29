@@ -24,16 +24,16 @@ core = angular.module('app.core', [
 #      _plugins = {}
 
       _checkType = (type, val, name) ->
-        # TODO: change to $exceptionHandler
+        # TODO: change to $exceptionHandler or return false anf throw exception in caller
         console.log 'checkType: ' + "#{name} has to be a #{type}"
-        if typeof val isnt type
+        if typeof val isnt type or utils.typeIsArray(val) isnt true
           console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
           console.log 'BUT: ' + "#{name} is " + typeof val
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
 #      _onModuleState = (state, fn, moduleId = '_always') ->
-#        checkType 'function', fn, 'parameter'
+#        _checkType 'function', fn, 'parameter'
 #        moduleStates.on '#{state}/#{moduleId}', fn, @
 
       _getInstanceOptions = (instanceId, module, opt) ->

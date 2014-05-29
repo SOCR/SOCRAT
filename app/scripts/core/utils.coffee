@@ -5,8 +5,11 @@
 utils = angular.module('app.utils', [])
 
   .factory 'utils', ->
+
+    _typeIsArray = Array.isArray || (value) -> return {}.toString.call(value) is '[object Array]'
+
     _clone = (data) ->
-      if data instanceof Array
+      if _typeIsArray data
         copy = (v for v in data)
       else
         copy = {}
@@ -86,6 +89,7 @@ utils = angular.module('app.utils', [])
           fn a, next
       _runSeries tasks, cb
 
+    typeIsArray: _typeIsArray
     clone: _clone
     installFromTo: _installFromTo
     getArgumentNames: _getArgumentNames
