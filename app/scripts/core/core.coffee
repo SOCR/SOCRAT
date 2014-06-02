@@ -26,9 +26,9 @@ core = angular.module('app_core', [
       _checkType = (type, val, name) ->
         # TODO: change to $exceptionHandler or return false anf throw exception in caller
         console.log 'checkType: ' + "#{name} has to be a #{type}"
-        if typeof val isnt type or utils.typeIsArray(val) isnt true
+        if typeof val isnt type or utils.typeIsArray(val)
           console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
-          console.log 'BUT: ' + "#{name} is " + typeof val
+          console.log 'BUT: ' + "#{name} is a " + typeof val
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
