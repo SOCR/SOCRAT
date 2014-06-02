@@ -33,6 +33,7 @@ qualRobEst = angular.module('app_qualRobEst', [
   (qualRobEstMngr) ->
     (sb) ->
       qualRobEstMngr.setSb sb unless !sb?
+      _msgList = qualRobEstMngr.getMsgList()
 
       init: (opt) ->
         console.log 'qualRobEst init invoked'
@@ -43,9 +44,9 @@ qualRobEst = angular.module('app_qualRobEst', [
 #          qualRobEstMngr.eventManager
 #        ) unless !sb?
 
-        destroy: () ->
+      destroy: () ->
 
-      msgList: qualRobEstMngr.msgList
+      msgList: _msgList
 ])
 ####
 # Every module will have a MODULE_NAMEEventMngr() service

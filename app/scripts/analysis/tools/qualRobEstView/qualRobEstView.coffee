@@ -71,6 +71,7 @@ qualRobEstView = angular.module('app_qualRobEstView', [
   (qualRobEstViewMngr) ->
     (sb) ->
       qualRobEstViewMngr.setSb sb unless !sb?
+      _msgList = qualRobEstViewMngr.getMsgList()
 
       init: (opt) ->
         console.log 'qualRobEstView init invoked'
@@ -81,9 +82,9 @@ qualRobEstView = angular.module('app_qualRobEstView', [
         #          qualRobEstViewMngr.eventManager
         #        ) unless !sb?
 
-        destroy: () ->
+      destroy: () ->
 
-      msgList: qualRobEstViewMngr.msgList
+      msgList: _msgList
 ])
 ####
 # Every module will have a MODULE_NAMEEventMngr() service
