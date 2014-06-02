@@ -13,10 +13,10 @@
     or memory of the tables created using it.
 ###
 
-db = angular.module 'app_db', []
+db = angular.module 'app_database', []
 
 
-db.factory 'app_database_construct', [
+db.factory 'app_database_constructor', [
   'app_database_manager'
   (manager)->
     (sb)->

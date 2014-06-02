@@ -22,7 +22,7 @@ App = angular.module('app', [
   'app_services'
   'app_mediator'
   'ngSanitize'
-  'app_db'
+  'app_database'
 ])
 
 App.config([
@@ -103,7 +103,7 @@ App.config([
 
 App.run([
   'core'
-  'db'
+  'app_database_constructor'
   'getData'
   'qualRobEstView'
   'qualRobEst'

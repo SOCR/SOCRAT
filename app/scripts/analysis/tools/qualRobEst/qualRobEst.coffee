@@ -28,7 +28,7 @@ qualRobEst = angular.module('app_qualRobEst', [
 #  init() and destroy() methods should be present in
 #  returned object.
 ####
-.factory('qualRobEst_constructor', [
+.factory('qualRobEst', [
   'qualRobEst_manager'
   (qualRobEstMngr) ->
     (sb) ->

@@ -89,7 +89,7 @@ qualRobEstView = angular.module('app_qualRobEstView', [
 # Every module will have a MODULE_NAMEEventMngr() service
 # which provides messaging with core
 ####
-.service('qualRobEstViewMngr', [
+.service('qualRobEstView_manager', [
   () ->
     _sb = null
 
