@@ -1,6 +1,6 @@
 'use strict'
 
-qualRobEst = angular.module('app.qualRobEst', [
+qualRobEst = angular.module('app_qualRobEst', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible

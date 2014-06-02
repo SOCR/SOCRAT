@@ -2,7 +2,7 @@
 
 # app.utils module
 
-utils = angular.module('app.utils', [])
+utils = angular.module('app_utils', [])
 
   .factory 'utils', ->
 

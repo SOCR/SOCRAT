@@ -2,11 +2,11 @@
 
 #app.core module contains
 
-core = angular.module('app.core', [
-  'app.eventMngr'
-  'app.sandbox'
-  'app.errorMngr'
-  'app.utils'
+core = angular.module('app_core', [
+  'app_eventMngr'
+  'app_sandbox'
+  'app_errorMngr'
+  'app_utils'
 ])
 
   .factory 'core', [

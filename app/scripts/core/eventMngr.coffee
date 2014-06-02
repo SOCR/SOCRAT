@@ -1,6 +1,6 @@
 'use strict'
 
-eventMngr = angular.module('app.eventMngr', ['app.mediator', 'app.utils'])
+eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 
 .service("eventMngr", [
   'pubSub'
@@ -34,7 +34,7 @@ eventMngr = angular.module('app.eventMngr', ['app.mediator', 'app.utils'])
 #        sb = _msgList
 
       # serialized subscription for arbitrary list of events
-      _subscribeForEvents: (msgList, listnrList, ...) ->
+      _subscribeForEvents: (msgList, listnrList...) ->
         # if listener parameter is missing, set up default callback
         listnrList ?= _eventManager
 

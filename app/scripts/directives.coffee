@@ -3,9 +3,9 @@
 ### Directives ###
 
 # register the module with Angular
-angular.module('app.directives', [
+angular.module('app_directives', [
   # require the 'app.service' module
-  'app.services'
+  'app_services'
 ])
 
 .directive('appVersion', [

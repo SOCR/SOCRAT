@@ -1,6 +1,6 @@
 'use strict'
 
-qualRobEstView = angular.module('app.qualRobEstView', [
+qualRobEstView = angular.module('app_qualRobEstView', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
