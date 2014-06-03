@@ -110,14 +110,14 @@ App.run([
   (core, db, getData, qualRobEstView, qualRobEst) ->
 
     map = [
-      msgFrom: '111'
+      msgFrom: 'add numbers'
       scopeFrom: ['qualRobEstView']
-      msgTo: '123'
+      msgTo: 'add numbers'
       scopeTo: ['qualRobEst']
     ,
-      msgFrom: '234'
+      msgFrom: 'numbers added'
       scopeFrom: ['qualRobEst']
-      msgTo: '000'
+      msgTo: 'numbers added'
       scopeTo: ['qualRobEstView']
     ,
       msgFrom:'save table'
