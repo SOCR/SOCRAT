@@ -4,14 +4,11 @@ qualRobEstView = angular.module('app_qualRobEstView', [])
 
 .factory('qualRobEstView', [
   'qualRobEstView_manager'
-  (ctrlMngr) ->
+  (manager) ->
     (sb) ->
-      ctrlMngr.setSb sb unless !sb?
 
-      _msgList =
-        outgoing: ['add numbers']
-        incoming: ['numbers added']
-        scope: ['qualRobEstView']
+      manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
 
       init: (opt) ->
         console.log 'qualRobEstView init invoked'
@@ -25,14 +22,23 @@ qualRobEstView = angular.module('app_qualRobEstView', [])
   () ->
     _sb = null
 
+    _msgList =
+      outgoing: ['add numbers']
+      incoming: ['numbers added']
+      scope: ['qualRobEstView']
+
     _setSb = (sb) ->
       _sb = sb
 
     _getSb = () ->
       _sb
 
+    _getMsgList = () ->
+      _msgList
+
     getSb: _getSb
     setSb: _setSb
+    getMsgList: _getMsgList
 ])
 
 .controller('qualRobEstViewSidebarCtrl', [
@@ -69,7 +75,6 @@ qualRobEstView = angular.module('app_qualRobEstView', [])
     sb.subscribe
       msg: 'numbers added'
       listener: (msg, data) ->
-        console.log 'GOT RESULT'
         $scope.sum = data
       msgScope: ['qualRobEstView']
 ])

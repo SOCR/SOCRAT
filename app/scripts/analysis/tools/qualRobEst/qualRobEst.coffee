@@ -8,11 +8,7 @@ qualRobEst = angular.module('app_qualRobEst', [])
     (sb) ->
 
       manager.setSb sb unless !sb?
-
-      _msgList =
-        outgoing: ['numbers added']
-        incoming: ['add numbers']
-        scope: ['qualRobEst']
+      _msgList = manager.getMsgList()
 
       init: (opt) ->
         console.log 'qualRobEst init invoked'
@@ -27,6 +23,11 @@ qualRobEst = angular.module('app_qualRobEst', [])
   (estimator) ->
     _sb = null
 
+    _msgList =
+      outgoing: ['numbers added']
+      incoming: ['add numbers']
+      scope: ['qualRobEst']
+
     _setSb = (sb) ->
       _sb = sb
       estimator.setSb sb
@@ -34,8 +35,12 @@ qualRobEst = angular.module('app_qualRobEst', [])
     _getSb = () ->
       _sb
 
+    _getMsgList = () ->
+      _msgList
+
     getSb: _getSb
     setSb: _setSb
+    getMsgList: _getMsgList
 ])
 
 .factory('estimator', [
