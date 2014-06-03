@@ -30,23 +30,44 @@ qualRobEst = angular.module('app_qualRobEst', [
 ####
 .factory('qualRobEst', [
   'qualRobEst_manager'
-  (qualRobEstMngr) ->
+  'estimator'
+  (qualRobEstMngr, estimator) ->
     (sb) ->
+      console.log sb
       qualRobEstMngr.setSb sb unless !sb?
       _msgList = qualRobEstMngr.getMsgList()
 
       init: (opt) ->
         console.log 'qualRobEst init invoked'
-        # TODO: need to use this or just setLocalListener (which will subscribe automatically inside eventMngr)?
-        # TODO: i.e. does module listen for incoming events if components didn't ask about it?
-#        sb.subscribeForEvents(
-#          qualRobEstMngr.msgList.incoming
-#          qualRobEstMngr.eventManager
-#        ) unless !sb?
+        estimator.initEstimator(sb)
 
       destroy: () ->
 
       msgList: _msgList
+])
+####
+# Service for parameters estimation
+####
+.service('estimator', [
+#  'qualRobEst_manager'
+#  (qualRobEstMngr) ->
+  () ->
+    console.log 'estimator executed'
+    _initEstimator = (sb) ->
+#      sb = qualRobEstMngr.getSb()
+      sb.subscribe
+        msg: 'add numbers'
+        listener: (msg, data) ->
+          console.log '--- parameters estimation --> just return concatenation ---'
+          console.log data
+          sum = data.a + data.b
+          sb.publish
+            msg: 'numbers added'
+            data: sum
+            msgScope: ['qualRobEst']
+        msgScope: ['qualRobEst']
+
+    initEstimator: _initEstimator
 ])
 ####
 # Every module will have a MODULE_NAMEEventMngr() service
@@ -65,23 +86,9 @@ qualRobEst = angular.module('app_qualRobEst', [
       return false if sb is undefined
       _sb = sb
 
+    getSb: () ->
+      _sb
+
     getMsgList: () ->
       _msgList
-
-    sb: _sb
-])
-####
-# Service for parameters estimation
-####
-.service('estimator', [
-  'qualRobEst_manager'
-  (qualRobEstMngr) ->
-#    qualRobEstMngr.sb.setLocalListener 'add numbers', (data) ->
-      qualRobEstMngr.sb.subscribe 'add numbers', (data) ->
-      console.log '--- parameters estimation --> just return concatenation ---'
-      sum = data.a + data.b
-      qualRobEstMngr.sb.publish
-        msg: 'numbers added'
-        data: sum
-        msgScope: qualRobEst
 ])

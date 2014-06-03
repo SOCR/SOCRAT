@@ -23,8 +23,8 @@ qualRobEstView = angular.module('app_qualRobEstView', [
 # getDataViewCtrl is the ctrl that talks to the view.
 # ###
 .controller('qualRobEstViewSidebarCtrl', [
-#  '$scope'
-  'qualRobEstViewMngr'
+  '$scope'
+  'qualRobEstView_manager'
   ($scope, qualRobEstViewMngr) ->
     console.log 'qualRobEstViewSidebarCtrl executed'
 
@@ -35,27 +35,30 @@ qualRobEstView = angular.module('app_qualRobEstView', [
     $scope.noiseLevel = '0.2'
     $scope.estParam = '0.5'
 
+    sb = qualRobEstViewMngr.getSb()
     $scope.sumNumbers = () ->
-      qualRobEstViewMngr.sb.publish
+      sb.publish
         msg: 'add numbers'
         data:
           a: $scope.outcomeDim
           b: $scope.outcomeLevels
-        msgScope: 'qualRobEstView'
+        msgScope: ['qualRobEstView']
 ])
 
 .controller('qualRobEstViewMainCtrl', [
-#  '$scope'
-  'qualRobEstViewMngr'
+  '$scope'
+  'qualRobEstView_manager'
   ($scope, qualRobEstViewMngr) ->
     console.log 'qualRobEstViewMainCtrl executed'
-    qualRobEstViewMngr.sb.subscribe
+    console.log qualRobEstViewMngr
+    sb = qualRobEstViewMngr.getSb()
+    console.log sb
+    sb.subscribe
       msg: 'numbers added'
-      listener: (msg, data) -> $scope.sum = data
-      msgScope: 'qualRobEstView'
-#    $scope.sum = qualRobEstViewEventMngr.sum
-#    $scope.$on 'newSum', (event, pushData) ->
-#
+      listener: (msg, data) ->
+        console.log 'GOT RESULT'
+        $scope.sum = data
+      msgScope: ['qualRobEstView']
 ])
 ####
 #  Every module is supposed have a factory method
@@ -92,6 +95,7 @@ qualRobEstView = angular.module('app_qualRobEstView', [
 ####
 .service('qualRobEstView_manager', [
   () ->
+    console.log 'qualRobEstView_manager executed'
     _sb = null
 
     _msgList =
@@ -103,8 +107,9 @@ qualRobEstView = angular.module('app_qualRobEstView', [
       return false if sb is undefined
       _sb = sb
 
+    getSb: () ->
+      _sb
+
     getMsgList: () ->
       _msgList
-
-    sb: _sb
 ])

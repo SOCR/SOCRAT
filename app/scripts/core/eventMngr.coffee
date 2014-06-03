@@ -38,17 +38,21 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 #        sb = _msgList
 
 #    serialized subscription for arbitrary list of events
-    _subscribeForEvents = (msgList, listnrList...) ->
+    _subscribeForEvents = (events, listnrList...) ->
+      console.log 'subscribing for'
+      console.log events
+      console.log listnrList
       # if listener parameter is missing, set up default callback
       listnrList ?= _eventManager
 
-      for msg, i of msgList
+      for i, msg of events.msgList
+        console.log msg
         mediator.subscribe
           msg: msg
         # checking if array of listeners was passes as a parameter
           listener: if utils.typeIsArray listnrList then listnrList[i] else listnrList
-          msgScope: msgList.scope
-          context: msgList.context
+          msgScope: events.scope
+          context: events.context
 
     setLocalListeners: _setLocalListeners
     subscribeForEvents: _subscribeForEvents

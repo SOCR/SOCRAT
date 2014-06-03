@@ -114,6 +114,7 @@ core = angular.module('app_core', [
           _addModule.apply @, [moduleId, creator, opt]
         catch e
 #          console.log e
+          console.log "could not register module" + moduleId
           console.error "could not register module #{moduleId}: #{e.message}"
           false
 
@@ -135,10 +136,14 @@ core = angular.module('app_core', [
 
       # subscribe for outgoing events from module
       _subscribeForModuleEvents = (moduleId, msgList, API) ->
-        msgList.scope = moduleId
+#        msgList.scope = moduleId
         # TODO: change context
-        msgList.scope = console
-        eventMngr.subscribeForEvents msgList, API
+#        msgList.context = console
+        eventMngr.subscribeForEvents
+          msgList: msgList
+          scope: [moduleId]
+          context: console
+          , API
 #        for msg in msgList
 #          mediator.subscribe
 #            msg: msg
@@ -289,6 +294,7 @@ core = angular.module('app_core', [
 
 #     TODO: abstract it to eventMngr module
       _API = (msg, data) ->
+        console.log 'API HERE'
         for o in _map when o.msgFrom is msg
           _sendMessage o.msgTo, data, o.scopeTo
           return true
