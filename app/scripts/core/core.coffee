@@ -254,29 +254,29 @@ core = angular.module('app_core', [
 
       _ls = (o) -> (id for id, m of o)
 
-      _registerPlugin = (plugin) ->
-        try
-          _checkType 'object', plugin, 'plugin'
-          _checkType 'string', plugin.id, '"id" of plugin'
-
-          if typeof plugin.sandbox is 'function'
-            Sandbox::[k] ?= v for k, v of plugin.sandbox::
-
-          if typeof plugin.core is 'function'
-            Core::[k] ?= v for k,v of plugin.core::
-
-          if typeof plugin.core is 'object'
-            Core::[k] ?= v for k,v of plugin.core
-
-          if typeof plugin.base is 'object'
-            base[k] ?= v for k,v of plugin.base
-
-          plugins[plugin.id] = plugin
-          true
-
-        catch e
-#          console.error e
-          false
+#      _registerPlugin = (plugin) ->
+#        try
+#          _checkType 'object', plugin, 'plugin'
+#          _checkType 'string', plugin.id, '"id" of plugin'
+#
+#          if typeof plugin.sandbox is 'function'
+#            Sandbox::[k] ?= v for k, v of plugin.sandbox::
+#
+#          if typeof plugin.core is 'function'
+#            Core::[k] ?= v for k,v of plugin.core::
+#
+#          if typeof plugin.core is 'object'
+#            Core::[k] ?= v for k,v of plugin.core
+#
+#          if typeof plugin.base is 'object'
+#            base[k] ?= v for k,v of plugin.base
+#
+#          plugins[plugin.id] = plugin
+#          true
+#
+#        catch e
+##          console.error e
+#          false
 
       _setEventsMapping = (map) ->
         _checkType 'object', map, 'event map'
@@ -286,7 +286,6 @@ core = angular.module('app_core', [
       _sendMessage = (msg, data, scopeArray) ->
         console.log 'core sends: ' + msg + ' data: ' + data +
           ' scope: ' + scopeArray
-#        mediator.publish
         eventMngr.publish
           msg: msg
           data: data
@@ -294,7 +293,6 @@ core = angular.module('app_core', [
 
 #     TODO: abstract it to eventMngr module
       _API = (msg, data) ->
-        console.log 'API HERE'
         for o in _map when o.msgFrom is msg
           _sendMessage o.msgTo, data, o.scopeTo
           return true
