@@ -29,8 +29,7 @@ App.config([
   '$locationProvider'
   '$urlRouterProvider'
   '$stateProvider'
-
-( $locationProvider, $urlRouterProvider, $stateProvider) ->
+  ($locationProvider, $urlRouterProvider, $stateProvider) ->
 
   console.log "config block of app module"
   $urlRouterProvider.when('/','/')
@@ -61,7 +60,6 @@ App.config([
           templateUrl: 'partials/projects.html'
           controller: 'projectCtrl'
     )
-
     .state('contact'
       url: '/contact'
       views:
