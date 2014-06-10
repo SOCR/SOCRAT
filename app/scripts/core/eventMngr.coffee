@@ -29,14 +29,6 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
         data: _data
         msgScope: msgList.scope
 
-#  #   Getter and setter for mgsList
-#      _getMsgList: () ->
-#        msgList
-#
-#      _setMsgList: (_msgList) ->
-#        return false if _msgList is undefined
-#        sb = _msgList
-
 #    serialized subscription for arbitrary list of events
     _subscribeForEvents = (events, listnrList...) ->
       console.log 'subscribing for'
