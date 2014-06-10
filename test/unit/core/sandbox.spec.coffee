@@ -4,7 +4,7 @@
 
 describe 'Sandbox module', ->
 
- $injector = angular.injector ['app.sandbox']
+ $injector = angular.injector ['app.app_sandbox']
 
  describe 'provides service sandbox', ->
    Sandbox = $injector.get 'Sandbox'
@@ -14,9 +14,6 @@ describe 'Sandbox module', ->
      it 'returns an object', ->
        (expect typeof new Sandbox {}, 'myId').toEqual 'object'
        (expect new Sandbox {}, 'myId').not.toBe(new Sandbox {}, 'myId')
-
-     # toThrow matcher ignores error type and only checks an error's message
-     # https://github.com/pivotal/jasmine/issues/227
 
      it 'throws an error if the core was not defined', ->
        (expect -> new Sandbox null, 'an id').toThrow 'core was not defined'
