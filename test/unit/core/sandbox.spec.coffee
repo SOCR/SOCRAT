@@ -4,7 +4,7 @@
 
 describe 'Sandbox module', ->
 
- $injector = angular.injector ['app.app_sandbox']
+ $injector = angular.injector ['app_sandbox']
 
  describe 'provides service sandbox', ->
    Sandbox = $injector.get 'Sandbox'
@@ -16,13 +16,13 @@ describe 'Sandbox module', ->
        (expect new Sandbox {}, 'myId').not.toBe(new Sandbox {}, 'myId')
 
      it 'throws an error if the core was not defined', ->
-       (expect -> new Sandbox null, 'an id').toThrow 'core was not defined'
+       (expect -> new Sandbox null, 'an id').toThrow new TypeError "core was not defined"
 
      it 'throws an error if no id was specified', ->
-       (expect -> new Sandbox {}).toThrow 'no id was specified'
+       (expect -> new Sandbox {}).toThrow new TypeError 'no id was specified'
 
      it 'throws an error if id is not a string', ->
-       (expect -> new Sandbox {},{}).toThrow 'id is not a string'
+       (expect -> new Sandbox {},{}).toThrow new TypeError 'id is not a string'
 
      it 'stores the instance id in "instanceID"', ->
        sandbox = new Sandbox {}, 'myId'
