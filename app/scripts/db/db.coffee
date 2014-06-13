@@ -20,33 +20,43 @@ db.factory 'app_database_constructor', [
   'app_database_manager'
   (manager)->
     (sb)->
+
+      manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
+
       init: (opt) ->
         console.log 'db init called'
-        sb.listenToIncomeEvents(manager.msgList.incoming)
 
       destroy: () ->
 
       msgList: _msgList
-
-      sb:sb
 ]
 
 db.factory 'app_database_manager',->
-  _sb = null
-  _msgList =
-        incoming:['save table','get table','delete table'],
-        outgoing:['table saved','take table','table deleted'],
-        scope: ['database']
+  'app_database_dv'
+  (database)->
+    _sb = null
+    _msgList =
+          incoming:['create table','get table','delete table'],
+          outgoing:['table created','take table','table deleted'],
+          scope: ['database']
 
-  msgList:_msgList
-  setSb:(sb)->
-    if sb?
+    _setSb = (sb) ->
       _sb = sb
-  sb:_sb
+      database.setSb sb
+
+    _getSb = () ->
+      _sb
+
+    _getMsgList = () ->
+      _msgList
+
+    getSb: _getSb
+    setSb: _setSb
+    getMsgList: _getMsgList
 
 db.service 'app_database_dv',[
-  'app_database_manager'
-  (manager) ->
+  () ->
     #contains references to all the tables created.
     _registry = []
 
@@ -176,12 +186,42 @@ db.service 'app_database_dv',[
       if _registry[tname]?
         _registry[tname].where(q)
 
-    # registering database callbacks for all possible incoming messages.
-  	# manager.sb.setLocalListeners [
-  	# 	{incoming:'save table',outgoing:'table saved',event:_db.create}
-  	# 	{incoming:'get table',outgoing:'take table',event:_db.get}
-  	# ]
+    #set all the callbacks here.
+    _setSb = ((_db) ->
+      (sb)->
+        #registering database callbacks for all possible incoming messages.
+        _methods = [
+          {incoming:'save table',outgoing:'table saved',event:_db.create}
+          {incoming:'get table',outgoing:'take table',event:_db.get}
+        ]
+        
+        _status = _methods.map (method)->
+          sb.subscribe
+            msg: method['incoming']
+            listener: (msg,data)->
+              _data = method.event data
 
-    #returns the database object.
-    _db
+              if _data is false
+                if typeof data.promise isnt "undefined"
+                  data.promise.reject('table operation failed')
+                false
+              
+              #all publish calls should pass a promise in the data object.
+              #if promise is not defined, create one and pass it along.
+              
+              if typeof data.promise isnt "undefined"
+                _data['promise'] = $q.defer()
+              else
+                _data['promise'] = data.promise
+
+              sb.publish
+                msg:'take table'
+                data: _data
+                msgScope:['database']
+            msgScope:['database']
+
+          #console.log(_status)
+    )(_db)
+
+    setSb: _setSb
 ]

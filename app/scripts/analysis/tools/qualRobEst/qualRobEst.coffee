@@ -1,9 +1,9 @@
 'use strict'
 
-qualRobEst = angular.module('app_qualRobEst', [])
+qualRobEst = angular.module('app_analysis_qualRobEst', [])
 
-.factory('qualRobEst', [
-  'qualRobEst_manager'
+.factory('app_database_constructor', [
+  'app_anaylsis_qualRobEst_manager'
   (manager) ->
     (sb) ->
 
@@ -18,7 +18,7 @@ qualRobEst = angular.module('app_qualRobEst', [])
       msgList: _msgList
 ])
 
-.factory('qualRobEst_manager', [
+.factory('app_analysis_qualRobEst_manager', [
   'estimator'
   (estimator) ->
     _sb = null
