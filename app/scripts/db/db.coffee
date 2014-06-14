@@ -55,137 +55,143 @@ db.factory 'app_database_manager',->
     setSb: _setSb
     getMsgList: _getMsgList
 
-db.service 'app_database_dv',[
-  () ->
-    #contains references to all the tables created.
-    _registry = []
+db.service 'app_database_dv', ()->
 
-    _db = {}
-    ###
-      @returns {string|boolean}
-    ###
-    _register = (tname,ref)->
-      return false if _registry[tname]?
-    		# #name already exists. Create an alternate name.
-      #   tname = '_' + tname
-      #   _register tname,ref
-      _registry[tname] = ref
-      tname
+  #contains references to all the tables created.
+  _registry = []
 
-    _fire = (tname,cname)->
-      if _registry[tname]?
-        _l = _listeners[tname]
-      #trigger all listeners attached to the column `name`
-      if cname? && _l[cname]?
-        i = 0
-        while i < _l[cname].length
-          _l[cname][i] _registry[tname].get(cname)
-          i++
+  _db = {}
+  ###
+    @returns {string|boolean}
+  ###
+  _register = (tname,ref)->
+    return false if _registry[tname]?
+  		# #name already exists. Create an alternate name.
+    #   tname = '_' + tname
+    #   _register tname,ref
+    _registry[tname] = ref
+    tname
 
-      #trigger all listeners attached to the table.
-      if _l.table.length is not 0
-        i = 0
-        while i < _l.table.length
-          _l.table[i] _registry[tname]
-          i++
+  _fire = (tname,cname)->
+    if _registry[tname]?
+      _l = _listeners[tname]
+    #trigger all listeners attached to the column `name`
+    if cname? && _l[cname]?
+      i = 0
+      while i < _l[cname].length
+        _l[cname][i] _registry[tname].get(cname)
+        i++
 
-    _db.create = (input,tname)->
-      return false if _registry[tname]?
-      #create table
-      _ref = dv.table(input)
-      # register the reference to the table
-      _register(tname,_ref)
-      _db
+    #trigger all listeners attached to the table.
+    if _l.table.length is not 0
+      i = 0
+      while i < _l.table.length
+        _l.table[i] _registry[tname]
+        i++
 
-    _db.addColumn = (cname, values, type, iscolumn...,tname)->
-      if _registry[tname]?
-        _registry[tname].addColumn(cname, values, type, iscolumn)
-        manager.sb.send
-          'msg' : tname
-          'msgScope' : ['database']
-        #@todo: Why sending 2 different messages?
-        manager.sb.send
-          msg: tname+':'+cname
-          msgScope:['database']
+  _db.create = (input,tname)->
+    return false if _registry[tname]?
+    #create table
+    _ref = dv.table(input)
+    # register the reference to the table
+    _register(tname,_ref)
+    _db
 
-    _db.removeColumn = (cname,tname)->
-      if _registry[tname]?[cname]?
-        delete _registry[tname][cname]
-        true
+  _db.addColumn = (cname, values, type, iscolumn...,tname)->
+    if _registry[tname]?
+      _registry[tname].addColumn(cname, values, type, iscolumn)
+      manager.sb.send
+        'msg' : tname
+        'msgScope' : ['database']
+      #@todo: Why sending 2 different messages?
+      manager.sb.send
+        msg: tname+':'+cname
+        msgScope:['database']
+
+  _db.removeColumn = (cname,tname)->
+    if _registry[tname]?[cname]?
+      delete _registry[tname][cname]
+      true
+    else
+      false
+
+  _db.addListener = (opts)->
+    if opts?
+      if typeof opts is 'function'
+        return false
       else
-        false
-
-    _db.addListener = (opts)->
-      if opts?
-        if typeof opts is 'function'
-          return false
-        else
-          if opts.table?
-            if opts.column?
-              msg = opts.table+':'+opts.column
-            else
-              msg = opts.table
-            if _registry[opts.table]?
-              #_listeners[table][col] = _listeners[table][col] || []
-              #_listeners[table][col].push fn
-              manager.sb.send
-                'msg' : msg
-                'listener': opts.listener
-                'msgScope': ['database']
-
-
-    # destroy any table
-    _db.destroy = (tname)->
-      if _registry[tname]?
-        delete _registry[tname]
-        true
-      else
-        false
-
-    _db.rows = (tname)->
-      if _registry[tname]?
-        _registry[tname].rows()
-
-    _db.cols = (tname)->
-      if _registry[tname]?
-        _registry[tname].cols()
-
-    _db.get = (tname,col,row)->
-      if _registry[tname]?
-        if col?
-          if row?
-            _registry[tname][col].get row
+        if opts.table?
+          if opts.column?
+            msg = opts.table+':'+opts.column
           else
-            _registry[tname][col]
+            msg = opts.table
+          if _registry[opts.table]?
+            #_listeners[table][col] = _listeners[table][col] || []
+            #_listeners[table][col].push fn
+            manager.sb.send
+              'msg' : msg
+              'listener': opts.listener
+              'msgScope': ['database']
+
+
+  # destroy any table
+  _db.destroy = (tname)->
+    if _registry[tname]?
+      delete _registry[tname]
+      true
+    else
+      false
+
+  _db.rows = (tname)->
+    if _registry[tname]?
+      _registry[tname].rows()
+
+  _db.cols = (tname)->
+    if _registry[tname]?
+      _registry[tname].cols()
+
+  _db.get = (tname,col,row)->
+    if _registry[tname]?
+      if col?
+        if row?
+          _registry[tname][col].get row
         else
-          #TODO : returned object is dv object.
-          # need to return only the table content
-          _registry[tname]
+          _registry[tname][col]
       else
-        false
+        #TODO : returned object is dv object.
+        # need to return only the table content
+        _registry[tname]
+    else
+      false
 
-    _db.exists = (tname)->
-      if _registry[tname]?
-        true
-      else
-        false
+  _db.exists = (tname)->
+    if _registry[tname]?
+      true
+    else
+      false
 
-    # Query methods
-    _db.query = (q,name)->
-      _db.dense_query(q,name)
+  # Query methods
+  _db.query = (q,name)->
+    _db.dense_query(q,name)
 
-    _db.dense_query = (q,tname)->
-      if _registry[tname]?
-        _registry[tname].dense_query(q)
+  _db.dense_query = (q,tname)->
+    if _registry[tname]?
+      _registry[tname].dense_query(q)
 
-    _db.sparse_query = (q,tname)->
-      if _registry[tname]?
-        _registry[tname].sparse_query(q)
+  _db.sparse_query = (q,tname)->
+    if _registry[tname]?
+      _registry[tname].sparse_query(q)
 
-    _db.where = (q,tname)->
-      if _registry[tname]?
-        _registry[tname].where(q)
+  _db.where = (q,tname)->
+    if _registry[tname]?
+      _registry[tname].where(q)
 
+  _db
+
+
+db.service 'database',[
+  'app_database_dv'
+  (_db)->
     #set all the callbacks here.
     _setSb = ((_db) ->
       (sb)->
@@ -222,6 +228,5 @@ db.service 'app_database_dv',[
 
           #console.log(_status)
     )(_db)
-
-    setSb: _setSb
-]
+    setSb:_setSb
+  ]
