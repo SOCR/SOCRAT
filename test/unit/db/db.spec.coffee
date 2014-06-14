@@ -70,7 +70,7 @@ describe "app.db module", ->
         app_database_dv.create table, "test"
         app_database_dv.addColumn "C", colC, "numeric", "test"
         expect(app_database_dv.get "test", "C").toMatch [12,3,42,4]
-        
+
     it "remove column from existing table ", ->
       inject (app_database_dv)->
         app_database_dv.create table, "test"
@@ -96,33 +96,33 @@ describe "app.db module", ->
         app_database_dv.addColumn "C", colC, "numeric", "test"
         expect(foo.cb).toHaveBeenCalled()
 
-    it "add listeners to a column and trigger with model change", ->
-      inject (app_database_dv)->
-        app_database_dv.create table, "test"
-        foo =
-          cb1 : ->
-          cb2 : ->
-        spyOn(foo,"cb1")
-        spyOn(foo,"cb2")
-        app_database_dv.addListener
-          table : "test"
-          column: "C" 
-          listener:foo.cb1
-        app_database_dv.addListener
-          table : "test"
-          column: "B" 
-          listener:foo.cb2
-        app_database_dv.addColumn "C", colC, "numeric", "test"
-        expect(foo.cb1).toHaveBeenCalled()
-        expect(foo.cb2).not.toHaveBeenCalled()
-
+    # it "add listeners to a column and trigger with model change", ->
+    #   inject (app_database_dv)->
+    #     app_database_dv.create table, "test"
+    #     foo =
+    #       cb1 : ->
+    #       cb2 : ->
+    #     spyOn(foo,"cb1")
+    #     spyOn(foo,"cb2")
+    #     app_database_dv.addListener
+    #       table : "test"
+    #       column: "C" 
+    #       listener:foo.cb1
+    #     app_database_dv.addListener
+    #       table : "test"
+    #       column: "B" 
+    #       listener:foo.cb2
+    #     app_database_dv.addColumn "C", colC, "numeric", "test"
+    #     expect(foo.cb1).toHaveBeenCalled()
+    #     expect(foo.cb2).not.toHaveBeenCalled()
+        
     it "destroys a table if it exists", ->
       inject (app_database_dv)->
         app_database_dv.create table, "tab1"
         expect(app_database_dv.destroy "tab1").toBeTruthy()
         expect(app_database_dv.destroy "tab2").toBeFalsy()
         expect(app_database_dv.exists "tab1").toBeFalsy()
-        
+
     it "append data to column.", ->
       # method doesnt exist yet. Will do this when the method is implemented.
 
@@ -168,35 +168,32 @@ describe "app.db module", ->
           , "tab1"
         expect(filter).toMatch [["b","c"], [2,1]]
 
-  # describe 'dbEventMngr',->
+          # describe 'dbEventMngr',->
 
-  #   it "executes registered methods on publishing of registered msgs in the msgList", ->
-  #     inject (app_database_dv,db,dbEventMngr,pubSub,$q)->
-  #       db = new db()
-  #       #creating the sandbox
-  #       dbEventMngr.setSb(pubSub)
-  #       #instantiating the app
-  #       db.init()
-  #       #create a promise
-  #       deferred = $q.defer()
-  #       _data = [table,'test',deferred]
-  #       foo = 
-  #         cb : ->
-  #       spyOn(foo,'cb')
-  #       #subscribing to the outcome msg for 'save table'
-  #       pubSub.subscribe
-  #         msg:'table saved'
-  #         listener:foo.cb
-  #         msgScope:['app_database_dv']
-  #       #manually publishing the msg 'save table'
-  #       pubSub.publish
-  #         msg:'save table'
-  #         data: _data
-  #         msgScope:['app_database_dv']
-  #       #expect the eventManager in the app_database_dv service
-  #       #to process and publish 'table saved' msg  
-  #       expect(foo.cb).toHaveBeenCalled()
-
-
-
-
+    # it "executes registered methods on publishing of registered msgs in the msgList", ->
+    #   inject (app_database_dv,app_database,dbEventMngr,pubSub,$q)->
+    #     db = new app_database()
+    #     #creating the sandbox
+    #     dbEventMngr.setSb(pubSub)
+    #     #instantiating the app
+    #     db.init()
+    #     #create a promise
+    #     deferred = $q.defer()
+    #     _data = [table,'test',deferred]
+    #     foo = 
+    #       cb : ->
+    #     spyOn(foo,'cb')
+    #     #subscribing to the outcome msg for 'save table'
+    #     pubSub.subscribe
+    #       msg:'table saved'
+    #       listener:foo.cb
+    #       msgScope:['app_database_dv']
+    #     #manually publishing the msg 'save table'
+    #     pubSub.publish
+    #       msg:'save table'
+    #       data: _data
+    #       msgScope:['app_database_dv']
+    #     #expect the eventManager in the app_database_dv service
+    #     #to process and publish 'table saved' msg  
+    #     expect(foo.cb).toHaveBeenCalled()
+    

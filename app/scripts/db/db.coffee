@@ -55,11 +55,11 @@ db.factory 'app_database_manager',->
     setSb: _setSb
     getMsgList: _getMsgList
 
-db.service 'app_database_dv', ()->
+db.service 'app_database_dv', ->
 
   #contains references to all the tables created.
   _registry = []
-
+  _listeners = {}
   _db = {}
   ###
     @returns {string|boolean}
@@ -73,20 +73,25 @@ db.service 'app_database_dv', ()->
     tname
 
   _fire = (tname,cname)->
-    if _registry[tname]?
-      _l = _listeners[tname]
+    #console.log _listeners
+    if typeof _registry[tname] isnt "undefined"
+      _l = _listeners[tname] || []
+    else
+      return false
     #trigger all listeners attached to the column `name`
-    if cname? && _l[cname]?
+    if cname? && typeof _l[cname] isnt "undefined"
       i = 0
       while i < _l[cname].length
-        _l[cname][i] _registry[tname].get(cname)
+        _l[cname][i] _registry[tname].get(cname) if typeof _l[cname][i] is "function"
+
         i++
 
     #trigger all listeners attached to the table.
-    if _l.table.length is not 0
+    #console.log _l?.length
+    if _l?.length isnt 0
       i = 0
-      while i < _l.table.length
-        _l.table[i] _registry[tname]
+      while i < _l.length
+        _l[i] _registry[tname] if typeof _l[i] is "function"
         i++
 
   _db.create = (input,tname)->
@@ -99,18 +104,15 @@ db.service 'app_database_dv', ()->
 
   _db.addColumn = (cname, values, type, iscolumn...,tname)->
     if _registry[tname]?
-      _registry[tname].addColumn(cname, values, type, iscolumn)
-      manager.sb.send
-        'msg' : tname
-        'msgScope' : ['database']
-      #@todo: Why sending 2 different messages?
-      manager.sb.send
-        msg: tname+':'+cname
-        msgScope:['database']
-
+      _registry[tname].addColumn cname, values, type, iscolumn
+      #fire away all listeners on the new column.
+      _fire tname,cname
+      
   _db.removeColumn = (cname,tname)->
     if _registry[tname]?[cname]?
       delete _registry[tname][cname]
+      #fire away all listeners on the new column.
+      _fire tname,cname
       true
     else
       false
@@ -121,19 +123,13 @@ db.service 'app_database_dv', ()->
         return false
       else
         if opts.table?
+          _listeners[opts.table] = _listeners[opts.table] || []
           if opts.column?
-            msg = opts.table+':'+opts.column
+            _listeners[opts.table][opts.column] = _listeners[opts.table][opts.column] || []
+            _listeners[opts.table][opts.column].push opts.listener
           else
-            msg = opts.table
-          if _registry[opts.table]?
-            #_listeners[table][col] = _listeners[table][col] || []
-            #_listeners[table][col].push fn
-            manager.sb.send
-              'msg' : msg
-              'listener': opts.listener
-              'msgScope': ['database']
-
-
+            _listeners[opts.table].push opts.listener
+    console.log _listeners[opts.table][opts.column]
   # destroy any table
   _db.destroy = (tname)->
     if _registry[tname]?
@@ -199,8 +195,16 @@ db.service 'database',[
         _methods = [
           {incoming:'save table',outgoing:'table saved',event:_db.create}
           {incoming:'get table',outgoing:'take table',event:_db.get}
+          {incoming:'add listener',outgoing:'listener added',event:_db.addListener}
         ]
-        
+        manager.sb.send
+        'msg' : tname
+        'msgScope' : ['database']
+      #@todo: Why sending 2 different messages?
+      manager.sb.send
+        msg: tname+':'+cname
+        msgScope:['database']
+
         _status = _methods.map (method)->
           sb.subscribe
             msg: method['incoming']
