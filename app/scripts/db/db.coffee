@@ -73,25 +73,26 @@ db.service 'app_database_dv', ->
     tname
 
   _fire = (tname,cname)->
-    #console.log _listeners
-    if typeof _registry[tname] isnt "undefined"
-      _l = _listeners[tname] || []
+
+    if typeof _registry[tname] isnt "undefined" && typeof _listeners[tname] isnt "undefined"
+      _table = _listeners[tname]
     else
       return false
-    #trigger all listeners attached to the column `name`
-    if cname? && typeof _l[cname] isnt "undefined"
-      i = 0
-      while i < _l[cname].length
-        _l[cname][i] _registry[tname].get(cname) if typeof _l[cname][i] is "function"
 
+    #trigger all listeners attached to the column `name`
+
+    if cname? && typeof _table[cname] isnt "undefined"
+      i = 0
+      while i < _table[cname].cb.length
+        _table[cname].cb[i] _registry[tname][cname] if typeof _table[cname].cb[i] is "function"
         i++
 
     #trigger all listeners attached to the table.
     #console.log _l?.length
-    if _l?.length isnt 0
+    if _table.cb?.length isnt 0
       i = 0
-      while i < _l.length
-        _l[i] _registry[tname] if typeof _l[i] is "function"
+      while i < _table.cb.length
+        _table.cb[i] _registry[tname] if typeof _table.cb[i] is "function"
         i++
 
   _db.create = (input,tname)->
@@ -110,9 +111,9 @@ db.service 'app_database_dv', ->
       
   _db.removeColumn = (cname,tname)->
     if _registry[tname]?[cname]?
-      delete _registry[tname][cname]
       #fire away all listeners on the new column.
       _fire tname,cname
+      delete _registry[tname][cname]
       true
     else
       false
@@ -123,13 +124,14 @@ db.service 'app_database_dv', ->
         return false
       else
         if opts.table?
-          _listeners[opts.table] = _listeners[opts.table] || []
+          _listeners[opts.table] = _listeners[opts.table] || {cb:[]}
           if opts.column?
-            _listeners[opts.table][opts.column] = _listeners[opts.table][opts.column] || []
-            _listeners[opts.table][opts.column].push opts.listener
+            _listeners[opts.table][opts.column] = _listeners[opts.table][opts.column] || {cb:[]}
+            _listeners[opts.table][opts.column]['cb'].push opts.listener
           else
-            _listeners[opts.table].push opts.listener
-    console.log _listeners[opts.table][opts.column]
+            _listeners[opts.table]['cb'].push opts.listener
+    console.log _listeners[opts.table]
+  
   # destroy any table
   _db.destroy = (tname)->
     if _registry[tname]?

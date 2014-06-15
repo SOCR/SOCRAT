@@ -96,25 +96,25 @@ describe "app.db module", ->
         app_database_dv.addColumn "C", colC, "numeric", "test"
         expect(foo.cb).toHaveBeenCalled()
 
-    # it "add listeners to a column and trigger with model change", ->
-    #   inject (app_database_dv)->
-    #     app_database_dv.create table, "test"
-    #     foo =
-    #       cb1 : ->
-    #       cb2 : ->
-    #     spyOn(foo,"cb1")
-    #     spyOn(foo,"cb2")
-    #     app_database_dv.addListener
-    #       table : "test"
-    #       column: "C" 
-    #       listener:foo.cb1
-    #     app_database_dv.addListener
-    #       table : "test"
-    #       column: "B" 
-    #       listener:foo.cb2
-    #     app_database_dv.addColumn "C", colC, "numeric", "test"
-    #     expect(foo.cb1).toHaveBeenCalled()
-    #     expect(foo.cb2).not.toHaveBeenCalled()
+    it "add listeners to a column and trigger with model change", ->
+      inject (app_database_dv)->
+        app_database_dv.create table, "test"
+        foo =
+          cb1 : ->
+          cb2 : ->
+        spyOn(foo,"cb1")
+        spyOn(foo,"cb2")
+        app_database_dv.addListener
+          table : "test"
+          column: "C" 
+          listener:foo.cb1
+        app_database_dv.addListener
+          table : "test"
+          column: "B" 
+          listener:foo.cb2
+        app_database_dv.addColumn "C", colC, "numeric", "test"
+        expect(foo.cb1).toHaveBeenCalled()
+        expect(foo.cb2).not.toHaveBeenCalled()
         
     it "destroys a table if it exists", ->
       inject (app_database_dv)->
