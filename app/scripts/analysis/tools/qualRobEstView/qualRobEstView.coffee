@@ -1,9 +1,9 @@
 'use strict'
 
-qualRobEstView = angular.module('app_qualRobEstView', [])
+qualRobEstView = angular.module('app_analysis_qualRobEstView', [])
 
-.factory('qualRobEstView', [
-  'qualRobEstView_manager'
+.factory('app_analysis_qualRobEstView_construct', [
+  'app_analysis_qualRobEstView_manager'
   (manager) ->
     (sb) ->
 
@@ -18,7 +18,7 @@ qualRobEstView = angular.module('app_qualRobEstView', [])
       msgList: _msgList
 ])
 
-.factory('qualRobEstView_manager', [
+.factory('app_analysis_qualRobEstView_manager', [
   () ->
     _sb = null
 
@@ -42,7 +42,7 @@ qualRobEstView = angular.module('app_qualRobEstView', [])
 ])
 
 .controller('qualRobEstViewSidebarCtrl', [
-  'qualRobEstView_manager'
+  'app_analysis_qualRobEstView_manager'
   '$scope'
   (ctrlMngr, $scope) ->
     console.log 'qualRobEstViewSidebarCtrl executed'
@@ -66,7 +66,7 @@ qualRobEstView = angular.module('app_qualRobEstView', [])
 ])
 
 .controller('qualRobEstViewMainCtrl', [
-  'qualRobEstView_manager'
+  'app_analysis_qualRobEstView_manager'
   '$scope'
   (ctrlMngr, $scope) ->
     console.log 'qualRobEstViewMainCtrl executed'

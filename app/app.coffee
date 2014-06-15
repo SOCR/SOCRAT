@@ -13,15 +13,14 @@ App = angular.module('app', [
   'ngCookies'
   'ngResource'
   'app_core'
-  'app_getData'
-  'app_qualRobEstView'
-  'app_qualRobEst'
   'app_controllers'
   'app_directives'
   'app_filters'
   'app_services'
   'app_mediator'
   'ngSanitize'
+  'app_analysis_qualRobEstView'
+  'app_analysis_qualRobEst'
   'app_database'
 ])
 
@@ -32,6 +31,7 @@ App.config([
   ($locationProvider, $urlRouterProvider, $stateProvider) ->
 
     console.log "config block of app module"
+
     $urlRouterProvider.when('/','/')
       .otherwise('/home')
 
@@ -102,10 +102,11 @@ App.config([
 App.run([
   'core'
   'app_database_constructor'
-  'getData'
-  'qualRobEstView'
-  'qualRobEst'
-  (core, db, getData, qualRobEstView, qualRobEst) ->
+  'app_analysis_qualRobEst_construct'
+  'app_analysis_qualRobEstView_construct'
+  (core, db, qualRobEst,qualRobEstView) ->
+
+    console.log "config block of app module"
 
     map = [
       msgFrom: 'add numbers'
