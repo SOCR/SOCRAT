@@ -2,7 +2,7 @@
 
 qualRobEstView = angular.module('app_analysis_qualRobEstView', [])
 
-.factory('app_analysis_qualRobEstView_construct', [
+.factory('app_analysis_qualRobEstView_constructor', [
   'app_analysis_qualRobEstView_manager'
   (manager) ->
     (sb) ->

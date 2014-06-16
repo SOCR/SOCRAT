@@ -12,13 +12,13 @@ App = angular.module('app', [
   'ui.compat'
   'ngCookies'
   'ngResource'
+  'ngSanitize'
   'app_core'
   'app_controllers'
   'app_directives'
   'app_filters'
   'app_services'
   'app_mediator'
-  'ngSanitize'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
   'app_database'
@@ -102,11 +102,11 @@ App.config([
 App.run([
   'core'
   'app_database_constructor'
-  'app_analysis_qualRobEst_construct'
-  'app_analysis_qualRobEstView_construct'
+  'app_analysis_qualRobEst_constructor'
+  'app_analysis_qualRobEstView_constructor'
   (core, db, qualRobEst,qualRobEstView) ->
 
-    console.log "config block of app module"
+    console.log "run block of app module"
 
     map = [
       msgFrom: 'add numbers'
@@ -135,8 +135,6 @@ App.run([
 
     core.register 'db', db
     core.start 'db'
-
-    console.log 'run block of app module'
 
 ])
 
