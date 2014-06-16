@@ -3,7 +3,7 @@
 qualRobEst = angular.module('app_analysis_qualRobEst', [])
 
 .factory('app_analysis_qualRobEst_constructor', [
-  'app_anaylsis_qualRobEst_manager'
+  'app_analysis_qualRobEst_manager'
   (manager) ->
     (sb) ->
 
