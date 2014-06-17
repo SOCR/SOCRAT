@@ -9,8 +9,8 @@ describe 'Core module', ->
     init: (opt, done) -> setTimeout (-> done()), 0
     destroy: (done) -> setTimeout (-> done()), 0
     msgList:
-      outcome: ['0']
-      income: ['1']
+      outgoing: ['0']
+      incoming: ['1']
       scope: ['validModuleScope']
 
 # Create mock module and overriding services
@@ -20,18 +20,18 @@ describe 'Core module', ->
         @core = @
         @instanceId = _instanceId
         @options = {}
-    .service 'pubSub', ->
-      @events = [];
-      @publish = (event) ->
-        result = (item.cb() for item in @events when item.name is event.name)
-      @subscribe = (event) ->
-        @events.push event
+#    .service 'pubSub', ->
+#      @events = [];
+#      @publish = (event) ->
+#        result = (item.cb() for item in @events when item.name is event.name)
+#      @subscribe = (event) ->
+#        @events.push event
 
   beforeEach ->
-    module 'app.core'
+    module 'app_core'
     module 'app.mocks'
 
-  describe 'provides service $core', ->
+  describe 'provides service $core containing methods:', ->
 
     beforeEach ->
       inject (core) ->
@@ -41,15 +41,7 @@ describe 'Core module', ->
     describe 'register function', ->
 
       it 'should register valid module', ->
-        inject (core,$exceptionHandler) ->
-          console.log 'CORE'
-          $exceptionHandler 
-            debug:1
-          $exceptionHandler 
-            type:'error'
-            message:'from core'
-            display:true
-          console.log 'CORE'
+        inject (core) ->
           (expect core.register(moduleId, validModule)).toBeTruthy()
 
       it 'should not register module if the module creator is an object', ->
@@ -98,7 +90,9 @@ describe 'Core module', ->
     describe 'start function', ->
 
       foo =
-        cb1: ->
+        cb1: (olo) ->
+          console.log 'FFFFFUUUUUUUUUUUUU'
+          olo
 
       beforeEach ->
         inject (core) ->
@@ -112,7 +106,7 @@ describe 'Core module', ->
 
       it 'should start module if valid name was passed', ->
         inject (core) ->
-          core.register moduleId, validModule
+#          core.register moduleId, validModule
           (expect core.start moduleId).toBeTruthy()
 
       it 'should start module if empty parameters object was passed', ->
@@ -145,8 +139,8 @@ describe 'Core module', ->
               done()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
           core.register 'foo', mod
           core.start 'foo', options:
@@ -163,8 +157,8 @@ describe 'Core module', ->
               x = 1
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['idScope']
 
           core.start 'anId', { callback: cb }
@@ -176,8 +170,8 @@ describe 'Core module', ->
             init: (opt) ->
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['idScope']
           (expect core.register 'anId', mod1).toBeTruthy()
           core.start 'anId', { callback: foo.cb1 }
@@ -186,15 +180,18 @@ describe 'Core module', ->
       it 'should call the callback function with an error if an error occurs', (done) ->
         inject (core) ->
           spyOn foo, 'cb1'
+
           mod1 = (sb) ->
             init: ->
-              foo.cb1()
+              console.log foo.cb1 '123'
+              foo.cb1 'lalala'
               thisWillProduceAnError()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
+
           (expect core.register 'anId', mod1).toBeTruthy()
           (expect core.start 'anId', { callback: (err) ->
             (expect foo.cb1).toHaveBeenCalled()
@@ -210,8 +207,8 @@ describe 'Core module', ->
             init: -> foo.cb1()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           (expect core.register 'separate', mod1).toBeTruthy()
@@ -237,338 +234,338 @@ describe 'Core module', ->
 
           (expect foo.cb1).toHaveBeenCalled()
 
-    describe 'stop function', ->
-
-      it 'should call the callback afterwards', (done) ->
-        inject (core) ->
-          (expect core.register moduleId, validModule).toBeTruthy()
-          (expect core.start moduleId).toBeTruthy()
-          (expect core.stop moduleId, done).toBeTruthy()
-
-      it 'should support synchronous stopping', ->
-        inject (core) ->
-          mod = (sb) ->
-            init: ->
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-          end = false
-          (expect core.register moduleId, mod).toBeTruthy()
-          (expect core.start moduleId).toBeTruthy()
-          (expect core.stop moduleId, -> end = true).toBeTruthy()
-          (expect end).toEqual true
-
-
-    describe 'startAll function', ->
-
-      foo = {}
-
-      beforeEach ->
-        inject (core) ->
-          core.stopAll()
-          core.unregisterAll()
-          foo =
-            cb1: ->
-            cb2: ->
-            cb3: ->
-            finished: ->
-
-      it 'instantiates and starts all available modules', ->
-        inject (core) ->
-          spyOn foo, 'cb1'
-          spyOn foo, 'cb2'
-
-          mod1 = (sb) ->
-            init: -> foo.cb1()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          mod2 = (sb) ->
-            init: -> foo.cb2()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          (expect core.register 'first', mod1 ).toBeTruthy()
-          (expect core.register 'second', mod2).toBeTruthy()
-
-          (expect foo.cb1).not.toHaveBeenCalled()
-          (expect foo.cb2).not.toHaveBeenCalled()
-
-          (expect core.startAll()).toBeTruthy()
-          (expect foo.cb1).toHaveBeenCalled()
-          (expect foo.cb2).toHaveBeenCalled()
-
-      it 'starts all modules of the passed array', ->
-        inject (core) ->
-          spyOn foo, 'cb1'
-          spyOn foo, 'cb2'
-          spyOn foo, 'cb3'
-
-          mod1 = (sb) ->
-            init: -> foo.cb1()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          mod2 = (sb) ->
-            init: -> foo.cb2()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          mod3 = (sb) ->
-            init: -> foo.cb3()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          core.stopAll()
-          core.unregisterAll()
-
-          (expect core.register 'first', mod1 ).toBeTruthy()
-          (expect core.register 'second',mod2 ).toBeTruthy()
-          (expect core.register 'third', mod3 ).toBeTruthy()
-
-          (expect foo.cb1).not.toHaveBeenCalled()
-          (expect foo.cb2).not.toHaveBeenCalled()
-          (expect foo.cb3).not.toHaveBeenCalled()
-
-          (expect core.startAll ['first','third']).toBeTruthy()
-          (expect foo.cb1).toHaveBeenCalled()
-          (expect foo.cb2).not.toHaveBeenCalled()
-          (expect foo.cb3).toHaveBeenCalled()
-
-      it 'calls the callback function after all modules have started', (done) ->
-        inject (core) ->
-          spyOn foo, 'cb1'
-
-          sync = (sb) ->
-            init: (opt)->
-              (expect foo.cb1).not.toHaveBeenCalled()
-              foo.cb1()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          pseudoAsync = (sb) ->
-            init: (opt, done)->
-              (expect foo.cb1.callCount).toEqual 1
-              foo.cb1()
-              done()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          async = (sb) ->
-            init: (opt, done)->
-              setTimeout (->
-                (expect foo.cb1.callCount).toEqual 2
-                foo.cb1()
-                done()
-              ), 0
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          core.register 'first', sync
-          core.register 'second', async
-          core.register 'third', pseudoAsync
-
-          (expect core.startAll ->
-            (expect foo.cb1.callCount).toEqual 3
-            done()
-          ).toBeTruthy()
-
-      it 'calls the callback after defined modules have started', (done) ->
-        inject (core) ->
-          spyOn foo, 'finished'
-          spyOn foo, 'cb1'
-          spyOn foo, 'cb2'
-
-          mod1 = (sb) ->
-            init: (opt, done)->
-              setTimeout (->done()), 0
-              (expect foo.finished).not.toHaveBeenCalled()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          mod2 = (sb) ->
-            init: (opt, done) ->
-              setTimeout (-> done()), 0
-              (expect foo.finished).not.toHaveBeenCalled()
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          core.register 'first', mod1, { callback: foo.cb1 }
-          core.register 'second', mod2, { callback: foo.cb2 }
-
-          (expect core.startAll ['first','second'], ->
-            foo.finished()
-            (expect foo.cb1).toHaveBeenCalled()
-            (expect foo.cb2).toHaveBeenCalled()
-            done()
-          ).toBeTruthy()
-
-      # it 'calls the callback with an error if one or more modules couldn\'t start', (done) ->
-      #   inject (core) ->
-      #     spyOn foo, 'cb1'
-      #     spyOn foo, 'cb2'
-      #     mod1 = (sb) ->
-      #       init: -> foo.cb1(); thisIsAnInvalidMethod()
-      #       destroy: ->
-      #       msgList:
-      #         outcome: ['0']
-      #         income: ['1']
-      #         scope: ['fooScope']
-      #     mod2 = (sb) ->
-      #       init: -> foo.cb2()
-      #       destroy: ->
-      #       msgList:
-      #         outcome: ['0']
-      #         income: ['1']
-      #         scope: ['fooScope']
-      #     core.register 'invalid', mod1
-      #     core.register 'valid', mod2
-      #     core.startAll ['invalid', 'valid'], (err) ->
-      #       (expect foo.cb1).toHaveBeenCalled()
-      #       (expect foo.cb2).toHaveBeenCalled()
-      #       (expect err.message).toEqual 'errors occoured in the following modules: \'invalid\''
-      #       done()
-
-      it 'calls the callback with an error if one or more modules don\'t exist', (done) ->
-        inject (core) ->
-          spyOn foo, 'cb2'
-          mod = (sb) ->
-            init: (opt, done)->
-              foo.cb2()
-              setTimeout (-> done()), 0
-            destroy: ->
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-          core.register 'valid', validModule
-          core.register 'x', mod
-          finished = (err) ->
-            (expect err.message).toEqual 'these modules don\'t exist: "invalid","y"'
-            done()
-          (expect core.startAll ['valid','invalid', 'x', 'y'], finished).toBeFalsy()
-          (expect foo.cb2).toHaveBeenCalled()
-
-      it 'calls the callback without an error if module array is empty', ->
-        inject (core) ->
-          spyOn foo, 'cb1'
-          finished = (err) ->
-            (expect err).toEqual null
-            foo.cb1()
-          (expect core.startAll [], finished).toBeTruthy()
-          (expect foo.cb1).toHaveBeenCalled()
-
-    describe 'stopAll function', ->
-
-      foo = {}
-
-      beforeEach ->
-        inject (core) ->
-          core.stop moduleId
-          core.unregister moduleId
-          foo =
-            cb1: ->
-            cb2: ->
-            cb3: ->
-            finished: ->
-
-      it 'should stop all running instances', ->
-        inject (core) ->
-          spyOn foo, 'cb1'
-
-          mod1 = (sb) ->
-            init: ->
-            destroy: -> foo.cb1()
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-
-          core.register moduleId, mod1
-
-          core.start moduleId, { instanceId: 'a' }
-          core.start moduleId, { instanceId: 'b' }
-
-          (expect core.stopAll()).toBeTruthy()
-          (expect foo.cb1.callCount).toEqual 2
-
-      it 'should call the callback afterwards', (done) ->
-        inject (core) ->
-          (expect core.register moduleId, validModule).toBeTruthy()
-          (expect core.start moduleId).toBeTruthy()
-          (expect core.start moduleId, instanceId: 'valid').toBeTruthy()
-          (expect core.stopAll done).toBeTruthy()
-
-      it 'should call the callback if not destroyed in a asynchronous way', (done) ->
-        inject (core) ->
-          spyOn foo, 'cb1'
-          mod = (sb) ->
-            init: ->
-            destroy: -> foo.cb1()
-            msgList:
-              outcome: ['0']
-              income: ['1']
-              scope: ['fooScope']
-          (expect core.register 'syncDestroy', mod).toBeTruthy()
-          (expect core.start 'syncDestroy').toBeTruthy()
-          (expect core.start 'syncDestroy', instanceId: 'second').toBeTruthy()
-          (expect core.stopAll done).toBeTruthy()
-
-    describe 'setEventsMapping function', ->
-
-      it 'should set event map if it\'s an object', ->
-        inject (core,$exceptionHandler) ->
-
-          invalidMap = 5
-          validMap = [
-            msgFrom: '111'
-            scopeFrom: ['0']
-            msgTo: '123'
-            scopeTo: ['1']
-          ,
-            msgFrom: '234'
-            scopeFrom: ['1']
-            msgTo: '000'
-            scopeTo: ['0']
-          ]
-          try
-            core.setEventsMapping invalidMap
-          catch e
-            expect(e.message).toEqual 'event map has to be a object'
-          
-          (expect core.setEventsMapping validMap).toBeTruthy()
+#    describe 'stop function', ->
+#
+#      it 'should call the callback afterwards', (done) ->
+#        inject (core) ->
+#          (expect core.register moduleId, validModule).toBeTruthy()
+#          (expect core.start moduleId).toBeTruthy()
+#          (expect core.stop moduleId, done).toBeTruthy()
+#
+#      it 'should support synchronous stopping', ->
+#        inject (core) ->
+#          mod = (sb) ->
+#            init: ->
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#          end = false
+#          (expect core.register moduleId, mod).toBeTruthy()
+#          (expect core.start moduleId).toBeTruthy()
+#          (expect core.stop moduleId, -> end = true).toBeTruthy()
+#          (expect end).toEqual true
+#
+#
+#    describe 'startAll function', ->
+#
+#      foo = {}
+#
+#      beforeEach ->
+#        inject (core) ->
+#          core.stopAll()
+#          core.unregisterAll()
+#          foo =
+#            cb1: ->
+#            cb2: ->
+#            cb3: ->
+#            finished: ->
+#
+#      it 'instantiates and starts all available modules', ->
+#        inject (core) ->
+#          spyOn foo, 'cb1'
+#          spyOn foo, 'cb2'
+#
+#          mod1 = (sb) ->
+#            init: -> foo.cb1()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          mod2 = (sb) ->
+#            init: -> foo.cb2()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          (expect core.register 'first', mod1 ).toBeTruthy()
+#          (expect core.register 'second', mod2).toBeTruthy()
+#
+#          (expect foo.cb1).not.toHaveBeenCalled()
+#          (expect foo.cb2).not.toHaveBeenCalled()
+#
+#          (expect core.startAll()).toBeTruthy()
+#          (expect foo.cb1).toHaveBeenCalled()
+#          (expect foo.cb2).toHaveBeenCalled()
+#
+#      it 'starts all modules of the passed array', ->
+#        inject (core) ->
+#          spyOn foo, 'cb1'
+#          spyOn foo, 'cb2'
+#          spyOn foo, 'cb3'
+#
+#          mod1 = (sb) ->
+#            init: -> foo.cb1()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          mod2 = (sb) ->
+#            init: -> foo.cb2()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          mod3 = (sb) ->
+#            init: -> foo.cb3()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          core.stopAll()
+#          core.unregisterAll()
+#
+#          (expect core.register 'first', mod1 ).toBeTruthy()
+#          (expect core.register 'second',mod2 ).toBeTruthy()
+#          (expect core.register 'third', mod3 ).toBeTruthy()
+#
+#          (expect foo.cb1).not.toHaveBeenCalled()
+#          (expect foo.cb2).not.toHaveBeenCalled()
+#          (expect foo.cb3).not.toHaveBeenCalled()
+#
+#          (expect core.startAll ['first','third']).toBeTruthy()
+#          (expect foo.cb1).toHaveBeenCalled()
+#          (expect foo.cb2).not.toHaveBeenCalled()
+#          (expect foo.cb3).toHaveBeenCalled()
+#
+#      it 'calls the callback function after all modules have started', (done) ->
+#        inject (core) ->
+#          spyOn foo, 'cb1'
+#
+#          sync = (sb) ->
+#            init: (opt)->
+#              (expect foo.cb1).not.toHaveBeenCalled()
+#              foo.cb1()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          pseudoAsync = (sb) ->
+#            init: (opt, done)->
+#              (expect foo.cb1.callCount).toEqual 1
+#              foo.cb1()
+#              done()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          async = (sb) ->
+#            init: (opt, done)->
+#              setTimeout (->
+#                (expect foo.cb1.callCount).toEqual 2
+#                foo.cb1()
+#                done()
+#              ), 0
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          core.register 'first', sync
+#          core.register 'second', async
+#          core.register 'third', pseudoAsync
+#
+#          (expect core.startAll ->
+#            (expect foo.cb1.callCount).toEqual 3
+#            done()
+#          ).toBeTruthy()
+#
+#      it 'calls the callback after defined modules have started', (done) ->
+#        inject (core) ->
+#          spyOn foo, 'finished'
+#          spyOn foo, 'cb1'
+#          spyOn foo, 'cb2'
+#
+#          mod1 = (sb) ->
+#            init: (opt, done)->
+#              setTimeout (->done()), 0
+#              (expect foo.finished).not.toHaveBeenCalled()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          mod2 = (sb) ->
+#            init: (opt, done) ->
+#              setTimeout (-> done()), 0
+#              (expect foo.finished).not.toHaveBeenCalled()
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          core.register 'first', mod1, { callback: foo.cb1 }
+#          core.register 'second', mod2, { callback: foo.cb2 }
+#
+#          (expect core.startAll ['first','second'], ->
+#            foo.finished()
+#            (expect foo.cb1).toHaveBeenCalled()
+#            (expect foo.cb2).toHaveBeenCalled()
+#            done()
+#          ).toBeTruthy()
+#
+#      # it 'calls the callback with an error if one or more modules couldn\'t start', (done) ->
+#      #   inject (core) ->
+#      #     spyOn foo, 'cb1'
+#      #     spyOn foo, 'cb2'
+#      #     mod1 = (sb) ->
+#      #       init: -> foo.cb1(); thisIsAnInvalidMethod()
+#      #       destroy: ->
+#      #       msgList:
+#      #         outgoing: ['0']
+#      #         incoming: ['1']
+#      #         scope: ['fooScope']
+#      #     mod2 = (sb) ->
+#      #       init: -> foo.cb2()
+#      #       destroy: ->
+#      #       msgList:
+#      #         outgoing: ['0']
+#      #         incoming: ['1']
+#      #         scope: ['fooScope']
+#      #     core.register 'invalid', mod1
+#      #     core.register 'valid', mod2
+#      #     core.startAll ['invalid', 'valid'], (err) ->
+#      #       (expect foo.cb1).toHaveBeenCalled()
+#      #       (expect foo.cb2).toHaveBeenCalled()
+#      #       (expect err.message).toEqual 'errors occoured in the following modules: \'invalid\''
+#      #       done()
+#
+#      it 'calls the callback with an error if one or more modules don\'t exist', (done) ->
+#        inject (core) ->
+#          spyOn foo, 'cb2'
+#          mod = (sb) ->
+#            init: (opt, done)->
+#              foo.cb2()
+#              setTimeout (-> done()), 0
+#            destroy: ->
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#          core.register 'valid', validModule
+#          core.register 'x', mod
+#          finished = (err) ->
+#            (expect err.message).toEqual 'these modules don\'t exist: "invalid","y"'
+#            done()
+#          (expect core.startAll ['valid','invalid', 'x', 'y'], finished).toBeFalsy()
+#          (expect foo.cb2).toHaveBeenCalled()
+#
+#      it 'calls the callback without an error if module array is empty', ->
+#        inject (core) ->
+#          spyOn foo, 'cb1'
+#          finished = (err) ->
+#            (expect err).toEqual null
+#            foo.cb1()
+#          (expect core.startAll [], finished).toBeTruthy()
+#          (expect foo.cb1).toHaveBeenCalled()
+#
+#    describe 'stopAll function', ->
+#
+#      foo = {}
+#
+#      beforeEach ->
+#        inject (core) ->
+#          core.stop moduleId
+#          core.unregister moduleId
+#          foo =
+#            cb1: ->
+#            cb2: ->
+#            cb3: ->
+#            finished: ->
+#
+#      it 'should stop all running instances', ->
+#        inject (core) ->
+#          spyOn foo, 'cb1'
+#
+#          mod1 = (sb) ->
+#            init: ->
+#            destroy: -> foo.cb1()
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#
+#          core.register moduleId, mod1
+#
+#          core.start moduleId, { instanceId: 'a' }
+#          core.start moduleId, { instanceId: 'b' }
+#
+#          (expect core.stopAll()).toBeTruthy()
+#          (expect foo.cb1.callCount).toEqual 2
+#
+#      it 'should call the callback afterwards', (done) ->
+#        inject (core) ->
+#          (expect core.register moduleId, validModule).toBeTruthy()
+#          (expect core.start moduleId).toBeTruthy()
+#          (expect core.start moduleId, instanceId: 'valid').toBeTruthy()
+#          (expect core.stopAll done).toBeTruthy()
+#
+#      it 'should call the callback if not destroyed in a asynchronous way', (done) ->
+#        inject (core) ->
+#          spyOn foo, 'cb1'
+#          mod = (sb) ->
+#            init: ->
+#            destroy: -> foo.cb1()
+#            msgList:
+#              outgoing: ['0']
+#              incoming: ['1']
+#              scope: ['fooScope']
+#          (expect core.register 'syncDestroy', mod).toBeTruthy()
+#          (expect core.start 'syncDestroy').toBeTruthy()
+#          (expect core.start 'syncDestroy', instanceId: 'second').toBeTruthy()
+#          (expect core.stopAll done).toBeTruthy()
+#
+#    describe 'setEventsMapping function', ->
+#
+#      it 'should set event map if it\'s an object', ->
+#        inject (core,$exceptionHandler) ->
+#
+#          invalidMap = 5
+#          validMap = [
+#            msgFrom: '111'
+#            scopeFrom: ['0']
+#            msgTo: '123'
+#            scopeTo: ['1']
+#          ,
+#            msgFrom: '234'
+#            scopeFrom: ['1']
+#            msgTo: '000'
+#            scopeTo: ['0']
+#          ]
+#          try
+#            core.setEventsMapping invalidMap
+#          catch e
+#            expect(e.message).toEqual 'event map has to be a object'
+#
+#          (expect core.setEventsMapping validMap).toBeTruthy()
 
 #
 #    describe 'onModuleState function', ->
@@ -595,26 +592,26 @@ describe 'Core module', ->
 #        core.onModuleState 'destroy', fn, 'mod'
 #        core.start 'mod'
 #        core.stop 'mod'
-
-    describe 'list methods', ->
-
-      beforeEach ->
-        inject (core) ->
-          core.stopAll()
-          core.register moduleId, validModule
-
-      it 'has an lsModules method', ->
-        inject (core) ->
-          (expect core.lsModules()).toEqual [moduleId]
-
-      it 'has an lsInstances method', ->
-        inject (core) ->
-          (expect typeof core.lsInstances).toEqual 'function'
-          (expect core.lsInstances()).toEqual []
-          (expect core.start moduleId ).toBeTruthy()
-          (expect core.lsInstances()).toEqual [moduleId]
-          (expect core.start moduleId, instanceId: 'test' ).toBeTruthy()
-          (expect core.lsInstances()).toEqual [moduleId, 'test']
-          (expect core.stop moduleId).toBeTruthy()
-          (expect core.lsInstances()).toEqual ['test']
+#
+#    describe 'list methods', ->
+#
+#      beforeEach ->
+#        inject (core) ->
+#          core.stopAll()
+#          core.register moduleId, validModule
+#
+#      it 'has an lsModules method', ->
+#        inject (core) ->
+#          (expect core.lsModules()).toEqual [moduleId]
+#
+#      it 'has an lsInstances method', ->
+#        inject (core) ->
+#          (expect typeof core.lsInstances).toEqual 'function'
+#          (expect core.lsInstances()).toEqual []
+#          (expect core.start moduleId ).toBeTruthy()
+#          (expect core.lsInstances()).toEqual [moduleId]
+#          (expect core.start moduleId, instanceId: 'test' ).toBeTruthy()
+#          (expect core.lsInstances()).toEqual [moduleId, 'test']
+#          (expect core.stop moduleId).toBeTruthy()
+#          (expect core.lsInstances()).toEqual ['test']
 

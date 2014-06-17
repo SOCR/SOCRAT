@@ -4,7 +4,7 @@
 
 describe 'utils module', ->
 
-  $injector = angular.injector ['app.utils']
+  $injector = angular.injector ['app_utils']
 
   describe 'provides service utils', ->
 

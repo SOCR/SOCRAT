@@ -17,7 +17,7 @@ describe "errorMngr Module", ->
     cb2: ->
   
   beforeEach ->
-    module "app.errorMngr"
+    module "app_errorMngr"
     module "app.mocks"
 
 

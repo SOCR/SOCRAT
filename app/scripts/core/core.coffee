@@ -139,6 +139,7 @@ core = angular.module('app_core', [
 #        msgList.scope = moduleId
         # TODO: change context
 #        msgList.context = console
+        console.log 'SBSCRBNG'
         eventMngr.subscribeForEvents
           msgList: msgList
           scope: [moduleId]
@@ -177,6 +178,7 @@ core = angular.module('app_core', [
             # then define a callback
             instance.init instance.options, (err) -> opt.callback? err
           else
+            console.log opt.callback
             # else call the callback directly after initialisation
             instance.init instance.options
             opt.callback? null
