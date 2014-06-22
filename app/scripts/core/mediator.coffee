@@ -2,7 +2,7 @@
 
 #app.core module contains services like error management , pub/sub
 
-mediator = angular.module('app.mediator', [])
+mediator = angular.module('app_mediator', [])
 
 # publish/subscribe angular service
 .service("pubSub", () ->

@@ -3,3 +3,4 @@
 
 [SOCR Website](http://socr.ucla.edu)
 
+This branch is created for working on DB module during [SOCR Hackthon 5/17](https://socredu.atlassian.net/browse/SOCRFW-79)

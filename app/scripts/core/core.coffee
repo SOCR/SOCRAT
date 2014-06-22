@@ -2,20 +2,20 @@
 
 #app.core module contains
 
-core = angular.module('app.core', [
-  'app.mediator'
-  'app.sandbox'
-  'app.errorMngr'
-  'app.utils'
+core = angular.module('app_core', [
+  'app_eventMngr'
+  'app_sandbox'
+  'app_errorMngr'
+  'app_utils'
 ])
 
   .factory 'core', [
-    'pubSub'
+    'eventMngr'
     'Sandbox'
 #    '$exceptionHandler'
     'utils'
 #    (mediator, Sandbox, $exceptionHandler, utils) ->
-    (mediator, Sandbox, utils) ->
+    (eventMngr, Sandbox, utils) ->
 
       _modules = {}
       _instances = {}
@@ -24,16 +24,19 @@ core = angular.module('app.core', [
 #      _plugins = {}
 
       _checkType = (type, val, name) ->
-        # TODO: change to $exceptionHandler
+        # TODO: change to $exceptionHandler or return false anf throw exception in caller
         console.log 'checkType: ' + "#{name} has to be a #{type}"
-        if typeof val isnt type
+        if typeof val isnt type and utils.typeIsArray(val) isnt true
+          console.log typeof val isnt type
+          console.log utils.typeIsArray(val)
+          console.log typeof val isnt type and utils.typeIsArray(val) isnt true
           console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
-          console.log 'BUT: ' + "#{name} is " + typeof val
+          console.log 'INSTEAD: ' + "#{name} is a " + typeof val
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
 #      _onModuleState = (state, fn, moduleId = '_always') ->
-#        checkType 'function', fn, 'parameter'
+#        _checkType 'function', fn, 'parameter'
 #        moduleStates.on '#{state}/#{moduleId}', fn, @
 
       _getInstanceOptions = (instanceId, module, opt) ->
@@ -58,9 +61,10 @@ core = angular.module('app.core', [
         module = _modules[moduleId]
         return _instances[instanceId] if _instances[instanceId]?
         iOpts = _getInstanceOptions.apply @, [instanceId, module, opt]
-        sb = new Sandbox @, instanceId, iOpts
 
-        utils.installFromTo mediator, sb
+
+        sb = new Sandbox @, instanceId, iOpts
+        utils.installFromTo eventMngr, sb
 
 #        for i,p of plugins when p.sandbox?
 #          plugin = new p.sandbox sb
@@ -89,7 +93,7 @@ core = angular.module('app.core', [
         _checkType 'function', modObj.init, '"init" of the module'
         _checkType 'function', modObj.destroy, '"destroy" of the module'
         _checkType 'object', modObj.msgList, 'message list of the module'
-        _checkType 'object', modObj.msgList.outcome,
+        _checkType 'object', modObj.msgList.outgoing,
           'outcoming message list of the module'
 
         # TODO: change to $exceptionHandler
@@ -110,6 +114,7 @@ core = angular.module('app.core', [
           _addModule.apply @, [moduleId, creator, opt]
         catch e
 #          console.log e
+          console.log "could not register module" + moduleId
           console.error "could not register module #{moduleId}: #{e.message}"
           false
 
@@ -129,12 +134,21 @@ core = angular.module('app.core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
+      # subscribe for outgoing events from module
       _subscribeForModuleEvents = (moduleId, msgList, API) ->
-        for msg in msgList
-          mediator.subscribe
-            msg: msg
-            listener: API
-            msgScope: [moduleId]
+#        msgList.scope = moduleId
+        # TODO: change context
+#        msgList.context = console
+        eventMngr.subscribeForEvents
+          msgList: msgList
+          scope: [moduleId]
+          context: console
+          , API
+#        for msg in msgList
+#          mediator.subscribe
+#            msg: msg
+#            listener: API
+#            msgScope: [moduleId]
 
       _start = (moduleId, opt = {}) ->
         try
@@ -153,10 +167,10 @@ core = angular.module('app.core', [
             throw new Error 'module was already started'
 
           # subscription for module events
-          if instance.msgList? and instance.msgList.outcome?
+          if instance.msgList? and instance.msgList.outgoing?
             _subscribeForModuleEvents moduleId,
-              instance.msgList.outcome,
-              _eventsManager
+              instance.msgList.outgoing,
+              _API
 
           # if the module wants to init in an asynchronous way
           if (utils.getArgumentNames instance.init).length >= 2
@@ -240,29 +254,29 @@ core = angular.module('app.core', [
 
       _ls = (o) -> (id for id, m of o)
 
-      _registerPlugin = (plugin) ->
-        try
-          _checkType 'object', plugin, 'plugin'
-          _checkType 'string', plugin.id, '"id" of plugin'
-
-          if typeof plugin.sandbox is 'function'
-            Sandbox::[k] ?= v for k, v of plugin.sandbox::
-
-          if typeof plugin.core is 'function'
-            Core::[k] ?= v for k,v of plugin.core::
-
-          if typeof plugin.core is 'object'
-            Core::[k] ?= v for k,v of plugin.core
-
-          if typeof plugin.base is 'object'
-            base[k] ?= v for k,v of plugin.base
-
-          plugins[plugin.id] = plugin
-          true
-
-        catch e
-#          console.error e
-          false
+#      _registerPlugin = (plugin) ->
+#        try
+#          _checkType 'object', plugin, 'plugin'
+#          _checkType 'string', plugin.id, '"id" of plugin'
+#
+#          if typeof plugin.sandbox is 'function'
+#            Sandbox::[k] ?= v for k, v of plugin.sandbox::
+#
+#          if typeof plugin.core is 'function'
+#            Core::[k] ?= v for k,v of plugin.core::
+#
+#          if typeof plugin.core is 'object'
+#            Core::[k] ?= v for k,v of plugin.core
+#
+#          if typeof plugin.base is 'object'
+#            base[k] ?= v for k,v of plugin.base
+#
+#          plugins[plugin.id] = plugin
+#          true
+#
+#        catch e
+##          console.error e
+#          false
 
       _setEventsMapping = (map) ->
         _checkType 'object', map, 'event map'
@@ -272,12 +286,13 @@ core = angular.module('app.core', [
       _sendMessage = (msg, data, scopeArray) ->
         console.log 'core sends: ' + msg + ' data: ' + data +
           ' scope: ' + scopeArray
-        mediator.publish
+        eventMngr.publish
           msg: msg
           data: data
           msgScope: scopeArray
 
-      _eventsManager = (msg, data) ->
+#     TODO: abstract it to eventMngr module
+      _API = (msg, data) ->
         for o in _map when o.msgFrom is msg
           _sendMessage o.msgTo, data, o.scopeTo
           return true
