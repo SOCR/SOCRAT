@@ -19,9 +19,11 @@ App = angular.module('app', [
   'app_filters'
   'app_services'
   'app_mediator'
+  'app_database'
+   # Analysis modules
+  'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
-  'app_database'
 ])
 
 App.config([
