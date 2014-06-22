@@ -122,7 +122,7 @@ App.run([
       msgFrom:'save table'
       scopeFrom: ['getData']
       msgTo:'save table'
-      scopeTo:['db']
+      scopeTo:['database']
     ]
 
     core.setEventsMapping map
