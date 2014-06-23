@@ -16,7 +16,7 @@
 db = angular.module 'app_database', []
 
 
-db.factory 'app_database_constructor', [
+db.factory 'app_database_constructor',[
   'app_database_manager'
   (manager)->
     (sb)->
@@ -32,8 +32,8 @@ db.factory 'app_database_constructor', [
       msgList: _msgList
 ]
 
-db.factory 'app_database_manager',->
-  'app_database_dv'
+db.factory 'app_database_manager',[
+  'app_database_handler'
   (database)->
     _sb = null
     _msgList =
@@ -54,6 +54,7 @@ db.factory 'app_database_manager',->
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
+]
 
 db.service 'app_database_dv', ->
 
@@ -187,7 +188,7 @@ db.service 'app_database_dv', ->
   _db
 
 
-db.service 'database',[
+db.factory 'app_database_handler',[
   'app_database_dv'
   (_db)->
     #set all the callbacks here.
@@ -199,13 +200,13 @@ db.service 'database',[
           {incoming:'get table',outgoing:'take table',event:_db.get}
           {incoming:'add listener',outgoing:'listener added',event:_db.addListener}
         ]
-        manager.sb.send
-        'msg' : tname
-        'msgScope' : ['database']
-      #@todo: Why sending 2 different messages?
-      manager.sb.send
-        msg: tname+':'+cname
-        msgScope:['database']
+        sb.send
+          msg: tname
+          msgScope : ['database']
+        #@todo: Why sending 2 different messages?
+        sb.send
+          msg: tname+':'+cname
+          msgScope:['database']
 
         _status = _methods.map (method)->
           sb.subscribe
@@ -234,5 +235,6 @@ db.service 'database',[
 
           #console.log(_status)
     )(_db)
+
     setSb:_setSb
   ]
