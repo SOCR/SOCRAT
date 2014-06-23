@@ -91,8 +91,7 @@ describe 'Core module', ->
 
       foo =
         cb1: (olo) ->
-          console.log 'FFFFFUUUUUUUUUUUUU'
-          olo
+          console.log 'foo cb1'
 
       beforeEach ->
         inject (core) ->

@@ -39,7 +39,6 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 
       for i, msg of events.msgList
         console.log msg
-        console.log mediator.subscribe
         mediator.subscribe
           msg: msg
         # checking if array of listeners was passes as a parameter
