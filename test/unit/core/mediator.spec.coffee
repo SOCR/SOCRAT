@@ -5,7 +5,7 @@
 describe "Mediator", ->
 
   #load the module
-  beforeEach module "app.mediator"
+  beforeEach module "app_mediator"
 
 #  Alternate implementation for including the module and injecting the service.
 #  $injector = angular.injector ["app.mediator"]

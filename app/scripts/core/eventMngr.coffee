@@ -2,10 +2,10 @@
 
 eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 
-.service("eventMngr", [
+.service('eventMngr', [
   'pubSub'
   'utils'
-  (mediator, utils) ->
+  (pubSub, utils) ->
     incomeCallbacks = {}
 
     _setLocalListeners = (localMsgListeners) ->
@@ -22,9 +22,8 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
         data[data.length - 1].resolve _data if _data isnt false
       catch e
         console.log e.message
-        alert 'error in database'
 
-      mediator.publish
+      pubSub.publish
         msg: msgList.incoming[msg].outgoing
         data: _data
         msgScope: msgList.scope
@@ -32,14 +31,14 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 #    serialized subscription for arbitrary list of events
     _subscribeForEvents = (events, listnrList...) ->
       console.log 'subscribing for'
-      console.log events
+      console.log events.msgList
       console.log listnrList
       # if listener parameter is missing, set up default callback
       listnrList ?= _eventManager
 
       for i, msg of events.msgList
         console.log msg
-        mediator.subscribe
+        pubSub.subscribe
           msg: msg
         # checking if array of listeners was passes as a parameter
           listener: if utils.typeIsArray listnrList then listnrList[i] else listnrList
@@ -48,6 +47,6 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 
     setLocalListeners: _setLocalListeners
     subscribeForEvents: _subscribeForEvents
-    publish: mediator.publish
-    subscribe: mediator.subscribe
+    publish: pubSub.publish
+    subscribe: pubSub.subscribe
 ])

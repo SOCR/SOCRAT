@@ -135,8 +135,8 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
-    core.register 'db', db
-    core.start 'db'
+#    core.register 'db', db
+#    core.start 'db'
 
 ])
 

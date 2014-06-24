@@ -32,7 +32,7 @@ mediator = angular.module('app_mediator', [])
         i++
     if(_flag is 1)
       # execute the callback and return false
-      console.log "message not present in the list. returning false"
+      console.log "MEDIATOR: message not present in the list. returning false"
       cb()
       return false
 
@@ -75,20 +75,20 @@ mediator = angular.module('app_mediator', [])
                 throw e
               j++
           else
-            console.log "no cb's registered with this message"
+            console.log "MEDIATOR: no cb's registered with this message"
             _msgList[_scopes[i]][msg]=[]
           i++
       else
-        console.log 'msgScope is not an Array instance'
+        console.log 'MEDIATOR: msgScope is not an Array instance'
         throw
-          message:'msgScope is not an Array instance'
+          message:'MEDIATOR: msgScope is not an Array instance'
           type:'error'
     else
       throw
-        message:'msgScope is not defined'
+        message:'MEDIATOR: msgScope is not defined'
         type:'error'
     cb()
-    console.log 'successfully published:'+obj.msg
+    console.log 'MEDIATOR: successfully published:' + obj.msg
     return @
 
   # _subscribe() - registers a listener function for a msg
@@ -163,7 +163,7 @@ mediator = angular.module('app_mediator', [])
         token:++_lastUID
         func:cb
         context:context
-      console.log('successfully subscribed:'+obj.msg)
+      console.log('MEDIATOR: successfully subscribed:' + obj.msg)
       j++
 
     return @
@@ -177,7 +177,7 @@ mediator = angular.module('app_mediator', [])
         while i<j
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
-            console.log('successfully unsubscribed:'+m)
+            console.log('MEDIATOR: successfully unsubscribed:' + m)
             return token
           i++
     return @

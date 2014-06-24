@@ -9,29 +9,65 @@ describe 'Core module', ->
     init: (opt, done) -> setTimeout (-> done()), 0
     destroy: (done) -> setTimeout (-> done()), 0
     msgList:
-      outcome: ['0']
-      income: ['1']
+      outgoing: ['0']
+      incoming: ['1']
       scope: ['validModuleScope']
 
 # Create mock module and overriding services
-  angular.module('app.mocks', [])
+  angular.module('app_mocks', [])
     .factory 'Sandbox', ->
       (_core, _instanceId, _options = {}) ->
         @core = @
         @instanceId = _instanceId
         @options = {}
+
     .service 'pubSub', ->
-      @events = [];
-      @publish = (event) ->
-        result = (item.cb() for item in @events when item.name is event.name)
-      @subscribe = (event) ->
+      @events = []
+      @publish = (event) =>
+          console.log 'pubSub: published'
+          console.log event
+          console.log @events[0].listener
+          result = (item.listener(item.msg) for item in @events when item.msg is event.msg)
+      @subscribe = (event) =>
         @events.push event
+        console.log 'pubSub: subscribed'
+        console.log @events
+      @unsubscribe = ->
+      publish: @publish
+      subscribe: @subscribe
+      unsubscribe: @unsubscribe
+
+    .service('eventMngr', [
+      'pubSub'
+      'utils'
+      (pubSub, utils) ->
+        @incomeCallbacks = {}
+        @eventManager = (msg, data) ->
+          try
+            _data = @incomeCallbacks[msg] data
+          catch e
+            console.log e.message
+        @subscribeForEvents = (events, listnrList...) ->
+          listnrList ?= @eventManager
+
+          for i, msg of events.msgList
+            console.log msg
+            console.log pubSub.subscribe
+            pubSub.subscribe
+              msg: msg
+            # checking if array of listeners was passes as a parameter
+              listener: if utils.typeIsArray listnrList then listnrList[i] else listnrList
+              msgScope: events.scope
+        subscribeForEvents: @subscribeForEvents
+        publish: pubSub.publish
+        subscribe: pubSub.subscribe
+    ])
 
   beforeEach ->
-    module 'app.core'
-    module 'app.mocks'
+    module 'app_core'
+    module 'app_mocks'
 
-  describe 'provides service $core', ->
+  describe 'provides service $core containing methods:', ->
 
     beforeEach ->
       inject (core) ->
@@ -41,15 +77,7 @@ describe 'Core module', ->
     describe 'register function', ->
 
       it 'should register valid module', ->
-        inject (core,$exceptionHandler) ->
-          console.log 'CORE'
-          $exceptionHandler 
-            debug:1
-          $exceptionHandler 
-            type:'error'
-            message:'from core'
-            display:true
-          console.log 'CORE'
+        inject (core) ->
           (expect core.register(moduleId, validModule)).toBeTruthy()
 
       it 'should not register module if the module creator is an object', ->
@@ -98,7 +126,7 @@ describe 'Core module', ->
     describe 'start function', ->
 
       foo =
-        cb1: ->
+        cb1: () ->
 
       beforeEach ->
         inject (core) ->
@@ -112,7 +140,7 @@ describe 'Core module', ->
 
       it 'should start module if valid name was passed', ->
         inject (core) ->
-          core.register moduleId, validModule
+#          core.register moduleId, validModule
           (expect core.start moduleId).toBeTruthy()
 
       it 'should start module if empty parameters object was passed', ->
@@ -145,8 +173,8 @@ describe 'Core module', ->
               done()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
           core.register 'foo', mod
           core.start 'foo', options:
@@ -163,8 +191,8 @@ describe 'Core module', ->
               x = 1
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['idScope']
 
           core.start 'anId', { callback: cb }
@@ -176,31 +204,31 @@ describe 'Core module', ->
             init: (opt) ->
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['idScope']
           (expect core.register 'anId', mod1).toBeTruthy()
           core.start 'anId', { callback: foo.cb1 }
           (expect foo.cb1).toHaveBeenCalled()
 
-      it 'should call the callback function with an error if an error occurs', (done) ->
+      it 'should call the callback function with an error if an error occurs', () ->
         inject (core) ->
           spyOn foo, 'cb1'
+
           mod1 = (sb) ->
             init: ->
               foo.cb1()
               thisWillProduceAnError()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['a']
+              incoming: ['b']
               scope: ['fooScope']
+
           (expect core.register 'anId', mod1).toBeTruthy()
           (expect core.start 'anId', { callback: (err) ->
             (expect foo.cb1).toHaveBeenCalled()
             (expect err.message).toEqual 'could not start module: thisWillProduceAnError is not defined'
-            # TODO: fix context for done()
-#            done()
           }).toBeFalsy()
 
       it 'should start a separate instance', ->
@@ -210,32 +238,49 @@ describe 'Core module', ->
             init: -> foo.cb1()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           (expect core.register 'separate', mod1).toBeTruthy()
           core.start 'separate', { instanceId: 'instance' }
           (expect foo.cb1).toHaveBeenCalled()
 
-      it 'should fire event in response to registered module according to event map', ->
+      it 'should fire event in response to registered module according to event map', () ->
         inject (core, pubSub) ->
           spyOn foo, 'cb1'
 
-          map = [
-            msgFrom: '0'
-            scopeFrom: ['validModuleScope']
-            msgTo: '1'
-            scopeTo: ['validModuleScope']
-          ]
-          core.setEventsMapping map
-          pubSub.subscribe
-            name: '1'
-            listener: foo.cb1
-          pubSub.publish
-            name: '0'
+          mod1 = (sb) ->
+            init: ->
+              console.log "INIT HERE"
+              sb.subscribe
+                msg: 'b'
+                listener: ->
+                  foo.cb1()
+                msgScope: ['fooScope']
+              sb.publish
+                msg: 'a'
+                data: ''
+                msgScope: ['fooScope']
+            destroy: ->
+            msgList:
+              outgoing: ['a']
+              incoming: ['b']
+              scope: ['fooScope']
 
-          (expect foo.cb1).toHaveBeenCalled()
+          map = [
+            msgFrom: 'a'
+            scopeFrom: ['fooScope']
+            msgTo: 'b'
+            scopeTo: ['fooScope']
+          ]
+
+          core.setEventsMapping map
+          (expect core.register 'anId', mod1).toBeTruthy()
+          (expect core.start('anId', { callback: (err) ->
+            (expect foo.cb1).toHaveBeenCalled()
+          })).toBeTruthy()
+
 
     describe 'stop function', ->
 
@@ -251,15 +296,14 @@ describe 'Core module', ->
             init: ->
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
           end = false
           (expect core.register moduleId, mod).toBeTruthy()
           (expect core.start moduleId).toBeTruthy()
           (expect core.stop moduleId, -> end = true).toBeTruthy()
           (expect end).toEqual true
-
 
     describe 'startAll function', ->
 
@@ -284,16 +328,16 @@ describe 'Core module', ->
             init: -> foo.cb1()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           mod2 = (sb) ->
             init: -> foo.cb2()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           (expect core.register 'first', mod1 ).toBeTruthy()
@@ -316,24 +360,24 @@ describe 'Core module', ->
             init: -> foo.cb1()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           mod2 = (sb) ->
             init: -> foo.cb2()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           mod3 = (sb) ->
             init: -> foo.cb3()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           core.stopAll()
@@ -352,7 +396,7 @@ describe 'Core module', ->
           (expect foo.cb2).not.toHaveBeenCalled()
           (expect foo.cb3).toHaveBeenCalled()
 
-      it 'calls the callback function after all modules have started', (done) ->
+      it 'calls the callback function after all modules have started', () ->
         inject (core) ->
           spyOn foo, 'cb1'
 
@@ -362,32 +406,31 @@ describe 'Core module', ->
               foo.cb1()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           pseudoAsync = (sb) ->
-            init: (opt, done)->
+            init: (opt)->
               (expect foo.cb1.callCount).toEqual 1
               foo.cb1()
-              done()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           async = (sb) ->
-            init: (opt, done)->
-              setTimeout (->
+            init: (opt)->
+              async_cb = ->
                 (expect foo.cb1.callCount).toEqual 2
                 foo.cb1()
-                done()
-              ), 0
+              setTimeout async_cb, 0
+
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           core.register 'first', sync
@@ -396,7 +439,6 @@ describe 'Core module', ->
 
           (expect core.startAll ->
             (expect foo.cb1.callCount).toEqual 3
-            done()
           ).toBeTruthy()
 
       it 'calls the callback after defined modules have started', (done) ->
@@ -411,8 +453,8 @@ describe 'Core module', ->
               (expect foo.finished).not.toHaveBeenCalled()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           mod2 = (sb) ->
@@ -421,8 +463,8 @@ describe 'Core module', ->
               (expect foo.finished).not.toHaveBeenCalled()
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           core.register 'first', mod1, { callback: foo.cb1 }
@@ -435,50 +477,51 @@ describe 'Core module', ->
             done()
           ).toBeTruthy()
 
-      # it 'calls the callback with an error if one or more modules couldn\'t start', (done) ->
-      #   inject (core) ->
-      #     spyOn foo, 'cb1'
-      #     spyOn foo, 'cb2'
-      #     mod1 = (sb) ->
-      #       init: -> foo.cb1(); thisIsAnInvalidMethod()
-      #       destroy: ->
-      #       msgList:
-      #         outcome: ['0']
-      #         income: ['1']
-      #         scope: ['fooScope']
-      #     mod2 = (sb) ->
-      #       init: -> foo.cb2()
-      #       destroy: ->
-      #       msgList:
-      #         outcome: ['0']
-      #         income: ['1']
-      #         scope: ['fooScope']
-      #     core.register 'invalid', mod1
-      #     core.register 'valid', mod2
-      #     core.startAll ['invalid', 'valid'], (err) ->
-      #       (expect foo.cb1).toHaveBeenCalled()
-      #       (expect foo.cb2).toHaveBeenCalled()
-      #       (expect err.message).toEqual 'errors occoured in the following modules: \'invalid\''
-      #       done()
+      it 'calls the callback with an error if one or more modules couldn\'t start', (done) ->
+         inject (core) ->
+           spyOn foo, 'cb1'
+           spyOn foo, 'cb2'
+           mod1 = (sb) ->
+             init: -> foo.cb1(); thisIsAnInvalidMethod()
+             destroy: ->
+             msgList:
+               outgoing: ['0']
+               incoming: ['1']
+               scope: ['fooScope']
+           mod2 = (sb) ->
+             init: -> foo.cb2()
+             destroy: ->
+             msgList:
+               outgoing: ['0']
+               incoming: ['1']
+               scope: ['fooScope']
+           core.register 'invalid', mod1
+           core.register 'valid', mod2
+           core.startAll ['invalid', 'valid'], (err) ->
+             (expect foo.cb1).toHaveBeenCalled()
+             (expect foo.cb2).toHaveBeenCalled()
+             (expect err.message).toEqual 'errors occoured in the following modules: \'invalid\''
+             done()
 
-      it 'calls the callback with an error if one or more modules don\'t exist', (done) ->
+      it 'calls the callback with an error if one or more modules don\'t exist', () ->
         inject (core) ->
           spyOn foo, 'cb2'
           mod = (sb) ->
-            init: (opt, done)->
+            init: (opt)->
               foo.cb2()
-              setTimeout (-> done()), 0
+              setTimeout (-> ), 0
             destroy: ->
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
           core.register 'valid', validModule
           core.register 'x', mod
           finished = (err) ->
-            (expect err.message).toEqual 'these modules don\'t exist: "invalid","y"'
-            done()
-          (expect core.startAll ['valid','invalid', 'x', 'y'], finished).toBeFalsy()
+            console.log err
+            (expect err).toEqual "these modules don't exist: 'invalid', 'y'"
+          mods = ['valid', 'invalid', 'x', 'y']
+          (expect core.startAll(mods, @finished)).toBeFalsy()
           (expect foo.cb2).toHaveBeenCalled()
 
       it 'calls the callback without an error if module array is empty', ->
@@ -512,8 +555,8 @@ describe 'Core module', ->
             init: ->
             destroy: -> foo.cb1()
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
 
           core.register moduleId, mod1
@@ -538,8 +581,8 @@ describe 'Core module', ->
             init: ->
             destroy: -> foo.cb1()
             msgList:
-              outcome: ['0']
-              income: ['1']
+              outgoing: ['0']
+              incoming: ['1']
               scope: ['fooScope']
           (expect core.register 'syncDestroy', mod).toBeTruthy()
           (expect core.start 'syncDestroy').toBeTruthy()
@@ -567,34 +610,34 @@ describe 'Core module', ->
             core.setEventsMapping invalidMap
           catch e
             expect(e.message).toEqual 'event map has to be a object'
-          
+
           (expect core.setEventsMapping validMap).toBeTruthy()
 
-#
-#    describe 'onModuleState function', ->
-#
-#      beforeEach ->
-#        core.register 'mod', (sb) ->
-#          init: ->
-#          destroy: ->
-#
-#      it 'calls a registered method on instatiation', (done) ->
-#        fn = (data, channel) ->
-#          (expect channel).toEqual 'instantiate/mod'
-#        fn2 = (data, channel) ->
-#          (expect channel).toEqual 'instantiate/_always'
-#          done()
-#        core.onModuleState 'instantiate', fn, 'mod'
-#        core.onModuleState 'instantiate', fn2
-#        core.start 'mod'
-#
-#      it 'calls a registered method on destruction', (done) ->
-#        fn = (data, channel) ->
-#          (expect channel).toEqual 'destroy/mod'
-#          done()
-#        core.onModuleState 'destroy', fn, 'mod'
-#        core.start 'mod'
-#        core.stop 'mod'
+
+    describe 'onModuleState function', ->
+
+      beforeEach ->
+        core.register 'mod', (sb) ->
+          init: ->
+          destroy: ->
+
+      it 'calls a registered method on instatiation', (done) ->
+        fn = (data, channel) ->
+          (expect channel).toEqual 'instantiate/mod'
+        fn2 = (data, channel) ->
+          (expect channel).toEqual 'instantiate/_always'
+          done()
+        core.onModuleState 'instantiate', fn, 'mod'
+        core.onModuleState 'instantiate', fn2
+        core.start 'mod'
+
+      it 'calls a registered method on destruction', (done) ->
+        fn = (data, channel) ->
+          (expect channel).toEqual 'destroy/mod'
+          done()
+        core.onModuleState 'destroy', fn, 'mod'
+        core.start 'mod'
+        core.stop 'mod'
 
     describe 'list methods', ->
 
