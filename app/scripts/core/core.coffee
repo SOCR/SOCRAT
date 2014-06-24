@@ -25,7 +25,7 @@ core = angular.module('app_core', [
 
       _checkType = (type, val, name) ->
         # TODO: change to $exceptionHandler or return false anf throw exception in caller
-        console.log 'checkType: ' + "#{name} has to be a #{type}"
+        console.log 'CORE: checkType: ' + "#{name} has to be a #{type}"
         if typeof val isnt type and utils.typeIsArray(val) isnt true
           console.log typeof val isnt type
           console.log utils.typeIsArray(val)
@@ -115,7 +115,7 @@ core = angular.module('app_core', [
           _addModule.apply @, [moduleId, creator, opt]
         catch e
 #          console.log e
-          console.log "could not register module" + moduleId
+          console.log " CORE: could not register module" + moduleId
           console.error "could not register module #{moduleId}: #{e.message}"
           false
 
@@ -189,7 +189,7 @@ core = angular.module('app_core', [
           true
 
         catch e
-          console.log "could not start module: #{e.message}"
+          console.log "CORE: could not start module: #{e.message}"
           opt.callback? new Error "could not start module: #{e.message}"
           false
 
@@ -289,7 +289,7 @@ core = angular.module('app_core', [
         true
 
       _sendMessage = (msg, data, scopeArray) ->
-        console.log 'core sends: ' + msg + ' data: ' + data +
+        console.log 'CORE: send ' + msg + ' data: ' + data +
           ' scope: ' + scopeArray
         eventMngr.publish
           msg: msg
@@ -298,11 +298,10 @@ core = angular.module('app_core', [
 
 #     TODO: abstract it to eventMngr module
       _API = (msg, data) ->
-        console.log 'CORE: in API'
         for o in _map when o.msgFrom is msg
           _sendMessage o.msgTo, data, o.scopeTo
           return true
-        console.log 'No mapping in API for message: ' + msg
+        console.log 'CORE: no mapping in API for message: ' + msg
         false
 
       # External methods
