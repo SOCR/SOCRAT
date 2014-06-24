@@ -617,30 +617,30 @@ describe 'Core module', ->
           (expect core.setEventsMapping validMap).toBeTruthy()
 
 
-    describe 'onModuleState function', ->
-
-      beforeEach ->
-        core.register 'mod', (sb) ->
-          init: ->
-          destroy: ->
-
-      it 'calls a registered method on instatiation', (done) ->
-        fn = (data, channel) ->
-          (expect channel).toEqual 'instantiate/mod'
-        fn2 = (data, channel) ->
-          (expect channel).toEqual 'instantiate/_always'
-          done()
-        core.onModuleState 'instantiate', fn, 'mod'
-        core.onModuleState 'instantiate', fn2
-        core.start 'mod'
-
-      it 'calls a registered method on destruction', (done) ->
-        fn = (data, channel) ->
-          (expect channel).toEqual 'destroy/mod'
-          done()
-        core.onModuleState 'destroy', fn, 'mod'
-        core.start 'mod'
-        core.stop 'mod'
+#    describe 'onModuleState function', ->
+#
+#      beforeEach ->
+#        core.register 'mod', (sb) ->
+#          init: ->
+#          destroy: ->
+#
+#      it 'calls a registered method on instatiation', (done) ->
+#        fn = (data, channel) ->
+#          (expect channel).toEqual 'instantiate/mod'
+#        fn2 = (data, channel) ->
+#          (expect channel).toEqual 'instantiate/_always'
+#          done()
+#        core.onModuleState 'instantiate', fn, 'mod'
+#        core.onModuleState 'instantiate', fn2
+#        core.start 'mod'
+#
+#      it 'calls a registered method on destruction', (done) ->
+#        fn = (data, channel) ->
+#          (expect channel).toEqual 'destroy/mod'
+#          done()
+#        core.onModuleState 'destroy', fn, 'mod'
+#        core.start 'mod'
+#        core.stop 'mod'
 
     describe 'list methods', ->
 
