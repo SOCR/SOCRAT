@@ -27,11 +27,7 @@ core = angular.module('app_core', [
         # TODO: change to $exceptionHandler or return false anf throw exception in caller
         console.log 'CORE: checkType: ' + "#{name} has to be a #{type}"
         if typeof val isnt type and utils.typeIsArray(val) isnt true
-          console.log typeof val isnt type
-          console.log utils.typeIsArray(val)
-          console.log typeof val isnt type and utils.typeIsArray(val) isnt true
-          console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
-          console.log 'INSTEAD: ' + "#{name} is a " + typeof val
+          console.log 'CORE: checkType: ' + "#{name} is not a #{type}"
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
@@ -106,7 +102,7 @@ core = angular.module('app_core', [
           options: opt
           id: moduleId
 
-        console.log 'Module added: ' + moduleId
+        console.log 'CORE: module added: ' + moduleId
 
         true
 
@@ -114,7 +110,6 @@ core = angular.module('app_core', [
         try
           _addModule.apply @, [moduleId, creator, opt]
         catch e
-#          console.log e
           console.log " CORE: could not register module" + moduleId
           console.error "could not register module #{moduleId}: #{e.message}"
           false
