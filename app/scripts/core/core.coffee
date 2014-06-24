@@ -180,7 +180,6 @@ core = angular.module('app_core', [
             # then define a callback
             instance.init instance.options, (err) -> opt.callback? err
           else
-            console.log opt.callback
             # else call the callback directly after initialisation
             instance.init instance.options
             opt.callback? null
@@ -219,7 +218,6 @@ core = angular.module('app_core', [
 
         utils.doForAll valid, startAction, (err) ->
           if err?.length > 0
-            console.log 'WHY'
             e = new Error "errors occoured in the following modules: " +
                           "#{("'#{valid[i]}'" for x,i in err when x?)}"
           cb? e or invalidErr
