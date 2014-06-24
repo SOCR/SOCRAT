@@ -1,6 +1,6 @@
 'use strict'
 
-getData = angular.module('app.getData', [
+getData = angular.module('app_analysis_getData', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
@@ -17,6 +17,47 @@ getData = angular.module('app.getData', [
     ()->
       console.log "config block of getData"
 ])
+
+.factory('app_analysis_getData_constructor', [
+  'app_anaylsis_getData_manager'
+  (manager) ->
+    (sb) ->
+
+      manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
+
+      init: (opt) ->
+        console.log 'getData init invoked'
+
+      destroy: () ->
+
+      msgList: _msgList
+])
+
+.factory('app_analysis_getData_manager', [
+  () ->
+    _sb = null
+
+    _msgList =
+      outgoing: ['take data']
+      incoming: ['get data']
+      scope: ['getData']
+
+    _setSb = (sb) ->
+      _sb = sb
+
+    _getSb = () ->
+      _sb
+
+    _getMsgList = () ->
+      _msgList
+
+    getSb: _getSb
+    setSb: _setSb
+    getMsgList: _getMsgList
+])
+
+
 # jsonParser gets json based on url
 #
 #
@@ -47,14 +88,10 @@ getData = angular.module('app.getData', [
 # getDataViewCtrl is the ctrl that talks to the view.
 # ###
 .controller('getDataSidebarCtrl', [
+  'app_analysis_getData_manager'
   '$scope'
-  'getDataSb'
   'jsonParser'
-  ($scope,getDataSb,jsonParser)->
-
-    #get the sandbox made for this module
-    #sb = getDataSb.getSb()
-    console.log 'sandbox created'
+  (manager,$scope,jsonParser)->
 
     #getJson
     $scope.getJson=()->
@@ -76,42 +113,14 @@ getData = angular.module('app.getData', [
 
     $scope.getGrid = ()->
     return
-  ])
+])
 
 .controller('getDataMainCtrl', [
+  'app_analysis_getData_manager'
   '$scope'
-  ($scope)->
-    #$scope.msg = "selvam"
+  (manager,$scope)->
     console.log 'getDataCtrl executed'
 ])
-####
-#  Every module is supposed have a factory method
-#  by its name. For example, "app.charts" module will
-#  have "charts" factory method.
-#
-#  This method helps in module initialization.
-#  init() and destroy() methods should be present in
-#  returned object.
-####
-.factory('getData',['getDataSb', (getDataSb)->
-  (sb) ->
-    getDataSb.setSb(sb) unless !sb?
-    init: ()->
-    destroy: ()->
-])
-####
-# Every module will have a MODULE_NAMESb() service
-# For the module methods to access the sandbox object.
-####
-.service('getDataSb', ()->
-  console.log "sb"
-  _sb = null
-  setSb:(sb)->
-    return false if sb is undefined
-    _sb = sb
 
-  getSb:()->
-    _sb
-)
 
 

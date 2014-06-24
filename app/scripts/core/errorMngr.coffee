@@ -2,7 +2,7 @@
 ###
   depends on the app.mediator for publishing messages
 ###
-errorMngr = angular.module 'app.errorMngr', ['app.mediator']
+errorMngr = angular.module 'app_errorMngr', ['app_mediator']
 
 ###
   overriding the default $exceptionHandler for custom exception handling.
