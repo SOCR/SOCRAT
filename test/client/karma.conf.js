@@ -35,8 +35,7 @@ module.exports = function(config) {
       // Specs //
 
       // CoffeeScript //
-//      'test/unit/**/*.spec.coffee'
-      'test/unit/core/core.spec.coffee'
+      'test/unit/**/*.spec.coffee'
 
       // Javascript //
       // 'test/unit/**/*.spec.js'

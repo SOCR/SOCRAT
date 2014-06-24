@@ -80,6 +80,7 @@ core = angular.module('app_core', [
 
 #        for n in [instanceId, '_always']
 #          moduleStates.emit 'instantiate/#{n}'
+        console.log 'CORE: created instance of ' + instance.id
 
         instance
 
@@ -139,12 +140,13 @@ core = angular.module('app_core', [
 #        msgList.scope = moduleId
         # TODO: change context
 #        msgList.context = console
-        console.log 'SBSCRBNG'
         eventMngr.subscribeForEvents
           msgList: msgList
           scope: [moduleId]
           context: console
           , API
+
+        console.log 'CORE: subscribed for events from ' + moduleId
 #        for msg in msgList
 #          mediator.subscribe
 #            msg: msg
@@ -217,6 +219,7 @@ core = angular.module('app_core', [
 
         utils.doForAll valid, startAction, (err) ->
           if err?.length > 0
+            console.log 'WHY'
             e = new Error "errors occoured in the following modules: " +
                           "#{("'#{valid[i]}'" for x,i in err when x?)}"
           cb? e or invalidErr
@@ -295,6 +298,7 @@ core = angular.module('app_core', [
 
 #     TODO: abstract it to eventMngr module
       _API = (msg, data) ->
+        console.log 'CORE: in API'
         for o in _map when o.msgFrom is msg
           _sendMessage o.msgTo, data, o.scopeTo
           return true
