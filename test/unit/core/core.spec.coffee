@@ -126,7 +126,7 @@ describe 'Core module', ->
     describe 'start function', ->
 
       foo =
-        cb1: () ->
+        cb1: ->
 
       beforeEach ->
         inject (core) ->
@@ -280,7 +280,6 @@ describe 'Core module', ->
           (expect core.start('anId', { callback: (err) ->
             (expect foo.cb1).toHaveBeenCalled()
           })).toBeTruthy()
-
 
     describe 'stop function', ->
 
