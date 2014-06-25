@@ -25,7 +25,7 @@ core = angular.module('app_core', [
 
       _checkType = (type, val, name) ->
         # TODO: change to $exceptionHandler or return false anf throw exception in caller
-        console.log 'CORE: checkType: ' + "#{name} has to be a #{type}"
+#        console.log 'CORE: checkType: ' + "#{name} has to be a #{type}"
         if typeof val isnt type and utils.typeIsArray(val) isnt true
           console.log 'CORE: checkType: ' + "#{name} is not a #{type}"
           throw new TypeError "#{name} has to be a #{type}"
@@ -197,11 +197,15 @@ core = angular.module('app_core', [
             next err
           _start m, o
 
-        utils.doForAll valid, startAction, (err) ->
-          if err?.length > 0
-            e = new Error "errors occoured in the following modules: " +
-                          "#{("'#{valid[i]}'" for x,i in err when x?)}"
-          cb? e or invalidErr
+        utils.doForAll(
+          valid
+          startAction
+          (err) ->
+            if err?.length > 0
+              e = new Error "errors occoured in the following modules: " +
+                            "#{("'#{valid[i]}'" for x,i in err when x?)}"
+            cb? e or invalidErr
+          true)
 
         not invalidErr?
 
