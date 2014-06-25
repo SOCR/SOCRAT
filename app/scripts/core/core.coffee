@@ -130,24 +130,6 @@ core = angular.module('app_core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
-      # subscribe for outgoing events from module
-      _subscribeForModuleEvents = (moduleId, msgList, API) ->
-#        msgList.scope = moduleId
-        # TODO: change context
-#        msgList.context = console
-        eventMngr.subscribeForEvents
-          msgList: msgList
-          scope: [moduleId]
-          context: console
-          , API
-
-        console.log 'CORE: subscribed for events from ' + moduleId
-#        for msg in msgList
-#          mediator.subscribe
-#            msg: msg
-#            listener: API
-#            msgScope: [moduleId]
-
       _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
@@ -166,9 +148,12 @@ core = angular.module('app_core', [
 
           # subscription for module events
           if instance.msgList? and instance.msgList.outgoing?
-            _subscribeForModuleEvents moduleId,
-              instance.msgList.outgoing,
-              _API
+            eventMngr.subscribeForEvents
+              msgList: instance.msgList.outgoing
+              scope: [moduleId]
+              # TODO: figure out context
+              context: console
+              , _redirectMsg
 
           # if the module wants to init in an asynchronous way
           if (utils.getArgumentNames instance.init).length >= 2
@@ -180,6 +165,7 @@ core = angular.module('app_core', [
             opt.callback? null
 
           instance.running = true
+          console.log 'CORE: started module ' + moduleId
           true
 
         catch e
@@ -281,20 +267,15 @@ core = angular.module('app_core', [
         _map = map
         true
 
-      _sendMessage = (msg, data, scopeArray) ->
-        console.log 'CORE: send ' + msg + ' data: ' + data +
-          ' scope: ' + scopeArray
-        eventMngr.publish
-          msg: msg
-          data: data
-          msgScope: scopeArray
-
-#     TODO: abstract it to eventMngr module
-      _API = (msg, data) ->
+      _redirectMsg = (msg, data) ->
         for o in _map when o.msgFrom is msg
-          _sendMessage o.msgTo, data, o.scopeTo
+          eventMngr.publish
+            msg: o.msgTo
+            data: data
+            msgScope: o.scopeTo
+          console.log 'CORE: redirect mgs ' + o.msgTo + 'to ' + o.scopeTo
           return true
-        console.log 'CORE: no mapping in API for message: ' + msg
+        console.log 'CORE: no mapping in API for message: ' + o.msgTo
         false
 
       # External methods
