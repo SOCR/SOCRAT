@@ -20,16 +20,6 @@ describe 'utils module', ->
       it 'shouldn\' tbreak if the function is not defined', ->
         (expect utils.getArgumentNames undefined).toEqual []
 
-    describe 'clone function', ->
-
-      it 'should return a clone of array', ->
-        arr = ['a', 'b', 'c', 'd']
-        (expect utils.clone arr).toEqual arr
-
-      it 'returns a clone of object', ->
-        obj = name: 'object', id: 1
-        (expect utils.clone obj).toEqual obj
-
     describe 'installFromTo function', ->
 
       it 'copies all properties of first object to second', ->
