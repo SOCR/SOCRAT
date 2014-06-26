@@ -24,13 +24,13 @@ describe 'Core module', ->
     .service 'pubSub', ->
       @events = []
       @publish = (event) =>
-          console.log 'pubSub: published'
+          console.log 'mock pubSub: published'
           console.log event
-          console.log @events[0].listener
+          console.log @events[0]?.listener
           result = (item.listener(item.msg) for item in @events when item.msg is event.msg)
       @subscribe = (event) =>
         @events.push event
-        console.log 'pubSub: subscribed'
+        console.log 'mock pubSub: subscribed'
         console.log @events
       @unsubscribe = ->
       publish: @publish
