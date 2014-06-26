@@ -80,13 +80,13 @@ mediator = angular.module('app_mediator', [])
           i++
       else
         console.log 'MEDIATOR: msgScope is not an Array instance'
-        throw
-          message:'MEDIATOR: msgScope is not an Array instance'
-          type:'error'
+        throw new Error 'msgScope is not an Array instance'
+#          message:'msgScope is not an Array instance'
+#          type:'error'
     else
-      throw
-        message:'MEDIATOR: msgScope is not defined'
-        type:'error'
+      throw new Error 'msgScope is not defined'
+#        message:'msgScope is not defined'
+#        type:'error'
     cb()
     console.log 'MEDIATOR: successfully published:' + obj.msg
     return @
