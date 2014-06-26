@@ -24,13 +24,13 @@ describe 'Core module', ->
     .service 'pubSub', ->
       @events = []
       @publish = (event) =>
-          console.log 'pubSub: published'
+          console.log 'mock pubSub: published'
           console.log event
-          console.log @events[0].listener
+          console.log @events[0]?.listener
           result = (item.listener(item.msg) for item in @events when item.msg is event.msg)
       @subscribe = (event) =>
         @events.push event
-        console.log 'pubSub: subscribed'
+        console.log 'mock pubSub: subscribed'
         console.log @events
       @unsubscribe = ->
       publish: @publish
@@ -126,7 +126,7 @@ describe 'Core module', ->
     describe 'start function', ->
 
       foo =
-        cb1: () ->
+        cb1: ->
 
       beforeEach ->
         inject (core) ->
@@ -280,7 +280,6 @@ describe 'Core module', ->
           (expect core.start('anId', { callback: (err) ->
             (expect foo.cb1).toHaveBeenCalled()
           })).toBeTruthy()
-
 
     describe 'stop function', ->
 
@@ -481,30 +480,37 @@ describe 'Core module', ->
           ).toBeTruthy()
 
       it 'calls the callback with an error if one or more modules couldn\'t start', (done) ->
-         inject (core) ->
-           spyOn foo, 'cb1'
-           spyOn foo, 'cb2'
-           mod1 = (sb) ->
-             init: -> foo.cb1(); thisIsAnInvalidMethod()
-             destroy: ->
-             msgList:
-               outgoing: ['0']
-               incoming: ['1']
-               scope: ['fooScope']
-           mod2 = (sb) ->
-             init: -> foo.cb2()
-             destroy: ->
-             msgList:
-               outgoing: ['0']
-               incoming: ['1']
-               scope: ['fooScope']
-           core.register 'invalid', mod1
-           core.register 'valid', mod2
-           core.startAll ['invalid', 'valid'], (err) ->
-             (expect foo.cb1).toHaveBeenCalled()
-             (expect foo.cb2).toHaveBeenCalled()
-             (expect err.message).toEqual 'errors occoured in the following modules: \'invalid\''
-             done()
+        inject (core) ->
+
+          spyOn foo, 'cb1'
+          spyOn foo, 'cb2'
+
+          mod1 = (sb) ->
+            init: ->
+              foo.cb1()
+              thisIsAnInvalidMethod()
+            destroy: ->
+            msgList:
+              outgoing: ['0']
+              incoming: ['1']
+              scope: ['fooScope']
+
+          mod2 = (sb) ->
+            init: ->
+              foo.cb2()
+            destroy: ->
+            msgList:
+              outgoing: ['0']
+              incoming: ['1']
+              scope: ['fooScope']
+
+          core.register 'invalid', mod1
+          core.register 'valid', mod2
+          core.startAll ['invalid', 'valid'], (err) ->
+            (expect foo.cb1).toHaveBeenCalled()
+            (expect foo.cb2).toHaveBeenCalled()
+            (expect err.message).toEqual 'errors occoured in the following modules: \'invalid\''
+            done()
 
       it 'calls the callback with an error if one or more modules don\'t exist', () ->
         inject (core) ->
@@ -616,6 +622,27 @@ describe 'Core module', ->
 
           (expect core.setEventsMapping validMap).toBeTruthy()
 
+    describe 'list methods', ->
+
+      beforeEach ->
+        inject (core) ->
+          core.stopAll()
+          core.register moduleId, validModule
+
+      it 'has an lsModules method', ->
+        inject (core) ->
+          (expect core.lsModules()).toEqual [moduleId]
+
+      it 'has an lsInstances method', ->
+        inject (core) ->
+          (expect typeof core.lsInstances).toEqual 'function'
+          (expect core.lsInstances()).toEqual []
+          (expect core.start moduleId ).toBeTruthy()
+          (expect core.lsInstances()).toEqual [moduleId]
+          (expect core.start moduleId, instanceId: 'test' ).toBeTruthy()
+          (expect core.lsInstances()).toEqual [moduleId, 'test']
+          (expect core.stop moduleId).toBeTruthy()
+          (expect core.lsInstances()).toEqual ['test']
 
 #    describe 'onModuleState function', ->
 #
@@ -641,26 +668,4 @@ describe 'Core module', ->
 #        core.onModuleState 'destroy', fn, 'mod'
 #        core.start 'mod'
 #        core.stop 'mod'
-
-    describe 'list methods', ->
-
-      beforeEach ->
-        inject (core) ->
-          core.stopAll()
-          core.register moduleId, validModule
-
-      it 'has an lsModules method', ->
-        inject (core) ->
-          (expect core.lsModules()).toEqual [moduleId]
-
-      it 'has an lsInstances method', ->
-        inject (core) ->
-          (expect typeof core.lsInstances).toEqual 'function'
-          (expect core.lsInstances()).toEqual []
-          (expect core.start moduleId ).toBeTruthy()
-          (expect core.lsInstances()).toEqual [moduleId]
-          (expect core.start moduleId, instanceId: 'test' ).toBeTruthy()
-          (expect core.lsInstances()).toEqual [moduleId, 'test']
-          (expect core.stop moduleId).toBeTruthy()
-          (expect core.lsInstances()).toEqual ['test']
 
