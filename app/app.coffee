@@ -12,9 +12,6 @@ App = angular.module('app', [
   'ui.compat'
   'ngCookies'
   'ngResource'
-  #charts module
-  #'app_analysis_chartsView'
-  #'app_analysis_charts'
   'ngSanitize'
   'app_core'
   'app_controllers'
@@ -23,7 +20,9 @@ App = angular.module('app', [
   'app_services'
   'app_mediator'
   'app_database'
-   # Analysis modules
+  #charts module
+  'app_analysis_chartsView'
+  # Analysis modules
   'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
@@ -120,7 +119,8 @@ App.run([
   'app_database_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
-  (core, db, qualRobEst,qualRobEstView) ->
+  'app_analysis_chartsView_constructor'
+  (core, db, qualRobEst,qualRobEstView,chartsView) ->
 
     console.log "run block of app module"
 
@@ -157,11 +157,8 @@ App.run([
     core.register 'db', db
     core.start 'db'
 
-    # core.register 'chartsView', chartsView
-    # core.start 'chartsView'
-
-    # core.register 'charts', charts
-    # core.start 'charts'
+    core.register 'chartsView', chartsView
+    core.start 'chartsView'
 
     console.log 'run block of app module'
 

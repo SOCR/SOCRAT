@@ -3,13 +3,60 @@
   @author: Selvam Palanimalai
 ###
 
-charts = angular.module 'app_analysis_chartsView', ['nvd3ChartDirectives']
+chartsView = angular.module 'app_analysis_chartsView', ['nvd3ChartDirectives']
+
+###
+  @description: Constructor for this module.
+  @type: factory
+###
+chartsView.factory 'app_analysis_chartsView_manager', [
+  () ->
+    _sb = null
+
+    _msgList =
+      outgoing: ['get table']
+      incoming: ['take table']
+      scope: ['chartsView']
+
+    _setSb = (sb) ->
+      _sb = sb
+
+    _getSb = () ->
+      _sb
+
+    _getMsgList = () ->
+      _msgList
+
+    getSb: _getSb
+    setSb: _setSb
+    getMsgList: _getMsgList
+]
+
+###
+  @description: Constructor for this module.
+  @type: factory
+###
+chartsView.factory('app_analysis_chartsView_constructor', [
+  'app_analysis_chartsView_manager'
+  (manager) ->
+    (sb) ->
+
+      manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
+
+      init: (opt) ->
+        console.log 'chartsView init invoked'
+
+      destroy: () ->
+
+      msgList: _msgList
+])
 
 ###
   @description: All default values specific to charts module.
   @type: constant
 ###
-charts.constant 'app_analysis_chartsView_defaults',
+chartsView.constant 'app_analysis_chartsView_defaults',
   defaultPlot: 'line'
   plots:
     'line':
@@ -29,7 +76,7 @@ charts.constant 'app_analysis_chartsView_defaults',
   @description: Get list of variables from db.
   @type: factory
 ###
-charts.factory 'app_analysis_chartsView_variables',[
+chartsView.factory 'app_analysis_chartsView_variables',[
   ()->
     _list = null
     get:->
@@ -39,46 +86,27 @@ charts.factory 'app_analysis_chartsView_variables',[
       _list = ['a','b','c','d']
 ]
 
-###
-  @description: Constructor for this module.
-  @type: factory
-###
-charts.factory 'app_analysis_chartsView_manager', [
-    (sb)->
-      msgList =
-        outgoing:['get table']
-        incoming:['take table']
-        scope:['chartsView']
-      
-      init: (opt) ->
-        console.log 'db init called'
-
-      destroy: () ->
-
-      msgList: msgList
-]
-
 
 ###
   @type:controller
 ###
-charts.controller('chartsSidebarCtrl',[
+chartsView.controller('chartsSidebarCtrl',[
   '$scope'
   '$stateParams'
   '$rootScope'
   'app_analysis_chartsView_defaults'
   'app_analysis_chartsView_variables'
   ($scope,$stateParams,$rootScope,defaults,variables)->
-    
+
     $scope.plots = defaults.plots
     $scope.currentPlot = defaults.defaultPlot
-    
+
     #set the fork name
     #TODO : Cross check with projectMngr module,
     # if the projectid and forkid exist.
     if (_c = $stateParams).projectId? or _c.forkId?
       $scope.currentFork = $stateParams.projectId+':'+$stateParams.forkId
-    
+
     #NOTE: since all plots that socr supports [as of now] are only 1 or 2
     # dimensionals, there are only 2 variable dropdowns.
 
@@ -87,11 +115,11 @@ charts.controller('chartsSidebarCtrl',[
     # call db get the list of variables. then save it in defaults.
     variables.set(_c.projectId+':'+_c.forkId)
     $scope.variables = variables.get()
-    
+
     #watch forkname for change.
     $scope.$watch 'currentFork', (newVal,oldVal)->
       # redirect page
-    
+
     # watch xVariable, yVariable, plotType for change.
     # send broadcast message to update chart.
     $scope.$watch 'currentPlot', (newVal,oldVal)->
@@ -105,13 +133,13 @@ charts.controller('chartsSidebarCtrl',[
       $rootScope.$broadcast 'chartsMainCtrl:update variable',
         type:'yVariable'
         value:newVal
-  
+
 ])
 
 ###
   @type:controller
 ###
-charts.controller('chartsMainCtrl' ,[
+chartsView.controller('chartsMainCtrl' ,[
   '$q'
   '$scope'
   'app_analysis_chartsView_defaults'
@@ -128,13 +156,13 @@ charts.controller('chartsMainCtrl' ,[
       for k, v of defaults.plots
         if v.label is args[1]
           $scope.currentPlot = k
-    
+
     $scope.$on 'chartsMainCtrl:update variable', (args...)->
       for d in variables.get()
         if d is args[1].value
           # edit the values in the #scope.data depending on the xvariable.
           console.log 'changed variable ' + args[1].type
-      
+
       #create promise object
       deferred = $q.defer()
 
@@ -145,13 +173,13 @@ charts.controller('chartsMainCtrl' ,[
         msgScope:['chartsView']
 
       console.log promise
-      
+
       #onsucess, update $scope.data
       promise.then (data)->
         console.log 'data returned promise', data
         #update the plot with data.
         $scope.data = data
-    
+
     #default value.
     $scope.currentPlot = 'none'
 
