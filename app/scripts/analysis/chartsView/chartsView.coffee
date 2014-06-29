@@ -45,7 +45,7 @@ charts.factory 'app_analysis_chartsView_variables',[
 ###
 charts.factory 'app_analysis_chartsView_manager', [
     (sb)->
-      msgList = 
+      msgList =
         outgoing:['get table']
         incoming:['take table']
         scope:['chartsView']
@@ -139,7 +139,7 @@ charts.controller('chartsMainCtrl' ,[
       deferred = $q.defer()
 
       #make db call.
-      promise = manager.sb.send 
+      promise = manager.sb.send
         msg:'get table',
         data:['charts_test_db',deferred]
         msgScope:['chartsView']

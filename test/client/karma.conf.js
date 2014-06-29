@@ -36,7 +36,6 @@ module.exports = function(config) {
 
       // CoffeeScript //
       'test/unit/**/*.spec.coffee'
-      // 'test/unit/db/db.spec.coffee'
 
       // Javascript //
       // 'test/unit/**/*.spec.js'
@@ -82,7 +81,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Firefox'],
+    browsers: ['Chrome'],
 
 
     // Continuous Integration mode

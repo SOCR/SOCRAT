@@ -12,32 +12,31 @@ App = angular.module('app', [
   'ui.compat'
   'ngCookies'
   'ngResource'
-  'app.core'
-#getData module
-  'app.getData'
-#charts module
-  'app_analysis_chartsView'
-  'app_analysis_charts'
-#Robust estimator module
-  'app.qualRobEstView'
-  'app.qualRobEst'
-  'app.controllers'
-  'app.directives'
-  'app.filters'
-  'app.services'
-  'app.mediator'
+  #charts module
+  #'app_analysis_chartsView'
+  #'app_analysis_charts'
   'ngSanitize'
-  'app.db'
+  'app_core'
+  'app_controllers'
+  'app_directives'
+  'app_filters'
+  'app_services'
+  'app_mediator'
+  'app_database'
+   # Analysis modules
+  'app_analysis_getData'
+  'app_analysis_qualRobEstView'
+  'app_analysis_qualRobEst'
 ])
 
 App.config([
   '$locationProvider'
   '$urlRouterProvider'
   '$stateProvider'
-
-( $locationProvider, $urlRouterProvider, $stateProvider) ->
+($locationProvider, $urlRouterProvider, $stateProvider) ->
 
   console.log "config block of app module"
+
   $urlRouterProvider.when('/','/')
     .otherwise('/home')
 
@@ -118,28 +117,28 @@ App.config([
 
 App.run([
   'core'
-  'db'
-  'getData'
-  'qualRobEstView'
-  'qualRobEst'
-  'app_analysis_chartsView_construct'
-  (core, db, getData, qualRobEstView, qualRobEst, chartsView) ->
+  'app_database_constructor'
+  'app_analysis_qualRobEst_constructor'
+  'app_analysis_qualRobEstView_constructor'
+  (core, db, qualRobEst,qualRobEstView) ->
+
+    console.log "run block of app module"
 
     map = [
-      msgFrom: '111'
+      msgFrom: 'add numbers'
       scopeFrom: ['qualRobEstView']
-      msgTo: '123'
+      msgTo: 'add numbers'
       scopeTo: ['qualRobEst']
     ,
-      msgFrom: '234'
+      msgFrom: 'numbers added'
       scopeFrom: ['qualRobEst']
-      msgTo: '000'
+      msgTo: 'numbers added'
       scopeTo: ['qualRobEstView']
     ,
       msgFrom:'save table'
       scopeFrom: ['getData']
       msgTo:'save table'
-      scopeTo:['db']
+      scopeTo:['database']
     ,
       msgFrom:'get table'
       scopeFrom:['chartsView']
@@ -158,13 +157,14 @@ App.run([
     core.register 'db', db
     core.start 'db'
 
-    core.register 'chartsView', chartsView
-    core.start 'chartsView'
+    # core.register 'chartsView', chartsView
+    # core.start 'chartsView'
 
     # core.register 'charts', charts
     # core.start 'charts'
 
     console.log 'run block of app module'
+
 
 ])
 
