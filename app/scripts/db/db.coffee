@@ -25,7 +25,7 @@ db.factory 'app_database_constructor',[
       _msgList = manager.getMsgList()
 
       init: (opt) ->
-        console.log 'db init called'
+        console.log 'DB: init called'
 
       destroy: () ->
 
@@ -131,6 +131,7 @@ db.service 'app_database_dv', ->
             _listeners[opts.table][opts.column]['cb'].push opts.listener
           else
             _listeners[opts.table]['cb'].push opts.listener
+    console.log 'DB: listeners:'
     console.log _listeners[opts.table]
   
   # destroy any table
