@@ -9,7 +9,7 @@
 #    {name:"B", values:colB, type:"numeric"}
 #  ]
 #
-### Create mock module and overriding services
+## Create mock module and overriding services
 ##  angular.module('app.mocks', [])
 ##    .factory 'Sandbox', ->
 ##      (_core, _instanceId, _options = {}) ->
