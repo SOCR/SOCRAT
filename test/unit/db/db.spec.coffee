@@ -9,23 +9,23 @@ describe "app.db module", ->
     {name:"B", values:colB, type:"numeric"}
   ]
 
-# Create mock module and overriding services
-  angular.module('app.mocks', [])
-    .factory 'Sandbox', ->
-      (_core, _instanceId, _options = {}) ->
-        @core = @
-        @instanceId = _instanceId
-        @options = {}
-    .service 'pubSub', ->
-      @events = [];
-      @publish = (event) ->
-        result = (item.listener(event.msg,event.data) for item in @events when item.msg is event.msg)
-      @subscribe = (event) ->
-        @events.push event
+## Create mock module and overriding services
+#  angular.module('app.mocks', [])
+#    .factory 'Sandbox', ->
+#      (_core, _instanceId, _options = {}) ->
+#        @core = @
+#        @instanceId = _instanceId
+#        @options = {}
+#    .service 'pubSub', ->
+#      @events = [];
+#      @publish = (event) ->
+#        result = (item.listener(event.msg,event.data) for item in @events when item.msg is event.msg)
+#      @subscribe = (event) ->
+#        @events.push event
 
   beforeEach ->
     module "app_database"
-    module "app.mocks"
+    module "app_mocks"
 
   describe "database service", ->
 
@@ -167,6 +167,10 @@ describe "app.db module", ->
               table.get("A", row) isnt "a"
           , "tab1"
         expect(filter).toMatch [["b","c"], [2,1]]
+
+    it 'last DB test', ->
+      console.log 'TEST: last db test'
+      (expect 1).toEqual 1
 
           # describe 'dbEventMngr',->
 
