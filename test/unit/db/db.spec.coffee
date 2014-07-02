@@ -9,23 +9,9 @@ describe "app.db module", ->
     {name:"B", values:colB, type:"numeric"}
   ]
 
-# Create mock module and overriding services
-  angular.module('app.mocks', [])
-    .factory 'Sandbox', ->
-      (_core, _instanceId, _options = {}) ->
-        @core = @
-        @instanceId = _instanceId
-        @options = {}
-    .service 'pubSub', ->
-      @events = [];
-      @publish = (event) ->
-        result = (item.listener(event.msg,event.data) for item in @events when item.msg is event.msg)
-      @subscribe = (event) ->
-        @events.push event
-
   beforeEach ->
     module "app_database"
-    module "app.mocks"
+    module "app_mocks"
 
   describe "database service", ->
 
@@ -106,16 +92,16 @@ describe "app.db module", ->
         spyOn(foo,"cb2")
         app_database_dv.addListener
           table : "test"
-          column: "C" 
+          column: "C"
           listener:foo.cb1
         app_database_dv.addListener
           table : "test"
-          column: "B" 
+          column: "B"
           listener:foo.cb2
         app_database_dv.addColumn "C", colC, "numeric", "test"
         expect(foo.cb1).toHaveBeenCalled()
         expect(foo.cb2).not.toHaveBeenCalled()
-        
+
     it "destroys a table if it exists", ->
       inject (app_database_dv)->
         app_database_dv.create table, "tab1"
@@ -169,31 +155,31 @@ describe "app.db module", ->
         expect(filter).toMatch [["b","c"], [2,1]]
 
           # describe 'dbEventMngr',->
-
-    # it "executes registered methods on publishing of registered msgs in the msgList", ->
-    #   inject (app_database_dv,app_database,dbEventMngr,pubSub,$q)->
-    #     db = new app_database()
-    #     #creating the sandbox
-    #     dbEventMngr.setSb(pubSub)
-    #     #instantiating the app
-    #     db.init()
-    #     #create a promise
-    #     deferred = $q.defer()
-    #     _data = [table,'test',deferred]
-    #     foo = 
-    #       cb : ->
-    #     spyOn(foo,'cb')
-    #     #subscribing to the outcome msg for 'save table'
-    #     pubSub.subscribe
-    #       msg:'table saved'
-    #       listener:foo.cb
-    #       msgScope:['app_database_dv']
-    #     #manually publishing the msg 'save table'
-    #     pubSub.publish
-    #       msg:'save table'
-    #       data: _data
-    #       msgScope:['app_database_dv']
-    #     #expect the eventManager in the app_database_dv service
-    #     #to process and publish 'table saved' msg  
-    #     expect(foo.cb).toHaveBeenCalled()
-    
+#
+#    # it "executes registered methods on publishing of registered msgs in the msgList", ->
+#    #   inject (app_database_dv,app_database,dbEventMngr,pubSub,$q)->
+#    #     db = new app_database()
+#    #     #creating the sandbox
+#    #     dbEventMngr.setSb(pubSub)
+#    #     #instantiating the app
+#    #     db.init()
+#    #     #create a promise
+#    #     deferred = $q.defer()
+#    #     _data = [table,'test',deferred]
+#    #     foo =
+#    #       cb : ->
+#    #     spyOn(foo,'cb')
+#    #     #subscribing to the outcome msg for 'save table'
+#    #     pubSub.subscribe
+#    #       msg:'table saved'
+#    #       listener:foo.cb
+#    #       msgScope:['app_database_dv']
+#    #     #manually publishing the msg 'save table'
+#    #     pubSub.publish
+#    #       msg:'save table'
+#    #       data: _data
+#    #       msgScope:['app_database_dv']
+#    #     #expect the eventManager in the app_database_dv service
+#    #     #to process and publish 'table saved' msg
+#    #     expect(foo.cb).toHaveBeenCalled()
+#
