@@ -2,7 +2,7 @@
 
 #app.core module contains services like error management , pub/sub
 
-mediator = angular.module('app.mediator', [])
+mediator = angular.module('app_mediator', [])
 
 # publish/subscribe angular service
 .service("pubSub", () ->
@@ -32,7 +32,7 @@ mediator = angular.module('app.mediator', [])
         i++
     if(_flag is 1)
       # execute the callback and return false
-      console.log "message not present in the list. returning false"
+      console.log "MEDIATOR: message not present in the list. returning false"
       cb()
       return false
 
@@ -75,17 +75,20 @@ mediator = angular.module('app.mediator', [])
                 throw e
               j++
           else
-            console.log "no cb's registered with this message"
+            console.log "MEDIATOR: no cb's registered with this message"
             _msgList[_scopes[i]][msg]=[]
           i++
       else
-        cb()
-        return false
+        console.log 'MEDIATOR: msgScope is not an Array instance'
+        throw new Error 'msgScope is not an Array instance'
+#          message:'msgScope is not an Array instance'
+#          type:'error'
     else
-      cb()
-      return false
+      throw new Error 'msgScope is not defined'
+#        message:'msgScope is not defined'
+#        type:'error'
     cb()
-    console.log "successfully published"
+    console.log 'MEDIATOR: successfully published:' + obj.msg
     return @
 
   # _subscribe() - registers a listener function for a msg
@@ -160,7 +163,7 @@ mediator = angular.module('app.mediator', [])
         token:++_lastUID
         func:cb
         context:context
-      console.log("successfully subscribed")
+      console.log('MEDIATOR: successfully subscribed:' + obj.msg)
       j++
 
     return @
@@ -174,7 +177,7 @@ mediator = angular.module('app.mediator', [])
         while i<j
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
-            console.log("successfully unsubscribed")
+            console.log('MEDIATOR: successfully unsubscribed:' + m)
             return token
           i++
     return @

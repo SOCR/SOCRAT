@@ -2,7 +2,7 @@
 
 # app.sandbox module for wrapping modules
 
-sandbox = angular.module('app.sandbox', [])
+sandbox = angular.module('app_sandbox', [])
 
   .factory 'Sandbox', ->
     (_core, _instanceId, _options = {}) ->

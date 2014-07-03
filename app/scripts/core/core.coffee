@@ -2,20 +2,20 @@
 
 #app.core module contains
 
-core = angular.module('app.core', [
-  'app.mediator'
-  'app.sandbox'
-  'app.errorMngr'
-  'app.utils'
+core = angular.module('app_core', [
+  'app_eventMngr'
+  'app_sandbox'
+  'app_errorMngr'
+  'app_utils'
 ])
 
   .factory 'core', [
-    'pubSub'
+    'eventMngr'
     'Sandbox'
 #    '$exceptionHandler'
     'utils'
 #    (mediator, Sandbox, $exceptionHandler, utils) ->
-    (mediator, Sandbox, utils) ->
+    (eventMngr, Sandbox, utils) ->
 
       _modules = {}
       _instances = {}
@@ -24,16 +24,15 @@ core = angular.module('app.core', [
 #      _plugins = {}
 
       _checkType = (type, val, name) ->
-        # TODO: change to $exceptionHandler
-        console.log 'checkType: ' + "#{name} has to be a #{type}"
-        if typeof val isnt type
-          console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
-          console.log 'BUT: ' + "#{name} is " + typeof val
+        # TODO: change to $exceptionHandler or return false anf throw exception in caller
+#        console.log 'CORE: checkType: ' + "#{name} has to be a #{type}"
+        if typeof val isnt type and utils.typeIsArray(val) isnt true
+          console.log 'CORE: checkType: ' + "#{name} is not a #{type}"
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
 #      _onModuleState = (state, fn, moduleId = '_always') ->
-#        checkType 'function', fn, 'parameter'
+#        _checkType 'function', fn, 'parameter'
 #        moduleStates.on '#{state}/#{moduleId}', fn, @
 
       _getInstanceOptions = (instanceId, module, opt) ->
@@ -58,9 +57,10 @@ core = angular.module('app.core', [
         module = _modules[moduleId]
         return _instances[instanceId] if _instances[instanceId]?
         iOpts = _getInstanceOptions.apply @, [instanceId, module, opt]
-        sb = new Sandbox @, instanceId, iOpts
 
-        utils.installFromTo mediator, sb
+
+        sb = new Sandbox @, instanceId, iOpts
+        utils.installFromTo eventMngr, sb
 
 #        for i,p of plugins when p.sandbox?
 #          plugin = new p.sandbox sb
@@ -76,6 +76,7 @@ core = angular.module('app.core', [
 
 #        for n in [instanceId, '_always']
 #          moduleStates.emit 'instantiate/#{n}'
+        console.log 'CORE: created instance of ' + instance.id
 
         instance
 
@@ -89,7 +90,7 @@ core = angular.module('app.core', [
         _checkType 'function', modObj.init, '"init" of the module'
         _checkType 'function', modObj.destroy, '"destroy" of the module'
         _checkType 'object', modObj.msgList, 'message list of the module'
-        _checkType 'object', modObj.msgList.outcome,
+        _checkType 'object', modObj.msgList.outgoing,
           'outcoming message list of the module'
 
         # TODO: change to $exceptionHandler
@@ -101,7 +102,7 @@ core = angular.module('app.core', [
           options: opt
           id: moduleId
 
-        console.log 'Module added: ' + moduleId
+        console.log 'CORE: module added: ' + moduleId
 
         true
 
@@ -109,7 +110,7 @@ core = angular.module('app.core', [
         try
           _addModule.apply @, [moduleId, creator, opt]
         catch e
-#          console.log e
+          console.log " CORE: could not register module" + moduleId
           console.error "could not register module #{moduleId}: #{e.message}"
           false
 
@@ -129,13 +130,6 @@ core = angular.module('app.core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
-      _subscribeForModuleEvents = (moduleId, msgList, API) ->
-        for msg in msgList
-          mediator.subscribe
-            msg: msg
-            listener: API
-            msgScope: [moduleId]
-
       _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
@@ -153,10 +147,13 @@ core = angular.module('app.core', [
             throw new Error 'module was already started'
 
           # subscription for module events
-          if instance.msgList? and instance.msgList.outcome?
-            _subscribeForModuleEvents moduleId,
-              instance.msgList.outcome,
-              _eventsManager
+          if instance.msgList? and instance.msgList.outgoing?
+            eventMngr.subscribeForEvents
+              msgList: instance.msgList.outgoing
+              scope: [moduleId]
+              # TODO: figure out context
+              context: console
+              , _redirectMsg
 
           # if the module wants to init in an asynchronous way
           if (utils.getArgumentNames instance.init).length >= 2
@@ -168,10 +165,11 @@ core = angular.module('app.core', [
             opt.callback? null
 
           instance.running = true
+          console.log 'CORE: started module ' + moduleId
           true
 
         catch e
-          console.log "could not start module: #{e.message}"
+          console.log "CORE: could not start module: #{e.message}"
           opt.callback? new Error "could not start module: #{e.message}"
           false
 
@@ -190,7 +188,7 @@ core = angular.module('app.core', [
           invalid = ("'#{id}'" for id in mods when not (id in valid))
           invalidErr = new Error "these modules don't exist: #{invalid}"
 
-        startAction = (m, next) =>
+        startAction = (m, next) ->
           o = {}
           modOpts = _modules[m].options
           o[k] = v for own k,v of modOpts when v
@@ -199,11 +197,15 @@ core = angular.module('app.core', [
             next err
           _start m, o
 
-        utils.doForAll valid, startAction, (err) ->
-          if err?.length > 0
-            e = new Error "errors occoured in the following modules: " +
-                          "#{("'#{valid[i]}'" for x,i in err when x?)}"
-          cb? e or invalidErr
+        utils.doForAll(
+          valid
+          startAction
+          (err) ->
+            if err?.length > 0
+              e = new Error "errors occoured in the following modules: " +
+                            "#{("'#{valid[i]}'" for x,i in err when x?)}"
+            cb? e or invalidErr
+          true)
 
         not invalidErr?
 
@@ -240,48 +242,44 @@ core = angular.module('app.core', [
 
       _ls = (o) -> (id for id, m of o)
 
-      _registerPlugin = (plugin) ->
-        try
-          _checkType 'object', plugin, 'plugin'
-          _checkType 'string', plugin.id, '"id" of plugin'
-
-          if typeof plugin.sandbox is 'function'
-            Sandbox::[k] ?= v for k, v of plugin.sandbox::
-
-          if typeof plugin.core is 'function'
-            Core::[k] ?= v for k,v of plugin.core::
-
-          if typeof plugin.core is 'object'
-            Core::[k] ?= v for k,v of plugin.core
-
-          if typeof plugin.base is 'object'
-            base[k] ?= v for k,v of plugin.base
-
-          plugins[plugin.id] = plugin
-          true
-
-        catch e
-#          console.error e
-          false
+#      _registerPlugin = (plugin) ->
+#        try
+#          _checkType 'object', plugin, 'plugin'
+#          _checkType 'string', plugin.id, '"id" of plugin'
+#
+#          if typeof plugin.sandbox is 'function'
+#            Sandbox::[k] ?= v for k, v of plugin.sandbox::
+#
+#          if typeof plugin.core is 'function'
+#            Core::[k] ?= v for k,v of plugin.core::
+#
+#          if typeof plugin.core is 'object'
+#            Core::[k] ?= v for k,v of plugin.core
+#
+#          if typeof plugin.base is 'object'
+#            base[k] ?= v for k,v of plugin.base
+#
+#          plugins[plugin.id] = plugin
+#          true
+#
+#        catch e
+##          console.error e
+#          false
 
       _setEventsMapping = (map) ->
         _checkType 'object', map, 'event map'
         _map = map
         true
 
-      _sendMessage = (msg, data, scopeArray) ->
-        console.log 'core sends: ' + msg + ' data: ' + data +
-          ' scope: ' + scopeArray
-        mediator.publish
-          msg: msg
-          data: data
-          msgScope: scopeArray
-
-      _eventsManager = (msg, data) ->
+      _redirectMsg = (msg, data) ->
         for o in _map when o.msgFrom is msg
-          _sendMessage o.msgTo, data, o.scopeTo
+          eventMngr.publish
+            msg: o.msgTo
+            data: data
+            msgScope: o.scopeTo
+          console.log 'CORE: redirect mgs ' + o.msgTo + 'to ' + o.scopeTo
           return true
-        console.log 'No mapping in API for message: ' + msg
+        console.log 'CORE: no mapping in API for message: ' + o.msgTo
         false
 
       # External methods
