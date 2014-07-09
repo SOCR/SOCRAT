@@ -4,6 +4,9 @@ A scalable and highly flexible HTML5/JS framework for the [SOCR](http://socr.ucl
 * Web site: http://socr.umich.edu
 * Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
 
+[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=master)](https://travis-ci.org/SOCRedu/SOCR-framework)
+[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=master)](https://gemnasium.com/SOCRedu/SOCR-framework)
+
 Motivation 
 --------------
 [SOCR](http://socr.umich.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
