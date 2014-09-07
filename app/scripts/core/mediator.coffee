@@ -88,7 +88,7 @@ mediator = angular.module('app_mediator', [])
 #        message:'msgScope is not defined'
 #        type:'error'
     cb()
-    console.log 'MEDIATOR: successfully published:' + obj.msg
+    console.log 'MEDIATOR: successfully published:'+obj.msg+' MsgScope:'+obj.msgScope
     return @
 
   # _subscribe() - registers a listener function for a msg
