@@ -135,13 +135,18 @@ App.run([
       msgTo: 'numbers added'
       scopeTo: ['qualRobEstView']
     ,
-      msgFrom:'save table'
-      scopeFrom: ['getData']
-      msgTo:'save table'
-      scopeTo:['database']
-    ,
+    #  msgFrom:'save table'
+    #  scopeFrom: ['getData']
+    #  msgTo:'save table'
+    #  scopeTo:['database']
+    #,
       msgFrom:'get table'
       scopeFrom:['chartsView']
+      msgTo:'get table'
+      scopeTo:['database']
+    ,
+      msgFrom:'take table'
+      scopeFrom:['database']
       msgTo:'take table'
       scopeTo:['chartsView']
     ]
@@ -154,14 +159,13 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
-    core.register 'db', db
-    core.start 'db'
+    core.register 'database', db
+    core.start 'database'
 
     core.register 'chartsView', chartsView
     core.start 'chartsView'
 
     console.log 'run block of app module'
-
 
 ])
 

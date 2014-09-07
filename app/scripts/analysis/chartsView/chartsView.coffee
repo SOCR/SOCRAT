@@ -40,7 +40,6 @@ chartsView.factory('app_analysis_chartsView_constructor', [
   'app_analysis_chartsView_manager'
   (manager) ->
     (sb) ->
-
       manager.setSb sb unless !sb?
       _msgList = manager.getMsgList()
 
@@ -83,7 +82,7 @@ chartsView.factory 'app_analysis_chartsView_variables',[
       _list
     set:(id)->
       # TODO: get list from db for the id [projectId:forkId]
-      _list = ['a','b','c','d']
+      _list = ['A','B','C','D']
 ]
 
 
@@ -107,6 +106,7 @@ chartsView.controller('chartsSidebarCtrl',[
     if (_c = $stateParams).projectId? or _c.forkId?
       $scope.currentFork = $stateParams.projectId+':'+$stateParams.forkId
 
+    console.log "ChartsSidebar CTRL"
     #NOTE: since all plots that socr supports [as of now] are only 1 or 2
     # dimensionals, there are only 2 variable dropdowns.
 
@@ -126,13 +126,17 @@ chartsView.controller('chartsSidebarCtrl',[
       $rootScope.$broadcast 'chartsMainCtrl:update currentPlot',
         newVal
     $scope.$watch 'xVariable', (newVal,oldVal)->
-      $rootScope.$broadcast 'chartsMainCtrl:update variable',
-        type:'xVariable'
-        value:newVal
+      if newVal isnt undefined and  newVal isnt oldVal
+        alert newVal
+        $rootScope.$broadcast 'chartsMainCtrl:update variable',
+          type:'xVariable'
+          value:newVal
     $scope.$watch 'yVariable', (newVal,oldVal)->
-      $rootScope.$broadcast 'chartsMainCtrl:update variable',
-        type:'yVariable'
-        value:newVal
+      if newVal isnt undefined and  newVal isnt oldVal
+        alert newVal
+        $rootScope.$broadcast 'chartsMainCtrl:update variable',
+          type:'yVariable'
+          value:newVal
 
 ])
 
@@ -147,9 +151,12 @@ chartsView.controller('chartsMainCtrl' ,[
   'app_analysis_chartsView_manager'
   ($q,$scope,defaults,variables,manager)->
 
+    sb = manager.getSb()
+
     #directive config.
     $scope.width = 900
     $scope.height = 400
+    #make db call.
 
     #plot type changed in sidebar.
     $scope.$on 'chartsMainCtrl:update currentPlot', (args...)->
@@ -157,34 +164,38 @@ chartsView.controller('chartsMainCtrl' ,[
         if v.label is args[1]
           $scope.currentPlot = k
 
-    $scope.$on 'chartsMainCtrl:update variable', (args...)->
+    $scope.$on 'chartsMainCtrl:update variable',(args...)->
       for d in variables.get()
         if d is args[1].value
           # edit the values in the #scope.data depending on the xvariable.
-          console.log 'changed variable ' + args[1].type
+          console.log 'changed variable '+args[1].type+' to '+args[1].value
+          newKey = args[1].value
 
       #create promise object
       deferred = $q.defer()
-
+      console.log "deferred",deferred
       #make db call.
-      promise = manager.sb.send
+      sb.publish
         msg:'get table',
-        data:['charts_test_db',deferred]
+        data:{data:['charts_test_db',newKey],promise:deferred}
         msgScope:['chartsView']
 
-      console.log promise
-
+      console.log "promise object:",deferred.promise
       #onsucess, update $scope.data
-      promise.then (data)->
-        console.log 'data returned promise', data
-        #update the plot with data.
-        $scope.data = data
-
+      deferred.promise.then ((key)->
+        (data)->
+          window.data = data
+          #update the plot with data.
+          console.log data
+          $scope.data.push
+            key:newKey
+            values:data
+      )(newKey)
     #default value.
     $scope.currentPlot = 'none'
-
     #plotData
-    $scope.data = [
+    $scope.data = []
+    $scope.data2 = [
       key: 'Series 1'
       values: [
         [1025409600000, 0], [1028088000000, -6.3382185140371],

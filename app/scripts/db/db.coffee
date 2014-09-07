@@ -4,10 +4,10 @@
   app_database module serves as the in-memory database for SOCR framework. The module lets
   you perform create, read, update and delete operations on all the tables created by the
   application.
-  
+
   "database" service is the single point access for all the CRUD operations.To make DB calls
   from another module, publish messages using the "sb" object.
-  
+
   Notes:
     Datavore doesnt have inbuilt event system
     or memory of the tables created using it.
@@ -36,10 +36,15 @@ db.factory 'app_database_manager',[
   'app_database_handler'
   (database)->
     _sb = null
+    #_msgList =
+    #  incoming:['create table','get table','delete table'],
+    #  outgoing:['table created','take table','table deleted'],
+    #  scope: ['database']
+
     _msgList =
-          incoming:['create table','get table','delete table'],
-          outgoing:['table created','take table','table deleted'],
-          scope: ['database']
+      incoming:['get table'],
+      outgoing:['take table'],
+      scope:['database']
 
     _setSb = (sb) ->
       _sb = sb
@@ -62,6 +67,7 @@ db.service 'app_database_dv', ->
   _registry = []
   _listeners = {}
   _db = {}
+  window._db = _db
   ###
     @returns {string|boolean}
   ###
@@ -109,7 +115,7 @@ db.service 'app_database_dv', ->
       _registry[tname].addColumn cname, values, type, iscolumn
       #fire away all listeners on the new column.
       _fire tname,cname
-      
+
   _db.removeColumn = (cname,tname)->
     if _registry[tname]?[cname]?
       #fire away all listeners on the new column.
@@ -132,7 +138,7 @@ db.service 'app_database_dv', ->
           else
             _listeners[opts.table]['cb'].push opts.listener
     console.log _listeners[opts.table]
-  
+
   # destroy any table
   _db.destroy = (tname)->
     if _registry[tname]?
@@ -190,51 +196,74 @@ db.service 'app_database_dv', ->
 
 db.factory 'app_database_handler',[
   'app_database_dv'
-  (_db)->
+  '$q'
+  (_db,$q)->
+    console.log "app_database_handler"
     #set all the callbacks here.
-    _setSb = ((_db) ->
-      (sb)->
-        #registering database callbacks for all possible incoming messages.
-        _methods = [
-          {incoming:'save table',outgoing:'table saved',event:_db.create}
-          {incoming:'get table',outgoing:'take table',event:_db.get}
-          {incoming:'add listener',outgoing:'listener added',event:_db.addListener}
+    _setSb = (sb)->
+
+      #registering database callbacks for all possible incoming messages.
+      _methods = [
+        {incoming:'save table',outgoing:'table saved',event:_db.create}
+        {incoming:'get table',outgoing:'take table',event:_db.get}
+        {incoming:'add listener',outgoing:'listener added',event:_db.addListener}
+      ]
+
+      # Creating a test database
+      try
+        colA = [[1099195200000, 30.802601992077], [1101790800000, 36.331003758254],
+        [1104469200000, 43.142498700060], [1107147600000, 40.558263931958],
+        [1109566800000, 42.543622385800], [1112245200000, 41.683584710331],
+        [1114833600000, 36.375367302328], [1117512000000, 40.719688980730],
+        [1120104000000, 43.897963036919], [1122782400000, 49.797033975368],
+        [1125460800000, 47.085993935989], [1128052800000, 46.601972859745],
+        [1130734800000, 41.567784572762], [1133326800000, 47.296923737245],
+        [1136005200000, 47.642969612080], [1138683600000, 50.781515820954],
+        [1141102800000, 52.600229204305]]
+        colB = [[1025409600000, 0], [1028088000000, -6.3382185140371],
+        [1030766400000, -5.9507873460847], [1033358400000, -11.569146943813],
+        [1036040400000, -5.4767332317425]]
+        colC = [12,3,42,4]
+        table = [
+          {name:"A", values:colA, type:"numeric"}
+          {name:"B", values:colB, type:"numeric"}
         ]
-        sb.send
-          msg: tname
-          msgScope : ['database']
-        #@todo: Why sending 2 different messages?
-        sb.send
-          msg: tname+':'+cname
-          msgScope:['database']
-
-        _status = _methods.map (method)->
-          sb.subscribe
-            msg: method['incoming']
-            listener: (msg,data)->
-              _data = method.event data
-
-              if _data is false
-                if typeof data.promise isnt "undefined"
-                  data.promise.reject('table operation failed')
-                false
-              
-              #all publish calls should pass a promise in the data object.
-              #if promise is not defined, create one and pass it along.
-              
+        _db.create table,'charts_test_db'
+      catch e
+        console.log e.stack
+        alert "Error: "+e.message
+      #sb.send
+      #  msg: tname
+      #  msgScope : ['database']
+      #@todo: Why sending 2 different messages?
+      #sb.send
+      #  msg: tname+':'+cname
+      #  msgScope:['database']
+      _status = _methods.map (method)->
+        sb.subscribe
+          msg: method['incoming']
+          listener: (msg,data)->
+            _data = method.event.apply null,data.data
+            console.log "Raw data",_data
+            if _data is false
               if typeof data.promise isnt "undefined"
-                _data['promise'] = $q.defer()
-              else
-                _data['promise'] = data.promise
+                data.promise.reject('table operation failed')
+              false
+            data.promise.resolve _data
+            #all publish calls should pass a promise in the data object.
+            #if promise is not defined, create one and pass it along.
+            return true
+            if typeof data.promise isnt "undefined"
+              _data['promise'] = $q.defer()
+            else
+              _data['promise'] = data.promise
 
-              sb.publish
-                msg:'take table'
-                data: _data
-                msgScope:['database']
-            msgScope:['database']
+            sb.publish
+              msg:'take table'
+              data: _data
+              msgScope:['database']
 
-          #console.log(_status)
-    )(_db)
+          msgScope:['database']
 
     setSb:_setSb
   ]
