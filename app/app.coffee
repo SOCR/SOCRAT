@@ -51,7 +51,7 @@ App.config([
             templateUrl: 'partials/nav/home.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            controller: 'projectCtrl'
+            #controller: 'projectCtrl'
       )
       .state('guide'
         url: '/guide'
@@ -60,7 +60,7 @@ App.config([
             templateUrl: 'partials/nav/guide-me.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            controller: 'projectCtrl'
+            #controller: 'projectCtrl'
       )
       .state('contact'
         url: '/contact'
@@ -73,10 +73,10 @@ App.config([
         views:
           'main':
             templateUrl: 'partials/analysis/getData/main.html'
-            controller: 'getDataMainCtrl'
+            #controller: 'getDataMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
-            controller: 'getDataSidebarCtrl'
+            #controller: 'getDataSidebarCtrl'
       )
       .state('cleanData'
         url: '/cleanData'
@@ -91,10 +91,10 @@ App.config([
         views:
           'main':
             templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-            controller: 'qualRobEstViewMainCtrl'
+            #controller: 'qualRobEstViewMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
-            controller: 'qualRobEstViewSidebarCtrl'
+            #controller: 'qualRobEstViewSidebarCtrl'
       )
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
