@@ -1,6 +1,6 @@
 'use strict'
 
-getData = angular.module('app.getData', [
+getData = angular.module('app_analysis_getData', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible
@@ -20,19 +20,59 @@ getData = angular.module('app.getData', [
       console.log "config block of getData"
 ])
 
+.factory('app_analysis_getData_constructor', [
+  'app_anaylsis_getData_manager'
+  (manager) ->
+    (sb) ->
+
+      manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
+
+      init: (opt) ->
+        console.log 'getData init invoked'
+
+      destroy: () ->
+
+      msgList: _msgList
+])
+
+.factory('app_analysis_getData_manager', [
+  () ->
+    _sb = null
+
+    _msgList =
+      outgoing: ['take data']
+      incoming: ['get data']
+      scope: ['getData']
+
+    _setSb = (sb) ->
+      _sb = sb
+
+    _getSb = () ->
+      _sb
+
+    _getMsgList = () ->
+      _msgList
+
+    getSb: _getSb
+    setSb: _setSb
+    getMsgList: _getMsgList
+])
+
 # ###
 # @type : service
 # @description:Caches data. Changes to handsontable is stored here
-# and synced after some time. Changes in db is heard and reflected on 
+# and synced after some time. Changes in db is heard and reflected on
 # handsontable.
 # ###
-.service('getData.inputCache',[
-  'getDataEventMngr'
+.service('app_analysis_getData_inputCache',[
+  'app_anaylsis_getData_manager'
   '$q'
   '$stateParams'
   '$rootScope'
   '$timeout'
-  (getDataEventMngr,$q,$stateParams,$rootScope,$timeout)->
+  (manager,$q,$stateParams,$rootScope,$timeout)->
+    sb = manager.getSb()
     _data = []
     _timer = null
     ret = {}
@@ -58,7 +98,7 @@ getData = angular.module('app.getData', [
               msg:"Error in Database."
               type:"alert-error"
             promise: deferred.promise
-          getDataEventMngr.getSb().publish
+          sb.publish
             msg:'handsontable updated'
             data:[_data,$stateParams.projectId,$stateParams.forkId,deferred]
             msgScope:['getData']
@@ -70,6 +110,9 @@ getData = angular.module('app.getData', [
     ret
 ])
 
+
+# jsonParser gets json based on url
+#
 # @type: factory
 # @description: jsonParser parses the json url input by the user.
 # @dependencies : $q, $rootscope, $http
@@ -164,10 +207,10 @@ getData = angular.module('app.getData', [
 .controller('getDataSidebarCtrl', [
   '$q'
   '$scope'
-  'getDataEventMngr'
+  'app_analysis_getData_manager'
   'jsonParser'
   '$stateParams'
-  'getData.inputCache'
+  'app_analysis_getData_inputCache'
   ($q,$scope,getDataEventMngr,jsonParser,$stateParams,inputCache)->
     #get the sandbox made for this module
     #sb = getDataSb.getSb()
@@ -214,14 +257,17 @@ getData = angular.module('app.getData', [
   #get url data
     $scope.getUrl = ->
 
+    $scope.getGrid = ()->
+    return
 ])
 
 .controller('getDataMainCtrl', [
+  'app_analysis_getData_manager'
   '$scope'
   'showState'
   'jsonParser'
   '$state'
-  ($scope,showState,jsonParser,state)->
+  (getDataEventMngr,$scope,showState,jsonParser,state)->
     console.log 'getDataMainCtrl executed'
     $scope.getWB = ->
       #default value
@@ -262,29 +308,8 @@ getData = angular.module('app.getData', [
     $scope.$on "$viewContentLoaded", ->
       console.log "get data main div loaded"
 ])
-####
-#  Every module is supposed have a factory method
-#  by its name. For example, "app.charts" module will
-#  have "charts" factory method.
-#
-#  This method helps in module initialization.
-#  init() and destroy() methods should be present in
-#  returned object.
-####
-.factory('getData',[
-  'getDataEventMngr'
-  (getDataEventMngr)->
-    (sb)->
-      msgList = getDataEventMngr.getMsgList()
-      getDataEventMngr.setSb sb unless !sb?
-      init: (opt)->
-        console.log "getData init called"
-        getDataEventMngr.listenToIncomeEvents()
-      
-      destroy: ()->
 
-      msgList:msgList
-])
+
 
 ####
 # Every module will have a MODULE_NAMEEventMngr() service
@@ -362,6 +387,7 @@ getData = angular.module('app.getData', [
         #console.log scope.showState
 )
 
+
 .factory("html2json", ($http)->
   (url,cb)->
     # Use url to get html.
@@ -388,7 +414,7 @@ getData = angular.module('app.getData', [
 )
  
 .directive "handsontable",[
-  'getData.inputCache'
+  'app_analysis_getData_inputCache'
   '$exceptionHandler'
   (inputCache,$exceptionHandler)->
     restrict: "E"
@@ -440,7 +466,7 @@ getData = angular.module('app.getData', [
         console.log "handsontable: update called"
         #check if data is in the right format
         if arg? and typeof arg.data is "object" and typeof arg.columns is "object"
-          obj = 
+          obj =
             data: arg.data[1]
             startRows: Object.keys(arg.data[1]).length
             startCols: arg.columns.length
@@ -449,14 +475,14 @@ getData = angular.module('app.getData', [
             minSpareRows: 1
 
         else if arg.default is true
-          obj = 
+          obj =
             data: [
               ["Copy", "paste", "your", "data", "here"]
             ]
             colHeaders: true
             minSpareRows: 5
         else
-          $exceptionHandler 
+          $exceptionHandler
             message: 'handsontable configuration is missing'
 
         obj['change'] = true

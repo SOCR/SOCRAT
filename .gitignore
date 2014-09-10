@@ -2,3 +2,18 @@
 node_modules/
 test/test-results.xml
 *.log
+
+# Public files (generated)#
+===============
+_public/
+app/assets/
+
+#OS generated files #
+=====================
+.DS_STORE
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

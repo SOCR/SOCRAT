@@ -2,16 +2,11 @@
 
 # app.utils module
 
-utils = angular.module('app.utils', [])
+utils = angular.module('app_utils', [])
 
-.factory 'utils', ->
-  _clone = (data) ->
-    if data instanceof Array
-      copy = (v for v in data)
-    else
-      copy = {}
-      copy[k] = v for k, v of data
-    copy
+utils.factory 'utils', ->
+
+  _typeIsArray = Array.isArray || (value) -> return {}.toString.call(value) is '[object Array]'
 
   _installFromTo = (srcObj, resObj) ->
     if typeof resObj is 'object' and typeof srcObj is 'object'
@@ -19,77 +14,106 @@ utils = angular.module('app.utils', [])
       true
     else false
 
-  _getArgumentNames = (fn = ->) ->
-    args = fn.toString().match ///
-        function    # start with 'function'
-        [^(]*       # any character but not '('
-        \(          # open bracket = '(' character
-          ([^)]*)   # any character but not ')'
-        \)          # close bracket = ')' character
-      ///
-    return [] if not args? or (args.length < 2)
-    args = args[1]
-    args = args.split /\s*,\s*/
-    (a for a in args when a.trim() isnt '')
+  _fnRgx =
+    ///
+      function    # start with 'function'
+      [^(]*       # any character but not '('
+      \(          # open bracket = '(' character
+        ([^)]*)   # any character but not ')'
+      \)          # close bracket = ')' character
+    ///
+
+  _argRgx = /([^\s,]+)/g
+
+  _getArgumentNames = (fn) ->
+    (fn?.toString().match(_fnRgx)?[1] or '').match(_argRgx) or []
 
   ### based on RFC 4122, section 4.4 ###
-  _getGuid = () ->
+  _generateGuid = () ->
     'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
       r = Math.random() * 16 | 0
       v = (if c is 'x' then r else (r & 0x3 | 0x8))
       v.toString 16
 
-  _runSeries = (tasks = [], cb = (->), force) ->
-    count = tasks.length
+  # run asynchronous tasks in parallel
+  _runParallel = (tasks=[], cb=(->), force) ->
+    count   = tasks.length
     results = []
 
-    return cb? null, results if count is 0
+    return cb null, results if count is 0
 
-    errors = []
+    errors  = []; hasErr = false
 
-    checkEnd = ->
-      count--
-      if count is 0
-        if (e for e in errors when e?).length > 0
-          cb errors, results
-        else
-          cb null, results
-
-    for t, i in tasks then do (t, i) ->
+    for t,i in tasks then do (t,i) ->
       next = (err, res...) ->
-        if err?
+        if err
           errors[i] = err
-          results[i] = undefined
+          hasErr    = true
+          return cb errors, results unless force
         else
           results[i] = if res.length < 2 then res[0] else res
-        checkEnd()
+        if --count <= 0
+          if hasErr
+            cb errors, results
+          else
+            cb null, results
       try
         t next
       catch e
-        next e if force
+        next e
 
+  # run asynchronous tasks one after another
+  _runSeries = (tasks=[], cb=(->), force) ->
+    i = -1
+    count   = tasks.length
+    results = []
+    return cb null, results if count is 0
+
+    errors = []; hasErr = false
+
+    next = (err, res...) ->
+      if err
+        errors[i] = err
+        hasErr    = true
+        return cb errors, results unless force
+      else
+        if i > -1 # first run
+          results[i] = if res.length < 2 then res[0] else res
+      if ++i >= count
+        if hasErr
+          cb errors, results
+        else
+          cb null, results
+      else
+        try
+          tasks[i] next
+        catch e
+          next e
+    next()
+
+  # run asynchronous tasks one after another
+  # and pass the argument
   _runWaterfall = (tasks, cb) ->
     i = -1
     return cb() if tasks.length is 0
 
     next = (err, res...) ->
       return cb err if err?
-      if ++i is tasks.length
+      if ++i >= tasks.length
         cb null, res...
       else
         tasks[i] res..., next
     next()
 
-  _doForAll = (args = [], fn, cb)->
-    tasks = for a in args then do (a) ->
-      (next) ->
-        fn a, next
-    _runSeries tasks, cb
+  _doForAll = (args=[], fn, cb, force)->
+    tasks = for a in args then do (a) -> (next) -> fn a, next
+    _runParallel tasks, cb, force
 
-  clone: _clone
+  typeIsArray: _typeIsArray
   installFromTo: _installFromTo
   getArgumentNames: _getArgumentNames
-  getGuid: _getGuid
+  getGuid: _generateGuid
   doForAll: _doForAll
   runSeries: _runSeries
   runWaterfall: _runWaterfall
+  runParallel: _runParallel
