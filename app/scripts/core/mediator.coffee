@@ -88,7 +88,7 @@ mediator = angular.module('app_mediator', [])
 #        message:'msgScope is not defined'
 #        type:'error'
     cb()
-    console.log 'MEDIATOR: successfully published:' + obj.msg
+    console.log '%c MEDIATOR:successfully published'+obj.msg,'color: blue'
     return @
 
   # _subscribe() - registers a listener function for a msg
@@ -163,7 +163,7 @@ mediator = angular.module('app_mediator', [])
         token:++_lastUID
         func:cb
         context:context
-      console.log('MEDIATOR: successfully subscribed:' + obj.msg)
+      console.log '%c MEDIATOR:successfully subscribed '+msg,'color: blue'
       j++
 
     return @
@@ -178,6 +178,7 @@ mediator = angular.module('app_mediator', [])
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
             console.log('MEDIATOR: successfully unsubscribed:' + m)
+            console.log '%c MEDIATOR:successfully unsubscribed'+m,'color: blue'
             return token
           i++
     return @

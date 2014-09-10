@@ -60,6 +60,7 @@ getData = angular.module('app_analysis_getData', [
 ])
 
 # ###
+# @name : app_analysis_getData_inputCache
 # @type : service
 # @description:Caches data. Changes to handsontable is stored here
 # and synced after some time. Changes in db is heard and reflected on
@@ -84,9 +85,13 @@ getData = angular.module('app_analysis_getData', [
       console.log '%c inputCache set called','color:steelblue'
       if data?
         _data = data unless data is 'edit'
+
         clearTimeout _timer
+
         deferred = $q.defer()
+
         _timer =  $timeout (->
+
           $rootScope.$broadcast "app:push notification",
             initial:
               msg:"Data is being saved in the database..."
@@ -97,14 +102,15 @@ getData = angular.module('app_analysis_getData', [
             failure:
               msg:"Error in Database."
               type:"alert-error"
-            promise: deferred.promise
           sb.publish
             msg:'handsontable updated'
             data:[_data,$stateParams.projectId,$stateParams.forkId,deferred]
             msgScope:['getData']
         ),4000
+
       else
         false
+
     ret.push = (data)->
       this.ht.loadData(data)
     ret
@@ -126,10 +132,6 @@ getData = angular.module('app_analysis_getData', [
       # test json : https://graph.facebook.com/search?q=ucla
       deferred = $q.defer()
       console.log deferred.promise
-    # opts.url = "http://api.worldbank.org/countries/indicators/2.4_OOSC.RATE?"+
-    # "per_page=100&date=1960:2013&format=jsonp&prefix=JSON_CALLBACK"
-    #opts.url="http://api.worldbank.org/countries/indicators/4.2_BASIC.EDU"+
-    #".SPENDING?per_page=100&date=2011:2011&format=jsonp&prefix=JSON_CALLBACK"
       switch opts.type
         when "worldBank"
           #create the callback
@@ -171,7 +173,7 @@ getData = angular.module('app_analysis_getData', [
           cb = (data,status)->
             console.log data
             return data
-        
+
       # using broadcast because msg sent from rootScope.
       $rootScope.$broadcast "app:push notification",
         initial:
@@ -310,12 +312,11 @@ getData = angular.module('app_analysis_getData', [
 ])
 
 
-
 ####
 # Every module will have a MODULE_NAMEEventMngr() service
 # which provides messaging with core
 ####
-.service('getDataEventMngr', [
+.service('app_analysis_getData_eventMngr', [
   '$rootScope'
   ($rootScope) ->
     sb = null
@@ -394,7 +395,7 @@ getData = angular.module('app_analysis_getData', [
     # parse html to find tables
     # use jQuery plugin to get jsons for all tables.
     return false unless url?
- 
+
     $http.get(url).success(
       #search for tables
       (data)->
@@ -410,9 +411,9 @@ getData = angular.module('app_analysis_getData', [
         #compute the res obj
         cb(res)
       )
- 
+
 )
- 
+
 .directive "handsontable",[
   'app_analysis_getData_inputCache'
   '$exceptionHandler'
@@ -427,7 +428,7 @@ getData = angular.module('app_analysis_getData', [
     controller: ($scope) ->
 
     replace: true #replace the directive element with the output of the template.
-    
+
     #the link method does the work of setting the directive
     # up, things like bindings, jquery calls, etc are done in here
     # It is run before the controller
@@ -461,7 +462,7 @@ getData = angular.module('app_analysis_getData', [
             #save the column obj in the table.
             table.push obj
         table
-          
+
       scope.update = (evt,arg) ->
         console.log "handsontable: update called"
         #check if data is in the right format

@@ -1,339 +1,363 @@
 /**
- * Handsontable 0.9.0
+ * Handsontable 0.9.19
  * Handsontable is a simple jQuery plugin for editable tables with basic copy-paste compatibility with Excel and Google Docs
  *
  * Copyright 2012, Marcin Warpechowski
  * Licensed under the MIT license.
  * http://handsontable.com/
  *
- * Date: Tue May 21 2013 02:53:16 GMT+0200 (Central European Daylight Time)
+ * Date: Tue Oct 01 2013 13:17:18 GMT+0200 (Central European Daylight Time)
  */
 
 .handsontable {
-    position: relative;
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.3em;
-    font-size: 13px;
+  position: relative;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.3em;
+  font-size: 13px;
 }
 
-.handsontable.hidden {
-    display: none;
-    left: 0;
-    position: absolute;
-    top: 0;
+.handsontable.htAutoColumnSize {
+  visibility: hidden;
+  left: 0;
+  position: absolute;
+  top: 0;
 }
 
-.handsontable * {
-    box-sizing: content-box;
-    -webkit-box-sizing: content-box;
-    -moz-box-sizing: content-box;
+.handsontable table,
+.handsontable tbody,
+.handsontable thead,
+.handsontable td,
+.handsontable th,
+.handsontable div
+{
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
 }
 
-.handsontable table {
-    border-collapse: separate; /*it must be separate, otherwise there are offset miscalculations in WebKit: http://stackoverflow.com/questions/2655987/border-collapse-differences-in-ff-and-webkit*/
-    position: relative;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    -ms-user-select: none;
-    /*user-select: none; /*no browser supports unprefixed version*/
-    border-spacing: 0;
-    margin: 0;
-    border-width: 0;
-    table-layout: fixed;
-    width: 0;
-    outline-width: 0;
-    /* reset bootstrap table style. for more info see: https://github.com/warpech/jquery-handsontable/issues/224 */
-    max-width: none;
-    max-height: none;
+.handsontable table.htCore {
+  border-collapse: separate; /*it must be separate, otherwise there are offset miscalculations in WebKit: http://stackoverflow.com/questions/2655987/border-collapse-differences-in-ff-and-webkit*/
+  position: relative;
+  /*this actually only changes appearance of user selection - does not make text unselectable
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -ms-user-select: none;
+  /*user-select: none; /*no browser supports unprefixed version*/
+  border-spacing: 0;
+  margin: 0;
+  border-width: 0;
+  table-layout: fixed;
+  width: 0;
+  outline-width: 0;
+  /* reset bootstrap table style. for more info see: https://github.com/warpech/jquery-handsontable/issues/224 */
+  max-width: none;
+  max-height: none;
 }
 
 .handsontable col {
-    width: 50px;
+  width: 50px;
 }
 
 .handsontable col.rowHeader {
-    width: 50px;
+  width: 50px;
 }
 
 .handsontable th,
 .handsontable td {
-    border-right: 1px solid #CCC;
-    border-bottom: 1px solid #CCC;
-    height: 22px;
-    empty-cells: show;
-    line-height: 21px;
-    padding: 0 4px 0 4px; /* top, bottom padding different than 0 is handled poorly by FF with HTML5 doctype */
-    background-color: #FFF;
-    font-size: 12px;
-    vertical-align: top;
-    overflow: hidden;
-    outline-width: 0;
+  border-right: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+  height: 22px;
+  empty-cells: show;
+  line-height: 21px;
+  padding: 0 4px 0 4px; /* top, bottom padding different than 0 is handled poorly by FF with HTML5 doctype */
+  background-color: #FFF;
+  font-size: 12px;
+  vertical-align: top;
+  overflow: hidden;
+  outline-width: 0;
+  white-space: pre-line; /* preserve new line character in cell */
+}
+
+.handsontable td.htInvalid {
+  -webkit-transition: background 0.75s ease;
+  transition: background 0.75s ease;
+  background-color: #ff4c42;
 }
 
 .handsontable th:last-child {
-    /*Foundation framework fix*/
-    border-right: 1px solid #CCC;
-    border-bottom: 1px solid #CCC;
+  /*Foundation framework fix*/
+  border-right: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
 }
 
 .handsontable tr:first-child th.htNoFrame,
 .handsontable th:first-child.htNoFrame,
 .handsontable th.htNoFrame {
-    border-left-width: 0;
-    background-color: white;
-    border-color: #FFF;
+  border-left-width: 0;
+  background-color: white;
+  border-color: #FFF;
 }
 
 .handsontable th:first-child,
 .handsontable td:first-child,
 .handsontable .htNoFrame + th,
 .handsontable .htNoFrame + td {
-    border-left: 1px solid #CCC;
+  border-left: 1px solid #CCC;
 }
 
 .handsontable tr:first-child th,
 .handsontable tr:first-child td {
-    border-top: 1px solid #CCC;
+  border-top: 1px solid #CCC;
 }
 
 .handsontable thead tr:last-child th {
-    border-bottom-width: 0;
+  border-bottom-width: 0;
 }
 
 .handsontable thead tr.lastChild th {
-    border-bottom-width: 0;
+  border-bottom-width: 0;
 }
 
 .handsontable th {
-    background-color: #EEE;
-    color: #222;
-    text-align: center;
-    font-weight: normal;
-    white-space: nowrap;
+  background-color: #EEE;
+  color: #222;
+  text-align: center;
+  font-weight: normal;
+  white-space: nowrap;
 }
 
 .handsontable th .small {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .handsontable thead th {
-    padding: 0;
+  padding: 0;
 }
 
 .handsontable th.active {
-    background-color: #CCC;
+  background-color: #CCC;
 }
 
 .handsontable thead th .relative {
-    position: relative;
-    padding: 2px 4px;
+  position: relative;
+  padding: 2px 4px;
 }
 
 /* plugins */
 
 .handsontable .manualColumnMover {
-    position: absolute;
-    left: 0;
-    top: 0;
-    background-color: transparent;
-    width: 5px;
-    height: 25px;
-    z-index: 999;
-    cursor: move;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: transparent;
+  width: 5px;
+  height: 25px;
+  z-index: 999;
+  cursor: move;
 }
 
 .handsontable th .manualColumnMover:hover,
 .handsontable th .manualColumnMover.active {
-    background-color: #88F;
+  background-color: #88F;
 }
 
 .handsontable .manualColumnResizer {
-    position: absolute;
-    right: -1px;
-    top: 0;
-    background-color: transparent;
-    width: 5px;
-    height: 25px;
-    z-index: 999;
-    cursor: col-resize;
+  position: absolute;
+  top: 0;
+  cursor: col-resize;
 }
 
-.handsontable th .manualColumnResizer:hover,
-.handsontable .manualColumnResizerLine .manualColumnResizer {
-    background-color: #AAB;
+.handsontable .manualColumnResizerHandle {
+  background-color: transparent;
+  width: 5px;
+  height: 25px;
+}
+
+.handsontable .manualColumnResizer:hover .manualColumnResizerHandle,
+.handsontable .manualColumnResizer.active .manualColumnResizerHandle {
+  background-color: #AAB;
+}
+
+.handsontable .manualColumnResizerLine {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: #AAB;
+  display: none;
+  width: 0;
+  border-right: 1px dashed #777;
+}
+
+.handsontable .manualColumnResizer.active .manualColumnResizerLine {
+  display: block;
 }
 
 .handsontable .columnSorting:hover {
-    text-decoration: underline;
-    cursor: pointer;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* border line */
 .handsontable .wtBorder {
-    position: absolute;
-    font-size: 0;
+  position: absolute;
+  font-size: 0;
 }
 
 .handsontable td.area {
-    background-color: #EEF4FF;
+  background-color: #EEF4FF;
 }
 
 /* fill handle */
 .handsontable .wtBorder.corner {
-    font-size: 0;
-    cursor: crosshair;
+  font-size: 0;
+  cursor: crosshair;
 }
 
 .handsontable .htBorder.htFillBorder {
-    background: red;
-    width: 1px;
-    height: 1px;
+  background: red;
+  width: 1px;
+  height: 1px;
 }
 
-/* textarea border color */
-textarea.handsontableInput {
-    border: 2px solid #5292F7;
-    outline-width: 0;
-    margin: 0;
-    padding: 1px 4px 0 2px;
-    font-family: Arial, Helvetica, sans-serif; /*repeat from .handsontable (inherit doesn't work with IE<8) */
-    line-height: 1.3em; /*repeat from .handsontable (inherit doesn't work with IE<8) */
-    font-size: 13px;
-    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.4);
-    resize: none;
+.handsontableInput {
+  border: 2px solid #5292F7;
+  outline-width: 0;
+  margin: 0;
+  padding: 1px 4px 0 2px;
+  font-family: Arial, Helvetica, sans-serif; /*repeat from .handsontable (inherit doesn't work with IE<8) */
+  line-height: 1.3em; /*repeat from .handsontable (inherit doesn't work with IE<8) */
+  font-size: 13px;
+  -webkit-box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.4);
+  resize: none;
 
-    /*below are needed to overwrite stuff added by jQuery UI Bootstrap theme*/
-    display: inline-block;
-    font-size: 13px;
-    color: #000;
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    border-radius: 0;
+  /*below are needed to overwrite stuff added by jQuery UI Bootstrap theme*/
+  display: inline-block;
+  font-size: 13px;
+  color: #000;
+  border-radius: 0;
 }
 
 .handsontableInputHolder {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1px;
-    height: 1px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
 }
 
 /*
 TextRenderer readOnly cell
 */
 .handsontable .htDimmed {
-    font-style: italic;
-    color: #777;
+  font-style: italic;
+  color: #777;
 }
 
 /*
 AutocompleteRenderer down arrow
 */
 .handsontable .htAutocomplete {
-    position: relative;
-    padding-right: 20px;
+  position: relative;
+  padding-right: 20px;
 }
 
 .handsontable .htAutocompleteArrow {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 10px;
-    color: #EEE;
-    cursor: default;
-    width: 16px;
-    text-align: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 10px;
+  color: #EEE;
+  cursor: default;
+  width: 16px;
+  text-align: center;
 }
 
 .handsontable td .htAutocompleteArrow:hover {
-    color: #777;
+  color: #777;
 }
 
 /*
 CheckboxRenderer
 */
 .handsontable .htCheckboxRendererInput.noValue {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 /*
 NumericRenderer
 */
 .handsontable .htNumeric {
-    text-align: right;
+  text-align: right;
 }
 
 /* typeahead rules. Needed only if you are using the autocomplete feature */
 .handsontable .typeahead {
-    position: absolute;
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.3em;
-    font-size: 13px;
-    z-index: 10;
-    top: 100%;
-    left: 0;
-    float: left;
-    display: none;
-    min-width: 160px;
-    padding: 4px 0;
-    margin: 2px 0 0 0;
-    list-style: none;
-    background-color: white;
-    border-color: #CCC;
-    border-color: rgba(0, 0, 0, 0.2);
-    border-style: solid;
-    border-width: 1px;
-    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
+  position: absolute;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.3em;
+  font-size: 13px;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  float: left;
+  display: none;
+  min-width: 160px;
+  padding: 4px 0;
+  margin: 2px 0 0 0;
+  list-style: none;
+  background-color: white;
+  border-color: #CCC;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-style: solid;
+  border-width: 1px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border-radius: 4px;
 }
 
 .handsontable .typeahead li {
-    line-height: 18px;
-    min-height: 18px;
-    display: list-item;
-    margin: 0;
+  line-height: 18px;
+  min-height: 18px;
+  display: list-item;
+  margin: 0;
 }
 
 .handsontable .typeahead a {
-    display: block;
-    padding: 3px 15px;
-    clear: both;
-    font-weight: normal;
-    line-height: 18px;
-    min-height: 18px;
-    color: #333;
-    white-space: nowrap;
+  display: block;
+  padding: 3px 15px;
+  clear: both;
+  font-weight: normal;
+  line-height: 18px;
+  min-height: 18px;
+  color: #333;
+  white-space: nowrap;
 }
 
 .handsontable .typeahead li > a:hover,
 .handsontable .typeahead .active > a,
 .handsontable .typeahead .active > a:hover {
-    color: white;
-    text-decoration: none;
-    background-color: #08C;
+  color: white;
+  text-decoration: none;
+  background-color: #08C;
 }
 
 .handsontable .typeahead a {
-    color: #08C;
-    text-decoration: none;
+  color: #08C;
+  text-decoration: none;
 }
 
 /*context menu rules*/
 ul.context-menu-list {
-    color: black;
+  color: black;
 }
 
 ul.context-menu-list li {
-    margin-bottom: 0; /*Foundation framework fix*/
+  margin-bottom: 0; /*Foundation framework fix*/
 }
 
 /**
@@ -341,27 +365,27 @@ ul.context-menu-list li {
  */
 
 .handsontable .dragdealer {
-    position: relative;
-    width: 9px;
-    height: 9px;
-    background: #F8F8F8;
-    border: 1px solid #DDD;
+  position: relative;
+  width: 9px;
+  height: 9px;
+  background: #F8F8F8;
+  border: 1px solid #DDD;
 }
 
 .handsontable .dragdealer .handle {
-    position: absolute;
-    width: 9px;
-    height: 9px;
-    background: #C5C5C5;
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: #C5C5C5;
 }
 
 .handsontable .dragdealer .disabled {
-    background: #898989;
+  background: #898989;
 }
 /*!
  * jQuery contextMenu - Plugin for simple contextMenu handling
  *
- * Version: 1.5.25
+ * Version: 1.6.5
  *
  * Authors: Rodney Rehm, Addy Osmani (patches for FF)
  * Web: http://medialize.github.com/jQuery-contextMenu/
@@ -373,24 +397,24 @@ ul.context-menu-list li {
  */
 
 .context-menu-list {
-    margin:0;
+    margin:0; 
     padding:0;
-
+    
     min-width: 120px;
     max-width: 250px;
     display: inline-block;
     position: absolute;
     list-style-type: none;
-
+    
     border: 1px solid #DDD;
     background: #EEE;
-
+    
     -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    -ms-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    -o-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-
+       -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        -ms-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+         -o-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    
     font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 11px;
 }
@@ -400,9 +424,9 @@ ul.context-menu-list li {
     background-color: #EEE;
     position: relative;
     -webkit-user-select: none;
-    -moz-user-select: -moz-none;
-    -ms-user-select: none;
-    user-select: none;
+       -moz-user-select: -moz-none;
+        -ms-user-select: none;
+            user-select: none;
 }
 
 .context-menu-separator {
@@ -413,9 +437,9 @@ ul.context-menu-list li {
 .context-menu-item > label > input,
 .context-menu-item > label > textarea {
     -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+       -moz-user-select: text;
+        -ms-user-select: text;
+            user-select: text;
 }
 
 .context-menu-item.hover {
@@ -445,7 +469,7 @@ ul.context-menu-list li {
 /* icons
     #protip:
     In case you want to use sprites for icons (which I would suggest you do) have a look at
-    http://css-tricks.com/13224-pseudo-spriting/ to get an idea of how to implement
+    http://css-tricks.com/13224-pseudo-spriting/ to get an idea of how to implement 
     .context-menu-item.icon:before {}
  */
 .context-menu-item.icon { min-height: 18px; background-repeat: no-repeat; background-position: 4px 2px; }
@@ -475,12 +499,12 @@ ul.context-menu-list li {
 .context-menu-input > label > select {
     display: block;
     width: 100%;
-
+    
     -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    box-sizing: border-box;
+       -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+         -o-box-sizing: border-box;
+            box-sizing: border-box;
 }
 
 .context-menu-input > label > textarea {

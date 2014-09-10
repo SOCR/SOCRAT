@@ -130,6 +130,7 @@ core = angular.module('app_core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
+
       _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
