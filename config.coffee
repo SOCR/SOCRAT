@@ -68,6 +68,8 @@ exports.config =
     options:
       no_trailing_semicolons:
         level: "ignore"
+      no_trailing_whitespace:
+        level: "ignore"
       max_line_length:
         value:1000
   # Enable or disable minifying of result js / css files.
