@@ -22,7 +22,7 @@ App = angular.module('app', [
   'app_mediator'
   'app_database'
    # Analysis modules
-  #'app_analysis_getData'
+  'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
 ])
@@ -123,11 +123,11 @@ App.run([
   '$rootScope'
   'core'
   'app_database_constructor'
-  #'app_analysis_getData_constructor'
+  'app_analysis_getData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, qualRobEstView, qualRobEst) ->
+  ($rootScope, core, db, getData,qualRobEstView, qualRobEst) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -164,14 +164,14 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
-    #core.register 'getData', getData
-    #core.start 'getData'
+    core.register 'getData', getData
+    core.start 'getData'
 
     core.register 'db', db
     core.start 'db'
 
-    core.register 'importer', importer
-    core.start 'importer'
+    #core.register 'importer', importer
+    #core.start 'importer'
 
     $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
       console.log arguments
