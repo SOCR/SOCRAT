@@ -21,7 +21,7 @@ getData = angular.module('app_analysis_getData', [
 ])
 
 .factory('app_analysis_getData_constructor', [
-  'app_anaylsis_getData_manager'
+  'app_analysis_getData_manager'
   (manager) ->
     (sb) ->
 
@@ -67,7 +67,7 @@ getData = angular.module('app_analysis_getData', [
 # handsontable.
 # ###
 .service('app_analysis_getData_inputCache',[
-  'app_anaylsis_getData_manager'
+  'app_analysis_getData_manager'
   '$q'
   '$stateParams'
   '$rootScope'
