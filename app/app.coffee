@@ -127,7 +127,7 @@ App.run([
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData,qualRobEstView, qualRobEst) ->
+  ($rootScope, core, db, getData, qualRobEst, qualRobEstView) ->
 
     map = [
       msgFrom: 'add numbers'
