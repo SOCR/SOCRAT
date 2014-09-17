@@ -8,7 +8,7 @@ describe "getData", ->
   angular.module "ngGrid",[]
   angular.module "ui.bootstrap",[]
   beforeEach ->
-    module "app.getData"
+    module "app_analysis_getData"
 
 
   describe "showState", ->
@@ -18,7 +18,8 @@ describe "getData", ->
 ####
     it "should return false if input obj is not defined.", ->
       inject (showState)->
-        expect(new showState()).toEqual({})
+        ss = new showState()
+        expect(Object.keys(ss).length).toBe(0)
 
     it "should create showState object to supplied scope.", ->
       inject (showState,$rootScope)->
