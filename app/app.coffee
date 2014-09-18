@@ -13,6 +13,7 @@ App = angular.module('app', [
   'ngCookies'
   'ngResource'
   'ngSanitize'
+  #'app.utils.importer'
   'app_core'
   'app_controllers'
   'app_directives'
@@ -28,6 +29,7 @@ App = angular.module('app', [
 
 App.config([
   '$locationProvider'
+  #urlRouterProvider is not required
   '$urlRouterProvider'
   '$stateProvider'
   ($locationProvider, $urlRouterProvider, $stateProvider) ->
@@ -68,12 +70,28 @@ App.config([
           'main':
             templateUrl: 'partials/nav/contact.html'
       )
+
       .state('getData'
         url: '/getData'
         views:
           'main':
             templateUrl: 'partials/analysis/getData/main.html'
             #controller: 'getDataMainCtrl'
+          'sidebar':
+            templateUrl: 'partials/analysis/getData/sidebar.html'
+            #controller: 'getDataSidebarCtrl'
+      )
+      .state('getData.project'
+        url: '/:projectId/:forkId'
+        resolve:
+          checkDb:($stateParams,database)->
+            res = database.exists $stateParams.projectId+":"+$stateParams.forkId
+            console.log database
+          # alert res
+        views:
+          'main':
+            templateUrl:'partials/analysis/getData/main.html'
+            #controller:'getDataMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
             #controller: 'getDataSidebarCtrl'
@@ -102,13 +120,14 @@ App.config([
 ])
 
 App.run([
+  '$rootScope'
   'core'
   'app_database_constructor'
+  'app_analysis_getData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
-  (core, db, qualRobEst,qualRobEstView) ->
-
-    console.log "run block of app module"
+  #'app.utils.importer'
+  ($rootScope, core, db, getData, qualRobEst, qualRobEstView) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -122,9 +141,19 @@ App.run([
       scopeTo: ['qualRobEstView']
     ,
       msgFrom:'save table'
-      scopeFrom: ['getData']
+      scopeFrom: ['getData','app.utils.importer']
       msgTo:'save table'
       scopeTo:['database']
+    ,
+      msgFrom:'table saved'
+      scopeFrom: ['database']
+      msgTo:'234'
+      scopeTo:['qualRobEst']
+    ,
+      msgFrom:'upload csv'
+      scopeFrom: ['getData']
+      msgTo:'upload csv'
+      scopeTo:['app.utils.importer']
     ]
 
     core.setEventsMapping map
@@ -135,8 +164,20 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
-#    core.register 'db', db
-#    core.start 'db'
+    core.register 'getData', getData
+    core.start 'getData'
+
+    core.register 'db', db
+    core.start 'db'
+
+    #core.register 'importer', importer
+    #core.start 'importer'
+
+    $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
+      console.log arguments
+      console.log "teststestse"
+
+    console.log 'run block of app module'
 
 ])
 
