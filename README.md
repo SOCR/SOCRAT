@@ -1,6 +1,9 @@
 ## SOCR One Framework
 A scalable and highly flexible HTML5/JS framework for the [SOCR](http://socr.ucla.edu) tools to perform statistical analysis.
 
+[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=data_bridge_SOCRFW#56)](https://travis-ci.org/SOCRedu/SOCR-framework)
+[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=data_bridge_SOCRFW#56)](https://gemnasium.com/SOCRedu/SOCR-framework)
+
 * Web site: http://socr.umich.edu
 * Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
 

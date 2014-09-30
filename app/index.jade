@@ -8,12 +8,7 @@ html(lang='en', ng-app='app')
     meta(name='author', content='')
     title(ng-bind-template='{{pageTitle}}')
     link(rel='stylesheet', href='css/app.css')
-    //-script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
-    //if lte IE 7
-      script(src='http://cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js')
-    //if lte IE 8
-      script(src='//html5shiv.googlecode.com/svn/trunk/html5.js')
-    script
+    script.
       window.brunch = window.brunch || {};
       window.brunch['auto-reload'] = {
         enabled: true
@@ -33,8 +28,8 @@ html(lang='en', ng-app='app')
             .nav-collapse
               div(ng-include="'partials/nav.html'")
               p.navbar-text.pull-right Logged in as&nbsp;
-                a(href='#').navbar-link
-                    {{username}}
+                a(href='#').navbar-link.
+                  {{username}}
       
       //tooblar navigation for statistical analysis 
       .navbar.navbar-static-top

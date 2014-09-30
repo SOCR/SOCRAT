@@ -5,7 +5,7 @@
   This file contains the controllers that are generic
   and not specific to any particular analysis(clean data or charts etc).
 ###
-app= angular.module('app.controllers', ['app.mediator'])
+app= angular.module('app_controllers', ['app_mediator'])
 .config([
     ()->
       console.log "config block of app.controllers module"

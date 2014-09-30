@@ -36,7 +36,6 @@ module.exports = function(config) {
 
       // CoffeeScript //
       'test/unit/**/*.spec.coffee'
-      // 'test/unit/db/db.spec.coffee'
 
       // Javascript //
       // 'test/unit/**/*.spec.js'
@@ -48,7 +47,6 @@ module.exports = function(config) {
     exclude: [
       
     ],
-
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -87,7 +85,7 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun: true,
 
      plugins: [
       'karma-jasmine',
@@ -98,3 +96,4 @@ module.exports = function(config) {
     ]
   });
 };
+
