@@ -4,18 +4,18 @@
 ###
 errorMngr = angular.module 'app_errorMngr', ['app_mediator']
 
-###
-  overriding the default $exceptionHandler for custom exception handling.
-###
-###
-  What is the structure of the err object?
-  err={
-    msg: "I am a error",
-    type: "error",
-    severity,
-    display: {true,false}
-  }
-###
+####
+#  overriding the default $exceptionHandler for custom exception handling.
+####
+####
+#  What is the structure of the err object?
+#  err={
+#    msg: "I am a error",
+#    type: "error",
+#    severity,
+#    display: {true,false}
+#  }
+####
 errorMngr.factory '$exceptionHandler', [
   '$log'
   'pubSub'

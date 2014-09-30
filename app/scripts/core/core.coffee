@@ -130,6 +130,7 @@ core = angular.module('app_core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
+
       _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
@@ -147,7 +148,8 @@ core = angular.module('app_core', [
             throw new Error 'module was already started'
 
           # subscription for module events
-          if instance.msgList? and instance.msgList.outgoing?
+          # TODO: consider checking scope list for containing nothing else but moduleId and "all"
+          if instance.msgList? and instance.msgList.outgoing? and moduleId in instance.msgList.scope
             eventMngr.subscribeForEvents
               msgList: instance.msgList.outgoing
               scope: [moduleId]

@@ -67,7 +67,7 @@ db.service 'app_database_dv', ->
   ###
   _register = (tname,ref)->
     return false if _registry[tname]?
-  		# #name already exists. Create an alternate name.
+      # #name already exists. Create an alternate name.
     #   tname = '_' + tname
     #   _register tname,ref
     _registry[tname] = ref
