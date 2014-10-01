@@ -53,7 +53,6 @@ App.config([
             templateUrl: 'partials/nav/home.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            #controller: 'projectCtrl'
       )
       .state('guide'
         url: '/guide'
@@ -62,7 +61,6 @@ App.config([
             templateUrl: 'partials/nav/guide-me.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            #controller: 'projectCtrl'
       )
       .state('contact'
         url: '/contact'
@@ -70,31 +68,25 @@ App.config([
           'main':
             templateUrl: 'partials/nav/contact.html'
       )
-
       .state('getData'
         url: '/getData'
         views:
           'main':
             templateUrl: 'partials/analysis/getData/main.html'
-            #controller: 'getDataMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
-            #controller: 'getDataSidebarCtrl'
       )
       .state('getData.project'
         url: '/:projectId/:forkId'
         resolve:
-          checkDb:($stateParams,database)->
-            res = database.exists $stateParams.projectId+":"+$stateParams.forkId
+          checkDb: ($stateParams, database) ->
+            res = database.exists $stateParams.projectId + ':' + $stateParams.forkId
             console.log database
-          # alert res
         views:
           'main':
-            templateUrl:'partials/analysis/getData/main.html'
-            #controller:'getDataMainCtrl'
+            templateUrl: 'partials/analysis/getData/main.html'
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
-            #controller: 'getDataSidebarCtrl'
       )
       .state('cleanData'
         url: '/cleanData'
@@ -109,10 +101,8 @@ App.config([
         views:
           'main':
             templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-            #controller: 'qualRobEstViewMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
-            #controller: 'qualRobEstViewSidebarCtrl'
       )
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
@@ -154,6 +144,11 @@ App.run([
       scopeFrom: ['getData']
       msgTo:'upload csv'
       scopeTo:['app.utils.importer']
+    ,
+      msgFrom:'handsontable updated'
+      scopeFrom: ['getData']
+      msgTo:'save table'
+      scopeTo:['database']
     ]
 
     core.setEventsMapping map
@@ -173,9 +168,9 @@ App.run([
     #core.register 'importer', importer
     #core.start 'importer'
 
-    $rootScope.$on "$stateChangeSuccess", (scope,next,change)->
+    $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
+      console.log 'CORE: state change: '
       console.log arguments
-      console.log "teststestse"
 
     console.log 'run block of app module'
 
