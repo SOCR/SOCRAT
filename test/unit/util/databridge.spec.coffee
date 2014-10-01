@@ -1,14 +1,12 @@
-   describe "app_utils module", ->
+describe "app_utils module", ->
 
-           #variables.
+  #variables.
 
-               beforeEach ->
-                   module "app_utils"
+  beforeEach ->
+    module "app_utils"
 
-                                   describe "databridge service", ->
+    describe "databridge service", ->
 
-                                               it "first unit test case", ->
-                                                               inject (app_utils_databridge)->
-                                                                                   expect(true).toBe(true)
-
-
+      it "first unit test case", ->
+        inject (app_utils_databridge)->
+          expect(true).toBe(true)
