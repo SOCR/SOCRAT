@@ -22,16 +22,13 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 #        data: _data
 
     # Serialized subscription for a list of events
-    _subscribeForEvents = (events, listnrList...) ->
-      # if listener parameter is missing, set up default callback
-#      listnrList ?= _defaultEventManager
+    _subscribeForEvents = (events, listener) ->
 
-      for i, msg of events.msgList
+      for msg of events.msgList
         console.log msg
         pubSub.subscribe
           msg: msg
-        # checking if array of listeners was passes as a parameter
-          listener: if utils.typeIsArray listnrList then listnrList[i] else listnrList
+          listener: listener
           msgScope: events.scope
           context: events.context
 
