@@ -127,7 +127,7 @@ getData = angular.module('app_analysis_getData', [
 # @type: factory
 # @description: jsonParser parses the json url input by the user.
 # @dependencies : $q, $rootscope, $http
-.factory('jsonParser', [
+.factory('app_analysis_getData_jsonParser', [
   '$http'
   '$q'
   '$rootScope'
@@ -220,7 +220,7 @@ getData = angular.module('app_analysis_getData', [
   '$q'
   '$scope'
   'app_analysis_getData_manager'
-  'jsonParser'
+  'app_analysis_getData_jsonParser'
   '$stateParams'
   'app_analysis_getData_inputCache'
   ($q, $scope, getDataEventMngr, jsonParser, $stateParams, inputCache) ->
@@ -282,7 +282,7 @@ getData = angular.module('app_analysis_getData', [
   'app_analysis_getData_manager'
   '$scope'
   'showState'
-  'jsonParser'
+  'app_analysis_getData_jsonParser'
   '$state'
   (getDataEventMngr, $scope, showState, jsonParser, state) ->
     console.log 'getDataMainCtrl executed'

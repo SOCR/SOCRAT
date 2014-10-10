@@ -64,7 +64,7 @@ describe "getData", ->
         expect(scope.showState["div2"]).toBeTruthy()
 
 
-  describe "jsonParser", ->
+  describe "app_analysis_getData_jsonParser", ->
     beforeEach inject ($injector) ->
       $httpBackend = $injector.get('$httpBackend')
       $httpBackend.expect("JSONP","test.json")
@@ -73,11 +73,11 @@ describe "getData", ->
     it "should return false if input is empty", ->
 
     it "should return object when worldbank url is passed", ->
-      inject (jsonParser) ->
+      inject (app_analysis_getData_jsonParser) ->
         opts =
           url:"test.json"
           type:"worldBank"
-        obj = jsonParser opts
+        obj = app_analysis_getData_jsonParser opts
         #returns a promise object
 
 
