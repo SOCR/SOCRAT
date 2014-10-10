@@ -88,6 +88,7 @@ getData = angular.module('app_analysis_getData', [
       if data?
         _data = data unless data is 'edit'
 
+		#clear any previous db update broadcast messages.
         clearTimeout _timer
 
         deferred = $q.defer()
