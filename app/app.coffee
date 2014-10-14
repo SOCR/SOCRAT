@@ -162,8 +162,8 @@ App.run([
     core.register 'getData', getData
     core.start 'getData'
 
-    core.register 'db', db
-    core.start 'db'
+    core.register 'database', db
+    core.start 'database'
 
     #core.register 'importer', importer
     #core.start 'importer'
