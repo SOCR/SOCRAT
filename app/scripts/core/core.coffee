@@ -130,7 +130,6 @@ core = angular.module('app_core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
-
       _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
@@ -150,6 +149,7 @@ core = angular.module('app_core', [
           # subscription for module events
           # TODO: consider checking scope list for containing nothing else but moduleId and "all"
           if instance.msgList? and instance.msgList.outgoing? and moduleId in instance.msgList.scope
+            console.log 'CORE: subscribing for messages from ' + moduleId
             eventMngr.subscribeForEvents
               msgList: instance.msgList.outgoing
               scope: [moduleId]
