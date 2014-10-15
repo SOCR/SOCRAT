@@ -162,7 +162,7 @@ mediator = angular.module('app_mediator', [])
         token:++_lastUID
         func:cb
         context:context
-      console.log '%cMEDIATOR: successfully subscribed: '+ msg, 'color: blue'
+      console.log 'MEDIATOR: successfully subscribed: '+ msg
       j++
 
     return @
@@ -176,7 +176,7 @@ mediator = angular.module('app_mediator', [])
         while i<j
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
-            console.log '%cMEDIATOR: successfully unsubscribed: '+ m, 'color: blue'
+            console.log 'MEDIATOR: successfully unsubscribed: '+ m
             return token
           i++
     return @

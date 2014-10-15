@@ -4,10 +4,10 @@
   app_database module serves as the in-memory database for SOCR framework. The module lets
   you perform create, read, update and delete operations on all the tables created by the
   application.
-  
+
   "database" service is the single point access for all the CRUD operations.To make DB calls
   from another module, publish messages using the "sb" object.
-  
+
   Notes:
     Datavore doesnt have inbuilt event system
     or memory of the tables created using it.
@@ -110,7 +110,7 @@ db.service 'app_database_dv', ->
       _registry[tname].addColumn cname, values, type, iscolumn
       #fire away all listeners on the new column.
       _fire tname, cname
-      
+
   _db.removeColumn = (cname, tname) ->
     if _registry[tname]?[cname]?
       #fire away all listeners on the new column.
@@ -134,7 +134,7 @@ db.service 'app_database_dv', ->
             _listeners[opts.table]['cb'].push opts.listener
     console.log 'DB: listeners:'
     console.log _listeners[opts.table]
-  
+
   # destroy any table
   _db.destroy = (tname) ->
     if _registry[tname]?
@@ -203,15 +203,6 @@ db.factory 'app_database_handler', [
           {incoming: 'add listener', outgoing: 'listener added', event: _db.addListener}
         ]
 
-        sb.send
-          msg: tname
-          msgScope : ['database']
-
-        #@todo: Why sending 2 different messages?
-        sb.send
-          msg: tname + ':' + cname
-          msgScope: ['database']
-
         _status = _methods.map (method) ->
           sb.subscribe
             msg: method['incoming']
@@ -222,10 +213,10 @@ db.factory 'app_database_handler', [
                 if typeof data.promise isnt 'undefined'
                   data.promise.reject 'table operation failed'
                 false
-              
+
               #all publish calls should pass a promise in the data object.
               #if promise is not defined, create one and pass it along.
-              
+
               if typeof data.promise isnt 'undefined'
                 _data['promise'] = $q.defer()
               else
