@@ -13,6 +13,7 @@ App = angular.module('app', [
   'ngCookies'
   'ngResource'
   'ngSanitize'
+  #'app.utils.importer'
   'app_core'
   'app_controllers'
   'app_directives'
@@ -28,6 +29,7 @@ App = angular.module('app', [
 
 App.config([
   '$locationProvider'
+  #urlRouterProvider is not required
   '$urlRouterProvider'
   '$stateProvider'
   ($locationProvider, $urlRouterProvider, $stateProvider) ->
@@ -51,7 +53,6 @@ App.config([
             templateUrl: 'partials/nav/home.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            controller: 'projectCtrl'
       )
       .state('guide'
         url: '/guide'
@@ -60,7 +61,6 @@ App.config([
             templateUrl: 'partials/nav/guide-me.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            controller: 'projectCtrl'
       )
       .state('contact'
         url: '/contact'
@@ -73,10 +73,20 @@ App.config([
         views:
           'main':
             templateUrl: 'partials/analysis/getData/main.html'
-            controller: 'getDataMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
-            controller: 'getDataSidebarCtrl'
+      )
+      .state('getData.project'
+        url: '/:projectId/:forkId'
+        resolve:
+          checkDb: ($stateParams, database) ->
+            res = database.exists $stateParams.projectId + ':' + $stateParams.forkId
+            console.log database
+        views:
+          'main':
+            templateUrl: 'partials/analysis/getData/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/getData/sidebar.html'
       )
       .state('cleanData'
         url: '/cleanData'
@@ -91,10 +101,8 @@ App.config([
         views:
           'main':
             templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-            controller: 'qualRobEstViewMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
-            controller: 'qualRobEstViewSidebarCtrl'
       )
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
@@ -102,13 +110,14 @@ App.config([
 ])
 
 App.run([
+  '$rootScope'
   'core'
   'app_database_constructor'
+  'app_analysis_getData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
-  (core, db, qualRobEst,qualRobEstView) ->
-
-    console.log "run block of app module"
+  #'app.utils.importer'
+  ($rootScope, core, db, getData, qualRobEst, qualRobEstView) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -122,6 +131,21 @@ App.run([
       scopeTo: ['qualRobEstView']
     ,
       msgFrom:'save table'
+      scopeFrom: ['getData','app.utils.importer']
+      msgTo:'save table'
+      scopeTo:['database']
+    ,
+      msgFrom:'table saved'
+      scopeFrom: ['database']
+      msgTo:'234'
+      scopeTo:['qualRobEst']
+    ,
+      msgFrom:'upload csv'
+      scopeFrom: ['getData']
+      msgTo:'upload csv'
+      scopeTo:['app.utils.importer']
+    ,
+      msgFrom:'handsontable updated'
       scopeFrom: ['getData']
       msgTo:'save table'
       scopeTo:['database']
@@ -135,8 +159,20 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
-#    core.register 'db', db
-#    core.start 'db'
+    core.register 'getData', getData
+    core.start 'getData'
+
+    core.register 'db', db
+    core.start 'db'
+
+    #core.register 'importer', importer
+    #core.start 'importer'
+
+    $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
+      console.log 'CORE: state change: '
+      console.log arguments
+
+    console.log 'run block of app module'
 
 ])
 

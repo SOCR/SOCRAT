@@ -26,6 +26,17 @@ app= angular.module('app_controllers', ['app_mediator'])
   $scope.$on "change in view", ()->
     $scope.$broadcast "update view", null
 
+  $scope.$on "change in showStates", (obj,data)->
+    console.log "change in showStates heard!"
+    $scope.$broadcast("update showStates",data)
+
+  $scope.$on "update handsontable", (obj,data)->
+    console.log data
+    $scope.$broadcast(data.purpose+":load data to handsontable",data)
+
+  # $scope.$on "get Data from handsontable", ->
+    # $scope.$broadcast "get Data from handsontable"
+
   $scope.$location = $location
   $scope.username = "Guest"
   $scope.$watch('$location.path()', (path) ->
@@ -71,7 +82,7 @@ app= angular.module('app_controllers', ['app_mediator'])
 ($scope,appConfig) ->
 
   console.log "controller block for sidebarCtrl"
-  $scope.state="show"
+  $scope.state= "show"
 
   #view function
   $scope.view=->
@@ -128,7 +139,7 @@ controller('projectCtrl',[
   ($scope,pubSub)->
     console.log "Project Ctrl"
     $scope.message = "Enter your name...."
-    $scope.messageReceived=""
+    $scope.messageReceived= ""
   #sendMsg
     $scope.sendMsg=()->
       console.log($scope.message)
@@ -144,12 +155,12 @@ controller('projectCtrl',[
 
     #callback function on event "message changed"
     updateMsg=(event,msg)->
-      $scope.messageReceived=msg
+      $scope.messageReceived= msg
       console.log("message received successfully through pub/sub")
       null
 
     #register function x to event "message changed"
-    $scope.token=pubSub.subscribe("username changed",updateMsg)
+    $scope.token= pubSub.subscribe("username changed",updateMsg)
 
 
 ])

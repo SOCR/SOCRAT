@@ -25,13 +25,9 @@ core = angular.module('app_core', [
 
       _checkType = (type, val, name) ->
         # TODO: change to $exceptionHandler or return false anf throw exception in caller
-        console.log 'checkType: ' + "#{name} has to be a #{type}"
+#        console.log 'CORE: checkType: ' + "#{name} has to be a #{type}"
         if typeof val isnt type and utils.typeIsArray(val) isnt true
-          console.log typeof val isnt type
-          console.log utils.typeIsArray(val)
-          console.log typeof val isnt type and utils.typeIsArray(val) isnt true
-          console.log 'DEBUG OUTPUT: ' + "#{name} is not a #{type}"
-          console.log 'INSTEAD: ' + "#{name} is a " + typeof val
+          console.log 'CORE: checkType: ' + "#{name} is not a #{type}"
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
@@ -106,7 +102,7 @@ core = angular.module('app_core', [
           options: opt
           id: moduleId
 
-        console.log 'Module added: ' + moduleId
+        console.log 'CORE: module added: ' + moduleId
 
         true
 
@@ -114,8 +110,7 @@ core = angular.module('app_core', [
         try
           _addModule.apply @, [moduleId, creator, opt]
         catch e
-#          console.log e
-          console.log "could not register module" + moduleId
+          console.log " CORE: could not register module" + moduleId
           console.error "could not register module #{moduleId}: #{e.message}"
           false
 
@@ -135,23 +130,6 @@ core = angular.module('app_core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
-      # subscribe for outgoing events from module
-      _subscribeForModuleEvents = (moduleId, msgList, API) ->
-#        msgList.scope = moduleId
-        # TODO: change context
-#        msgList.context = console
-        eventMngr.subscribeForEvents
-          msgList: msgList
-          scope: [moduleId]
-          context: console
-          , API
-
-        console.log 'CORE: subscribed for events from ' + moduleId
-#        for msg in msgList
-#          mediator.subscribe
-#            msg: msg
-#            listener: API
-#            msgScope: [moduleId]
 
       _start = (moduleId, opt = {}) ->
         try
@@ -170,26 +148,30 @@ core = angular.module('app_core', [
             throw new Error 'module was already started'
 
           # subscription for module events
-          if instance.msgList? and instance.msgList.outgoing?
-            _subscribeForModuleEvents moduleId,
-              instance.msgList.outgoing,
-              _API
+          # TODO: consider checking scope list for containing nothing else but moduleId and "all"
+          if instance.msgList? and instance.msgList.outgoing? and moduleId in instance.msgList.scope
+            eventMngr.subscribeForEvents
+              msgList: instance.msgList.outgoing
+              scope: [moduleId]
+              # TODO: figure out context
+              context: console
+              , _redirectMsg
 
           # if the module wants to init in an asynchronous way
           if (utils.getArgumentNames instance.init).length >= 2
             # then define a callback
             instance.init instance.options, (err) -> opt.callback? err
           else
-            console.log opt.callback
             # else call the callback directly after initialisation
             instance.init instance.options
             opt.callback? null
 
           instance.running = true
+          console.log 'CORE: started module ' + moduleId
           true
 
         catch e
-          console.log "could not start module: #{e.message}"
+          console.log "CORE: could not start module: #{e.message}"
           opt.callback? new Error "could not start module: #{e.message}"
           false
 
@@ -217,12 +199,15 @@ core = angular.module('app_core', [
             next err
           _start m, o
 
-        utils.doForAll valid, startAction, (err) ->
-          if err?.length > 0
-            console.log 'WHY'
-            e = new Error "errors occoured in the following modules: " +
-                          "#{("'#{valid[i]}'" for x,i in err when x?)}"
-          cb? e or invalidErr
+        utils.doForAll(
+          valid
+          startAction
+          (err) ->
+            if err?.length > 0
+              e = new Error "errors occoured in the following modules: " +
+                            "#{("'#{valid[i]}'" for x,i in err when x?)}"
+            cb? e or invalidErr
+          true)
 
         not invalidErr?
 
@@ -288,21 +273,15 @@ core = angular.module('app_core', [
         _map = map
         true
 
-      _sendMessage = (msg, data, scopeArray) ->
-        console.log 'core sends: ' + msg + ' data: ' + data +
-          ' scope: ' + scopeArray
-        eventMngr.publish
-          msg: msg
-          data: data
-          msgScope: scopeArray
-
-#     TODO: abstract it to eventMngr module
-      _API = (msg, data) ->
-        console.log 'CORE: in API'
+      _redirectMsg = (msg, data) ->
         for o in _map when o.msgFrom is msg
-          _sendMessage o.msgTo, data, o.scopeTo
+          eventMngr.publish
+            msg: o.msgTo
+            data: data
+            msgScope: o.scopeTo
+          console.log 'CORE: redirect mgs ' + o.msgTo + 'to ' + o.scopeTo
           return true
-        console.log 'No mapping in API for message: ' + msg
+        console.log 'CORE: no mapping in API for message: ' + o.msgTo
         false
 
       # External methods

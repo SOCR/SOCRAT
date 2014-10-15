@@ -32,7 +32,7 @@ mediator = angular.module('app_mediator', [])
         i++
     if(_flag is 1)
       # execute the callback and return false
-      console.log "MEDIATOR: message not present in the list. returning false"
+      console.log "%cMEDIATOR: message not present in the list " + msg, 'color: blue'
       cb()
       return false
 
@@ -75,20 +75,20 @@ mediator = angular.module('app_mediator', [])
                 throw e
               j++
           else
-            console.log "MEDIATOR: no cb's registered with this message"
+            console.log "%cMEDIATOR: no cb's registered with this message" + msg, 'color: blue'
             _msgList[_scopes[i]][msg]=[]
           i++
       else
-        console.log 'MEDIATOR: msgScope is not an Array instance'
-        throw
-          message:'MEDIATOR: msgScope is not an Array instance'
-          type:'error'
+        console.log '%cMEDIATOR: msgScope is not an Array instance' + msgScope, 'color: blue'
+        throw new Error 'msgScope is not an Array instance'
+#          message:'msgScope is not an Array instance'
+#          type:'error'
     else
-      throw
-        message:'MEDIATOR: msgScope is not defined'
-        type:'error'
+      throw new Error 'msgScope is not defined'
+#        message:'msgScope is not defined'
+#        type:'error'
     cb()
-    console.log 'MEDIATOR: successfully published:' + obj.msg
+    console.log '%cMEDIATOR: successfully published '+ obj.msg, 'color: blue'
     return @
 
   # _subscribe() - registers a listener function for a msg
@@ -144,7 +144,6 @@ mediator = angular.module('app_mediator', [])
           listener:v
           context:context
           msgScope:msgScope
-      #console.log _msgList
       return _results
     else
       unless typeof cb == "function"
@@ -163,7 +162,7 @@ mediator = angular.module('app_mediator', [])
         token:++_lastUID
         func:cb
         context:context
-      console.log('MEDIATOR: successfully subscribed:' + obj.msg)
+      console.log '%cMEDIATOR: successfully subscribed: '+ msg, 'color: blue'
       j++
 
     return @
@@ -177,7 +176,7 @@ mediator = angular.module('app_mediator', [])
         while i<j
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
-            console.log('MEDIATOR: successfully unsubscribed:' + m)
+            console.log '%cMEDIATOR: successfully unsubscribed: '+ m, 'color: blue'
             return token
           i++
     return @

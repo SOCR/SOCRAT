@@ -3,4 +3,5 @@
 
 [SOCR Website](http://socr.ucla.edu)
 
-This branch is created for working on DB module during [SOCR Hackthon 5/17](https://socredu.atlassian.net/browse/SOCRFW-79)
+[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=dev)](https://travis-ci.org/SOCRedu/SOCR-framework)
+[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=dev)](https://gemnasium.com/SOCRedu/SOCR-framework)
