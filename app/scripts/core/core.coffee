@@ -102,7 +102,7 @@ core = angular.module('app_core', [
           options: opt
           id: moduleId
 
-        console.log 'CORE: module added: ' + moduleId
+        console.log '%cCORE: module added: ' + moduleId,'color:blue'
 
         true
 
@@ -167,11 +167,11 @@ core = angular.module('app_core', [
             opt.callback? null
 
           instance.running = true
-          console.log 'CORE: started module ' + moduleId
+          console.log '%cCORE: started module ' + moduleId, 'color:blue'
           true
 
         catch e
-          console.log "CORE: could not start module: #{e.message}"
+          console.log "%cCORE: could not start module: #{e.message}",'color:red'
           opt.callback? new Error "could not start module: #{e.message}"
           false
 
