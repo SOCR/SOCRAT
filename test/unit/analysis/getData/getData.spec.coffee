@@ -31,11 +31,11 @@ describe "getData", ->
       subscribe: @subscribe
       unsubscribe: @unsubscribe
     .service "$stateParams", ->
-      forkId:12 
+      forkId:12
 
   beforeEach ->
     module "app_analysis_getData"
-	module "app_mocks"
+    module "app_mocks"
 
   describe "showState", ->
 ####
