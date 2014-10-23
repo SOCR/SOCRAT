@@ -60,9 +60,9 @@ getData = angular.module('app_analysis_getData', [
 ])
 
 # ###
-# @name : app_analysis_getData_inputCache
-# @type : service
-# @description:Caches data. Changes to handsontable is stored here
+# @name: app_analysis_getData_inputCache
+# @type: service
+# @description :Caches data. Changes to handsontable is stored here
 # and synced after some time. Changes in db is heard and reflected on
 # handsontable.
 # ###
@@ -455,9 +455,11 @@ getData = angular.module('app_analysis_getData', [
     # up, things like bindings, jquery calls, etc are done in here
     # It is run before the controller
     link: (scope, elem, attr) ->
+
       # useful to identify which handsontable instance to update
       scope.purpose = attr.purpose
-      # Update the table with the scope values
+
+      # update the table with the scope values
       _format = (data, cols) ->
         if arguments.length is 2
           table = []
@@ -508,7 +510,8 @@ getData = angular.module('app_analysis_getData', [
               ['Copy', 'paste', 'your', 'data', 'here']
             ]
             colHeaders: true
-            minSpareRows: 5
+            minSpareRows: 1
+            minSpareCols: 1
         else
           $exceptionHandler
             message: 'handsontable configuration is missing'
