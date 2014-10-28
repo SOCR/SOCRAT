@@ -79,9 +79,9 @@ App.config([
       .state('getData.project'
         url: '/:projectId/:forkId'
         resolve:
-          checkDb: ($stateParams, database) ->
-            res = database.exists $stateParams.projectId + ':' + $stateParams.forkId
-            console.log database
+          checkDb: ($stateParams, app_database_dv) ->
+            res = app_database_dv.exists $stateParams.projectId + ':' + $stateParams.forkId
+            console.log "does DB exist for this project? "+res
         views:
           'main':
             templateUrl: 'partials/analysis/getData/main.html'
@@ -145,6 +145,7 @@ App.run([
       msgTo:'upload csv'
       scopeTo:['app.utils.importer']
     ,
+    # When /getData handonstable is updated, DB needs to be updated with the lastest values.
       msgFrom:'handsontable updated'
       scopeFrom: ['getData']
       msgTo:'save table'
