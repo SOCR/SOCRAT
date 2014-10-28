@@ -37,8 +37,8 @@ db.factory 'app_database_manager', [
   (database) ->
     _sb = null
     _msgList =
-      incoming: ['create table', 'get table', 'delete table']
-      outgoing: ['table created', 'take table', 'table deleted']
+      incoming: ['save table','create table', 'get table', 'delete table']
+      outgoing: ['table saved','table created', 'take table', 'table deleted']
       scope: ['database']
 
     _setSb = (sb) ->
@@ -191,10 +191,12 @@ db.service 'app_database_dv', ->
 
 
 db.factory 'app_database_handler', [
+  '$q'
   'app_database_dv'
-  (_db) ->
+  ($q,_db) ->
     #set all the callbacks here.
     _setSb = ((_db) ->
+      window.db = _db
       (sb) ->
         #registering database callbacks for all possible incoming messages.
         _methods = [
@@ -207,20 +209,23 @@ db.factory 'app_database_handler', [
           sb.subscribe
             msg: method['incoming']
             listener: (msg, data) ->
-              _data = method.event data
-
-              if _data is false
-                if typeof data.promise isnt 'undefined'
-                  data.promise.reject 'table operation failed'
-                false
-
+              console.log "%cdatabase listener called","color:green"
+              console.log data
+              _data = method.event.apply null,data
+              console.log "%cdatabase listener response: "+_data,"color:green"
+              deferred = data[data.length-1]
+              
+              if typeof deferred isnt 'undefined'
+                deferred.resolve()
+              else
+                _data.push $q.defer()
+              
+              #if _data is false
+              #  if typeof data.promise isnt 'undefined'
+              #    data.promise.reject 'table operation failed'
+              #  false
               #all publish calls should pass a promise in the data object.
               #if promise is not defined, create one and pass it along.
-
-              if typeof data.promise isnt 'undefined'
-                _data['promise'] = $q.defer()
-              else
-                _data['promise'] = data.promise
 
               sb.publish
                 msg: 'take table'

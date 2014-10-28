@@ -84,8 +84,8 @@ getData = angular.module('app_analysis_getData', [
       _data
 
     ret.set = (data) ->
-      console.log '%c inputCache set called', 'color:steelblue'
-      if data?
+      console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
+      if data? or $statParams?.projectId? or $stateParams?.forkId?
         _data = data unless data is 'edit'
 
         #clear any previous db update broadcast messages.
@@ -105,11 +105,14 @@ getData = angular.module('app_analysis_getData', [
             failure:
               msg: 'Error in Database'
               type: 'alert-error'
+            promise:deferred.promise
 
           sb.publish
             msg: 'handsontable updated'
-            data: [_data, $stateParams.projectId, $stateParams.forkId, deferred]
+            data: [_data,$stateParams.projectId+':'+$stateParams.forkId,deferred]
             msgScope: ['getData']
+            callback:()->
+              console.log 'handsontable data updated to db'
 
         ), 4000
 
