@@ -25,7 +25,7 @@ db.factory 'app_database_constructor', [
       _msgList = manager.getMsgList()
 
       init: (opt) ->
-        console.log 'DB: init called'
+        console.log '%cDATABASE:: init called', 'color:green'
 
       destroy: ->
 
@@ -132,7 +132,7 @@ db.service 'app_database_dv', ->
             _listeners[opts.table][opts.column]['cb'].push opts.listener
           else
             _listeners[opts.table]['cb'].push opts.listener
-    console.log 'DB: listeners:'
+    console.log '%cDATABASE:: listeners:', 'color:green'
     console.log _listeners[opts.table]
 
   # destroy any table
@@ -209,10 +209,10 @@ db.factory 'app_database_handler', [
           sb.subscribe
             msg: method['incoming']
             listener: (msg, data) ->
-              console.log "%cdatabase listener called","color:green"
+              console.log "%cDATABASE: listener called","color:green"
               console.log data
               _data = method.event.apply null,data
-              console.log "%cdatabase listener response: "+_data,"color:green"
+              console.log "%cDATABASE: listener response: "+_data,"color:green"
               deferred = data[data.length-1]
               
               if typeof deferred isnt 'undefined'

@@ -170,7 +170,7 @@ App.run([
     #core.start 'importer'
 
     $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
-      console.log 'CORE: state change: '
+      console.log 'APP: state change: '
       console.log arguments
 
     console.log 'run block of app module'
