@@ -54,7 +54,6 @@ qualRobEstView = angular.module('app_analysis_qualRobEstView', [])
     $scope.noiseLevel = '0.2'
     $scope.estParam = '0.5'
 
-    console.log ctrlMngr
     sb = ctrlMngr.getSb()
     $scope.sumNumbers = () ->
       sb.publish

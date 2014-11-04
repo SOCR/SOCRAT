@@ -25,6 +25,8 @@ App = angular.module('app', [
   'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
+  'app_analysis_instrPerfEvalView'
+  'app_analysis_instrPerfEval'
 ])
 
 App.config([
@@ -100,9 +102,9 @@ App.config([
         url: '/tools'
         views:
           'main':
-            templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
+            templateUrl: 'partials/analysis/tools/instrPerfEvalView/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
+            templateUrl: 'partials/analysis/tools/instrPerfEvalView/sidebar.html'
       )
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
@@ -116,8 +118,10 @@ App.run([
   'app_analysis_getData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
+  'app_analysis_instrPerfEval_constructor'
+  'app_analysis_instrPerfEvalView_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, qualRobEst, qualRobEstView) ->
+  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -129,6 +133,16 @@ App.run([
       scopeFrom: ['qualRobEst']
       msgTo: 'numbers added'
       scopeTo: ['qualRobEstView']
+    ,
+      msgFrom: 'calculate'
+      scopeFrom: ['instrPerfEvalView']
+      msgTo: 'calculate'
+      scopeTo: ['instrPerfEval']
+    ,
+      msgFrom: 'calculated'
+      scopeFrom: ['instrPerfEval']
+      msgTo: 'calculated'
+      scopeTo: ['instrPerfEvalView']
     ,
       msgFrom:'save table'
       scopeFrom: ['getData','app.utils.importer']
@@ -159,6 +173,12 @@ App.run([
 
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
+
+    core.register 'instrPerfEvalView', instrPerfEvalView
+    core.start 'instrPerfEvalView'
+
+    core.register 'instrPerfEval', instrPerfEval
+    core.start 'instrPerfEval'
 
     core.register 'getData', getData
     core.start 'getData'
