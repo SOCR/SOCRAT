@@ -449,6 +449,7 @@ getData = angular.module('app_analysis_getData', [
 
     #the template for the directive.
     template: "<div></div>"
+
     #the controller for the directive
     controller: ($scope) ->
 
@@ -462,41 +463,64 @@ getData = angular.module('app_analysis_getData', [
       # useful to identify which handsontable instance to update
       scope.purpose = attr.purpose
 
-      # update the table with the scope values
-      _format = (data, cols) ->
-        if arguments.length is 2
-          table = []
-          cols = cols || []
+      # TODO: consider move this into database module?
+      # reformat handsontable into universal data format column-wise
+      _format = (data) ->
 
-          for c in cols
-            obj = {}
-            obj.name = c.data
-            obj.values = []
-            path = c.data.split '.'
+        # result table
+        table = []
 
-            for d in data
-              i = 1
-              temp = d[path[0]]
+        # using pop to remove last empty column
+        colHeader = data.getColHeader()
+        colHeader.pop()
 
-              while i < path.length
-                if temp[path[i]]?
-                  temp = temp[path[i]]
-                  i++
-                else
-                  temp = null
-                  break
+        # iterate over handsontable column-wise
+        for i, c of colHeader
 
-              if temp?
-                if typeof temp is 'number'
-                  obj.type = 'numeric'
-                obj.values.push temp
+          currCol = data.getDataAtCol(i)
+          # using pop to remove last empty row
+          currCol.pop()
 
-            #save the column obj in the table.
-            table.push obj
+          resCol =
+            name: c
+            values: currCol
+            # TODO: allow different data types
+            type: 'nominal'
+
+          # save the column obj in the table
+          table.push resCol
+
+#        if arguments.length is 2
+#          table = []
+#          cols = cols || []
+#
+#          for c in cols
+#            obj = {}
+#            obj.name = c.data
+#            obj.values = []
+#            path = c.data.split '.'
+#
+#            for d in data
+#              i = 1
+#              temp = d[path[0]]
+#
+#              while i < path.length
+#                if temp[path[i]]?
+#                  temp = temp[path[i]]
+#                  i++
+#                else
+#                  temp = null
+#                  break
+#
+#              if temp?
+#                if typeof temp is 'number'
+#                  obj.type = 'numeric'
+#                obj.values.push temp
         table
 
       scope.update = (evt, arg) ->
         console.log 'handsontable: update called'
+
         #check if data is in the right format
         if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
           obj =
@@ -506,7 +530,6 @@ getData = angular.module('app_analysis_getData', [
             colHeaders: arg.columnHeader
             columns:arg.columns
             minSpareRows: 1
-
         else if arg.default is true
           obj =
             data: [
@@ -525,9 +548,11 @@ getData = angular.module('app_analysis_getData', [
           # only place from where data is saved before DB: inputCache.
           # onSave, data is picked up from inputCache.
           if source is 'loadData'
-            inputCache.set _format($(this)[0].getData(),arg.columns)
+#            inputCache.set _format($(this)[0].getData(), arg.columns)
+            inputCache.set _format $(this)[0]
           else
             inputCache.set source
+
         try
           #hook for pushing data changes to handsontable.
           #Tight coupling :-/

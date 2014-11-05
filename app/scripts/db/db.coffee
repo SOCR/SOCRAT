@@ -209,7 +209,7 @@ db.factory 'app_database_handler', [
           sb.subscribe
             msg: method['incoming']
             listener: (msg, data) ->
-              console.log "%cDATABASE: listener called","color:green"
+              console.log "%cDATABASE: listener called ", "color:green"
               console.log data
               _data = method.event.apply null,data
               console.log "%cDATABASE: listener response: "+_data,"color:green"
