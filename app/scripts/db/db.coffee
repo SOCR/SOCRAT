@@ -98,12 +98,29 @@ db.service 'app_database_dv', ->
         i++
 
   _db.create = (input, tname) ->
-    return false if _registry[tname]?
-    #create table
-    _ref = dv.table input
-    # register the reference to the table
-    _register tname, _ref
-    _db
+    if _registry[tname]?
+      _db.update input, tname
+    else
+
+      # reformat data type
+      input.map (col) ->
+        switch col.type
+          when 'numeric' then col.type = dv.type.numeric
+          when 'nominal' then col.type = dv.type.nominal
+          when 'ordinal' then col.type = dv.type.ordinal
+          else col.type = _db.type.unknown
+
+      #create table
+      _ref = dv.table input
+      # register the reference to the table
+      _register tname, _ref
+      _db
+
+  _db.update = (input, tname) ->
+    # delete old table
+    _db.destroy tname
+    # create new table
+    _db.create input, tname
 
   _db.addColumn = (cname, values, type, iscolumn..., tname)->
     if _registry[tname]?
@@ -211,8 +228,9 @@ db.factory 'app_database_handler', [
             listener: (msg, data) ->
               console.log "%cDATABASE: listener called ", "color:green"
               console.log data
-              _data = method.event.apply null,data
-              console.log "%cDATABASE: listener response: "+_data,"color:green"
+
+              _data = method.event.apply null, data
+              console.log "%cDATABASE: listener response: " + _data, "color:green"
               deferred = data[data.length-1]
               
               if typeof deferred isnt 'undefined'
@@ -229,7 +247,7 @@ db.factory 'app_database_handler', [
 
               sb.publish
                 msg: 'take table'
-                data:  _data
+                data: _data
                 msgScope: ['database']
             msgScope: ['database']
 

@@ -547,7 +547,7 @@ getData = angular.module('app_analysis_getData', [
           #saving data to be globally accessible.
           # only place from where data is saved before DB: inputCache.
           # onSave, data is picked up from inputCache.
-          if source is 'loadData'
+          if source is 'loadData' or 'paste'
 #            inputCache.set _format($(this)[0].getData(), arg.columns)
             inputCache.set _format $(this)[0]
           else
