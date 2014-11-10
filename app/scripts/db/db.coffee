@@ -56,9 +56,37 @@ db.factory 'app_database_manager', [
     getMsgList: _getMsgList
 ]
 
+# ###
+# @name: app_database_dataFrame2table
+# @type: factory
+# @description: Reformats data from the universal dataFrame object to datavore format
+# ###
+db.factory 'app_database_dataFrame2table', [
+  () ->
+
+    _convert = (dataFrame) ->
+
+      table = []
+
+      # transpose array to make it column oriented
+      data = for i, el of dataFrame.data[0]
+        do () ->
+          row[i] for row in dataFrame.data
+
+      for i, col of data
+        table.push
+          name: dataFrame.header[i]
+          values: col
+          type: 'symbolic'
+
+      table
+
+    convert: _convert
+]
+
 db.service 'app_database_dv', ->
 
-  #contains references to all the tables created.
+  # contains references to all the tables created.
   _registry = []
   _listeners = {}
   _db = {}
@@ -103,12 +131,12 @@ db.service 'app_database_dv', ->
     else
 
       # reformat data type
-      input.map (col) ->
+      for col in input
         switch col.type
           when 'numeric' then col.type = dv.type.numeric
           when 'nominal' then col.type = dv.type.nominal
           when 'ordinal' then col.type = dv.type.ordinal
-          else col.type = _db.type.unknown
+          else col.type = dv.type.unknown
 
       #create table
       _ref = dv.table input
@@ -210,7 +238,8 @@ db.service 'app_database_dv', ->
 db.factory 'app_database_handler', [
   '$q'
   'app_database_dv'
-  ($q,_db) ->
+  'app_database_dataFrame2table'
+  ($q, _db, dataFrame2table) ->
     #set all the callbacks here.
     _setSb = ((_db) ->
       window.db = _db
@@ -225,13 +254,18 @@ db.factory 'app_database_handler', [
         _status = _methods.map (method) ->
           sb.subscribe
             msg: method['incoming']
-            listener: (msg, data) ->
+            listener: (msg, dataFrame) ->
               console.log "%cDATABASE: listener called ", "color:green"
-              console.log data
+              console.log dataFrame
 
-              _data = method.event.apply null, data
+              # convert from the universal dataFrame object to datavore table
+              dvTableData = dataFrame2table.convert dataFrame.data if msg is 'save table'
+
+              # invoke callback
+              _data = method.event.call null, dvTableData, dataFrame.tableName
+
               console.log "%cDATABASE: listener response: " + _data, "color:green"
-              deferred = data[data.length-1]
+              deferred = dataFrame.promise
               
               if typeof deferred isnt 'undefined'
                 deferred.resolve()
