@@ -444,7 +444,7 @@ getData = angular.module('app_analysis_getData', [
 # @type: factory
 # @description: Reformats data from input table format to the universal dataFrame object.
 # ###
-.factory('app_analysis_getData_table2dataFrame', [
+.factory('app_analysis_getData_dataAdaptor', [
   () ->
 
     # accepts handsontable table as input and returns dataFrame
@@ -468,14 +468,17 @@ getData = angular.module('app_analysis_getData', [
         nRows: tableData.nRows - nSpareRows
         nCols: tableData.nCols - nSpareCols
 
+    _toHandsontable = () ->
+
     toDataFrame: _toDataFrame
+    toHandsontable: _toHandsontable
 ])
 
 .directive 'handsontable', [
   'app_analysis_getData_inputCache'
-  'app_analysis_getData_table2dataFrame'
+  'app_analysis_getData_dataAdaptor'
   '$exceptionHandler'
-  (inputCache, table2dataFrame, $exceptionHandler) ->
+  (inputCache, dataAdaptor, $exceptionHandler) ->
     restrict: 'E'
     transclude: true
 
@@ -545,7 +548,7 @@ getData = angular.module('app_analysis_getData', [
           # onSave, data is picked up from inputCache.
           if source is 'loadData' or 'paste'
             tableData = _format $(this)[0]
-            dataFrame = table2dataFrame.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
+            dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
             inputCache.set dataFrame
           else
             inputCache.set source
