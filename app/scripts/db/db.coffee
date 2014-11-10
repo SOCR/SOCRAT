@@ -25,7 +25,7 @@ db.factory 'app_database_constructor', [
       _msgList = manager.getMsgList()
 
       init: (opt) ->
-        console.log 'DB: init called'
+        console.log '%cDATABASE:: init called', 'color:green'
 
       destroy: ->
 
@@ -37,8 +37,8 @@ db.factory 'app_database_manager', [
   (database) ->
     _sb = null
     _msgList =
-      incoming: ['create table', 'get table', 'delete table']
-      outgoing: ['table created', 'take table', 'table deleted']
+      incoming: ['save table','create table', 'get table', 'delete table']
+      outgoing: ['table saved','table created', 'take table', 'table deleted']
       scope: ['database']
 
     _setSb = (sb) ->
@@ -98,12 +98,29 @@ db.service 'app_database_dv', ->
         i++
 
   _db.create = (input, tname) ->
-    return false if _registry[tname]?
-    #create table
-    _ref = dv.table input
-    # register the reference to the table
-    _register tname, _ref
-    _db
+    if _registry[tname]?
+      _db.update input, tname
+    else
+
+      # reformat data type
+      input.map (col) ->
+        switch col.type
+          when 'numeric' then col.type = dv.type.numeric
+          when 'nominal' then col.type = dv.type.nominal
+          when 'ordinal' then col.type = dv.type.ordinal
+          else col.type = _db.type.unknown
+
+      #create table
+      _ref = dv.table input
+      # register the reference to the table
+      _register tname, _ref
+      _db
+
+  _db.update = (input, tname) ->
+    # delete old table
+    _db.destroy tname
+    # create new table
+    _db.create input, tname
 
   _db.addColumn = (cname, values, type, iscolumn..., tname)->
     if _registry[tname]?
@@ -132,7 +149,7 @@ db.service 'app_database_dv', ->
             _listeners[opts.table][opts.column]['cb'].push opts.listener
           else
             _listeners[opts.table]['cb'].push opts.listener
-    console.log 'DB: listeners:'
+    console.log '%cDATABASE:: listeners:', 'color:green'
     console.log _listeners[opts.table]
 
   # destroy any table
@@ -191,10 +208,12 @@ db.service 'app_database_dv', ->
 
 
 db.factory 'app_database_handler', [
+  '$q'
   'app_database_dv'
-  (_db) ->
+  ($q,_db) ->
     #set all the callbacks here.
     _setSb = ((_db) ->
+      window.db = _db
       (sb) ->
         #registering database callbacks for all possible incoming messages.
         _methods = [
@@ -207,24 +226,28 @@ db.factory 'app_database_handler', [
           sb.subscribe
             msg: method['incoming']
             listener: (msg, data) ->
-              _data = method.event data
+              console.log "%cDATABASE: listener called ", "color:green"
+              console.log data
 
-              if _data is false
-                if typeof data.promise isnt 'undefined'
-                  data.promise.reject 'table operation failed'
-                false
-
+              _data = method.event.apply null, data
+              console.log "%cDATABASE: listener response: " + _data, "color:green"
+              deferred = data[data.length-1]
+              
+              if typeof deferred isnt 'undefined'
+                deferred.resolve()
+              else
+                _data.push $q.defer()
+              
+              #if _data is false
+              #  if typeof data.promise isnt 'undefined'
+              #    data.promise.reject 'table operation failed'
+              #  false
               #all publish calls should pass a promise in the data object.
               #if promise is not defined, create one and pass it along.
 
-              if typeof data.promise isnt 'undefined'
-                _data['promise'] = $q.defer()
-              else
-                _data['promise'] = data.promise
-
               sb.publish
                 msg: 'take table'
-                data:  _data
+                data: _data
                 msgScope: ['database']
             msgScope: ['database']
 
