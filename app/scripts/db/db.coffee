@@ -61,10 +61,10 @@ db.factory 'app_database_manager', [
 # @type: factory
 # @description: Reformats data from the universal dataFrame object to datavore format
 # ###
-db.factory 'app_database_dataFrame2table', [
+db.factory 'app_database_dataAdaptor', [
   () ->
 
-    _convert = (dataFrame) ->
+    _toDvTable = (dataFrame) ->
 
       table = []
 
@@ -81,7 +81,10 @@ db.factory 'app_database_dataFrame2table', [
 
       table
 
-    convert: _convert
+    _toDataFrame = () ->
+
+    toDvTable: _toDvTable
+    toDataFrame: _toDataFrame
 ]
 
 db.service 'app_database_dv', ->
@@ -238,8 +241,8 @@ db.service 'app_database_dv', ->
 db.factory 'app_database_handler', [
   '$q'
   'app_database_dv'
-  'app_database_dataFrame2table'
-  ($q, _db, dataFrame2table) ->
+  'app_database_dataAdaptor'
+  ($q, _db, dataAdaptor) ->
     #set all the callbacks here.
     _setSb = ((_db) ->
       window.db = _db
@@ -259,7 +262,7 @@ db.factory 'app_database_handler', [
               console.log dataFrame
 
               # convert from the universal dataFrame object to datavore table
-              dvTableData = dataFrame2table.convert dataFrame.data if msg is 'save table'
+              dvTableData = dataAdaptor.toDvTable dataFrame.data if msg is 'save table'
 
               # invoke callback
               _data = method.event.call null, dvTableData, dataFrame.tableName
