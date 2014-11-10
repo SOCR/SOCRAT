@@ -109,7 +109,7 @@ getData = angular.module('app_analysis_getData', [
 
           sb.publish
             msg: 'handsontable updated'
-            data: [_data,$stateParams.projectId+':'+$stateParams.forkId,deferred]
+            data: { data: _data, tableName: $stateParams.projectId + ':' + $stateParams.forkId, promise: deferred }
             msgScope: ['getData']
             callback:()->
               console.log 'handsontable data updated to db'
@@ -507,22 +507,6 @@ getData = angular.module('app_analysis_getData', [
         header = obj.getColHeader()
         nCols = obj.countVisibleCols()
         nRows = obj.countVisibleRows()
-
-        #        # iterate over handsontable column-wise
-#        for i, c of colHeader
-#
-#          currCol = data.getDataAtCol(i)
-#          # using pop to remove last empty row
-#          currCol.pop()
-#
-#          resCol =
-#            name: c
-#            values: currCol
-#            # TODO: allow different data types
-#            type: 'nominal'
-#
-#          # save the column obj in the table
-#          table.push resCol
 
         table =
           data: data
