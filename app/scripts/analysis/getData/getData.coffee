@@ -439,16 +439,50 @@ getData = angular.module('app_analysis_getData', [
 
 )
 
+# ###
+# @name: app_analysis_getData_table2dataFrame
+# @type: factory
+# @description: Reformats data from input table format to the universal dataFrame object.
+# ###
+.factory('app_analysis_getData_table2dataFrame', [
+  () ->
+
+    # accepts handsontable table as input and returns dataFrame
+    _toDataFrame = (tableData, nSpareCols, nSpareRows) ->
+
+      # using pop to remove empty last row
+      tableData.data.pop()
+      # and column
+      row.pop() for row in tableData.data
+
+      # remove empty last column for header
+      tableData.header.pop()
+
+      # by default data types are not known at this step
+      #  and should be defined at Clean Data step
+      colTypes = ('symbolic' for [1...tableData.nCols - nSpareCols])
+
+      dataFrame =
+        data: tableData.data
+        header: tableData.header
+        nRows: tableData.nRows - nSpareRows
+        nCols: tableData.nCols - nSpareCols
+
+    toDataFrame: _toDataFrame
+])
+
 .directive 'handsontable', [
   'app_analysis_getData_inputCache'
+  'app_analysis_getData_table2dataFrame'
   '$exceptionHandler'
-  (inputCache, $exceptionHandler) ->
+  (inputCache, table2dataFrame, $exceptionHandler) ->
     restrict: 'E'
-    transclude:true
-    # to the name attribute on the directive element.
+    transclude: true
 
+    # to the name attribute on the directive element.
     #the template for the directive.
     template: "<div></div>"
+
 
     #the controller for the directive
     controller: ($scope) ->
@@ -460,63 +494,41 @@ getData = angular.module('app_analysis_getData', [
     # It is run before the controller
     link: (scope, elem, attr) ->
 
+      N_SPARE_COLS = 1
+      N_SPARE_ROWS = 1
+
       # useful to identify which handsontable instance to update
       scope.purpose = attr.purpose
 
-      # TODO: consider move this into database module?
-      # reformat handsontable into universal data format column-wise
-      _format = (data) ->
+      # retrieves data from handsontable object
+      _format = (obj) ->
 
-        # result table
-        table = []
+        data = obj.getData()
+        header = obj.getColHeader()
+        nCols = obj.countVisibleCols()
+        nRows = obj.countVisibleRows()
 
-        # using pop to remove last empty column
-        colHeader = data.getColHeader()
-        colHeader.pop()
-
-        # iterate over handsontable column-wise
-        for i, c of colHeader
-
-          currCol = data.getDataAtCol(i)
-          # using pop to remove last empty row
-          currCol.pop()
-
-          resCol =
-            name: c
-            values: currCol
-            # TODO: allow different data types
-            type: 'nominal'
-
-          # save the column obj in the table
-          table.push resCol
-
-#        if arguments.length is 2
-#          table = []
-#          cols = cols || []
+        #        # iterate over handsontable column-wise
+#        for i, c of colHeader
 #
-#          for c in cols
-#            obj = {}
-#            obj.name = c.data
-#            obj.values = []
-#            path = c.data.split '.'
+#          currCol = data.getDataAtCol(i)
+#          # using pop to remove last empty row
+#          currCol.pop()
 #
-#            for d in data
-#              i = 1
-#              temp = d[path[0]]
+#          resCol =
+#            name: c
+#            values: currCol
+#            # TODO: allow different data types
+#            type: 'nominal'
 #
-#              while i < path.length
-#                if temp[path[i]]?
-#                  temp = temp[path[i]]
-#                  i++
-#                else
-#                  temp = null
-#                  break
-#
-#              if temp?
-#                if typeof temp is 'number'
-#                  obj.type = 'numeric'
-#                obj.values.push temp
-        table
+#          # save the column obj in the table
+#          table.push resCol
+
+        table =
+          data: data
+          header: header
+          nCols: nCols
+          nRows: nRows
 
       scope.update = (evt, arg) ->
         console.log 'handsontable: update called'
@@ -529,15 +541,15 @@ getData = angular.module('app_analysis_getData', [
             startCols: arg.columns.length
             colHeaders: arg.columnHeader
             columns:arg.columns
-            minSpareRows: 1
+            minSpareRows: N_SPARE_ROWS
         else if arg.default is true
           obj =
             data: [
               ['Copy', 'paste', 'your', 'data', 'here']
             ]
             colHeaders: true
-            minSpareRows: 1
-            minSpareCols: 1
+            minSpareRows: N_SPARE_ROWS
+            minSpareCols: N_SPARE_COLS
         else
           $exceptionHandler
             message: 'handsontable configuration is missing'
@@ -548,8 +560,9 @@ getData = angular.module('app_analysis_getData', [
           # only place from where data is saved before DB: inputCache.
           # onSave, data is picked up from inputCache.
           if source is 'loadData' or 'paste'
-#            inputCache.set _format($(this)[0].getData(), arg.columns)
-            inputCache.set _format $(this)[0]
+            tableData = _format $(this)[0]
+            dataFrame = table2dataFrame.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
+            inputCache.set dataFrame
           else
             inputCache.set source
 
