@@ -69,11 +69,9 @@ db.factory 'app_database_dataAdaptor', [
       table = []
 
       # transpose array to make it column oriented
-      data = for i, el of dataFrame.data[0]
-        do () ->
-          row[i] for row in dataFrame.data
+      _data = ((row[i] for row in dataFrame.data) for i in [0...dataFrame.nCols])
 
-      for i, col of data
+      for i, col of _data
         table.push
           name: dataFrame.header[i]
           values: col
@@ -81,7 +79,23 @@ db.factory 'app_database_dataAdaptor', [
 
       table
 
-    _toDataFrame = () ->
+    _toDataFrame = (table) ->
+
+      _nRows = table[0].length
+      _nCols = table.length
+
+      # transpose array to make it row oriented
+      _data = ((col[i] for col in table) for i in [0..._nRows])
+
+      _header = (col.name for col in table)
+      _types = (col.type for col in table)
+
+      dataFrame =
+        data: _data
+        header: _header
+        types: _types
+        nRows: _nRows
+        nCols: _nCols
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
@@ -199,7 +213,7 @@ db.service 'app_database_dv', ->
     if _registry[tname]?
       _registry[tname].cols()
 
-  _db.get = (tname, col, row)->
+  _db.get = (tname, col, row) ->
     if _registry[tname]?
       if col?
         if row?
@@ -207,8 +221,6 @@ db.service 'app_database_dv', ->
         else
           _registry[tname][col]
       else
-        #TODO : returned object is dv object.
-        # need to return only the table content
         _registry[tname]
     else
       false
@@ -257,19 +269,21 @@ db.factory 'app_database_handler', [
         _status = _methods.map (method) ->
           sb.subscribe
             msg: method['incoming']
-            listener: (msg, dataFrame) ->
+            listener: (msg, data) ->
               console.log "%cDATABASE: listener called ", "color:green"
-              console.log dataFrame
+              console.log data
 
               # convert from the universal dataFrame object to datavore table
-              dvTableData = dataAdaptor.toDvTable dataFrame.data if msg is 'save table'
+              dvTableData = dataAdaptor.toDvTable data.dataFrame if msg is 'save table'
 
               # invoke callback
-              _data = method.event.call null, dvTableData, dataFrame.tableName
+              _data = method.event.call null, dvTableData, data.tableName
 
-              console.log "%cDATABASE: listener response: " + _data, "color:green"
-              deferred = dataFrame.promise
-              
+              _data = dataAdaptor.toDataFrame _data if msg is 'take table'
+
+              console.log '%cDATABASE: listener response: ' + _data, 'color:green'
+
+              deferred = data.promise
               if typeof deferred isnt 'undefined'
                 deferred.resolve()
               else
