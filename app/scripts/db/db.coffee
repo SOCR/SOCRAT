@@ -255,10 +255,12 @@ db.factory 'app_database_handler', [
   'app_database_dv'
   'app_database_dataAdaptor'
   ($q, _db, dataAdaptor) ->
+
     #set all the callbacks here.
     _setSb = ((_db) ->
       window.db = _db
       (sb) ->
+
         #registering database callbacks for all possible incoming messages.
         _methods = [
           {incoming: 'save table', outgoing: 'table saved', event: _db.create}
@@ -289,12 +291,12 @@ db.factory 'app_database_handler', [
               else
                 _data.push $q.defer()
               
-              #if _data is false
+              # if _data is false
               #  if typeof data.promise isnt 'undefined'
               #    data.promise.reject 'table operation failed'
               #  false
-              #all publish calls should pass a promise in the data object.
-              #if promise is not defined, create one and pass it along.
+              # all publish calls should pass a promise in the data object.
+              # if promise is not defined, create one and pass it along.
 
               sb.publish
                 msg: 'take table'
@@ -302,7 +304,6 @@ db.factory 'app_database_handler', [
                 msgScope: ['database']
             msgScope: ['database']
 
-          #console.log(_status)
     )(_db)
 
     setSb: _setSb
