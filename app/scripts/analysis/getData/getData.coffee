@@ -109,7 +109,7 @@ getData = angular.module('app_analysis_getData', [
 
           sb.publish
             msg: 'handsontable updated'
-            data: { data: _data, tableName: $stateParams.projectId + ':' + $stateParams.forkId, promise: deferred }
+            data: { dataFrame: _data, tableName: $stateParams.projectId + ':' + $stateParams.forkId, promise: deferred }
             msgScope: ['getData']
             callback:()->
               console.log 'handsontable data updated to db'
