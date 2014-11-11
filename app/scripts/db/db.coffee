@@ -262,6 +262,7 @@ db.factory 'app_database_handler', [
       (sb) ->
 
         #registering database callbacks for all possible incoming messages.
+        # TODO: add wrapper layer on top of _db methods?
         _methods = [
           {incoming: 'save table', outgoing: 'table saved', event: _db.create}
           {incoming: 'get table', outgoing: 'take table', event: _db.get}
@@ -276,10 +277,15 @@ db.factory 'app_database_handler', [
               console.log data
 
               # convert from the universal dataFrame object to datavore table
-              dvTableData = dataAdaptor.toDvTable data.dataFrame if msg is 'save table'
+              dvTableData = if msg is 'save table' then dataAdaptor.toDvTable data.dataFrame else data
 
               # invoke callback
-              _data = method.event.call null, dvTableData, data.tableName
+              # TODO: check presence of necessary arguments in data to invoke corresponding callback
+              _data = switch
+                when msg is 'save table' then [ dvTableData, data.tableName ]
+                when msg is 'get table' then [ data.tableName ]
+
+              _data = method.event.apply null, _data
 
               _data = dataAdaptor.toDataFrame _data if msg is 'take table'
 

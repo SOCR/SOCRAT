@@ -84,7 +84,10 @@ getData = angular.module('app_analysis_getData', [
       _data
 
     ret.set = (data) ->
-      console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
+
+      console.log('%c inputCache set called for the project' +
+        $stateParams.projectId + ':' + $stateParams.forkId, 'color:steelblue')
+
       if data? or $statParams?.projectId? or $stateParams?.forkId?
         _data = data unless data is 'edit'
 
@@ -109,9 +112,12 @@ getData = angular.module('app_analysis_getData', [
 
           sb.publish
             msg: 'handsontable updated'
-            data: { dataFrame: _data, tableName: $stateParams.projectId + ':' + $stateParams.forkId, promise: deferred }
+            data:
+              dataFrame: _data
+              tableName: $stateParams.projectId + ':' + $stateParams.forkId
+              promise: deferred
             msgScope: ['getData']
-            callback:()->
+            callback: ->
               console.log 'handsontable data updated to db'
 
         ), 4000
