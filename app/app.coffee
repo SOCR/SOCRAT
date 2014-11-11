@@ -144,26 +144,36 @@ App.run([
       msgTo: 'calculated'
       scopeTo: ['instrPerfEvalView']
     ,
-      msgFrom:'save table'
-      scopeFrom: ['getData','app.utils.importer']
-      msgTo:'save table'
-      scopeTo:['database']
+      msgFrom: 'save table'
+      scopeFrom: ['getData', 'app.utils.importer']
+      msgTo: 'save table'
+      scopeTo: ['database']
     ,
       msgFrom:'table saved'
       scopeFrom: ['database']
-      msgTo:'234'
-      scopeTo:['qualRobEst']
+      msgTo: '234'
+      scopeTo: ['qualRobEst']
     ,
-      msgFrom:'upload csv'
+      msgFrom: 'upload csv'
       scopeFrom: ['getData']
-      msgTo:'upload csv'
-      scopeTo:['app.utils.importer']
+      msgTo: 'upload csv'
+      scopeTo: ['app.utils.importer']
+    ,
+      msgFrom: 'get table'
+      scopeFrom: ['instrPerfEvalView']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['instrPerfEvalView']
     ,
     # When /getData handonstable is updated, DB needs to be updated with the lastest values.
-      msgFrom:'handsontable updated'
+      msgFrom: 'handsontable updated'
       scopeFrom: ['getData']
-      msgTo:'save table'
-      scopeTo:['database']
+      msgTo: 'save table'
+      scopeTo: ['database']
     ]
 
     core.setEventsMapping map
