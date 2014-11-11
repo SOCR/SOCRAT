@@ -23,8 +23,8 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
     _sb = null
 
     _msgList =
-      outgoing: ['calculate']
-      incoming: ['calculated']
+      outgoing: ['calculate', 'get table']
+      incoming: ['calculated', 'take table']
       scope: ['instrPerfEvalView']
 
     _setSb = (sb) ->
@@ -44,20 +44,32 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
 .controller('instrPerfEvalViewSidebarCtrl', [
   'app_analysis_instrPerfEvalView_manager'
   '$scope'
-  (ctrlMngr, $scope) ->
+  '$stateParams'
+  '$q'
+  (ctrlMngr, $scope, $stateParams, $q) ->
     console.log 'instrPerfEvalViewSidebarCtrl executed'
 
     $scope.nCols = '5'
     $scope.nRows = '5'
 
+    deferred = $q.defer()
+
     sb = ctrlMngr.getSb()
-    $scope.calculate = () ->
+    $scope.calculate = ->
+
       sb.publish
-        msg: 'calculate'
+        msg: 'get table'
         data:
-          a: $scope.nCols
-          b: $scope.nRows
+          tableName: $stateParams.projectId + ':' + $stateParams.forkId
+          promise: deferred
         msgScope: ['instrPerfEvalView']
+
+#      sb.publish
+#        msg: 'calculate'
+#        data:
+#          a: $scope.nCols
+#          b: $scope.nRows
+#        msgScope: ['instrPerfEvalView']
 ])
 
 .controller('instrPerfEvalViewMainCtrl', [
@@ -67,9 +79,16 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
     console.log 'instrPerfEvalViewMainCtrl executed'
 
     sb = ctrlMngr.getSb()
+
     sb.subscribe
-      msg: 'calculate'
+      msg: 'take table'
       listener: (msg, data) ->
+        console.log data
         $scope.outputStats = data
       msgScope: ['instrPerfEvalView']
+#    sb.subscribe
+#      msg: 'calculated'
+#      listener: (msg, data) ->
+#        $scope.outputStats = data
+#      msgScope: ['instrPerfEvalView']
 ])
