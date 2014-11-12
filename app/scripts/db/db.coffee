@@ -287,7 +287,7 @@ db.factory 'app_database_handler', [
 
               _data = method.event.apply null, _data
 
-              _data = dataAdaptor.toDataFrame _data if msg is 'take table'
+              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
 
               console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
