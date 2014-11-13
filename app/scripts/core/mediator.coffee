@@ -1,36 +1,39 @@
 'use strict'
 
-#app.core module contains services like error management , pub/sub
+# Module app.core contains services like error management, pub/sub
 
 mediator = angular.module('app_mediator', [])
 
 # publish/subscribe angular service
-.service("pubSub", () ->
+.service('pubSub', ->
   _msgList = []
   _msgScopeList = []
   _scopes = []
   _lastUID = 14
 
   # _publish() - registers msg if not present already,
-  # then executes all the callbacks.
+  #  then executes all the callbacks
   # @param {object}
   _publish = (obj) ->
-    unless typeof obj.msg is "string"
+
+    unless typeof obj.msg is 'string'
       return false
+
     if obj.callback?
       cb = obj.callback
     else
-      cb = ()->
+      cb = ->
+
     _flag = 1
     if obj.msg?
       msg = obj.msg
-      i=0
-      while i<_msgScopeList.length
+      i = 0
+      while i < _msgScopeList.length
         if _msgList[_msgScopeList[i]].hasOwnProperty(msg) is true
           _flag = 0
           break
         i++
-    if(_flag is 1)
+    if _flag is 1
       # execute the callback and return false
       console.log "%cMEDIATOR: message not present in the list " + msg, 'color: blue'
       cb()
@@ -40,8 +43,11 @@ mediator = angular.module('app_mediator', [])
       data = obj.data
     else
       data = undefined
+
     if obj.msgScope?
+
       msgScope = obj.msgScope
+
       if msgScope instanceof Array
         # search in the scopelist. if not there, move on
         # search in msglist, if not found move on to next el
@@ -50,20 +56,22 @@ mediator = angular.module('app_mediator', [])
         # adding the scope to the msgScope list if not present already
         # take each element of msgScope
         # if element is one, and = to "all" , search in all scopelists
-        i=0
-        _scopes =[]
+        i = 0
+        _scopes = []
+
         while i < msgScope.length
-          if(msgScope[i] is "all")
+          if(msgScope[i] is 'all')
             _scopes = _msgScopeList
             break
           if _msgScopeList.indexOf(msgScope[i]) isnt -1
             _scopes.push(msgScope[i])
           i++
-        # Now we have the _scopes list, find messages and make calls
-        i=0
+
+        # now we have the _scopes list, find messages and make calls
+        i = 0
         while i < Object.keys(_scopes).length
           if _msgList[_scopes[i]].hasOwnProperty(msg)
-            subscribers=_msgList[_scopes[i]][msg]
+            subscribers = _msgList[_scopes[i]][msg]
             j = 0
             while j < subscribers.length
               try
@@ -75,7 +83,7 @@ mediator = angular.module('app_mediator', [])
                 throw e
               j++
           else
-            console.log "%cMEDIATOR: no cb's registered with this message" + msg, 'color: blue'
+            console.log '%cMEDIATOR: no cb\'s registered with this message' + msg, 'color: blue'
             _msgList[_scopes[i]][msg]=[]
           i++
       else
@@ -87,12 +95,14 @@ mediator = angular.module('app_mediator', [])
       throw new Error 'msgScope is not defined'
 #        message:'msgScope is not defined'
 #        type:'error'
+
     cb()
-    console.log '%cMEDIATOR: successfully published '+ obj.msg, 'color: blue'
+    console.log '%cMEDIATOR: successfully published ' + obj.msg, 'color: blue'
     return @
 
   # _subscribe() - registers a listener function for a msg
   _subscribe = (obj) ->
+
     if obj.msg?
       msg = obj.msg
     else
@@ -111,7 +121,7 @@ mediator = angular.module('app_mediator', [])
 
     if obj.msgScope?
       msgScope = obj.msgScope
-      i=0
+      i = 0
       if msgScope instanceof Array
         # adding the scope to the msgScope list if not present already
         while i < msgScope.length
@@ -122,58 +132,64 @@ mediator = angular.module('app_mediator', [])
         return false
     else
       return false
+
     if msg instanceof Array
-      _results=[]
-      i=0
-      j=msg.length
-      while i<j
+      _results = []
+      i = 0
+      j = msg.length
+
+      while i < j
         id = msg[i]
         _results.push _subscribe
-          msg:id
-          listener:cb
-          context:context
-          msgScope:msgScope
+          msg: id
+          listener: cb
+          context: context
+          msgScope: msgScope
         i++
       return @
+
     else if msg instanceof Object
-      _results=[]
+      _results = []
       for k of msg
         v = msg[k]
         _results.push _subscribe
-          msg:k
-          listener:v
-          context:context
-          msgScope:msgScope
+          msg: k
+          listener: v
+          context: context
+          msgScope: msgScope
       return _results
+
     else
       unless typeof cb == "function"
         return false
       unless typeof msg == "string"
         return false
 
-    j=0
+    j = 0
     while j < msgScope.length
+
       if not _msgList[msgScope[j]]?
         _msgList[msgScope[j]] = {}
       unless _msgList[msgScope[j]].hasOwnProperty(msg)
         _msgList[msgScope[j]][msg]=[]
-      #pushing the cb function into the list
+
+      # pushing the cb function into the list
       _msgList[msgScope[j]][msg].push
-        token:++_lastUID
-        func:cb
-        context:context
+        token: ++_lastUID
+        func: cb
+        context: context
       console.log '%cMEDIATOR: successfully subscribed: '+ msg, 'color:blue'
       j++
 
     return @
 
-  #_unsubscribe()
-  _unsubscribe=(token)->
+  # _unsubscribe
+  _unsubscribe = (token) ->
     for m of _msgList
       if _msgList.hasOwnProperty(m)
-        i=0
-        j=_msgList[m].length
-        while i<j
+        i = 0
+        j = _msgList[m].length
+        while i < j
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
             console.log '%cMEDIATOR: successfully unsubscribed: '+ m, 'color:blue'
@@ -181,7 +197,7 @@ mediator = angular.module('app_mediator', [])
           i++
     return @
 
-  publish:_publish
-  subscribe:_subscribe
-  unsubscribe:_unsubscribe
+  publish: _publish
+  subscribe: _subscribe
+  unsubscribe: _unsubscribe
 )
