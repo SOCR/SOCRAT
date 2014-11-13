@@ -288,13 +288,9 @@ db.factory 'app_database_handler', [
               # invoke callback
               _data = method.event.apply null, _data
 
-              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
-
-              console.log '%cDATABASE: listener response: ' + _data, 'color:green'
-
               deferred = data.promise
               if typeof deferred isnt 'undefined'
-                deferred.resolve()
+                if _data isnt false then deferred.resolve() else deferred.reject()
               else
                 _data.push $q.defer()
               
@@ -304,6 +300,10 @@ db.factory 'app_database_handler', [
               #  false
               # all publish calls should pass a promise in the data object.
               # if promise is not defined, create one and pass it along.
+
+              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+
+              console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
               sb.publish
                 msg: 'take table'
