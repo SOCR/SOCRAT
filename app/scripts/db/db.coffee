@@ -279,12 +279,13 @@ db.factory 'app_database_handler', [
               # convert from the universal dataFrame object to datavore table
               dvTableData = if msg is 'save table' then dataAdaptor.toDvTable data.dataFrame else data
 
-              # invoke callback
-              # TODO: check presence of necessary arguments in data to invoke corresponding callback
+              # arrange arguments for a callback
               _data = switch
                 when msg is 'save table' then [ dvTableData, data.tableName ]
                 when msg is 'get table' then [ data.tableName ]
+                else data
 
+              # invoke callback
               _data = method.event.apply null, _data
 
               _data = dataAdaptor.toDataFrame _data if msg is 'get table'
