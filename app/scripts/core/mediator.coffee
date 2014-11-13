@@ -16,33 +16,25 @@ mediator = angular.module('app_mediator', [])
   # @param {object}
   _publish = (obj) ->
 
-    unless typeof obj.msg is 'string'
-      return false
+    return false unless typeof obj.msg is 'string'
 
-    if obj.callback?
-      cb = obj.callback
-    else
-      cb = ->
+    cb = if obj.callback? then obj.callback else ->
 
     _flag = 1
-    if obj.msg?
-      msg = obj.msg
-      i = 0
-      while i < _msgScopeList.length
-        if _msgList[_msgScopeList[i]].hasOwnProperty(msg) is true
-          _flag = 0
-          break
-        i++
+    msg = obj.msg
+
+    for _msgScope in _msgScopeList
+      if _msgList[_msgScope].hasOwnProperty msg
+        _flag = 0
+        break
+
     if _flag is 1
       # execute the callback and return false
-      console.log "%cMEDIATOR: message not present in the list " + msg, 'color: blue'
+      console.log '%cMEDIATOR: message not present in the list ' + msg, 'color: blue'
       cb()
       return false
 
-    if obj.data?
-      data = obj.data
-    else
-      data = undefined
+    data = if obj.data? then obj.data else undefined
 
     if obj.msgScope?
 
@@ -56,36 +48,30 @@ mediator = angular.module('app_mediator', [])
         # adding the scope to the msgScope list if not present already
         # take each element of msgScope
         # if element is one, and = to "all" , search in all scopelists
-        i = 0
         _scopes = []
 
-        while i < msgScope.length
-          if(msgScope[i] is 'all')
+        for _scope, i in msgScope
+          if _scope is 'all'
             _scopes = _msgScopeList
             break
-          if _msgScopeList.indexOf(msgScope[i]) isnt -1
-            _scopes.push(msgScope[i])
-          i++
+          if _msgScopeList.indexOf _scope isnt -1
+            _scopes.push _scope
 
-        # now we have the _scopes list, find messages and make calls
-        i = 0
-        while i < Object.keys(_scopes).length
-          if _msgList[_scopes[i]].hasOwnProperty(msg)
-            subscribers = _msgList[_scopes[i]][msg]
-            j = 0
-            while j < subscribers.length
+        for i, scope of _scopes
+          if _msgList[scope].hasOwnProperty msg
+            subscribers = _msgList[scope][msg]
+            for subscriber in subscribers
               try
-              #
-              # util.runSeries implementation goes here
-              #
-                subscribers[j].func.apply subscribers[j].context, [msg, data]
+                #
+                # util.runSeries implementation goes here
+                #
+                subscriber.func.apply subscriber.context, [msg, data]
               catch e
                 throw e
-              j++
           else
             console.log '%cMEDIATOR: no cb\'s registered with this message' + msg, 'color: blue'
-            _msgList[_scopes[i]][msg]=[]
-          i++
+            _msgList[scope][msg] = []
+
       else
         console.log '%cMEDIATOR: msgScope is not an Array instance' + msgScope, 'color: blue'
         throw new Error 'msgScope is not an Array instance'
@@ -108,26 +94,22 @@ mediator = angular.module('app_mediator', [])
     else
       return false
 
-    if obj.listener?
-      cb = obj.listener
-    else
-      cb = ->
+    cb = if obj.listener? then obj.listener else ->
 
     # not sure about this
-    if obj.context?
-      context = obj.context
-    else
-      context = this
+    context = if obj.context? then obj.context else @
 
     if obj.msgScope?
       msgScope = obj.msgScope
       i = 0
       if msgScope instanceof Array
+
         # adding the scope to the msgScope list if not present already
         while i < msgScope.length
           if _msgScopeList.indexOf(msgScope[i]) is -1
             _msgScopeList.push msgScope[i]
           i++
+
       else
         return false
     else
@@ -170,15 +152,16 @@ mediator = angular.module('app_mediator', [])
 
       if not _msgList[msgScope[j]]?
         _msgList[msgScope[j]] = {}
-      unless _msgList[msgScope[j]].hasOwnProperty(msg)
-        _msgList[msgScope[j]][msg]=[]
+
+      unless _msgList[msgScope[j]].hasOwnProperty msg
+        _msgList[msgScope[j]][msg] = []
 
       # pushing the cb function into the list
       _msgList[msgScope[j]][msg].push
         token: ++_lastUID
         func: cb
         context: context
-      console.log '%cMEDIATOR: successfully subscribed: '+ msg, 'color:blue'
+      console.log '%cMEDIATOR: successfully subscribed: ' + msg, 'color:blue'
       j++
 
     return @
@@ -186,13 +169,13 @@ mediator = angular.module('app_mediator', [])
   # _unsubscribe
   _unsubscribe = (token) ->
     for m of _msgList
-      if _msgList.hasOwnProperty(m)
+      if _msgList.hasOwnProperty m
         i = 0
         j = _msgList[m].length
         while i < j
           if _msgList[m][i].token is token
             _msgList[m].splice i, 1
-            console.log '%cMEDIATOR: successfully unsubscribed: '+ m, 'color:blue'
+            console.log '%cMEDIATOR: successfully unsubscribed: ' + m, 'color:blue'
             return token
           i++
     return @
