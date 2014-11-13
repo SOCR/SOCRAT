@@ -57,19 +57,23 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
     sb = ctrlMngr.getSb()
     $scope.calculate = ->
 
+      token = sb.subscribe
+        msg: 'take table'
+        msgScope: ['instrPerfEvalView']
+        listener: (msg, data) ->
+          console.log data
+          sb.publish
+            msg: 'calculate'
+            data: data
+            msgScope: ['instrPerfEvalView']
+
       sb.publish
         msg: 'get table'
         data:
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
           promise: deferred
         msgScope: ['instrPerfEvalView']
-
-#      sb.publish
-#        msg: 'calculate'
-#        data:
-#          a: $scope.nCols
-#          b: $scope.nRows
-#        msgScope: ['instrPerfEvalView']
+        callback: -> sb.unsubscribe(token)
 ])
 
 .controller('instrPerfEvalViewMainCtrl', [
@@ -81,14 +85,8 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
     sb = ctrlMngr.getSb()
 
     sb.subscribe
-      msg: 'take table'
+      msg: 'calculated'
       listener: (msg, data) ->
-        console.log data
         $scope.outputStats = data
       msgScope: ['instrPerfEvalView']
-#    sb.subscribe
-#      msg: 'calculated'
-#      listener: (msg, data) ->
-#        $scope.outputStats = data
-#      msgScope: ['instrPerfEvalView']
 ])

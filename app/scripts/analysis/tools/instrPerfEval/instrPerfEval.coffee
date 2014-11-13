@@ -50,13 +50,12 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
     _setSb = (sb) ->
       sb.subscribe
         msg: 'calculate'
+        msgScope: ['instrPerfEval']
         listener: (msg, data) ->
-          sum = data.a + data.b
           sb.publish
             msg: 'calculated'
-            data: sum
+            data: data
             msgScope: ['instrPerfEval']
-        msgScope: ['instrPerfEval']
 
     setSb: _setSb
 ])
