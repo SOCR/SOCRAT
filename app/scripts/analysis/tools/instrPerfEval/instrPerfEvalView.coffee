@@ -69,11 +69,11 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
 
       sb.publish
         msg: 'get table'
+        msgScope: ['instrPerfEvalView']
+        callback: -> sb.unsubscribe token
         data:
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
           promise: deferred
-        msgScope: ['instrPerfEvalView']
-        callback: -> sb.unsubscribe(token)
 ])
 
 .controller('instrPerfEvalViewMainCtrl', [

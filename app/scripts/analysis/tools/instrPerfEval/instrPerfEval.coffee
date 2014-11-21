@@ -51,11 +51,28 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       sb.subscribe
         msg: 'calculate'
         msgScope: ['instrPerfEval']
-        listener: (msg, data) ->
+        listener: (msg, obj) ->
+
+          # calculate Cronbach's Alpha
+          matrix = jStat obj.data
+          k = jStat.cols matrix
+          sumColsVar = jStat.sum matrix.variance()
+          rowTotalsVar = jStat.variance matrix.transpose().sum()
+          cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
+
           sb.publish
             msg: 'calculated'
-            data: data
+            data: cAlpha
             msgScope: ['instrPerfEval']
 
     setSb: _setSb
 ])
+
+#.factory('cronbachsAlpha', [
+#    () ->
+#
+#      _calc = (data) ->
+#        matrix = jStat(data)
+#
+#      cronbachsAlpha: _calc
+#  ])
