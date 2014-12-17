@@ -49,6 +49,8 @@ exports.config =
           'vendor/scripts/bootstrap/bootstrap-tab.js'
           'vendor/scripts/bootstrap/bootstrap-typeahead.js'
           'vendor/scripts/bootstrap/bootstrap-affix.js'
+
+          'vendor/scripts/table2json/jquery.tabletojson.js'
         ]
 
     stylesheets:
@@ -65,6 +67,8 @@ exports.config =
     pattern: /^app\/.*\.coffee$/
     options:
       no_trailing_semicolons:
+        level: "ignore"
+      no_trailing_whitespace:
         level: "ignore"
       max_line_length:
         value:1000

@@ -102,7 +102,7 @@ core = angular.module('app_core', [
           options: opt
           id: moduleId
 
-        console.log 'CORE: module added: ' + moduleId
+        console.log '%cCORE: module added: ' + moduleId,'color:blue'
 
         true
 
@@ -130,6 +130,7 @@ core = angular.module('app_core', [
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
 
+
       _start = (moduleId, opt = {}) ->
         try
           _checkType 'string', moduleId, 'module ID'
@@ -147,7 +148,8 @@ core = angular.module('app_core', [
             throw new Error 'module was already started'
 
           # subscription for module events
-          if instance.msgList? and instance.msgList.outgoing?
+          # TODO: consider checking scope list for containing nothing else but moduleId and "all"
+          if instance.msgList? and instance.msgList.outgoing? and moduleId in instance.msgList.scope
             eventMngr.subscribeForEvents
               msgList: instance.msgList.outgoing
               scope: [moduleId]
@@ -165,11 +167,11 @@ core = angular.module('app_core', [
             opt.callback? null
 
           instance.running = true
-          console.log 'CORE: started module ' + moduleId
+          console.log '%cCORE: started module ' + moduleId, 'color:blue'
           true
 
         catch e
-          console.log "CORE: could not start module: #{e.message}"
+          console.log "%cCORE: could not start module: #{e.message}",'color:red'
           opt.callback? new Error "could not start module: #{e.message}"
           false
 

@@ -15,7 +15,6 @@ describe "errorMngr Module", ->
   foo =
     cb1: ->
     cb2: ->
-  
   beforeEach ->
     module "app_errorMngr"
     module "app_mocks"

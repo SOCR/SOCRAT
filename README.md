@@ -3,6 +3,5 @@
 
 [SOCR Website](http://socr.ucla.edu)
 
-This branch is created for working on core modules including core, mediator, eventMngr, sandbox, utils, and errorMngr.
-
-[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=core)](https://travis-ci.org/SOCRedu/SOCR-framework)
+[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=dev)](https://travis-ci.org/SOCRedu/SOCR-framework)
+[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=dev)](https://gemnasium.com/SOCRedu/SOCR-framework)
