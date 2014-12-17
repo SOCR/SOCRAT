@@ -9,7 +9,7 @@ mediator = angular.module('app_mediator', [])
   _msgList = []
   _msgScopeList = []
   _scopes = []
-  _lastUID = 14
+  #_lastUID = 14
 
   # _publish() - registers msg if not present already,
   # then executes all the callbacks.
@@ -92,6 +92,9 @@ mediator = angular.module('app_mediator', [])
     return @
 
   # _subscribe() - registers a listener function for a msg
+  # @param {object} obj object literal with msg,msgScope,listener
+  # @return {object} listener position in the list. Useful for unsubscribing.
+
   _subscribe = (obj) ->
     if obj.msg?
       msg = obj.msg
@@ -109,6 +112,7 @@ mediator = angular.module('app_mediator', [])
     else
       context = this
 
+    #msgScope is mandatory
     if obj.msgScope?
       msgScope = obj.msgScope
       i=0
@@ -122,6 +126,8 @@ mediator = angular.module('app_mediator', [])
         return false
     else
       return false
+
+    #need to test this case. Array of messages not used right now.
     if msg instanceof Array
       _results=[]
       i=0
@@ -152,34 +158,40 @@ mediator = angular.module('app_mediator', [])
         return false
 
     j=0
+    token = {}
     while j < msgScope.length
       if not _msgList[msgScope[j]]?
         _msgList[msgScope[j]] = {}
       unless _msgList[msgScope[j]].hasOwnProperty(msg)
         _msgList[msgScope[j]][msg]=[]
-      #pushing the cb function into the list
-      _msgList[msgScope[j]][msg].push
-        token:++_lastUID
+      #pushing the cb function into the central list
+      _listenerIndex = _msgList[msgScope[j]][msg].push
+        #token:++_lastUID
         func:cb
         context:context
+
+      token[msg] = token[msg] || {}
+      #array push method returns the length of the array. 1 greater than the last index.
+      token[msg][msgScope[j]] = _listenerIndex - 1
+
       console.log 'MEDIATOR: successfully subscribed: '+ msg
       j++
 
-    return @
+    return token
 
   #_unsubscribe()
-  _unsubscribe=(token)->
-    for m of _msgList
-      if _msgList.hasOwnProperty(m)
-        i=0
-        j=_msgList[m].length
-        while i<j
-          if _msgList[m][i].token is token
-            _msgList[m].splice i, 1
-            console.log 'MEDIATOR: successfully unsubscribed: '+ m
-            return token
-          i++
-    return @
+  _unsubscribe=(tokens)->
+    if not tokens?
+      return false
+    for msg of tokens
+      for scope of tokens[msg]
+        indexToDel = tokens[msg][scope]
+        if _msgList.hasOwnProperty(scope)
+          if _msgList[scope][msg]?
+            _msgList[scope][msg].splice indexToDel,1
+            console.log 'MEDIATOR: successfully unsubscribed: '+msg+' of scope '+scope
+            return true
+    return false
 
   publish:_publish
   subscribe:_subscribe
