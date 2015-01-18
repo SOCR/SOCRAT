@@ -9,7 +9,7 @@ Convert json returns to chart input format
 #Create function
 #Date : http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
 
-databridge = angular.module "app_utils", []
+databridge = angular.module "app_utils"
 
 databridge.factory "app_utils_databridge",[
 
@@ -47,7 +47,7 @@ databridge.factory "app_utils_databridge",[
             [data[2*i][j], data[2*i + 1][j]]
           )
       #Javascript required ({x: val,y: val})
-       
+
     when "cumulative"
       for i in numCharts
         for j in data[2*i].length
@@ -72,7 +72,7 @@ databridge.factory "app_utils_databridge",[
                     y: data[3*i + 1]
                     area: data[3*i + 2]
                 })
-    
+
     when "stackedbar"
         for i in numCharts
             for j in data[2*i].length
