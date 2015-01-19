@@ -413,32 +413,6 @@ getData = angular.module('app_analysis_getData', [
         #console.log scope.showState
 )
 
-
-.factory('html2json', ($http) ->
-  (url, cb) ->
-    # Use url to get html.
-    # parse html to find tables
-    # use jQuery plugin to get jsons for all tables.
-    return false unless url?
-
-    $http.get(url).success(
-      #search for tables
-      (data) ->
-        console.log 'success'
-        # parser = new DOMparser()
-        # dom = parser.parseFromString(data)
-        # tables = dom.getElementsByTagName("table")
-        if data? and typeof data is 'string'
-          obj = $(data)
-          res = obj.tableToJSON()
-        #table-to-json
-        #returned data is used to compute data, coulumns, columnHeader
-        #compute the res obj
-        cb(res)
-      )
-
-)
-
 # ###
 # @name: app_analysis_getData_table2dataFrame
 # @type: factory
