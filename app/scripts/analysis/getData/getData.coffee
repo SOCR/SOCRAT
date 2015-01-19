@@ -371,7 +371,7 @@ getData = angular.module('app_analysis_getData', [
       # using pop to remove empty last row
       tableData.data.pop()
       # and column
-      row.pop() for row in tableData.data
+      #row.pop() for row in tableData.data
 
       # remove empty last column for header
       tableData.header.pop()
