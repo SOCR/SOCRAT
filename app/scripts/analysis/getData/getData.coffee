@@ -332,62 +332,6 @@ getData = angular.module('app_analysis_getData', [
       console.log 'get data main div loaded'
 ])
 
-
-####
-# Every module will have a MODULE_NAMEEventMngr() service
-# which provides messaging with core
-####
-.service('app_analysis_getData_eventMngr', [
-  '$rootScope'
-  ($rootScope) ->
-    sb = null
-    sum = ''
-
-    msgList =
-      outcome: ['save table']
-      income:
-        'handsontable updated':
-          method: (args...) ->
-            args
-          outcome: 'save table'
-      scope: ['getData']
-
-    eventManager = (msg, data) ->
-      try
-        _data = msgList.income[msg].method.apply null, data
-        #last item in data is a promise. #TODO: need to add a check
-        promise = data[data.length - 1]
-        promise.resolve _data if _data isnt false
-      catch e
-        console.log e.message
-        promise.reject e.message
-
-      sb.publish
-        msg: msgList.income[msg].outcome
-        data: _data
-        msgScope: msgList.scope
-
-    setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
-
-    getMsgList: () ->
-      msgList
-
-    getSb: ->
-      sb
-
-    listenToIncomeEvents: () ->
-      for msg of msgList.income
-        console.log 'subscribed for ' + msg
-        sb.subscribe
-          msg: msg
-          listener: eventManager
-          msgScope: msgList.scope
-          context: console
-
-])
-
 # Helps sidebar accordion to keep in sync with the main div.
 .factory('showState', ->
   (obj, scope) ->
@@ -444,6 +388,7 @@ getData = angular.module('app_analysis_getData', [
 
     toDataFrame: _toDataFrame
 ])
+
 
 .directive 'handsontable', [
   'app_analysis_getData_inputCache'
