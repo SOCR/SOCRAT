@@ -27,7 +27,7 @@ core = angular.module('app_core', [
         # TODO: change to $exceptionHandler or return false anf throw exception in caller
 #        console.log 'CORE: checkType: ' + "#{name} has to be a #{type}"
         if typeof val isnt type and utils.typeIsArray(val) isnt true
-          console.log 'CORE: checkType: ' + "#{name} is not a #{type}"
+          console.log '%cCORE: checkType: ' + "#{name} is not a #{type}", 'color:red'
           throw new TypeError "#{name} has to be a #{type}"
 
 #      # registers a function that gets executed when a module instantiated.
@@ -76,7 +76,7 @@ core = angular.module('app_core', [
 
 #        for n in [instanceId, '_always']
 #          moduleStates.emit 'instantiate/#{n}'
-        console.log 'CORE: created instance of ' + instance.id
+        console.log '%cCORE: created instance of ' + instance.id, 'color:red'
 
         instance
 
@@ -102,7 +102,7 @@ core = angular.module('app_core', [
           options: opt
           id: moduleId
 
-        console.log '%cCORE: module added: ' + moduleId,'color:blue'
+        console.log '%cCORE: module added: ' + moduleId, 'color:red'
 
         true
 
@@ -110,7 +110,7 @@ core = angular.module('app_core', [
         try
           _addModule.apply @, [moduleId, creator, opt]
         catch e
-          console.log " CORE: could not register module" + moduleId
+          console.log "%cCORE: could not register module" + moduleId, 'color:red'
           console.error "could not register module #{moduleId}: #{e.message}"
           false
 
@@ -129,7 +129,6 @@ core = angular.module('app_core', [
         _checkType 'object', opt, 'option parameter'
         _instanceOpts[instanceId] ?= {}
         _instanceOpts[instanceId][k] = v for k,v of opt
-
 
       _start = (moduleId, opt = {}) ->
         try
@@ -150,6 +149,7 @@ core = angular.module('app_core', [
           # subscription for module events
           # TODO: consider checking scope list for containing nothing else but moduleId and "all"
           if instance.msgList? and instance.msgList.outgoing? and moduleId in instance.msgList.scope
+            console.log '%cCORE: subscribing for messages from ' + moduleId, 'color:red'
             eventMngr.subscribeForEvents
               msgList: instance.msgList.outgoing
               scope: [moduleId]
@@ -167,7 +167,7 @@ core = angular.module('app_core', [
             opt.callback? null
 
           instance.running = true
-          console.log '%cCORE: started module ' + moduleId, 'color:blue'
+          console.log '%cCORE: started module ' + moduleId, 'color:red'
           true
 
         catch e
@@ -279,9 +279,9 @@ core = angular.module('app_core', [
             msg: o.msgTo
             data: data
             msgScope: o.scopeTo
-          console.log 'CORE: redirect mgs ' + o.msgTo + 'to ' + o.scopeTo
+          console.log '%cCORE: redirect mgs ' + o.msgTo + 'to ' + o.scopeTo, 'color:red'
           return true
-        console.log 'CORE: no mapping in API for message: ' + o.msgTo
+        console.log '%cCORE: no mapping in API for message: ' + o.msgTo, 'color:red'
         false
 
       # External methods
