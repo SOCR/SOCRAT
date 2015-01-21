@@ -144,7 +144,7 @@ mediator = angular.module('app_mediator', [])
     for scope in msgScope
 
       _msgList[msgScope[scope]] = {} if not _msgList[msgScope[scope]]?
-      _msgList[msgScope[scope]][msg] = [] unless _msgList[msgScope[scope]].hasOwnPropert msg
+      _msgList[msgScope[scope]][msg] = [] unless _msgList[msgScope[scope]].hasOwnProperty msg
 
       #pushing the cb function into the central list
       _listenerIndex = _msgList[msgScope[scope]][msg].push
