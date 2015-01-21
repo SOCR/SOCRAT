@@ -9,7 +9,7 @@ describe "getData", ->
   angular.module "ui.bootstrap",[]
 
 # Create mock module and overriding services
-  angular.module('app_mocks', [])
+  angular.module('app_mocks_get_data', [])
 
     .service 'app_analysis_getData_manager',['sb',(sb)->
       getSb:()->
@@ -36,7 +36,7 @@ describe "getData", ->
 
   beforeEach ->
     module "app_analysis_getData"
-    module "app_mocks"
+    module "app_mocks_get_data"
 
   describe "showState", ->
 ####
