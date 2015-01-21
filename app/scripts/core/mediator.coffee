@@ -141,20 +141,20 @@ mediator = angular.module('app_mediator', [])
         return false
 
     token = {}
-    for scope in msgScope
+    for scopeInd of msgScope
 
-      _msgList[msgScope[scope]] = {} if not _msgList[msgScope[scope]]?
-      _msgList[msgScope[scope]][msg] = [] unless _msgList[msgScope[scope]].hasOwnProperty msg
+      _msgList[msgScope[scopeInd]] = {} if not _msgList[msgScope[scopeInd]]?
+      _msgList[msgScope[scopeInd]][msg] = [] unless _msgList[msgScope[scopeInd]].hasOwnProperty msg
 
       #pushing the cb function into the central list
-      _listenerIndex = _msgList[msgScope[scope]][msg].push
+      _listenerIndex = _msgList[msgScope[scopeInd]][msg].push
         #token:++_lastUID
         func: cb
         context: context
 
       token[msg] = token[msg] || {}
       #array push method returns the length of the array. 1 greater than the last index
-      token[msg][msgScope[scope]] = _listenerIndex - 1
+      token[msg][msgScope[scopeInd]] = _listenerIndex - 1
 
       console.log 'MEDIATOR: successfully subscribed: ' + msg
 
