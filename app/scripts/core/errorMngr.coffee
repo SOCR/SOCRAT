@@ -62,6 +62,7 @@ errorMngr.factory '$exceptionHandler', [
               $log.warn err.message
             else
               $log.log err.message
+              $log.log err.stack
 
         #if display is defined
         if err.display?

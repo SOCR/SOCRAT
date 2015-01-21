@@ -56,9 +56,54 @@ db.factory 'app_database_manager', [
     getMsgList: _getMsgList
 ]
 
+# ###
+# @name: app_database_dataFrame2table
+# @type: factory
+# @description: Reformats data from the universal dataFrame object to datavore format
+# ###
+db.factory 'app_database_dataAdaptor', [
+  () ->
+
+    _toDvTable = (dataFrame) ->
+
+      table = []
+
+      # transpose array to make it column oriented
+      _data = ((row[i] for row in dataFrame.data) for i in [0...dataFrame.nCols])
+
+      for i, col of _data
+        table.push
+          name: dataFrame.header[i]
+          values: col
+          type: 'symbolic'
+
+      table
+
+    _toDataFrame = (table) ->
+
+      _nRows = table[0].length
+      _nCols = table.length
+
+      # transpose array to make it row oriented
+      _data = ((col[i] for col in table) for i in [0..._nRows])
+
+      _header = (col.name for col in table)
+      _types = (col.type for col in table)
+
+      dataFrame =
+        data: _data
+        header: _header
+        types: _types
+        nRows: _nRows
+        nCols: _nCols
+
+    toDvTable: _toDvTable
+    toDataFrame: _toDataFrame
+]
+
 db.service 'app_database_dv', ->
 
-  #contains references to all the tables created.
+  # contains references to all the tables created.
   _registry = []
   _listeners = {}
   _db = {}
@@ -103,12 +148,12 @@ db.service 'app_database_dv', ->
     else
 
       # reformat data type
-      input.map (col) ->
+      for col in input
         switch col.type
           when 'numeric' then col.type = dv.type.numeric
           when 'nominal' then col.type = dv.type.nominal
           when 'ordinal' then col.type = dv.type.ordinal
-          else col.type = _db.type.unknown
+          else col.type = dv.type.unknown
 
       #create table
       _ref = dv.table input
@@ -168,7 +213,7 @@ db.service 'app_database_dv', ->
     if _registry[tname]?
       _registry[tname].cols()
 
-  _db.get = (tname, col, row)->
+  _db.get = (tname, col, row) ->
     if _registry[tname]?
       if col?
         if row?
@@ -176,8 +221,6 @@ db.service 'app_database_dv', ->
         else
           _registry[tname][col]
       else
-        #TODO : returned object is dv object.
-        # need to return only the table content
         _registry[tname]
     else
       false
@@ -210,12 +253,16 @@ db.service 'app_database_dv', ->
 db.factory 'app_database_handler', [
   '$q'
   'app_database_dv'
-  ($q,_db) ->
+  'app_database_dataAdaptor'
+  ($q, _db, dataAdaptor) ->
+
     #set all the callbacks here.
     _setSb = ((_db) ->
       window.db = _db
       (sb) ->
+
         #registering database callbacks for all possible incoming messages.
+        # TODO: add wrapper layer on top of _db methods?
         _methods = [
           {incoming: 'save table', outgoing: 'table saved', event: _db.create}
           {incoming: 'get table', outgoing: 'take table', event: _db.get}
@@ -229,21 +276,34 @@ db.factory 'app_database_handler', [
               console.log "%cDATABASE: listener called ", "color:green"
               console.log data
 
-              _data = method.event.apply null, data
-              console.log "%cDATABASE: listener response: " + _data, "color:green"
-              deferred = data[data.length-1]
-              
+              # convert from the universal dataFrame object to datavore table
+              dvTableData = if msg is 'save table' then dataAdaptor.toDvTable data.dataFrame else data
+
+              # arrange arguments for a callback
+              _data = switch
+                when msg is 'save table' then [ dvTableData, data.tableName ]
+                when msg is 'get table' then [ data.tableName ]
+                else data
+
+              # invoke callback
+              _data = method.event.apply null, _data
+
+              deferred = data.promise
               if typeof deferred isnt 'undefined'
-                deferred.resolve()
+                if _data isnt false then deferred.resolve() else deferred.reject()
               else
                 _data.push $q.defer()
               
-              #if _data is false
+              # if _data is false
               #  if typeof data.promise isnt 'undefined'
               #    data.promise.reject 'table operation failed'
               #  false
-              #all publish calls should pass a promise in the data object.
-              #if promise is not defined, create one and pass it along.
+              # all publish calls should pass a promise in the data object.
+              # if promise is not defined, create one and pass it along.
+
+              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+
+              console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
               sb.publish
                 msg: 'take table'
@@ -251,7 +311,6 @@ db.factory 'app_database_handler', [
                 msgScope: ['database']
             msgScope: ['database']
 
-          #console.log(_status)
     )(_db)
 
     setSb: _setSb

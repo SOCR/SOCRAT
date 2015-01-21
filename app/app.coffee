@@ -25,6 +25,8 @@ App = angular.module('app', [
   'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
+  'app_analysis_instrPerfEvalView'
+  'app_analysis_instrPerfEval'
 ])
 
 App.config([
@@ -100,9 +102,9 @@ App.config([
         url: '/tools'
         views:
           'main':
-            templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
+            templateUrl: 'partials/analysis/tools/instrPerfEvalView/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
+            templateUrl: 'partials/analysis/tools/instrPerfEvalView/sidebar.html'
       )
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
@@ -116,8 +118,10 @@ App.run([
   'app_analysis_getData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
+  'app_analysis_instrPerfEval_constructor'
+  'app_analysis_instrPerfEvalView_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, qualRobEst, qualRobEstView) ->
+  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -130,26 +134,46 @@ App.run([
       msgTo: 'numbers added'
       scopeTo: ['qualRobEstView']
     ,
-      msgFrom:'save table'
-      scopeFrom: ['getData','app.utils.importer']
-      msgTo:'save table'
-      scopeTo:['database']
+      msgFrom: 'calculate'
+      scopeFrom: ['instrPerfEvalView']
+      msgTo: 'calculate'
+      scopeTo: ['instrPerfEval']
+    ,
+      msgFrom: 'calculated'
+      scopeFrom: ['instrPerfEval']
+      msgTo: 'calculated'
+      scopeTo: ['instrPerfEvalView']
+    ,
+      msgFrom: 'save table'
+      scopeFrom: ['getData', 'app.utils.importer']
+      msgTo: 'save table'
+      scopeTo: ['database']
     ,
       msgFrom:'table saved'
       scopeFrom: ['database']
-      msgTo:'234'
-      scopeTo:['qualRobEst']
+      msgTo: '234'
+      scopeTo: ['qualRobEst']
     ,
-      msgFrom:'upload csv'
+      msgFrom: 'upload csv'
       scopeFrom: ['getData']
-      msgTo:'upload csv'
-      scopeTo:['app.utils.importer']
+      msgTo: 'upload csv'
+      scopeTo: ['app.utils.importer']
+    ,
+      msgFrom: 'get table'
+      scopeFrom: ['instrPerfEvalView']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['instrPerfEvalView']
     ,
     # When /getData handonstable is updated, DB needs to be updated with the lastest values.
-      msgFrom:'handsontable updated'
+      msgFrom: 'handsontable updated'
       scopeFrom: ['getData']
-      msgTo:'save table'
-      scopeTo:['database']
+      msgTo: 'save table'
+      scopeTo: ['database']
     ]
 
     core.setEventsMapping map
@@ -159,6 +183,12 @@ App.run([
 
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
+
+    core.register 'instrPerfEvalView', instrPerfEvalView
+    core.start 'instrPerfEvalView'
+
+    core.register 'instrPerfEval', instrPerfEval
+    core.start 'instrPerfEval'
 
     core.register 'getData', getData
     core.start 'getData'

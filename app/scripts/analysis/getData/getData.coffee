@@ -109,9 +109,12 @@ getData = angular.module('app_analysis_getData', [
 
           sb.publish
             msg: 'handsontable updated'
-            data: [_data,$stateParams.projectId+':'+$stateParams.forkId,deferred]
+            data:
+              dataFrame: _data
+              tableName: $stateParams.projectId + ':' + $stateParams.forkId
+              promise: deferred
             msgScope: ['getData']
-            callback:()->
+            callback: ->
               console.log 'handsontable data updated to db'
 
         ), 4000
@@ -364,7 +367,7 @@ getData = angular.module('app_analysis_getData', [
 # @type: factory
 # @description: Reformats data from input table format to the universal dataFrame object.
 # ###
-.factory('app_analysis_getData_table2dataFrame', [
+.factory('app_analysis_getData_dataAdaptor', [
   () ->
 
     # accepts handsontable table as input and returns dataFrame
@@ -388,15 +391,18 @@ getData = angular.module('app_analysis_getData', [
         nRows: tableData.nRows - nSpareRows
         nCols: tableData.nCols - nSpareCols
 
+    _toHandsontable = () ->
+
     toDataFrame: _toDataFrame
+    toHandsontable: _toHandsontable
 ])
 
 
 .directive 'handsontable', [
   'app_analysis_getData_inputCache'
-  'app_analysis_getData_table2dataFrame'
+  'app_analysis_getData_dataAdaptor'
   '$exceptionHandler'
-  (inputCache, table2dataFrame, $exceptionHandler) ->
+  (inputCache, dataAdaptor, $exceptionHandler) ->
     restrict: 'E'
     transclude: true
 
@@ -428,22 +434,6 @@ getData = angular.module('app_analysis_getData', [
         header = obj.getColHeader()
         nCols = obj.countVisibleCols()
         nRows = obj.countVisibleRows()
-
-        #        # iterate over handsontable column-wise
-#        for i, c of colHeader
-#
-#          currCol = data.getDataAtCol(i)
-#          # using pop to remove last empty row
-#          currCol.pop()
-#
-#          resCol =
-#            name: c
-#            values: currCol
-#            # TODO: allow different data types
-#            type: 'nominal'
-#
-#          # save the column obj in the table
-#          table.push resCol
 
         table =
           data: data
@@ -482,7 +472,7 @@ getData = angular.module('app_analysis_getData', [
           # onSave, data is picked up from inputCache.
           if source is 'loadData' or 'paste'
             tableData = _format $(this)[0]
-            dataFrame = table2dataFrame.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
+            dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
             inputCache.set dataFrame
           else
             inputCache.set source
