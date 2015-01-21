@@ -85,7 +85,7 @@ getData = angular.module('app_analysis_getData', [
 
     ret.set = (data) ->
       console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
-      if data? or $statParams?.projectId? or $stateParams?.forkId?
+      if data? and  $stateParams.projectId? and $stateParams.forkId?
         _data = data unless data is 'edit'
 
         #clear any previous db update broadcast messages.
@@ -115,8 +115,10 @@ getData = angular.module('app_analysis_getData', [
               console.log 'handsontable data updated to db'
 
         ), 4000
+        true
 
       else
+        console.log "no data passed to inputCache"
         false
 
     ret.push = (data) ->
