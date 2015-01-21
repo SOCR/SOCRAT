@@ -84,11 +84,8 @@ getData = angular.module('app_analysis_getData', [
       _data
 
     ret.set = (data) ->
-
-      console.log('%c inputCache set called for the project' +
-        $stateParams.projectId + ':' + $stateParams.forkId, 'color:steelblue')
-
-      if data? or $statParams?.projectId? or $stateParams?.forkId?
+      console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
+      if data? and  $stateParams.projectId? and $stateParams.forkId?
         _data = data unless data is 'edit'
 
         #clear any previous db update broadcast messages.
@@ -121,8 +118,10 @@ getData = angular.module('app_analysis_getData', [
               console.log 'handsontable data updated to db'
 
         ), 4000
+        true
 
       else
+        console.log "no data passed to inputCache"
         false
 
     ret.push = (data) ->
@@ -338,62 +337,6 @@ getData = angular.module('app_analysis_getData', [
       console.log 'get data main div loaded'
 ])
 
-
-####
-# Every module will have a MODULE_NAMEEventMngr() service
-# which provides messaging with core
-####
-.service('app_analysis_getData_eventMngr', [
-  '$rootScope'
-  ($rootScope) ->
-    sb = null
-    sum = ''
-
-    msgList =
-      outcome: ['save table']
-      income:
-        'handsontable updated':
-          method: (args...) ->
-            args
-          outcome: 'save table'
-      scope: ['getData']
-
-    eventManager = (msg, data) ->
-      try
-        _data = msgList.income[msg].method.apply null, data
-        #last item in data is a promise. #TODO: need to add a check
-        promise = data[data.length - 1]
-        promise.resolve _data if _data isnt false
-      catch e
-        console.log e.message
-        promise.reject e.message
-
-      sb.publish
-        msg: msgList.income[msg].outcome
-        data: _data
-        msgScope: msgList.scope
-
-    setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
-
-    getMsgList: () ->
-      msgList
-
-    getSb: ->
-      sb
-
-    listenToIncomeEvents: () ->
-      for msg of msgList.income
-        console.log 'subscribed for ' + msg
-        sb.subscribe
-          msg: msg
-          listener: eventManager
-          msgScope: msgList.scope
-          context: console
-
-])
-
 # Helps sidebar accordion to keep in sync with the main div.
 .factory('showState', ->
   (obj, scope) ->
@@ -419,32 +362,6 @@ getData = angular.module('app_analysis_getData', [
         #console.log scope.showState
 )
 
-
-.factory('html2json', ($http) ->
-  (url, cb) ->
-    # Use url to get html.
-    # parse html to find tables
-    # use jQuery plugin to get jsons for all tables.
-    return false unless url?
-
-    $http.get(url).success(
-      #search for tables
-      (data) ->
-        console.log 'success'
-        # parser = new DOMparser()
-        # dom = parser.parseFromString(data)
-        # tables = dom.getElementsByTagName("table")
-        if data? and typeof data is 'string'
-          obj = $(data)
-          res = obj.tableToJSON()
-        #table-to-json
-        #returned data is used to compute data, coulumns, columnHeader
-        #compute the res obj
-        cb(res)
-      )
-
-)
-
 # ###
 # @name: app_analysis_getData_table2dataFrame
 # @type: factory
@@ -459,7 +376,7 @@ getData = angular.module('app_analysis_getData', [
       # using pop to remove empty last row
       tableData.data.pop()
       # and column
-      row.pop() for row in tableData.data
+      #row.pop() for row in tableData.data
 
       # remove empty last column for header
       tableData.header.pop()
@@ -479,6 +396,7 @@ getData = angular.module('app_analysis_getData', [
     toDataFrame: _toDataFrame
     toHandsontable: _toHandsontable
 ])
+
 
 .directive 'handsontable', [
   'app_analysis_getData_inputCache'
