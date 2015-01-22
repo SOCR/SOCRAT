@@ -143,6 +143,8 @@ db.service 'app_database_dv', ->
         i++
 
   _db.create = (input, tname) ->
+
+    # TODO: separate updating from creating
     if _registry[tname]?
       _db.update input, tname
     else
@@ -155,7 +157,7 @@ db.service 'app_database_dv', ->
           when 'ordinal' then col.type = dv.type.ordinal
           else col.type = dv.type.unknown
 
-      #create table
+      # create table
       _ref = dv.table input
       # register the reference to the table
       _register tname, _ref
