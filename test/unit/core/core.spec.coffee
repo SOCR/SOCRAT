@@ -629,7 +629,9 @@ describe 'Core module', ->
           (expect core.register 'syncDestroy', mod).toBeTruthy()
           (expect core.start 'syncDestroy').toBeTruthy()
           (expect core.start 'syncDestroy', instanceId: 'second').toBeTruthy()
-          (expect core.stopAll done).toBeTruthy()
+          core.stopAll ->
+            (expect foo.cb1).toHaveBeenCalled()
+            done()
 
     describe 'setEventsMapping function', ->
 
