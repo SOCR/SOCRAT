@@ -23,6 +23,7 @@ App = angular.module('app', [
   'app_database'
    # Analysis modules
   'app_analysis_getData'
+  'app_analysis_wrangleData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
   'app_analysis_instrPerfEvalView'
@@ -116,12 +117,13 @@ App.run([
   'core'
   'app_database_constructor'
   'app_analysis_getData_constructor'
+  'app_analysis_wrangleData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
   'app_analysis_instrPerfEvalView_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView) ->
+  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -192,6 +194,9 @@ App.run([
 
     core.register 'getData', getData
     core.start 'getData'
+
+    core.register 'wrangleData', wrangleData
+    core.start 'wrangleData'
 
     core.register 'database', db
     core.start 'database'
