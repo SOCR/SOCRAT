@@ -24,7 +24,7 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
     # Serialized subscription for a list of events
     _subscribeForEvents = (events, listener) ->
 
-      for msg of events.msgList
+      for msg in events.msgList
         console.log msg
         pubSub.subscribe
           msg: msg

@@ -1,47 +1,45 @@
 'use strict'
 
-#app.core module contains services like error management , pub/sub
+# Module app.core contains services like error management, pub/sub
 
 mediator = angular.module('app_mediator', [])
 
 # publish/subscribe angular service
-.service("pubSub", () ->
+.service('pubSub', ->
   _msgList = []
   _msgScopeList = []
   _scopes = []
   #_lastUID = 14
 
   # _publish() - registers msg if not present already,
-  # then executes all the callbacks.
+  #  then executes all the callbacks
   # @param {object}
   _publish = (obj) ->
-    unless typeof obj.msg is "string"
-      return false
-    if obj.callback?
-      cb = obj.callback
-    else
-      cb = ()->
+
+    return false unless typeof obj.msg is 'string'
+
+    cb = if obj.callback? then obj.callback else ->
+
     _flag = 1
-    if obj.msg?
-      msg = obj.msg
-      i=0
-      while i<_msgScopeList.length
-        if _msgList[_msgScopeList[i]].hasOwnProperty(msg) is true
-          _flag = 0
-          break
-        i++
-    if(_flag is 1)
+    msg = obj.msg
+
+    for _msgScope in _msgScopeList
+      if _msgList[_msgScope].hasOwnProperty msg
+        _flag = 0
+        break
+
+    if _flag is 1
       # execute the callback and return false
-      console.log "%cMEDIATOR: message not present in the list " + msg, 'color: blue'
+      console.log '%cMEDIATOR: message not present in the list ' + msg, 'color: blue'
       cb()
       return false
 
-    if obj.data?
-      data = obj.data
-    else
-      data = undefined
+    data = if obj.data? then obj.data else undefined
+
     if obj.msgScope?
+
       msgScope = obj.msgScope
+
       if msgScope instanceof Array
         # search in the scopelist. if not there, move on
         # search in msglist, if not found move on to next el
@@ -50,34 +48,29 @@ mediator = angular.module('app_mediator', [])
         # adding the scope to the msgScope list if not present already
         # take each element of msgScope
         # if element is one, and = to "all" , search in all scopelists
-        i=0
-        _scopes =[]
-        while i < msgScope.length
-          if(msgScope[i] is "all")
+        _scopes = []
+
+        for _scope, i in msgScope
+          if _scope is 'all'
             _scopes = _msgScopeList
             break
-          if _msgScopeList.indexOf(msgScope[i]) isnt -1
-            _scopes.push(msgScope[i])
-          i++
-        # Now we have the _scopes list, find messages and make calls
-        i=0
-        while i < Object.keys(_scopes).length
-          if _msgList[_scopes[i]].hasOwnProperty(msg)
-            subscribers=_msgList[_scopes[i]][msg]
-            j = 0
-            while j < subscribers.length
+          _scopes.push _scope if _scope in _msgScopeList
+
+        for i, scope of _scopes
+          if _msgList[scope].hasOwnProperty msg
+            subscribers = _msgList[scope][msg]
+            for subscriber in subscribers
               try
-              #
-              # util.runSeries implementation goes here
-              #
-                subscribers[j].func.apply subscribers[j].context, [msg, data]
+                #
+                # util.runSeries implementation goes here
+                #
+                subscriber.func.apply subscriber.context, [msg, data]
               catch e
                 throw e
-              j++
           else
-            console.log "%cMEDIATOR: no cb's registered with this message" + msg, 'color: blue'
-            _msgList[_scopes[i]][msg]=[]
-          i++
+            console.log '%cMEDIATOR: no cb\'s registered with this message' + msg, 'color: blue'
+            _msgList[scope][msg] = []
+
       else
         console.log '%cMEDIATOR: msgScope is not an Array instance' + msgScope, 'color: blue'
         throw new Error 'msgScope is not an Array instance'
@@ -87,113 +80,102 @@ mediator = angular.module('app_mediator', [])
       throw new Error 'msgScope is not defined'
 #        message:'msgScope is not defined'
 #        type:'error'
+
     cb()
-    console.log '%cMEDIATOR: successfully published '+ obj.msg, 'color: blue'
+    console.log '%cMEDIATOR: successfully published ' + obj.msg, 'color: blue'
     return @
 
   # _subscribe() - registers a listener function for a msg
   # @param {object} obj object literal with msg,msgScope,listener
   # @return {object} listener position in the list. Useful for unsubscribing.
-
   _subscribe = (obj) ->
-    if obj.msg?
-      msg = obj.msg
-    else
-      return false
 
-    if obj.listener?
-      cb = obj.listener
-    else
-      cb = ->
+    if obj.msg? then msg = obj.msg else return false
+
+    cb = if obj.listener? then obj.listener else ->
 
     # not sure about this
-    if obj.context?
-      context = obj.context
-    else
-      context = this
+    context = if obj.context? then obj.context else @
 
-    #msgScope is mandatory
+    # msgScope is mandatory
     if obj.msgScope?
       msgScope = obj.msgScope
-      i=0
+
       if msgScope instanceof Array
         # adding the scope to the msgScope list if not present already
-        while i < msgScope.length
-          if _msgScopeList.indexOf(msgScope[i]) is -1
-            _msgScopeList.push msgScope[i]
-          i++
+        for _scope in msgScope
+          _msgScopeList.push _scope if _scope not in _msgScopeList
+
       else
         return false
     else
       return false
 
-    #need to test this case. Array of messages not used right now.
+    # need to test this case. Array of messages not used right now.
     if msg instanceof Array
-      _results=[]
-      i=0
-      j=msg.length
-      while i<j
-        id = msg[i]
+      _results = []
+
+      for m in msg
         _results.push _subscribe
-          msg:id
-          listener:cb
-          context:context
-          msgScope:msgScope
-        i++
+          msg: m
+          listener: cb
+          context: context
+          msgScope: msgScope
       return @
+
     else if msg instanceof Object
-      _results=[]
-      for k of msg
-        v = msg[k]
+      _results = []
+
+      for k, v of msg
         _results.push _subscribe
-          msg:k
-          listener:v
-          context:context
-          msgScope:msgScope
+          msg: k
+          listener: v
+          context: context
+          msgScope: msgScope
       return _results
+
     else
       unless typeof cb == "function"
         return false
       unless typeof msg == "string"
         return false
 
-    j=0
     token = {}
-    while j < msgScope.length
-      if not _msgList[msgScope[j]]?
-        _msgList[msgScope[j]] = {}
-      unless _msgList[msgScope[j]].hasOwnProperty(msg)
-        _msgList[msgScope[j]][msg]=[]
+    for scopeInd of msgScope
+
+      _msgList[msgScope[scopeInd]] = {} if not _msgList[msgScope[scopeInd]]?
+      _msgList[msgScope[scopeInd]][msg] = [] unless _msgList[msgScope[scopeInd]].hasOwnProperty msg
+
       #pushing the cb function into the central list
-      _listenerIndex = _msgList[msgScope[j]][msg].push
+      _listenerIndex = _msgList[msgScope[scopeInd]][msg].push
         #token:++_lastUID
-        func:cb
-        context:context
+        func: cb
+        context: context
 
       token[msg] = token[msg] || {}
-      #array push method returns the length of the array. 1 greater than the last index.
-      token[msg][msgScope[j]] = _listenerIndex - 1
+      #array push method returns the length of the array. 1 greater than the last index
+      token[msg][msgScope[scopeInd]] = _listenerIndex - 1
 
-      console.log 'MEDIATOR: successfully subscribed: '+ msg
-      j++
+      console.log 'MEDIATOR: successfully subscribed: ' + msg
 
     return token
 
-  #_unsubscribe()
-  _unsubscribe=(tokens)->
-    if not tokens?
-      return false
+  # _unsubscribe()
+  _unsubscribe = (tokens) ->
+
+    return false unless tokens?
+
     for msg of tokens
       for scope of tokens[msg]
         indexToDel = tokens[msg][scope]
-        if _msgList.hasOwnProperty(scope)
+        if _msgList.hasOwnProperty scope
           if _msgList[scope][msg]?
-            _msgList[scope][msg].splice indexToDel,1
-            console.log 'MEDIATOR: successfully unsubscribed: '+msg+' of scope '+scope
+            _msgList[scope][msg].splice indexToDel, 1
+            console.log 'MEDIATOR: successfully unsubscribed: '+ msg + ' of scope ' + scope
             return true
     return false
 
-  publish:_publish
-  subscribe:_subscribe
-  unsubscribe:_unsubscribe
+  publish: _publish
+  subscribe: _subscribe
+  unsubscribe: _unsubscribe
 )
