@@ -90,13 +90,13 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
       )
-      .state('cleanData'
-        url: '/cleanData'
+      .state('wrangleData'
+        url: '/wrangleData'
         views:
           'main':
-            templateUrl: 'partials/analysis/cleanData/main.html'
+            templateUrl: 'partials/analysis/wrangleData/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/cleanData/sidebar.html'
+            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
       )
       .state('tools'
         url: '/tools'
