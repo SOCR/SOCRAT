@@ -159,7 +159,7 @@ describe 'Core module', ->
         inject (core) ->
           (expect core.start moduleId).toBeTruthy()
 
-      it 'should return false if instance was aleready started', ->
+      it 'should return false if instance was already started', ->
         inject (core) ->
           core.start 'myId'
           (expect core.start moduleId).toBeFalsy()
@@ -252,33 +252,66 @@ describe 'Core module', ->
 
           mod1 = (sb) ->
             init: ->
-              console.log "INIT HERE"
               sb.subscribe
                 msg: 'b'
                 listener: ->
                   foo.cb1()
-                msgScope: ['fooScope']
+                msgScope: ['anId']
               sb.publish
                 msg: 'a'
                 data: ''
-                msgScope: ['fooScope']
+                msgScope: ['anId']
             destroy: ->
             msgList:
               outgoing: ['a']
               incoming: ['b']
-              scope: ['fooScope']
+              scope: ['anId']
 
           map = [
             msgFrom: 'a'
-            scopeFrom: ['fooScope']
+            scopeFrom: ['anId']
             msgTo: 'b'
-            scopeTo: ['fooScope']
+            scopeTo: ['anId']
           ]
 
           core.setEventsMapping map
           (expect core.register 'anId', mod1).toBeTruthy()
           (expect core.start('anId', { callback: (err) ->
             (expect foo.cb1).toHaveBeenCalled()
+          })).toBeTruthy()
+
+      it 'should not subscribe for module messages if scope does not match module Id', () ->
+        inject (core, pubSub) ->
+          spyOn foo, 'cb1'
+
+          mod1 = (sb) ->
+            init: ->
+              sb.subscribe
+                msg: 'b'
+                listener: ->
+                  foo.cb1()
+                msgScope: ['anId']
+              sb.publish
+                msg: 'a'
+                data: ''
+                msgScope: ['anId']
+            destroy: ->
+            msgList:
+              outgoing: ['a']
+              incoming: ['b']
+              scope: ['notAnId']
+
+          map = [
+            msgFrom: 'a'
+            scopeFrom: ['anId']
+            msgTo: 'b'
+            scopeTo: ['anId']
+          ]
+
+          core.setEventsMapping map
+          (expect core.register 'anId', mod1).toBeTruthy()
+          (expect core.start('anId', { callback: (err) ->
+            (expect foo.cb1).not.toHaveBeenCalled()
           })).toBeTruthy()
 
     describe 'stop function', ->
@@ -596,7 +629,9 @@ describe 'Core module', ->
           (expect core.register 'syncDestroy', mod).toBeTruthy()
           (expect core.start 'syncDestroy').toBeTruthy()
           (expect core.start 'syncDestroy', instanceId: 'second').toBeTruthy()
-          (expect core.stopAll done).toBeTruthy()
+          core.stopAll ->
+            (expect foo.cb1).toHaveBeenCalled()
+            done()
 
     describe 'setEventsMapping function', ->
 

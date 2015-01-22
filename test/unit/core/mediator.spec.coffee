@@ -93,11 +93,13 @@ describe "Mediator", ->
           msg: "test message"
           listener: foo.cb1
           msgScope: ["core"]
-        ).subscribe(
+        )
+        pubSub.subscribe(
           msg: "test message"
           listener: foo.cb2
           msgScope: ["module"]
-        ).subscribe
+        )
+        pubSub.subscribe
           msg: "test message"
           listener: foo.cb3
           msgScope: ["app"]
@@ -121,11 +123,11 @@ describe "Mediator", ->
         res = pubSub.publish
           msg: ['not a string']
           msgScope: ['test']
-        expect(res).toEqual false 
+        expect(res).toEqual false
         res = pubSub.publish
           msg: 'String!'
           msgScope: ['test']
-        expect(typeof res).toEqual 'object' 
+        expect(typeof res).toEqual 'object'
 
     it "throws error if msgScope is absent or not an Array", ->
       inject (pubSub)->
@@ -134,7 +136,7 @@ describe "Mediator", ->
           msgScope: ['test']
           listener: ()->
             console.log "listener is getting executed!!"
-        
+
         expect(->
           pubSub.publish
             msg: "test message"
@@ -171,15 +173,13 @@ describe "Mediator", ->
             console.log "listener is getting executed!!"
         expect(res).toEqual(false)
 
-    it "should should subscribe to a message", ->
+    it "should subscribe to a message", ->
       inject (pubSub) ->
         obj = pubSub.subscribe
           msg: "test message"
           listener: ->
           msgScope: ["test"]
-        expect(obj.subscribe).toBeDefined()
-        expect(obj.publish).toBeDefined()
-        expect(obj.unsubscribe).toBeDefined()
+        expect(obj['test message']['test']).toEqual 0
 
     it "returns false if callback is not a function", ->
       inject (pubSub) ->
@@ -239,24 +239,36 @@ describe "Mediator", ->
         (expect obj.cb1.calls.count()).toEqual 1
         (expect obj.cb2.calls.count()).toEqual 1
 
-#  describe "unsubscribe function", ->
-#
-#    it "removes a subscription from a message", ->
-#      inject (pubSub)->
-#        console.log "TEST -- it should unsubscribe from a message"
-#        pubSub.subscribe
-#          msg:"test message"
-#          listener:()->2
-#        expect(pubSub.unsubscribe(15)).toEqual(15)
-#
-#    it "removes a cb function from all messages", ->
-#      inject (pubSub)->
-#        console.log "TEST -- it removes a cb function from all messages"
-#        pubSub.subscribe("test message",()->2)
-#        expect(pubSub.unsubscribe(15)).toEqual(15)
-#
-#    it "removes all subscriptions from a message", ->
-#      inject (pubSub)->
-#        console.log "TEST -- should unsubscribe from a message"
-#        pubSub.subscribe("test message",()->2)
-#        expect(pubSub.unsubscribe(15)).toEqual(15)
+  describe "unsubscribe function", ->
+    foo =
+      cb: ->2
+    it "removes a listener from the specified message", ->
+      inject (pubSub)->
+        console.log "TEST -- it should unsubscribe from a message"
+        spyOn foo,"cb"
+        token = pubSub.subscribe
+          msg:"test message"
+          msgScope:['test']
+          listener:foo.cb
+
+        pubSub.publish
+          msg:"test message"
+          msgScope:['test']
+        expect(foo.cb).toHaveBeenCalled()
+        expect(pubSub.unsubscribe(token)).toEqual true
+        pubSub.publish
+          msg:"test message"
+          msgScope:['test']
+        (expect foo.cb.calls.count()).toEqual 1
+
+    it "returns false when incorrect msg is passed", ->
+      inject (pubSub)->
+        console.log "TEST -- returns false when incorrect msg is passed"
+        token = pubSub.subscribe
+          msg:"test message"
+          msgScope:['test']
+          listener:()->2
+        token =
+          'message with no listeners':{'test':0}
+        expect(pubSub.unsubscribe(token)).toEqual false
+

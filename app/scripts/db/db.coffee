@@ -16,25 +16,25 @@
 db = angular.module 'app_database', []
 
 
-db.factory 'app_database_constructor',[
+db.factory 'app_database_constructor', [
   'app_database_manager'
-  (manager)->
-    (sb)->
+  (manager) ->
+    (sb) ->
 
       manager.setSb sb unless !sb?
       _msgList = manager.getMsgList()
 
       init: (opt) ->
-        console.log 'db init called'
+        console.log '%cDATABASE:: init called', 'color:green'
 
-      destroy: () ->
+      destroy: ->
 
       msgList: _msgList
 ]
 
-db.factory 'app_database_manager',[
+db.factory 'app_database_manager', [
   'app_database_handler'
-  (database)->
+  (database) ->
     _sb = null
     #_msgList =
     #  incoming:['create table','get table','delete table'],
@@ -42,18 +42,18 @@ db.factory 'app_database_manager',[
     #  scope: ['database']
 
     _msgList =
-      incoming:['get table'],
-      outgoing:['take table'],
-      scope:['database']
+      incoming: ['save table','create table', 'get table', 'delete table']
+      outgoing: ['table saved','table created', 'take table', 'table deleted']
+      scope: ['database']
 
     _setSb = (sb) ->
       _sb = sb
       database.setSb sb
 
-    _getSb = () ->
+    _getSb = ->
       _sb
 
-    _getMsgList = () ->
+    _getMsgList = ->
       _msgList
 
     getSb: _getSb
@@ -61,37 +61,83 @@ db.factory 'app_database_manager',[
     getMsgList: _getMsgList
 ]
 
+# ###
+# @name: app_database_dataFrame2table
+# @type: factory
+# @description: Reformats data from the universal dataFrame object to datavore format
+# ###
+db.factory 'app_database_dataAdaptor', [
+  () ->
+
+    _toDvTable = (dataFrame) ->
+
+      table = []
+
+      # transpose array to make it column oriented
+      _data = ((row[i] for row in dataFrame.data) for i in [0...dataFrame.nCols])
+
+      for i, col of _data
+        table.push
+          name: dataFrame.header[i]
+          values: col
+          type: 'symbolic'
+
+      table
+
+    _toDataFrame = (table) ->
+
+      _nRows = table[0].length
+      _nCols = table.length
+
+      # transpose array to make it row oriented
+      _data = ((col[i] for col in table) for i in [0..._nRows])
+
+      _header = (col.name for col in table)
+      _types = (col.type for col in table)
+
+      dataFrame =
+        data: _data
+        header: _header
+        types: _types
+        nRows: _nRows
+        nCols: _nCols
+
+    toDvTable: _toDvTable
+    toDataFrame: _toDataFrame
+]
+
 db.service 'app_database_dv', ->
 
-  #contains references to all the tables created.
+  # contains references to all the tables created.
   _registry = []
   _listeners = {}
   _db = {}
   window._db = _db
+
   ###
     @returns {string|boolean}
   ###
-  _register = (tname,ref)->
+  _register = (tname, ref) ->
     return false if _registry[tname]?
-  		# #name already exists. Create an alternate name.
+    # #name already exists. Create an alternate name.
     #   tname = '_' + tname
     #   _register tname,ref
     _registry[tname] = ref
     tname
 
-  _fire = (tname,cname)->
+  _fire = (tname, cname)->
 
-    if typeof _registry[tname] isnt "undefined" && typeof _listeners[tname] isnt "undefined"
+    if typeof _registry[tname] isnt 'undefined' && typeof _listeners[tname] isnt 'undefined'
       _table = _listeners[tname]
     else
       return false
 
     #trigger all listeners attached to the column `name`
 
-    if cname? && typeof _table[cname] isnt "undefined"
+    if cname? && typeof _table[cname] isnt 'undefined'
       i = 0
       while i < _table[cname].cb.length
-        _table[cname].cb[i] _registry[tname][cname] if typeof _table[cname].cb[i] is "function"
+        _table[cname].cb[i] _registry[tname][cname] if typeof _table[cname].cb[i] is 'function'
         i++
 
     #trigger all listeners attached to the table.
@@ -99,63 +145,84 @@ db.service 'app_database_dv', ->
     if _table.cb?.length isnt 0
       i = 0
       while i < _table.cb.length
-        _table.cb[i] _registry[tname] if typeof _table.cb[i] is "function"
+        _table.cb[i] _registry[tname] if typeof _table.cb[i] is 'function'
         i++
 
-  _db.create = (input,tname)->
-    return false if _registry[tname]?
-    #create table
-    _ref = dv.table(input)
-    # register the reference to the table
-    _register(tname,_ref)
-    _db
+  _db.create = (input, tname) ->
 
-  _db.addColumn = (cname, values, type, iscolumn...,tname)->
+    # TODO: separate updating from creating
+    if _registry[tname]?
+      _db.update input, tname
+    else
+
+      # reformat data type
+      for col in input
+        switch col.type
+          when 'numeric' then col.type = dv.type.numeric
+          when 'nominal' then col.type = dv.type.nominal
+          when 'ordinal' then col.type = dv.type.ordinal
+          else col.type = dv.type.unknown
+
+      # create table
+      _ref = dv.table input
+      # register the reference to the table
+      _register tname, _ref
+      _db
+
+  _db.update = (input, tname) ->
+    # delete old table
+    _db.destroy tname
+    # create new table
+    _db.create input, tname
+
+  _db.addColumn = (cname, values, type, iscolumn..., tname)->
     if _registry[tname]?
       _registry[tname].addColumn cname, values, type, iscolumn
       #fire away all listeners on the new column.
-      _fire tname,cname
 
-  _db.removeColumn = (cname,tname)->
+      _fire tname, cname
+
+  _db.removeColumn = (cname, tname) ->
     if _registry[tname]?[cname]?
       #fire away all listeners on the new column.
-      _fire tname,cname
+      _fire tname, cname
       delete _registry[tname][cname]
       true
     else
       false
 
-  _db.addListener = (opts)->
+  _db.addListener = (opts) ->
     if opts?
       if typeof opts is 'function'
         return false
       else
         if opts.table?
-          _listeners[opts.table] = _listeners[opts.table] || {cb:[]}
+          _listeners[opts.table] = _listeners[opts.table] || {cb: []}
           if opts.column?
-            _listeners[opts.table][opts.column] = _listeners[opts.table][opts.column] || {cb:[]}
+            _listeners[opts.table][opts.column] = _listeners[opts.table][opts.column] || {cb: []}
             _listeners[opts.table][opts.column]['cb'].push opts.listener
           else
             _listeners[opts.table]['cb'].push opts.listener
+    console.log '%cDATABASE:: listeners:', 'color:green'
     console.log _listeners[opts.table]
 
   # destroy any table
-  _db.destroy = (tname)->
+  _db.destroy = (tname) ->
     if _registry[tname]?
       delete _registry[tname]
       true
     else
       false
 
-  _db.rows = (tname)->
+  _db.rows = (tname) ->
     if _registry[tname]?
       _registry[tname].rows()
 
-  _db.cols = (tname)->
+  _db.cols = (tname) ->
     if _registry[tname]?
       _registry[tname].cols()
 
-  _db.get = (tname,col,row)->
+  _db.get = (tname, col, row) ->
     if _registry[tname]?
       if col?
         if row?
@@ -163,107 +230,97 @@ db.service 'app_database_dv', ->
         else
           _registry[tname][col]
       else
-        #TODO : returned object is dv object.
-        # need to return only the table content
         _registry[tname]
     else
       false
 
-  _db.exists = (tname)->
+  _db.exists = (tname) ->
     if _registry[tname]?
       true
     else
       false
 
   # Query methods
-  _db.query = (q,name)->
-    _db.dense_query(q,name)
+  _db.query = (q, name) ->
+    _db.dense_query(q, name)
 
-  _db.dense_query = (q,tname)->
+  _db.dense_query = (q, tname) ->
     if _registry[tname]?
       _registry[tname].dense_query(q)
 
-  _db.sparse_query = (q,tname)->
+  _db.sparse_query = (q, tname) ->
     if _registry[tname]?
       _registry[tname].sparse_query(q)
 
-  _db.where = (q,tname)->
+  _db.where = (q, tname) ->
     if _registry[tname]?
       _registry[tname].where(q)
 
   _db
 
 
-db.factory 'app_database_handler',[
-  'app_database_dv'
+db.factory 'app_database_handler', [
   '$q'
-  (_db,$q)->
-    console.log "app_database_handler"
+  'app_database_dv'
+  'app_database_dataAdaptor'
+  ($q, _db, dataAdaptor) ->
+
     #set all the callbacks here.
-    _setSb = (sb)->
+    _setSb = ((_db) ->
+      window.db = _db
+      (sb) ->
 
-      #registering database callbacks for all possible incoming messages.
-      _methods = [
-        {incoming:'save table',outgoing:'table saved',event:_db.create}
-        {incoming:'get table',outgoing:'take table',event:_db.get}
-        {incoming:'add listener',outgoing:'listener added',event:_db.addListener}
-      ]
-
-      # Creating a test database
-      try
-        colA = [[1099195200000, 30.802601992077], [1101790800000, 36.331003758254],
-        [1104469200000, 43.142498700060], [1107147600000, 40.558263931958],
-        [1109566800000, 42.543622385800], [1112245200000, 41.683584710331],
-        [1114833600000, 36.375367302328], [1117512000000, 40.719688980730],
-        [1120104000000, 43.897963036919], [1122782400000, 49.797033975368],
-        [1125460800000, 47.085993935989], [1128052800000, 46.601972859745],
-        [1130734800000, 41.567784572762], [1133326800000, 47.296923737245],
-        [1136005200000, 47.642969612080], [1138683600000, 50.781515820954],
-        [1141102800000, 52.600229204305]]
-        colB = [[1025409600000, 0], [1028088000000, -6.3382185140371],
-        [1030766400000, -5.9507873460847], [1033358400000, -11.569146943813],
-        [1036040400000, -5.4767332317425]]
-        colC = [12,3,42,4]
-        table = [
-          {name:"A", values:colA, type:"numeric"}
-          {name:"B", values:colB, type:"numeric"}
+        #registering database callbacks for all possible incoming messages.
+        # TODO: add wrapper layer on top of _db methods?
+        _methods = [
+          {incoming: 'save table', outgoing: 'table saved', event: _db.create}
+          {incoming: 'get table', outgoing: 'take table', event: _db.get}
+          {incoming: 'add listener', outgoing: 'listener added', event: _db.addListener}
         ]
-        _db.create table,'charts_test_db'
-      catch e
-        console.log e.stack
-        alert "Error: "+e.message
-      #sb.send
-      #  msg: tname
-      #  msgScope : ['database']
-      #@todo: Why sending 2 different messages?
-      #sb.send
-      #  msg: tname+':'+cname
-      #  msgScope:['database']
-      _status = _methods.map (method)->
-        sb.subscribe
-          msg: method['incoming']
-          listener: (msg,data)->
-            _data = method.event.apply null,data.data
-            console.log "Raw data",_data
-            if _data is false
-              if typeof data.promise isnt "undefined"
-                data.promise.reject('table operation failed')
-              false
-            data.promise.resolve _data
-            #all publish calls should pass a promise in the data object.
-            #if promise is not defined, create one and pass it along.
-            return true
-            if typeof data.promise isnt "undefined"
-              _data['promise'] = $q.defer()
-            else
-              _data['promise'] = data.promise
 
-            sb.publish
-              msg:'take table'
-              data: _data
-              msgScope:['database']
+        _status = _methods.map (method) ->
+          sb.subscribe
+            msg: method['incoming']
+            listener: (msg, data) ->
+              console.log "%cDATABASE: listener called ", "color:green"
+              console.log data
 
-          msgScope:['database']
+              # convert from the universal dataFrame object to datavore table
+              dvTableData = if msg is 'save table' then dataAdaptor.toDvTable data.dataFrame else data
 
-    setSb:_setSb
+              # arrange arguments for a callback
+              _data = switch
+                when msg is 'save table' then [ dvTableData, data.tableName ]
+                when msg is 'get table' then [ data.tableName ]
+                else data
+
+              # invoke callback
+              _data = method.event.apply null, _data
+
+              deferred = data.promise
+              if typeof deferred isnt 'undefined'
+                if _data isnt false then deferred.resolve() else deferred.reject()
+              else
+                _data.push $q.defer()
+
+              # if _data is false
+              #  if typeof data.promise isnt 'undefined'
+              #    data.promise.reject 'table operation failed'
+              #  false
+              # all publish calls should pass a promise in the data object.
+              # if promise is not defined, create one and pass it along.
+
+              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+
+              console.log '%cDATABASE: listener response: ' + _data, 'color:green'
+
+              sb.publish
+                msg: 'take table'
+                data: _data
+                msgScope: ['database']
+            msgScope: ['database']
+
+    )(_db)
+
+    setSb: _setSb
   ]

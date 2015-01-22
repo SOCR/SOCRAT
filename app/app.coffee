@@ -13,6 +13,7 @@ App = angular.module('app', [
   'ngCookies'
   'ngResource'
   'ngSanitize'
+  #'app.utils.importer'
   'app_core'
   'app_controllers'
   'app_directives'
@@ -26,10 +27,13 @@ App = angular.module('app', [
   'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
+  'app_analysis_instrPerfEvalView'
+  'app_analysis_instrPerfEval'
 ])
 
 App.config([
   '$locationProvider'
+  #urlRouterProvider is not required
   '$urlRouterProvider'
   '$stateProvider'
 ($locationProvider, $urlRouterProvider, $stateProvider) ->
@@ -53,7 +57,6 @@ App.config([
           templateUrl: 'partials/nav/home.html'
         'sidebar':
           templateUrl: 'partials/projects.html'
-          controller: 'projectCtrl'
     )
     .state('guide'
       url: '/guide'
@@ -62,9 +65,7 @@ App.config([
           templateUrl: 'partials/nav/guide-me.html'
         'sidebar':
           templateUrl: 'partials/projects.html'
-          controller: 'projectCtrl'
     )
-
     .state('contact'
       url: '/contact'
       views:
@@ -76,10 +77,20 @@ App.config([
       views:
         'main':
           templateUrl: 'partials/analysis/getData/main.html'
-          controller: 'getDataMainCtrl'
         'sidebar':
           templateUrl: 'partials/analysis/getData/sidebar.html'
-          controller: 'getDataSidebarCtrl'
+    )
+      .state('getData.project'
+      url: '/:projectId/:forkId'
+      resolve:
+        checkDb: ($stateParams, app_database_dv) ->
+          res = app_database_dv.exists $stateParams.projectId + ':' + $stateParams.forkId
+          console.log "does DB exist for this project? "+res
+      views:
+        'main':
+          templateUrl: 'partials/analysis/getData/main.html'
+        'sidebar':
+          templateUrl: 'partials/analysis/getData/sidebar.html'
     )
     .state('cleanData'
       url: '/cleanData'
@@ -94,35 +105,34 @@ App.config([
       views:
         'main':
           templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-          controller: 'qualRobEstViewMainCtrl'
         'sidebar':
           templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
-          controller: 'qualRobEstViewSidebarCtrl'
     )
     .state('charts'
       url: '/charts/:projectId/:forkId'
       views:
         'main':
           templateUrl: 'partials/analysis/charts/main.html'
-          controller: 'chartsMainCtrl'
         'sidebar':
           templateUrl: 'partials/analysis/charts/sidebar.html'
-          controller: 'chartsSidebarCtrl'
     )
+
   # Without server side support html5 must be disabled.
   $locationProvider.html5Mode(false)
-
 ])
 
 App.run([
+  '$rootScope'
   'core'
   'app_database_constructor'
+  'app_analysis_getData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
+  'app_analysis_instrPerfEval_constructor'
+  'app_analysis_instrPerfEvalView_constructor'
   'app_analysis_chartsView_constructor'
-  (core, db, qualRobEst,qualRobEstView,chartsView) ->
-
-    console.log "run block of app module"
+  #'app.utils.importer'
+($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView,chartsView) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -135,11 +145,47 @@ App.run([
       msgTo: 'numbers added'
       scopeTo: ['qualRobEstView']
     ,
-    #  msgFrom:'save table'
-    #  scopeFrom: ['getData']
-    #  msgTo:'save table'
-    #  scopeTo:['database']
-    #,
+      msgFrom: 'calculate'
+      scopeFrom: ['instrPerfEvalView']
+      msgTo: 'calculate'
+      scopeTo: ['instrPerfEval']
+    ,
+      msgFrom: 'calculated'
+      scopeFrom: ['instrPerfEval']
+      msgTo: 'calculated'
+      scopeTo: ['instrPerfEvalView']
+    ,
+      msgFrom:'save table'
+      scopeFrom: ['getData', 'app.utils.importer']
+      msgTo: 'save table'
+      scopeTo: ['database']
+    ,
+      msgFrom:'table saved'
+      scopeFrom: ['database']
+      msgTo: '234'
+      scopeTo: ['qualRobEst']
+    ,
+      msgFrom: 'upload csv'
+      scopeFrom: ['getData']
+      msgTo: 'upload csv'
+      scopeTo: ['app.utils.importer']
+    ,
+      msgFrom: 'get table'
+      scopeFrom: ['instrPerfEvalView']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['instrPerfEvalView']
+    ,
+    # When /getData handonstable is updated, DB needs to be updated with the lastest values.
+      msgFrom: 'handsontable updated'
+      scopeFrom: ['getData']
+      msgTo:'save table'
+      scopeTo:['database']
+    ,
       msgFrom:'get table'
       scopeFrom:['chartsView']
       msgTo:'get table'
@@ -159,13 +205,29 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
+    core.register 'instrPerfEvalView', instrPerfEvalView
+    core.start 'instrPerfEvalView'
+
+    core.register 'instrPerfEval', instrPerfEval
+    core.start 'instrPerfEval'
+
+    core.register 'getData', getData
+    core.start 'getData'
     core.register 'database', db
     core.start 'database'
 
     core.register 'chartsView', chartsView
     core.start 'chartsView'
 
+    #core.register 'importer', importer
+    #core.start 'importer'
+
+    $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
+      console.log 'APP: state change: '
+      console.log arguments
+
     console.log 'run block of app module'
+
 
 ])
 
