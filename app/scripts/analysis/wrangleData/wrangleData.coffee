@@ -46,29 +46,8 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     getMsgList: _getMsgList
 ])
 
-# ###
-# wrangleDataSidebarCtrl is the ctrl that talks to the view.
-# ###
-.controller('wrangleDataSidebarCtrl', [
-  'app_analysis_wrangleData_manager'
-  (wrangleDataEventMngr) ->
-    console.log 'wrangleDataSidebarCtrl executed'
-])
-
-.controller('wrangleDataMainCtrl', [
-  'app_analysis_wrangleData_manager'
-  (wrangleDataEventMngr) ->
-    console.log 'wrangleDataMainCtrl executed'
-])
-
-# ###
-# @name: app_analysis_wrangleData2dataFrame
-# @type: factory
-# @description: reformats data from input table format to the universal dataFrame object
-# ###
 .factory('app_analysis_wrangleData_dataAdaptor', [
   () ->
-
     # accepts DataWrangler format as input and returns dataFrame
     _toDataFrame = () ->
 
@@ -77,3 +56,71 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     toDataFrame: _toDataFrame
     toDataWranglerFormat: _toDataWranglerFormat
 ])
+
+.controller('wrangleDataSidebarCtrl', [
+    'app_analysis_wrangleData_manager'
+    (wrangleDataEventMngr) ->
+      console.log 'wrangleDataSidebarCtrl executed'
+  ])
+
+.controller('wrangleDataMainCtrl', [
+    'app_analysis_wrangleData_manager'
+    (wrangleDataEventMngr) ->
+
+      w = dw.wrangle()
+
+      console.log 'wrangleDataMainCtrl executed'
+  ])
+
+.directive 'datawrangler', [
+  'app_analysis_wrangleData_dataAdaptor'
+  '$exceptionHandler'
+  (dataAdaptor, $exceptionHandler) ->
+
+    restrict: 'E'
+    transclude: true
+    templateUrl: '../partials/analysis/wrangleData/wrangler.html'
+
+    #the controller for the directive
+    controller: ($scope) ->
+
+      myLayout = $('#dt_example').layout
+        north:
+          spacing_open: 0
+          resizable: false
+          slidable: false
+          fxName: 'none'
+        south:
+          spacing_open: 0
+          resizable: false
+          slidable: false
+          fxName: 'none'
+        west:
+          minSize: 310
+
+      container = $('#table')
+      previewContainer = $('#preview')
+
+      initial_transforms = [];
+
+      startWrangler = (dt) ->
+
+        dw.wrangler
+          tableContainer: container
+          table: dt
+          transformContainer: $('#transformEditor')
+          previewContainer: previewContainer
+          dashboardContainer: $("#wranglerDashboard")
+          initial_transforms: initial_transforms
+
+
+    replace: true #replace the directive element with the output of the template.
+
+    #the link method does the work of setting the directive
+    # up, things like bindings, jquery calls, etc are done in here
+    # It is run before the controller
+    link: (scope, elem, attr) ->
+
+      # useful to identify which handsontable instance to update
+      scope.purpose = attr.purpose
+]
