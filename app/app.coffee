@@ -27,6 +27,9 @@ App = angular.module('app', [
   'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
+  #charts analysis
+  'app_analysis_chartsView'
+  'app_analysis_charts'
   'app_analysis_instrPerfEvalView'
   'app_analysis_instrPerfEval'
 ])
@@ -36,78 +39,79 @@ App.config([
   #urlRouterProvider is not required
   '$urlRouterProvider'
   '$stateProvider'
-($locationProvider, $urlRouterProvider, $stateProvider) ->
+  ($locationProvider, $urlRouterProvider, $stateProvider) ->
 
-  console.log "config block of app module"
+    console.log "config block of app module"
 
-  $urlRouterProvider.when('/','/')
-    .otherwise('/home')
+    $urlRouterProvider.when('/','/')
+      .otherwise('/home')
 
-  $stateProvider
-    .state('welcome'
-      url: '/welcome'
-      views:
-        'main':
-          templateUrl: 'partials/welcome.html'
-    )
-    .state('home'
-      url:'/home'
-      views:
-        'main':
-          templateUrl: 'partials/nav/home.html'
-        'sidebar':
-          templateUrl: 'partials/projects.html'
-    )
-    .state('guide'
-      url: '/guide'
-      views:
-        'main':
-          templateUrl: 'partials/nav/guide-me.html'
-        'sidebar':
-          templateUrl: 'partials/projects.html'
-    )
-    .state('contact'
-      url: '/contact'
-      views:
-        'main':
-          templateUrl: 'partials/nav/contact.html'
-    )
-    .state('getData'
-      url: '/getData'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/getData/main.html'
-        'sidebar':
-          templateUrl: 'partials/analysis/getData/sidebar.html'
-    )
+    $stateProvider
+      .state('welcome'
+        url: '/welcome'
+        views:
+          'main':
+            templateUrl: 'partials/welcome.html'
+      )
+      .state('home'
+        url:'/home'
+        views:
+          'main':
+            templateUrl: 'partials/nav/home.html'
+          'sidebar':
+            templateUrl: 'partials/projects.html'
+      )
+      .state('guide'
+        url: '/guide'
+        views:
+          'main':
+            templateUrl: 'partials/nav/guide-me.html'
+          'sidebar':
+            templateUrl: 'partials/projects.html'
+      )
+      .state('contact'
+        url: '/contact'
+        views:
+          'main':
+            templateUrl: 'partials/nav/contact.html'
+      )
+      .state('getData'
+        url: '/getData'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/getData/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/getData/sidebar.html'
+      )
       .state('getData.project'
-      url: '/:projectId/:forkId'
-      resolve:
-        checkDb: ($stateParams, app_database_dv) ->
-          res = app_database_dv.exists $stateParams.projectId + ':' + $stateParams.forkId
-          console.log "does DB exist for this project? "+res
-      views:
-        'main':
-          templateUrl: 'partials/analysis/getData/main.html'
-        'sidebar':
-          templateUrl: 'partials/analysis/getData/sidebar.html'
-    )
-    .state('cleanData'
-      url: '/cleanData'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/cleanData/main.html'
-        'sidebar':
-          templateUrl: 'partials/analysis/cleanData/sidebar.html'
-    )
-    .state('tools'
-      url: '/tools'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-        'sidebar':
-          templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
-    )
+        url: '/:projectId/:forkId'
+        resolve:
+          checkDb: ($stateParams, app_database_dv) ->
+            res = app_database_dv.exists $stateParams.projectId + ':' + $stateParams.forkId
+            console.log "does DB exist for this project? "+res
+        views:
+          'main':
+            templateUrl: 'partials/analysis/getData/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/getData/sidebar.html'
+      )
+      .state('cleanData'
+        url: '/cleanData'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/cleanData/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/cleanData/sidebar.html'
+      )
+      .state('tools'
+        url: '/tools'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/tools/instrPerfEvalView/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/tools/instrPerfEvalView/sidebar.html'
+      )
+
     .state('charts'
       url: '/charts/:projectId/:forkId'
       views:
@@ -130,10 +134,10 @@ App.run([
   'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
   'app_analysis_instrPerfEvalView_constructor'
-  'app_analysis_chartsView_constructor'
+  'app_analysis_chartsView_construct'
+  'app_analysis_charts_construct'
   #'app.utils.importer'
-($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView,chartsView) ->
-
+  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView,charts,chartsView) ->
     map = [
       msgFrom: 'add numbers'
       scopeFrom: ['qualRobEstView']
@@ -205,6 +209,12 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
+    core.register 'chartsView', chartsView
+    core.start 'chartsView'
+
+    core.register 'charts', charts
+    core.start 'charts'
+
     core.register 'instrPerfEvalView', instrPerfEvalView
     core.start 'instrPerfEvalView'
 
@@ -227,7 +237,5 @@ App.run([
       console.log arguments
 
     console.log 'run block of app module'
-
-
 ])
 
