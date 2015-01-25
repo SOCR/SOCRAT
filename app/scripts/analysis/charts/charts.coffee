@@ -8,7 +8,7 @@ charts = angular.module 'app_analysis_charts', []
   @description: Constructor for this module.
   @type: factory
 ###
-charts.factory 'app_analysis_charts_construct', [
+charts.factory 'app_analysis_charts_constructor', [
   'app_analysis_charts_eventMngr'
   (chartsEventMngr)->
     (sb)->

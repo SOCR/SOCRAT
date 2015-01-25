@@ -112,17 +112,17 @@ App.config([
             templateUrl: 'partials/analysis/tools/instrPerfEvalView/sidebar.html'
       )
 
-    .state('charts'
-      url: '/charts/:projectId/:forkId'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/charts/main.html'
-        'sidebar':
-          templateUrl: 'partials/analysis/charts/sidebar.html'
-    )
+      .state('charts'
+        url: '/charts/:projectId/:forkId'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/charts/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/charts/sidebar.html'
+      )
 
-  # Without server side support html5 must be disabled.
-  $locationProvider.html5Mode(false)
+    # Without server side support html5 must be disabled.
+    $locationProvider.html5Mode(false)
 ])
 
 App.run([
@@ -134,8 +134,8 @@ App.run([
   'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
   'app_analysis_instrPerfEvalView_constructor'
-  'app_analysis_chartsView_construct'
-  'app_analysis_charts_construct'
+  'app_analysis_chartsView_constructor'
+  'app_analysis_charts_constructor'
   #'app.utils.importer'
   ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView,charts,chartsView) ->
     map = [
