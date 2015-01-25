@@ -36,6 +36,11 @@ db.factory 'app_database_manager', [
   'app_database_handler'
   (database) ->
     _sb = null
+    #_msgList =
+    #  incoming:['create table','get table','delete table'],
+    #  outgoing:['table created','take table','table deleted'],
+    #  scope: ['database']
+
     _msgList =
       incoming: ['save table','create table', 'get table', 'delete table']
       outgoing: ['table saved','table created', 'take table', 'table deleted']
@@ -107,13 +112,14 @@ db.service 'app_database_dv', ->
   _registry = []
   _listeners = {}
   _db = {}
+  window._db = _db
 
   ###
     @returns {string|boolean}
   ###
   _register = (tname, ref) ->
     return false if _registry[tname]?
-      # #name already exists. Create an alternate name.
+    # #name already exists. Create an alternate name.
     #   tname = '_' + tname
     #   _register tname,ref
     _registry[tname] = ref
@@ -173,6 +179,7 @@ db.service 'app_database_dv', ->
     if _registry[tname]?
       _registry[tname].addColumn cname, values, type, iscolumn
       #fire away all listeners on the new column.
+
       _fire tname, cname
 
   _db.removeColumn = (cname, tname) ->
@@ -295,7 +302,7 @@ db.factory 'app_database_handler', [
                 if _data isnt false then deferred.resolve() else deferred.reject()
               else
                 _data.push $q.defer()
-              
+
               # if _data is false
               #  if typeof data.promise isnt 'undefined'
               #    data.promise.reject 'table operation failed'

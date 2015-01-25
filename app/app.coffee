@@ -21,7 +21,9 @@ App = angular.module('app', [
   'app_services'
   'app_mediator'
   'app_database'
-   # Analysis modules
+  #charts module
+  'app_analysis_chartsView'
+  # Analysis modules
   'app_analysis_getData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
@@ -109,19 +111,18 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/tools/instrPerfEvalView/sidebar.html'
       )
+
     .state('charts'
       url: '/charts/:projectId/:forkId'
       views:
         'main':
           templateUrl: 'partials/analysis/charts/main.html'
-          controller: 'chartsMainCtrl'
         'sidebar':
           templateUrl: 'partials/analysis/charts/sidebar.html'
-          controller: 'chartsSidebarCtrl'
     )
-    # Without server side support html5 must be disabled.
-    $locationProvider.html5Mode(false)
 
+  # Without server side support html5 must be disabled.
+  $locationProvider.html5Mode(false)
 ])
 
 App.run([
@@ -158,7 +159,7 @@ App.run([
       msgTo: 'calculated'
       scopeTo: ['instrPerfEvalView']
     ,
-      msgFrom: 'save table'
+      msgFrom:'save table'
       scopeFrom: ['getData', 'app.utils.importer']
       msgTo: 'save table'
       scopeTo: ['database']
@@ -186,8 +187,18 @@ App.run([
     # When /getData handonstable is updated, DB needs to be updated with the lastest values.
       msgFrom: 'handsontable updated'
       scopeFrom: ['getData']
-      msgTo: 'save table'
-      scopeTo: ['database']
+      msgTo:'save table'
+      scopeTo:['database']
+    ,
+      msgFrom:'get table'
+      scopeFrom:['chartsView']
+      msgTo:'get table'
+      scopeTo:['database']
+    ,
+      msgFrom:'take table'
+      scopeFrom:['database']
+      msgTo:'take table'
+      scopeTo:['chartsView']
     ]
 
     core.setEventsMapping map
@@ -212,9 +223,11 @@ App.run([
 
     core.register 'getData', getData
     core.start 'getData'
-
     core.register 'database', db
     core.start 'database'
+
+    core.register 'chartsView', chartsView
+    core.start 'chartsView'
 
     #core.register 'importer', importer
     #core.start 'importer'
