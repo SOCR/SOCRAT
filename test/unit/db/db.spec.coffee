@@ -9,6 +9,19 @@ describe "app.db module", ->
     {name:"B", values:colB, type:"numeric"}
   ]
 
+
+  get_table_data =
+    tableName:'test_table'
+
+  save_table_data =
+    promise:''
+    tableName:'test_table'
+    dataFrame:
+      data:[[1,2],[3,4]]
+      header:['firstC','secondC']
+      nRows:2
+      nCols:2
+
   beforeEach ->
     module "app_database"
     module "app_mocks"
@@ -156,31 +169,59 @@ describe "app.db module", ->
         expect(filter).toMatch [["b","c"], [2,1]]
 
           # describe 'dbEventMngr',->
-#
-#    # it "executes registered methods on publishing of registered msgs in the msgList", ->
-#    #   inject (app_database_dv,app_database,dbEventMngr,pubSub,$q)->
-#    #     db = new app_database()
-#    #     #creating the sandbox
-#    #     dbEventMngr.setSb(pubSub)
-#    #     #instantiating the app
-#    #     db.init()
-#    #     #create a promise
-#    #     deferred = $q.defer()
-#    #     _data = [table,'test',deferred]
-#    #     foo =
-#    #       cb : ->
-#    #     spyOn(foo,'cb')
-#    #     #subscribing to the outcome msg for 'save table'
-#    #     pubSub.subscribe
-#    #       msg:'table saved'
-#    #       listener:foo.cb
-#    #       msgScope:['app_database_dv']
-#    #     #manually publishing the msg 'save table'
-#    #     pubSub.publish
-#    #       msg:'save table'
-#    #       data: _data
-#    #       msgScope:['app_database_dv']
-#    #     #expect the eventManager in the app_database_dv service
-#    #     #to process and publish 'table saved' msg
-#    #     expect(foo.cb).toHaveBeenCalled()
-#
+
+   it "executes listeners on publishing of registered msgs in the msgList", ->
+     inject (app_database_manager,app_database_handler,pubSub,$q)->
+       #creating the sandbox
+       app_database_manager.setSb(pubSub)
+
+       foo =
+         cb : ->
+       spyOn(foo,'cb')
+
+      #subscribing to the outcome msg for 'save table'
+       pubSub.subscribe
+         msg:'table saved'
+         listener:foo.cb
+         msgScope:['database']
+
+       #manually publishing the msg 'save table'
+       save_table_data.promise = $q.defer()
+       pubSub.publish
+         msg:'save table'
+         data: save_table_data
+         msgScope:['getData']
+
+       #expect the eventManager in the app_database_dv service
+       #to process and publish 'table saved' msg
+       expect(foo.cb).toHaveBeenCalled()
+
+   it "returns table in dataFrame format",->
+     inject (app_database_manager,app_database_handler,pubSub,$q)->
+       #creating the sandbox
+       app_database_manager.setSb(pubSub)
+
+       #saving data to db.
+       save_table_data.promise = $q.defer()
+       pubSub.publish
+         msg:'save table'
+         data: save_table_data
+         msgScope:['getData']
+
+       #callback to access data from db
+       pubSub.subscribe
+         msg:'take table'
+         msgScope:['database']
+         listener:(msg,tableData)->
+           expect(typeof tableData).toEqual('object');
+           expect(typeof tableData.data).toEqual('object');
+           expect(typeof tableData.header).toEqual('object');
+           expect(typeof tableData.nRows).toEqual('number');
+           expect(typeof tableData.nCols).toEqual('number');
+
+       #publishing the msg to 'get table'
+       pubSub.publish
+         msg:'get table'
+         data: get_table_data
+         msgScope:['getData']
+
