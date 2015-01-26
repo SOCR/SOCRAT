@@ -274,14 +274,15 @@ db.factory 'app_database_handler', [
         _status = _methods.map (method) ->
           sb.subscribe
             msg: method['incoming']
+            msgScope: ['database']
             listener: (msg, data) ->
-              console.log "%cDATABASE: listener called ", "color:green"
-              console.log data
+              console.log "%cDATABASE: listener called for"+msg , "color:green"
 
               # convert from the universal dataFrame object to datavore table
               dvTableData = if msg is 'save table' then dataAdaptor.toDvTable data.dataFrame else data
 
               # arrange arguments for a callback
+              # @todo need to find a better way for this.
               _data = switch
                 when msg is 'save table' then [ dvTableData, data.tableName ]
                 when msg is 'get table' then [ data.tableName ]
@@ -290,12 +291,16 @@ db.factory 'app_database_handler', [
               # invoke callback
               _data = method.event.apply null, _data
 
+              #convert to dataFrame in case of get request
+              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+
+              #incase of save table, promise is passed in data.
               deferred = data.promise
               if typeof deferred isnt 'undefined'
                 if _data isnt false then deferred.resolve() else deferred.reject()
               else
-                _data.push $q.defer()
-              
+                _data
+
               # if _data is false
               #  if typeof data.promise isnt 'undefined'
               #    data.promise.reject 'table operation failed'
@@ -303,15 +308,12 @@ db.factory 'app_database_handler', [
               # all publish calls should pass a promise in the data object.
               # if promise is not defined, create one and pass it along.
 
-              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
-
               console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
               sb.publish
-                msg: 'take table'
+                msg: method.outgoing
                 data: _data
                 msgScope: ['database']
-            msgScope: ['database']
 
     )(_db)
 
