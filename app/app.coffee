@@ -137,7 +137,7 @@ App.run([
   'app_analysis_chartsView_constructor'
   'app_analysis_charts_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView,charts,chartsView) ->
+  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView,chartsView,charts) ->
     map = [
       msgFrom: 'add numbers'
       scopeFrom: ['qualRobEstView']
@@ -212,8 +212,8 @@ App.run([
     core.register 'chartsView', chartsView
     core.start 'chartsView'
 
-    core.register 'charts', charts
-    core.start 'charts'
+    #core.register 'charts', charts
+    #core.start 'charts'
 
     core.register 'instrPerfEvalView', instrPerfEvalView
     core.start 'instrPerfEvalView'
@@ -223,11 +223,9 @@ App.run([
 
     core.register 'getData', getData
     core.start 'getData'
+
     core.register 'database', db
     core.start 'database'
-
-    core.register 'chartsView', chartsView
-    core.start 'chartsView'
 
     #core.register 'importer', importer
     #core.start 'importer'
