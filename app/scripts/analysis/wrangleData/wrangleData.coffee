@@ -81,7 +81,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     transclude: true
     templateUrl: '../partials/analysis/wrangleData/wrangler.html'
 
-    #the controller for the directive
+    # the controller for the directive
     controller: ($scope) ->
 
       myLayout = $('#dt_example').layout
@@ -103,7 +103,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       initial_transforms = [];
 
-      startWrangler = (dt) ->
+      _startWrangler = (dt) ->
 
         dw.wrangler
           tableContainer: container
@@ -114,11 +114,15 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
           initial_transforms: initial_transforms
 
 
-    replace: true #replace the directive element with the output of the template.
+      dt = dv.table crime
+      initial_transforms = dw.raw_inference(crime).transforms
+      _startWrangler dt
 
-    #the link method does the work of setting the directive
-    # up, things like bindings, jquery calls, etc are done in here
-    # It is run before the controller
+    replace: true # replace the directive element with the output of the template
+
+    # The link method does the work of setting the directive
+    #  up, things like bindings, jquery calls, etc are done in here
+    #  It is run before the controller
     link: (scope, elem, attr) ->
 
       # useful to identify which handsontable instance to update
