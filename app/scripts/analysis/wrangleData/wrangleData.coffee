@@ -28,7 +28,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     _sb = null
 
     _msgList =
-      outgoing: ['data wrangled', 'handsontable updated']
+      outgoing: ['data wrangled', 'handsontable updated', 'get data']
       incoming: ['wrangle data']
       scope: ['wrangleData']
 
@@ -46,21 +46,82 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     getMsgList: _getMsgList
 ])
 
+.factory('app_analysis_wrangleData_dataRetriever', [
+    'app_analysis_wrangleData_manager'
+    'app_analysis_wrangleData_dataAdaptor'
+    (manager, dataAdaptor) ->
+
+      _data = null
+
+      _sb = manager.getSb()
+
+      _getData = (cb) ->
+
+        token = _sb.subscribe
+          msg: 'wrangle data'
+          msgScope: ['wrangleData']
+          listener: (msg, data) ->
+            console.log data
+            _data = dataAdaptor.toDvTable(data)
+            cb(_data)
+
+        _sb.publish
+          msg: 'get data'
+          msgScope: ['wrangleData']
+          callback: -> _sb.unsubscribe token
+          data:
+#            tableName: $stateParams.projectId + ':' + $stateParams.forkId
+            tableName: 'undefined:undefined'
+
+      getData: _getData
+  ])
+
 .factory('app_analysis_wrangleData_dataAdaptor', [
   () ->
-    # accepts DataWrangler format as input and returns dataFrame
-    _toDataFrame = () ->
 
-    _toDataWranglerFormat = () ->
+    _toDvTable = (dataFrame) ->
 
+      table = []
+
+      # transpose array to make it column oriented
+      _data = ((row[i] for row in dataFrame.data) for i in [0...dataFrame.nCols])
+
+      for i, col of _data
+        table.push
+          name: dataFrame.header[i]
+          values: col
+          type: 'symbolic'
+
+      table
+
+    _toDataFrame = (table) ->
+
+      _nRows = table[0].length
+      _nCols = table.length
+
+      # transpose array to make it row oriented
+      _data = ((col[i] for col in table) for i in [0..._nRows])
+
+      _header = (col.name for col in table)
+      _types = (col.type for col in table)
+
+      dataFrame =
+        data: _data
+        header: _header
+        types: _types
+        nRows: _nRows
+        nCols: _nCols
+
+    toDvTable: _toDvTable
     toDataFrame: _toDataFrame
-    toDataWranglerFormat: _toDataWranglerFormat
 ])
 
 .controller('wrangleDataSidebarCtrl', [
+    '$scope'
     'app_analysis_wrangleData_manager'
-    (wrangleDataEventMngr) ->
+    ($scope, wrangleDataEventMngr) ->
       console.log 'wrangleDataSidebarCtrl executed'
+      $scope.$parent.toggle()
   ])
 
 .controller('wrangleDataMainCtrl', [
@@ -73,9 +134,9 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   ])
 
 .directive 'datawrangler', [
-  'app_analysis_wrangleData_dataAdaptor'
+  'app_analysis_wrangleData_dataRetriever'
   '$exceptionHandler'
-  (dataAdaptor, $exceptionHandler) ->
+  (dataAdaptor, dataRetriever, $exceptionHandler) ->
 
     restrict: 'E'
     transclude: true
@@ -113,6 +174,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
           dashboardContainer: $("#wranglerDashboard")
           initial_transforms: initial_transforms
 
+#      data = dataRetriever.getData(_startWrangler)
 
       dt = dv.table crime
       initial_transforms = dw.raw_inference(crime).transforms
