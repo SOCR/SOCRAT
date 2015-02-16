@@ -171,6 +171,16 @@ App.run([
       msgTo: 'take table'
       scopeTo: ['instrPerfEvalView']
     ,
+      msgFrom: 'get data'
+      scopeFrom: ['wrangleData']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'wrangle data'
+      scopeTo: ['wrangleData']
+    ,
     # When /getData handonstable is updated, DB needs to be updated with the lastest values.
       msgFrom: 'handsontable updated'
       scopeFrom: ['getData']
