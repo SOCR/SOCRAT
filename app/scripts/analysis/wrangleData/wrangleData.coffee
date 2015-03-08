@@ -136,7 +136,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 .directive 'datawrangler', [
   'app_analysis_wrangleData_dataRetriever'
   '$exceptionHandler'
-  (dataAdaptor, dataRetriever, $exceptionHandler) ->
+  (dataRetriever, $exceptionHandler) ->
 
     restrict: 'E'
     transclude: true
@@ -174,11 +174,11 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
           dashboardContainer: $("#wranglerDashboard")
           initial_transforms: initial_transforms
 
-#      data = dataRetriever.getData(_startWrangler)
+      data = dataRetriever.getData(_startWrangler)
 
-      dt = dv.table crime
-      initial_transforms = dw.raw_inference(crime).transforms
-      _startWrangler dt
+#      dt = dv.table crime
+#      initial_transforms = dw.raw_inference(crime).transforms
+#      _startWrangler dt
 
     replace: true # replace the directive element with the output of the template
 
