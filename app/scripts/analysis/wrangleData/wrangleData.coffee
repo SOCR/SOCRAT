@@ -47,9 +47,10 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 ])
 
 .factory('app_analysis_wrangleData_dataRetriever', [
+    '$q'
     'app_analysis_wrangleData_manager'
     'app_analysis_wrangleData_dataAdaptor'
-    (manager, dataAdaptor) ->
+    ($q, manager, dataAdaptor) ->
 
       _data = null
 
@@ -57,13 +58,16 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       _getData = (cb) ->
 
+        deferred = $q.defer()
+
         token = _sb.subscribe
           msg: 'wrangle data'
           msgScope: ['wrangleData']
           listener: (msg, data) ->
             console.log data
             _data = dataAdaptor.toDvTable(data)
-            cb(_data)
+            _csvData = dataAdaptor.toCsvString(data)
+            cb(_data, _csvData)
 
         _sb.publish
           msg: 'get data'
@@ -72,12 +76,21 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
           data:
 #            tableName: $stateParams.projectId + ':' + $stateParams.forkId
             tableName: 'undefined:undefined'
+            promise: deferred
 
       getData: _getData
   ])
 
 .factory('app_analysis_wrangleData_dataAdaptor', [
   () ->
+
+    _toCsvString = (dataFrame) ->
+
+      csv = dataFrame.header.toString() + '\n'
+
+      csv += row.toString() + '\n' for row in dataFrame.data
+
+      csv
 
     _toDvTable = (dataFrame) ->
 
@@ -114,6 +127,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
+    toCsvString: _toCsvString
 ])
 
 .controller('wrangleDataSidebarCtrl', [
@@ -134,9 +148,10 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   ])
 
 .directive 'datawrangler', [
+  'app_analysis_wrangleData_dataAdaptor'
   'app_analysis_wrangleData_dataRetriever'
   '$exceptionHandler'
-  (dataRetriever, $exceptionHandler) ->
+  (dataAdaptor, dataRetriever, $exceptionHandler) ->
 
     restrict: 'E'
     transclude: true
@@ -162,9 +177,14 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
       container = $('#table')
       previewContainer = $('#preview')
 
-      initial_transforms = [];
+      initial_transforms = []
 
-      _startWrangler = (dt) ->
+      _startWrangler = (dt, csv) ->
+
+        # TODO: abstract from using dv directly #SOCRFW-143
+        dt = dv.table csv
+
+        initial_transforms = dw.raw_inference(csv).transforms
 
         dw.wrangler
           tableContainer: container
