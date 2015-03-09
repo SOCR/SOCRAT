@@ -85,7 +85,10 @@ getData = angular.module('app_analysis_getData', [
 
     ret.set = (data) ->
       console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
-      if data? and  $stateParams.projectId? and $stateParams.forkId?
+
+      # TODO: fix checking existance of parameters to default table name #SOCR-140
+
+      if data? or  $stateParams.projectId? or $stateParams.forkId?
         _data = data unless data is 'edit'
 
         #clear any previous db update broadcast messages.
