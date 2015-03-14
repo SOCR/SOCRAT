@@ -120,7 +120,7 @@ getData = angular.module('app_analysis_getData', [
             callback: ->
               console.log 'handsontable data updated to db'
 
-        ), 4000
+        ), 2000
         true
 
       else
