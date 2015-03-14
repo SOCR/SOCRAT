@@ -162,16 +162,16 @@ App.run([
       scopeTo: ['app.utils.importer']
     ,
       # TODO: make message mapping dynamic #SOCRFW-151
-#      msgFrom: 'get table'
-#      scopeFrom: ['instrPerfEvalView']
-#      msgTo: 'get table'
-#      scopeTo: ['database']
-#    ,
-#      msgFrom: 'take table'
-#      scopeFrom: ['database']
-#      msgTo: 'take table'
-#      scopeTo: ['instrPerfEvalView']
-#    ,
+      msgFrom: 'get table'
+      scopeFrom: ['instrPerfEvalView']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['instrPerfEvalView']
+    ,
       msgFrom: 'get data'
       scopeFrom: ['wrangleData']
       msgTo: 'get table'
@@ -197,11 +197,11 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
-#    core.register 'instrPerfEvalView', instrPerfEvalView
-#    core.start 'instrPerfEvalView'
-#
-#    core.register 'instrPerfEval', instrPerfEval
-#    core.start 'instrPerfEval'
+    core.register 'instrPerfEvalView', instrPerfEvalView
+    core.start 'instrPerfEvalView'
+
+    core.register 'instrPerfEval', instrPerfEval
+    core.start 'instrPerfEval'
 
     core.register 'getData', getData
     core.start 'getData'
