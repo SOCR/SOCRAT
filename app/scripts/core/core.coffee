@@ -274,15 +274,19 @@ core = angular.module('app_core', [
         true
 
       _redirectMsg = (msg, data) ->
+        matches = 0
         for o in _map when o.msgFrom is msg
           eventMngr.publish
             msg: o.msgTo
             data: data
             msgScope: o.scopeTo
-          console.log '%cCORE: redirect mgs ' + o.msgTo + 'to ' + o.scopeTo, 'color:red'
+          console.log '%cCORE: redirect mgs ' + o.msgTo + ' to ' + o.scopeTo, 'color:red'
+          matches += 1
+        if matches == 0
+          console.log '%cCORE: no mapping in API for message: ' + o.msgTo, 'color:red'
+          return false
+        else
           return true
-        console.log '%cCORE: no mapping in API for message: ' + o.msgTo, 'color:red'
-        false
 
       # External methods
       lsModules: -> _ls _modules
