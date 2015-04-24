@@ -58,14 +58,13 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       _getData = () ->
 
-        data = []
         deferred = $q.defer()
 
         token = _sb.subscribe
           msg: 'wrangle data'
           msgScope: ['wrangleData']
           listener: (msg, data) ->
-            console.log data
+            _data = data
 
         _sb.publish
           msg: 'get data'
@@ -76,7 +75,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
             tableName: 'undefined:undefined'
             promise: deferred
 
-        data
+        _data
 
       getData: _getData
   ])
@@ -141,15 +140,15 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       _start = (viewContainers) ->
         data = dataRetriever.getData()
-        data = dataAdaptor.toDvTable(data)
+#        dvData = dataAdaptor.toDvTable(data)
         csvData = dataAdaptor.toCsvString(data)
-        _table = _wrangle(data, csvData, viewContainers)
+        _table = _wrangle(csvData, viewContainers)
 
-      _wrangle = (data, csvData, viewContainers) ->
+      _wrangle = (csvData, viewContainers) ->
         # TODO: abstract from using dv directly #SOCRFW-143
         table = dv.table csvData
 
-        _initial_transforms = dw.raw_inference(_csvData).transforms
+        _initial_transforms = dw.raw_inference(csvData).transforms
 
         dw.wrangler
           table: table
@@ -161,7 +160,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
         table
 
-      _saveDatatoDb ->
+      _saveDataToDb = ->
         _sb = manager.getSb()
 
         _sb.publish
@@ -169,8 +168,8 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
           data: _table
           msgScope: ['wrangleData']
 
-      _saveData: saveDatatoDb
-      _start: start
+      start: _start
+      saveData: _saveDataToDb
   ])
 
 .controller('wrangleDataSidebarCtrl', [
@@ -193,7 +192,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 .directive 'datawrangler', [
   '$exceptionHandler'
   'app_analysis_wrangleData_wrangler'
-  (wrangler, $exceptionHandler) ->
+  ($exceptionHandler, wrangler) ->
 
     restrict: 'E'
     transclude: true
