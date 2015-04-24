@@ -147,7 +147,7 @@ App.run([
       scopeTo: ['instrPerfEvalView']
     ,
       msgFrom: 'save table'
-      scopeFrom: ['getData', 'app.utils.importer']
+      scopeFrom: ['getData', 'app.utils.importer', 'wrangleData']
       msgTo: 'save table'
       scopeTo: ['database']
     ,

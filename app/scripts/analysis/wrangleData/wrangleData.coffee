@@ -56,8 +56,9 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       _sb = manager.getSb()
 
-      _getData = (cb) ->
+      _getData = () ->
 
+        data = []
         deferred = $q.defer()
 
         token = _sb.subscribe
@@ -65,9 +66,6 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
           msgScope: ['wrangleData']
           listener: (msg, data) ->
             console.log data
-            _data = dataAdaptor.toDvTable(data)
-            _csvData = dataAdaptor.toCsvString(data)
-            cb(_data, _csvData)
 
         _sb.publish
           msg: 'get data'
@@ -77,6 +75,8 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 #            tableName: $stateParams.projectId + ':' + $stateParams.forkId
             tableName: 'undefined:undefined'
             promise: deferred
+
+        data
 
       getData: _getData
   ])
@@ -130,6 +130,49 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     toCsvString: _toCsvString
 ])
 
+.factory('app_analysis_wrangleData_wrangler', [
+    'app_analysis_wrangleData_manager'
+    'app_analysis_wrangleData_dataRetriever'
+    'app_analysis_wrangleData_dataAdaptor'
+    (manager, dataRetriever, dataAdaptor) ->
+
+      _initial_transforms = []
+      _table = []
+
+      _start = (viewContainers) ->
+        data = dataRetriever.getData()
+        data = dataAdaptor.toDvTable(data)
+        csvData = dataAdaptor.toCsvString(data)
+        _table = _wrangle(data, csvData, viewContainers)
+
+      _wrangle = (data, csvData, viewContainers) ->
+        # TODO: abstract from using dv directly #SOCRFW-143
+        table = dv.table csvData
+
+        _initial_transforms = dw.raw_inference(_csvData).transforms
+
+        dw.wrangler
+          table: table
+          initial_transforms: _initial_transforms
+          tableContainer: viewContainers.tableContainer
+          transformContainer: viewContainers.transformContainer
+          previewContainer: viewContainers.previewContainer
+          dashboardContainer: viewContainers.dashboardContainer
+
+        table
+
+      _saveDatatoDb ->
+        _sb = manager.getSb()
+
+        _sb.publish
+          msg: 'wrangled'
+          data: _table
+          msgScope: ['wrangleData']
+
+      _saveData: saveDatatoDb
+      _start: start
+  ])
+
 .controller('wrangleDataSidebarCtrl', [
     '$scope'
     'app_analysis_wrangleData_manager'
@@ -148,10 +191,9 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   ])
 
 .directive 'datawrangler', [
-  'app_analysis_wrangleData_dataAdaptor'
-  'app_analysis_wrangleData_dataRetriever'
   '$exceptionHandler'
-  (dataAdaptor, dataRetriever, $exceptionHandler) ->
+  'app_analysis_wrangleData_wrangler'
+  (wrangler, $exceptionHandler) ->
 
     restrict: 'E'
     transclude: true
@@ -176,29 +218,14 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       container = $('#table')
       previewContainer = $('#preview')
+      transformContainer = $('#transformEditor')
+      dashboardContainer = $("#wranglerDashboard")
 
-      initial_transforms = []
-
-      _startWrangler = (dt, csv) ->
-
-        # TODO: abstract from using dv directly #SOCRFW-143
-        dt = dv.table csv
-
-        initial_transforms = dw.raw_inference(csv).transforms
-
-        dw.wrangler
-          tableContainer: container
-          table: dt
-          transformContainer: $('#transformEditor')
-          previewContainer: previewContainer
-          dashboardContainer: $("#wranglerDashboard")
-          initial_transforms: initial_transforms
-
-      data = dataRetriever.getData(_startWrangler)
-
-#      dt = dv.table crime
-#      initial_transforms = dw.raw_inference(crime).transforms
-#      _startWrangler dt
+      wrangler.start
+        tableContainer: container
+        transformContainer: transformContainer
+        previewContainer: previewContainer
+        dashboardContainer: dashboardContainer
 
     replace: true # replace the directive element with the output of the template
 
