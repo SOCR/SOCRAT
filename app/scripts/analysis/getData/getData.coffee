@@ -41,7 +41,7 @@ getData = angular.module('app_analysis_getData', [
     _sb = null
 
     _msgList =
-      outgoing: ['take data', 'handsontable updated']
+      outgoing: ['save data']
       incoming: ['get data']
       scope: ['getData']
 
@@ -111,7 +111,7 @@ getData = angular.module('app_analysis_getData', [
             promise:deferred.promise
 
           sb.publish
-            msg: 'handsontable updated'
+            msg: 'save data'
             data:
               dataFrame: _data
               tableName: $stateParams.projectId + ':' + $stateParams.forkId
@@ -120,7 +120,7 @@ getData = angular.module('app_analysis_getData', [
             callback: ->
               console.log 'handsontable data updated to db'
 
-        ), 2000
+        ), 1000
         true
 
       else
@@ -379,7 +379,7 @@ getData = angular.module('app_analysis_getData', [
       # using pop to remove empty last row
       tableData.data.pop()
       # and column
-      #row.pop() for row in tableData.data
+      row.pop() for row in tableData.data
 
       # remove empty last column for header
       tableData.header.pop()
