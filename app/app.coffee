@@ -146,8 +146,8 @@ App.run([
       msgTo: 'calculated'
       scopeTo: ['instrPerfEvalView']
     ,
-      msgFrom: 'save table'
-      scopeFrom: ['getData', 'app.utils.importer', 'wrangleData']
+      msgFrom: 'save data'
+      scopeFrom: ['getData', 'wrangleData']
       msgTo: 'save table'
       scopeTo: ['database']
     ,
@@ -181,12 +181,6 @@ App.run([
       scopeFrom: ['database']
       msgTo: 'wrangle data'
       scopeTo: ['wrangleData']
-    ,
-    # When /getData handonstable is updated, DB needs to be updated with the lastest values.
-      msgFrom: 'handsontable updated'
-      scopeFrom: ['getData']
-      msgTo: 'save table'
-      scopeTo: ['database']
     ]
 
     core.setEventsMapping map
