@@ -28,7 +28,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     _sb = null
 
     _msgList =
-      outgoing: ['data wrangled', 'handsontable updated', 'get data']
+      outgoing: ['save data', 'get data']
       incoming: ['wrangle data']
       scope: ['wrangleData']
 
@@ -108,6 +108,9 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
     _toDataFrame = (table) ->
 
+      # remove last empty row
+      row.pop() for row in table
+
       _nRows = table[0].length
       _nCols = table.length
 
@@ -130,19 +133,22 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 ])
 
 .factory('app_analysis_wrangleData_wrangler', [
+    '$q'
+    '$timeout'
+    '$stateParams'
+    '$rootScope'
     'app_analysis_wrangleData_manager'
     'app_analysis_wrangleData_dataRetriever'
     'app_analysis_wrangleData_dataAdaptor'
-    (manager, dataRetriever, dataAdaptor) ->
+    ($q, $timeout, $stateParams, $rootScope, manager, dataRetriever, dataAdaptor) ->
 
       _initial_transforms = []
       _table = []
 
       _start = (viewContainers) ->
         data = dataRetriever.getData()
-#        dvData = dataAdaptor.toDvTable(data)
-        csvData = dataAdaptor.toCsvString(data)
-        _table = _wrangle(csvData, viewContainers)
+        csvData = dataAdaptor.toCsvString data
+        _table = _wrangle csvData, viewContainers
 
       _wrangle = (csvData, viewContainers) ->
         # TODO: abstract from using dv directly #SOCRFW-143
@@ -161,12 +167,39 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
         table
 
       _saveDataToDb = ->
-        _sb = manager.getSb()
 
-        _sb.publish
-          msg: 'wrangled'
-          data: _table
-          msgScope: ['wrangleData']
+        clearTimeout _timer
+        _sb = manager.getSb()
+        deferred = $q.defer()
+
+        dataFrame = dataAdaptor.toDataFrame _table
+
+        _timer =  $timeout ( ->
+
+          $rootScope.$broadcast 'app:push notification',
+            initial:
+              msg: 'Data is being saved in the database...'
+              type: 'alert-info'
+            success:
+              msg: 'Successfully loaded data into database'
+              type: 'alert-success'
+            failure:
+              msg: 'Error in Database'
+              type: 'alert-error'
+            promise:deferred.promise
+
+          _sb.publish
+            msg: 'save data'
+            data:
+              dataFrame: dataFrame
+              tableName: $stateParams.projectId + ':' + $stateParams.forkId
+              promise: deferred
+            msgScope: ['wrangleData']
+            callback: ->
+              console.log 'wrangled data saved to db'
+
+        ), 1000
+        true
 
       start: _start
       saveData: _saveDataToDb
@@ -181,12 +214,20 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   ])
 
 .controller('wrangleDataMainCtrl', [
-    'app_analysis_wrangleData_manager'
-    (wrangleDataEventMngr) ->
+    '$rootScope'
+    'app_analysis_wrangleData_wrangler'
+    ($rootScope, wrangler) ->
 
+      #TODO: isolate dw from global scope
       w = dw.wrangle()
 
-      console.log 'wrangleDataMainCtrl executed'
+      # listen to state change and save data when exiting Wrangle Data
+      stateListener = $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
+        if fromState.name? and fromState.name is 'wrangleData'
+          wrangler.saveData()
+          stateListener()
+
+          console.log 'wrangleDataMainCtrl executed'
   ])
 
 .directive 'datawrangler', [
