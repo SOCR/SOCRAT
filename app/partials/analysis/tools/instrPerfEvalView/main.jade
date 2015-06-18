@@ -1,4 +1,12 @@
 div(ng-controller="instrPerfEvalViewMainCtrl")
-    h1 Instrument Perfomance Evaluation
+    h1 Instrument Performance Evaluation
     br
-    p Cronbach's alpha: {{outputStats}}
+    p Cronbach's alpha: {{cronAlpha}}
+    p Intraclass correlation coefficient (ICC): {{icc}}
+    p Split-Half Reliability coefficient: {{splitHalfCoef}}
+    p Kuder–Richardson Formula 20 (KR-20): {{kr20}}
+    p Confidence intervals:
+    p ID confidence interval: {{cronAlphaIdInterval}}
+    p Koning and Franses confidence interval: {{cronAlphaKfInterval}}
+    p Bootstrap confidence interval: {{cronAlphaBsInterval}}
+    p Logit confidence interval: {{cronAlphaLogInterval}}

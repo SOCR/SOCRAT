@@ -54,8 +54,17 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
 
     deferred = $q.defer()
 
-    sb = ctrlMngr.getSb()
-    $scope.calculate = ->
+    $scope.gamma = 0.1
+
+    # subscribe for incoming message with data
+    token = sb.subscribe
+      msg: 'take table'
+      msgScope: ['instrPerfEvalView']
+      listener: (msg, data) ->
+        _data = data
+        $scope.nRows = _data.data?.length
+        $scope.nCols = _data.data[0]?.length
+        console.log data
 
       token = sb.subscribe
         msg: 'take table'
@@ -87,6 +96,10 @@ instrPerfEvalView = angular.module('app_analysis_instrPerfEvalView', [])
     sb.subscribe
       msg: 'calculated'
       listener: (msg, data) ->
-        $scope.outputStats = data
+        $scope.cronAlpha = Number(data.cronAlpha).toFixed(3)
+        $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idIntervals)
+        $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfIntervals)
+        $scope.cronAlphaLogInterval = prettifyArrayOutput(data.logitIntervals)
+        $scope.splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
       msgScope: ['instrPerfEvalView']
 ])
