@@ -143,6 +143,8 @@ db.service 'app_database_dv', ->
         i++
 
   _db.create = (input, tname) ->
+
+    # TODO: separate updating from creating
     if _registry[tname]?
       _db.update input, tname
     else
@@ -155,7 +157,7 @@ db.service 'app_database_dv', ->
           when 'ordinal' then col.type = dv.type.ordinal
           else col.type = dv.type.unknown
 
-      #create table
+      # create table
       _ref = dv.table input
       # register the reference to the table
       _register tname, _ref
@@ -256,7 +258,7 @@ db.factory 'app_database_handler', [
   'app_database_dataAdaptor'
   ($q, _db, dataAdaptor) ->
 
-    #set all the callbacks here.
+    # set all the callbacks here.
     _setSb = ((_db) ->
       window.db = _db
       (sb) ->
@@ -272,6 +274,7 @@ db.factory 'app_database_handler', [
         _status = _methods.map (method) ->
           sb.subscribe
             msg: method['incoming']
+            msgScope: ['database']
             listener: (msg, data) ->
               console.log "%cDATABASE: listener called ", "color:green"
               console.log data
@@ -288,20 +291,16 @@ db.factory 'app_database_handler', [
               # invoke callback
               _data = method.event.apply null, _data
 
+              # convert data to DataFrame if returning it
+              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+
+              # all publish calls should pass a promise in the data object
+              # if promise is not defined, create one and pass it along
               deferred = data.promise
               if typeof deferred isnt 'undefined'
                 if _data isnt false then deferred.resolve() else deferred.reject()
               else
-                _data.push $q.defer()
-              
-              # if _data is false
-              #  if typeof data.promise isnt 'undefined'
-              #    data.promise.reject 'table operation failed'
-              #  false
-              # all publish calls should pass a promise in the data object.
-              # if promise is not defined, create one and pass it along.
-
-              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+                _data.promise = $q.defer()
 
               console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
@@ -309,8 +308,6 @@ db.factory 'app_database_handler', [
                 msg: 'take table'
                 data: _data
                 msgScope: ['database']
-            msgScope: ['database']
-
     )(_db)
 
     setSb: _setSb

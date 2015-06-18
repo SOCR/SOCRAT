@@ -9,12 +9,12 @@ describe "getData", ->
   angular.module "ui.bootstrap",[]
 
 # Create mock module and overriding services
-  angular.module('app_mocks', []) 
+  angular.module('app_mocks_get_data', [])
 
     .service 'app_analysis_getData_manager',['sb',(sb)->
       getSb:()->
-        sb  
-    ]   
+        sb
+    ]
     .service 'sb', ->
       @events = []
       @publish = (event) =>
@@ -31,11 +31,12 @@ describe "getData", ->
       subscribe: @subscribe
       unsubscribe: @unsubscribe
     .service "$stateParams", ->
-      forkId:12
+      projectId:'manhattan'
+      forkId:'evil'
 
   beforeEach ->
     module "app_analysis_getData"
-    module "app_mocks"
+    module "app_mocks_get_data"
 
   describe "showState", ->
 ####
@@ -83,23 +84,23 @@ describe "getData", ->
 
   describe "app_analysis_getData_inputCache", ->
     beforeEach ->
-      #$stateParams = $injector.get('$stateParams');
     it "should return false if input data is empty", ->
-      inject ($stateParams,app_analysis_getData_inputCache) ->
+      inject (app_analysis_getData_inputCache) ->
         expect(app_analysis_getData_inputCache.set null).toBeFalsy()
         expect(app_analysis_getData_inputCache.set []).toBeTruthy()
         expect(app_analysis_getData_inputCache.set [1,2,4]).toBeTruthy()
 
-    it "should publish message if data not updated within 4 seconds of first update", ->
-      inject (sb,$stateParams,app_analysis_getData_inputCache) ->
+    it "should publish message if data not updated within 4 seconds of first update", ()->
+      inject ($timeout,sb,app_analysis_getData_inputCache) ->
         foo =
           cb : ->
         spyOn(foo,"cb")
         sb.subscribe
           msg:'handsontable updated'
-          listener:foo
+          listener:foo.cb
           msgScope:['getData']
         app_analysis_getData_inputCache.set [1,2,3]
+        $timeout.flush()
         expect(foo.cb).toHaveBeenCalled()
 
     #it "should reset timer if data updated within 4 seconds", ->
