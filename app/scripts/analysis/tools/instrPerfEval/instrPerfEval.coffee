@@ -56,6 +56,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
 
       $scope.cronAlpha = Number(data.cronAlpha).toFixed(3)
       $scope.icc = Number(data.icc).toFixed(3)
+      $scope.kr20 = if data.kr20 is 'Not a binary data' then data.kr20 else Number(data.kr20).toFixed(3)
       $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idIntervals)
       $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfIntervals)
       $scope.cronAlphaLogInterval = prettifyArrayOutput(data.logitIntervals)
@@ -124,12 +125,12 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       matrixMean = jStat.sum(matrix.sum()) / (r * k)
       rowMeans = matrix.transpose().mean() # [mean xi]
       colMeans = matrix.mean() # [mean xj]
-      ssRows = k * jStat.sum(jStat.pow(jStat.subtract(rowMeans, matrixMean), 2))
-      ssCols = r * jStat.sum(jStat.pow(jStat.subtract(colMeans, matrixMean), 2))
+      ssRows = k * jStat.sum jStat.pow(jStat.subtract(rowMeans, matrixMean), 2)
+      ssCols = r * jStat.sum jStat.pow(jStat.subtract(colMeans, matrixMean), 2)
       ssErr = 0
       for col, j in matrix.transpose()
         for ij, i in col
-          ssErr = ssErr + Math.pow(ij - rowMeans[i] - colMeans[j] + matrixMean, 2)
+          ssErr = ssErr + Math.pow ij - rowMeans[i] - colMeans[j] + matrixMean, 2
       msRows = ssRows / (r - 1)
       msCols = ssCols / (k - 1)
       msErr = ssErr / ((r - 1) * (k - 1))
@@ -137,17 +138,22 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
 
       # Split-Half Reliability coefficient
       nGroups = 2
-      oddSum = jStat.zeros(1, r)
-      evenSum = jStat.zeros(1, r)
+      oddSum = jStat.zeros(1, r)[0]
+      evenSum = jStat.zeros(1, r)[0]
       for col in matrix.transpose() by 2
-        oddSum = jStat([oddSum, col]).sum()
-      for colIdx in [1..k] by 2
-        col = jStat.col matrix, colIdx
-        evenSum = jStat([evenSum, jStat.transpose(col)]).sum()
+        evenSum = (evenSum[x] + col[x] for x of evenSum)
+      for colIdx in [1..k-1] by 2
+        col = jStat.transpose jStat.col(matrix, colIdx)
+        oddSum = (oddSum[x] + col[x] for x of oddSum)
       meanOdd = jStat.mean oddSum
       meanEven = jStat.mean evenSum
-      rCorrCoef = jStat.corrcoeff(oddSum, evenSum)
+      rCorrCoef = jStat.corrcoeff oddSum, evenSum
       adjRCorrCoef = rCorrCoef * nGroups / ((nGroups - 1) * (rCorrCoef - 1))
+
+      # Calculating Kuder–Richardson Formula 20 (KR-20)
+      zeroMatrix = matrix.subtract 1
+      if jStat.sum(jStat(zeroMatrix).sum()) isnt 0
+        kr20 = 'Not a binary data'
 
       # Calculate confidence intervals
       gamma = (1 - confLevel) * 2 # confidence coefficient
@@ -184,6 +190,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       _data =
         cronAlpha: cAlpha
         icc: icc
+        kr20: kr20
         idIntervals: [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
         kfIntervals: [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
         logitIntervals: [Math.max(0, logitIntervalLeft), Math.min(1, logitIntervalRight)]
