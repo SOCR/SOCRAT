@@ -55,6 +55,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       data = alphaCalculator.getAlpha()
 
       $scope.cronAlpha = Number(data.cronAlpha).toFixed(3)
+      $scope.icc = Number(data.icc).toFixed(3)
       $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idIntervals)
       $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfIntervals)
       $scope.cronAlphaLogInterval = prettifyArrayOutput(data.logitIntervals)
@@ -119,6 +120,21 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       rowTotalsVar = jStat.variance matrix.transpose().sum()
       cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
 
+      # Intraclass correlation coefficient
+      matrixMean = jStat.sum(matrix.sum()) / (r * k)
+      rowMeans = matrix.transpose().mean() # [mean xi]
+      colMeans = matrix.mean() # [mean xj]
+      ssRows = k * jStat.sum(jStat.pow(jStat.subtract(rowMeans, matrixMean), 2))
+      ssCols = r * jStat.sum(jStat.pow(jStat.subtract(colMeans, matrixMean), 2))
+      ssErr = 0
+      for col, j in matrix.transpose()
+        for ij, i in col
+          ssErr = ssErr + Math.pow(ij - rowMeans[i] - colMeans[j] + matrixMean, 2)
+      msRows = ssRows / (r - 1)
+      msCols = ssCols / (k - 1)
+      msErr = ssErr / ((r - 1) * (k - 1))
+      icc = (msRows - msErr) / (msRows + (k - 1) * msErr) + k * (msCols - msErr) / r
+
       # Split-Half Reliability coefficient
       nGroups = 2
       oddSum = jStat.zeros(1, r)
@@ -132,7 +148,6 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       meanEven = jStat.mean evenSum
       rCorrCoef = jStat.corrcoeff(oddSum, evenSum)
       adjRCorrCoef = rCorrCoef * nGroups / ((nGroups - 1) * (rCorrCoef - 1))
-
 
       # Calculate confidence intervals
       gamma = (1 - confLevel) * 2 # confidence coefficient
@@ -168,6 +183,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
 
       _data =
         cronAlpha: cAlpha
+        icc: icc
         idIntervals: [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
         kfIntervals: [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
         logitIntervals: [Math.max(0, logitIntervalLeft), Math.min(1, logitIntervalRight)]
