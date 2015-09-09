@@ -174,6 +174,16 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
         dataFrame = dataAdaptor.toDataFrame _table
 
+        _sb.publish
+          msg: 'save data'
+          data:
+            dataFrame: dataFrame
+            tableName: $stateParams.projectId + ':' + $stateParams.forkId
+            promise: deferred
+          msgScope: ['wrangleData']
+          callback: ->
+            console.log 'wrangled data saved to db'
+
         _timer =  $timeout ( ->
 
           $rootScope.$broadcast 'app:push notification',
@@ -187,16 +197,6 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
               msg: 'Error in Database'
               type: 'alert-error'
             promise:deferred.promise
-
-          _sb.publish
-            msg: 'save data'
-            data:
-              dataFrame: dataFrame
-              tableName: $stateParams.projectId + ':' + $stateParams.forkId
-              promise: deferred
-            msgScope: ['wrangleData']
-            callback: ->
-              console.log 'wrangled data saved to db'
 
         ), 1000
         true
