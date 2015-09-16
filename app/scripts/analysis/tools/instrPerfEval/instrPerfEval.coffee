@@ -122,21 +122,29 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
 
       # Intraclass correlation coefficient
-      matrixMean = jStat.sum(matrix.sum()) / (r * k)
+      #  https://en.wikipedia.org/wiki/Intraclass_correlation#Modern_ICC_definitions:_simpler_formula_but_positive_bias
+      #  http://www.real-statistics.com/reliability/intraclass-correlation/
+      #  http://statwiki.ucdavis.edu/Statistical_Computing/Analysis_of_Variance/Two-Factor_ANOVA_model_with_n_%3D_1_(no_replication)
+
+      # Find 2-way ANOVA coefficients
+      matrixMean = jStat.sum(matrix.sum()) / (r * k)  # estimated overall mean
       rowMeans = matrix.transpose().mean() # [mean xi]
       colMeans = matrix.mean() # [mean xj]
       ssRows = k * jStat.sum jStat.pow(jStat.subtract(rowMeans, matrixMean), 2)
       ssCols = r * jStat.sum jStat.pow(jStat.subtract(colMeans, matrixMean), 2)
       ssErr = 0
-      for col, j in matrix.transpose()
-        for ij, i in col
-          ssErr = ssErr + Math.pow ij - rowMeans[i] - colMeans[j] + matrixMean, 2
+      for row, i in matrix
+        for ij, j in row
+          ssErr = ssErr + Math.pow(ij - rowMeans[i] - colMeans[j] + matrixMean, 2)
       msRows = ssRows / (r - 1)
       msCols = ssCols / (k - 1)
       msErr = ssErr / ((r - 1) * (k - 1))
-      icc = (msRows - msErr) / (msRows + (k - 1) * msErr) + k * (msCols - msErr) / r
+      # Calculate Intraclass Correlation Coefficient
+      icc = ((msRows - msErr) / k) / ((msRows - msErr) / k + (msCols - msErr) / r + msErr)
 
       # Split-Half Reliability coefficient
+      #  http://www.real-statistics.com/reliability/split-half-methodology/
+      #  https://en.wikipedia.org/wiki/Spearman–Brown prediction formula
       nGroups = 2
       oddSum = jStat.zeros(1, r)[0]
       evenSum = jStat.zeros(1, r)[0]
