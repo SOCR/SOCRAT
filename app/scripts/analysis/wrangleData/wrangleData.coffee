@@ -242,19 +242,19 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     # the controller for the directive
     controller: ($scope) ->
 
-#      myLayout = $('#dt_example').layout
-#        north:
-#          spacing_open: 0
-#          resizable: false
-#          slidable: false
-#          fxName: 'none'
-#        south:
-#          spacing_open: 0
-#          resizable: false
-#          slidable: false
-#          fxName: 'none'
-#        west:
-#          minSize: 310
+      myLayout = $('#dt_example').layout
+        north:
+          spacing_open: 0
+          resizable: false
+          slidable: false
+          fxName: 'none'
+        south:
+          spacing_open: 0
+          resizable: false
+          slidable: false
+          fxName: 'none'
+        west:
+          minSize: 310
 
       container = $('#table')
       previewContainer = $('#preview')
@@ -268,6 +268,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
         dashboardContainer: dashboardContainer
 
       # TODO: find correct programmatic way to invoke header propagation
+      # assuming there always is a header in data, propagate it in Wrangler
       $('#table .odd .rowHeader').first().mouseup().mousedown()
       d3.select('div.menu_option.Promote')[0][0].__onmousedown()
       $('div.suggestion.selected').click()
