@@ -148,7 +148,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       meanOdd = jStat.mean oddSum
       meanEven = jStat.mean evenSum
       rCorrCoef = jStat.corrcoeff oddSum, evenSum
-      adjRCorrCoef = rCorrCoef * nGroups / ((nGroups - 1) * (rCorrCoef - 1))
+      adjRCorrCoef = rCorrCoef * nGroups / (1 + (nGroups - 1) * rCorrCoef)
 
       # Calculating Kuder–Richardson Formula 20 (KR-20)
       zeroMatrix = matrix.subtract 1
