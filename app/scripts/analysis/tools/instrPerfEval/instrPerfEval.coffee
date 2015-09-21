@@ -49,8 +49,9 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       console.log 'instrPerfEvalViewMainCtrl executed'
 
       prettifyArrayOutput = (arr) ->
-        arr = arr.map (x) -> x.toFixed 3
-        '[' + arr.toString().split(',').join('; ') + ']'
+        if arr?
+          arr = arr.map (x) -> x.toFixed 3
+          '[' + arr.toString().split(',').join('; ') + ']'
 
       data = alphaCalculator.getAlpha()
 
@@ -116,36 +117,31 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       rowTotalsVar = jStat.variance matrix.transpose().sum()
       cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
 
-    _getCAlphaConfIntervals = (matrix, gamma) ->
+    _getCAlphaConfIntervals = (matrix, cAlpha, gamma) ->
       k = jStat.cols matrix
       r = jStat.rows matrix
-      # calculate ID confidence intervals
-      alphaCap = 0
-      for row in matrix
-        centeredRow = jStat.subtract row, jStat.mean row
-        alphaCap = alphaCap + jStat.dot centeredRow, centeredRow
-      alphaCap = alphaCap / (r - 1)
-      omega = 2 * (k - 1) * (1 - alphaCap) / k
-      varCapAlphaCap = (k * k * omega) / (r * (k - 1) * (k - 1))
 
-      idIntervalAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt varCapAlphaCap
-      idIntervalLeft = alphaCap - idIntervalAbsDev
-      idIntervalRight = alphaCap + idIntervalAbsDev
+      # calculate ID confidence intervals
+      omega = 2 * (k - 1) * (1 - cAlpha) / k
+      varCapAlphaCap = (k * k * omega) / (r * (k - 1) * (k - 1))
+      idIntervalAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt(varCapAlphaCap)
+      idIntervalLeft = cAlpha - idIntervalAbsDev
+      idIntervalRight = cAlpha + idIntervalAbsDev
 
       # calculate KF confidence intervals
-      kfIntervalLeft = 1 - (1 - alphaCap) * Math.exp jStat.normal.inv(1 - gamma / 2, 0, 1) *
+      kfIntervalLeft = 1 - (1 - cAlpha) * Math.exp jStat.normal.inv(1 - gamma / 2, 0, 1) *
           Math.sqrt 2 * k / (r * (k - 1))
-      kfIntervalRight = 1 - (1 - alphaCap) * Math.exp -1 * jStat.normal.inv(1 - gamma / 2, 0, 1) *
+      kfIntervalRight = 1 - (1 - cAlpha) * Math.exp -1 * jStat.normal.inv(1 - gamma / 2, 0, 1) *
           Math.sqrt 2 * k / (r * (k - 1))
 
       #calculate logit confidence intervals
-      thetaCap = Math.log alphaCap / (1 - alphaCap)
-      varCapThetaCap = varCapAlphaCap * Math.pow 1 / alphaCap + 1 / (1 - alphaCap), 2
-      thetaAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt varCapThetaCap
+      thetaCap = Math.log(cAlpha / (1 - cAlpha))
+      varCapThetaCap = varCapAlphaCap * Math.pow(1 / cAlpha + 1 / (1 - cAlpha), 2)
+      thetaAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt(varCapThetaCap)
       thetaIntervalLeft = thetaCap - thetaAbsDev
       thetaIntervalRight = thetaCap + thetaAbsDev
-      logitIntervalLeft = Math.exp(thetaIntervalLeft) / (1 + Math.exp thetaIntervalLeft)
-      logitIntervalRight = Math.exp(thetaIntervalRight) / (1 + Math.exp thetaIntervalRight)
+      logitIntervalLeft = Math.exp(thetaIntervalLeft) / (1 + Math.exp(thetaIntervalLeft))
+      logitIntervalRight = Math.exp(thetaIntervalRight) / (1 + Math.exp(thetaIntervalRight))
 
       _cAlphaConfIntervals =
         idIntervals: [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
@@ -209,10 +205,11 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
 
       # Calculate confidence intervals
       _gamma = (1 - confLevel) * 2 # confidence coefficient
-      _cAlphaConfIntervals = _getCAlphaConfIntervals(_matrix, _gamma)
+      _cAlpha = _getCAlpha(_matrix)
+      _cAlphaConfIntervals = _getCAlphaConfIntervals(_matrix, _cAlpha, _gamma)
 
       _data =
-        cronAlpha: _getCAlpha(_matrix)
+        cronAlpha: _cAlpha
         icc: _getIcc(_matrix)
         kr20: _getKr20(_matrix)
         adjRCorrCoef: _getSpliHalfReliability(_matrix)
