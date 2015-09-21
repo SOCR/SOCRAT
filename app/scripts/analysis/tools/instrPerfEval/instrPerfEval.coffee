@@ -109,22 +109,56 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
     _getAlpha = ->
       _data
 
-    _calculate = (obj, confLevel) ->
-      # calculate Cronbach's Alpha
-      matrix = jStat obj.data
+    _getCAlpha = (matrix) ->
       k = jStat.cols matrix
-      r = jStat.rows matrix
-
-      matrix = jStat jStat.map matrix, Number
-
+      # calculate Cronbach's Alpha
       sumColsVar = jStat.sum matrix.variance()
       rowTotalsVar = jStat.variance matrix.transpose().sum()
       cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
 
+    _getCAlphaConfIntervals = (matrix, gamma) ->
+      k = jStat.cols matrix
+      r = jStat.rows matrix
+      # calculate ID confidence intervals
+      alphaCap = 0
+      for row in matrix
+        centeredRow = jStat.subtract row, jStat.mean row
+        alphaCap = alphaCap + jStat.dot centeredRow, centeredRow
+      alphaCap = alphaCap / (r - 1)
+      omega = 2 * (k - 1) * (1 - alphaCap) / k
+      varCapAlphaCap = (k * k * omega) / (r * (k - 1) * (k - 1))
+
+      idIntervalAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt varCapAlphaCap
+      idIntervalLeft = alphaCap - idIntervalAbsDev
+      idIntervalRight = alphaCap + idIntervalAbsDev
+
+      # calculate KF confidence intervals
+      kfIntervalLeft = 1 - (1 - alphaCap) * Math.exp jStat.normal.inv(1 - gamma / 2, 0, 1) *
+          Math.sqrt 2 * k / (r * (k - 1))
+      kfIntervalRight = 1 - (1 - alphaCap) * Math.exp -1 * jStat.normal.inv(1 - gamma / 2, 0, 1) *
+          Math.sqrt 2 * k / (r * (k - 1))
+
+      #calculate logit confidence intervals
+      thetaCap = Math.log alphaCap / (1 - alphaCap)
+      varCapThetaCap = varCapAlphaCap * Math.pow 1 / alphaCap + 1 / (1 - alphaCap), 2
+      thetaAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt varCapThetaCap
+      thetaIntervalLeft = thetaCap - thetaAbsDev
+      thetaIntervalRight = thetaCap + thetaAbsDev
+      logitIntervalLeft = Math.exp(thetaIntervalLeft) / (1 + Math.exp thetaIntervalLeft)
+      logitIntervalRight = Math.exp(thetaIntervalRight) / (1 + Math.exp thetaIntervalRight)
+
+      _cAlphaConfIntervals =
+        idIntervals: [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
+        kfIntervals: [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
+        logitIntervals: [Math.max(0, logitIntervalLeft), Math.min(1, logitIntervalRight)]
+
+    _getIcc = (matrix) ->
       # Intraclass correlation coefficient
       #  https://en.wikipedia.org/wiki/Intraclass_correlation#Modern_ICC_definitions:_simpler_formula_but_positive_bias
       #  http://www.real-statistics.com/reliability/intraclass-correlation/
       #  http://statwiki.ucdavis.edu/Statistical_Computing/Analysis_of_Variance/Two-Factor_ANOVA_model_with_n_%3D_1_(no_replication)
+      k = jStat.cols matrix
+      r = jStat.rows matrix
 
       # Find 2-way ANOVA coefficients
       matrixMean = jStat.sum(matrix.sum()) / (r * k)  # estimated overall mean
@@ -142,9 +176,14 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       # Calculate Intraclass Correlation Coefficient
       icc = ((msRows - msErr) / k) / ((msRows - msErr) / k + (msCols - msErr) / r + msErr)
 
+    _getSpliHalfReliability = (matrix) ->
       # Split-Half Reliability coefficient
       #  http://www.real-statistics.com/reliability/split-half-methodology/
       #  https://en.wikipedia.org/wiki/Spearman–Brown prediction formula
+
+      k = jStat.cols matrix
+      r = jStat.rows matrix
+
       nGroups = 2
       oddSum = jStat.zeros(1, r)[0]
       evenSum = jStat.zeros(1, r)[0]
@@ -158,51 +197,28 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       rCorrCoef = jStat.corrcoeff oddSum, evenSum
       adjRCorrCoef = rCorrCoef * nGroups / (1 + (nGroups - 1) * rCorrCoef)
 
+    _getKr20 = (matrix) ->
       # Calculating Kuder–Richardson Formula 20 (KR-20)
       zeroMatrix = matrix.subtract 1
       if jStat.sum(jStat(zeroMatrix).sum()) isnt 0
         kr20 = 'Not a binary data'
 
+    _calculate = (obj, confLevel) ->
+      _matrix = jStat obj.data
+      _matrix = jStat jStat.map _matrix, Number
+
       # Calculate confidence intervals
-      gamma = (1 - confLevel) * 2 # confidence coefficient
-
-      # calculate ID confidence intervals
-      n = jStat.rows matrix
-      alphaCap = 0
-      for row in matrix
-        centeredRow = jStat.subtract row, jStat.mean row
-        alphaCap = alphaCap + jStat.dot centeredRow, centeredRow
-      alphaCap = alphaCap / (n - 1)
-      omega = 2 * (k - 1) * (1 - alphaCap) / k
-      varCapAlphaCap = (k * k * omega) / (n * (k - 1) * (k - 1))
-
-      idIntervalAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt varCapAlphaCap
-      idIntervalLeft = alphaCap - idIntervalAbsDev
-      idIntervalRight = alphaCap + idIntervalAbsDev
-
-      # calculate KF confidence intervals
-      kfIntervalLeft = 1 - (1 - alphaCap) * Math.exp jStat.normal.inv(1 - gamma / 2, 0, 1) *
-          Math.sqrt 2 * k / (n * (k - 1))
-      kfIntervalRight = 1 - (1 - alphaCap) * Math.exp -1 * jStat.normal.inv(1 - gamma / 2, 0, 1) *
-          Math.sqrt 2 * k / (n * (k - 1))
-
-      #calculate logit confidence intervals
-      thetaCap = Math.log alphaCap / (1 - alphaCap)
-      varCapThetaCap = varCapAlphaCap * Math.pow 1 / alphaCap + 1 / (1 - alphaCap), 2
-      thetaAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt varCapThetaCap
-      thetaIntervalLeft = thetaCap - thetaAbsDev
-      thetaIntervalRight = thetaCap + thetaAbsDev
-      logitIntervalLeft = Math.exp(thetaIntervalLeft) / (1 + Math.exp thetaIntervalLeft)
-      logitIntervalRight = Math.exp(thetaIntervalRight) / (1 + Math.exp thetaIntervalRight)
+      _gamma = (1 - confLevel) * 2 # confidence coefficient
+      _cAlphaConfIntervals = _getCAlphaConfIntervals(_matrix, _gamma)
 
       _data =
-        cronAlpha: cAlpha
-        icc: icc
-        kr20: kr20
-        idIntervals: [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
-        kfIntervals: [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
-        logitIntervals: [Math.max(0, logitIntervalLeft), Math.min(1, logitIntervalRight)]
-        adjRCorrCoef: adjRCorrCoef
+        cronAlpha: _getCAlpha(_matrix)
+        icc: _getIcc(_matrix)
+        kr20: _getKr20(_matrix)
+        adjRCorrCoef: _getSpliHalfReliability(_matrix)
+        idIntervals: _cAlphaConfIntervals.idIntervals
+        kfIntervals: _cAlphaConfIntervals.kfIntervals
+        logitIntervals: _cAlphaConfIntervals.logitIntervals
 
     calculate: _calculate
     getAlpha: _getAlpha
