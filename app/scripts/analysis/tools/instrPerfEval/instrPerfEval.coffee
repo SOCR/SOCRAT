@@ -62,6 +62,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfInterval)
       $scope.cronAlphaLogitInterval = prettifyArrayOutput(data.logitInterval)
       $scope.cronAlphaBootstrapInterval = prettifyArrayOutput(data.bootstrapInterval)
+      $scope.cronAlphaAdfInterval = prettifyArrayOutput(data.cronAlphaAdfInterval)
       $scope.splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
   ])
 
@@ -129,6 +130,48 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       k = jStat.cols matrix
       r = jStat.rows matrix
 
+      # calculate covariance matrix
+      matrixSquared = jStat.create k, (i, j) -> return 0
+      for row, i in matrix.transpose()
+        for col, j in matrix.transpose()
+          matrixSquared[i][j] = (a * col[k] for k, a of row).reduce (t, s) -> t + s
+      colMeans = matrix.mean() # row vector
+      colMeansSquared = jStat.create k, (i, j) -> return 0
+      for i in [0..k-1]
+        for j in [0..k-1]
+          colMeansSquared[i][j] = colMeans[i] * colMeans[j] * r
+      cov = jStat.create k, (i, j) -> return 0
+      covSum = 0
+      covDiagSum = 0
+      for i in [0..k-1]
+        for j in [0..k-1]
+          cov[i][j] = (matrixSquared[i][j] - colMeansSquared[i][j]) * (1 / (r - 1))
+          covSum = covSum + cov[i][j]
+          covDiagSum = covDiagSum + cov[i][j] if i == j
+      covOffDiagSum = (covSum - covDiagSum) / 2
+
+      # calculate ADF confidence intervals
+      dwrtvar = -2 * (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
+      dwrtcov = (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
+      jac = jStat.create k, (i, j) -> return dwrtcov
+      for j in [0..k - 1]
+        jac[j][j] = dwrtvar
+
+      trac = 0
+      for isub in [0..r]
+        v = jStat(matrix).row(isub).map (x, i) -> x - colMeans[i] # row vector
+        wcv = jStat.create k, (i, j) -> return 0
+        wcvSum = 0
+        for i in [0..k-1]
+          for j in [0..k-1]
+            wcv[i][j] = jac[i][j] * (v[i] * v[j] - cov[i][j])
+            wcvSum = wcvSum + wcv[i][j]
+        trac = trac + wcvSum * wcvSum
+      nnase = Math.sqrt((1 / r) * (1 / (r - 1)) * trac)
+      adfIntervalLeft = cAlpha - jStat.normal.inv(1 - gamma / 2, 0, 1) * nnase
+      adfIntervalRight = cAlpha + jStat.normal.inv(1 - gamma / 2, 0, 1) * nnase
+
+
       # calculate ID confidence intervals
       omega = 2 * (k - 1) * (1 - cAlpha) / k
       varCapAlphaCap = (k * k * omega) / (r * (k - 1) * (k - 1))
@@ -160,7 +203,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       accelerationAlpha = accelAlphaNum / accelAlphaDenom
 
       # calculate bias correction using bootstrapping
-      B = 100 # number of bootstrap samples
+      B = 1000 # number of bootstrap samples
       alphaBootstrapped = [] # bootstrap sample estimates
       for sample in [0..B - 1]
         sampleMatrix = []
@@ -197,6 +240,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
         kfInterval: [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
         logitInterval: [Math.max(0, logitIntervalLeft), Math.min(1, logitIntervalRight)]
         bootstrapInterval: [Math.max(0, bootstrapPercentiles[0]), Math.min(1, bootstrapPercentiles[1])]
+        adfInterval: [Math.max(0, adfIntervalLeft), Math.min(1, adfIntervalRight)]
 
     # Intraclass correlation coefficient
     #  https://en.wikipedia.org/wiki/Intraclass_correlation#Modern_ICC_definitions:_simpler_formula_but_positive_bias
@@ -269,6 +313,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
         kfInterval: _cAlphaConfIntervals.kfInterval
         logitInterval: _cAlphaConfIntervals.logitInterval
         bootstrapInterval: _cAlphaConfIntervals.bootstrapInterval
+        adfInterval: _cAlphaConfIntervals.adfInterval
 
     calculate: _calculate
     getAlpha: _getAlpha
