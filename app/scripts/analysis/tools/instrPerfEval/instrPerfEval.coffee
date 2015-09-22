@@ -58,9 +58,10 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       $scope.cronAlpha = Number(data.cronAlpha).toFixed(3)
       $scope.icc = Number(data.icc).toFixed(3)
       $scope.kr20 = if data.kr20 is 'Not a binary data' then data.kr20 else Number(data.kr20).toFixed(3)
-      $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idIntervals)
-      $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfIntervals)
-      $scope.cronAlphaLogInterval = prettifyArrayOutput(data.logitIntervals)
+      $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idInterval)
+      $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfInterval)
+      $scope.cronAlphaLogitInterval = prettifyArrayOutput(data.logitInterval)
+      $scope.cronAlphaBootstrapInterval = prettifyArrayOutput(data.bootstrapInterval)
       $scope.splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
   ])
 
@@ -110,14 +111,21 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
     _getAlpha = ->
       _data
 
+    # Crobach's Alpha
     _getCAlpha = (matrix) ->
+      matrix = jStat(matrix)
       k = jStat.cols matrix
       # calculate Cronbach's Alpha
       sumColsVar = jStat.sum matrix.variance()
       rowTotalsVar = jStat.variance matrix.transpose().sum()
       cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
 
+    # Confidence intervals for Crobach's Alpha
+    #  TSAGRIS, MICHAIL, CONSTANTINOS C. FRANGOS, and CHRISTOS C. FRANGOS.
+    #   "Confidence intervals for Cronbach’s reliability coefficient."
+    #   http://www.wseas.us/e-library/conferences/2013/Vouliagmeni/CCC/CCC-25.pdf
     _getCAlphaConfIntervals = (matrix, cAlpha, gamma) ->
+      matrix = jStat(matrix)
       k = jStat.cols matrix
       r = jStat.rows matrix
 
@@ -128,13 +136,53 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       idIntervalLeft = cAlpha - idIntervalAbsDev
       idIntervalRight = cAlpha + idIntervalAbsDev
 
+
       # calculate KF confidence intervals
       kfIntervalLeft = 1 - (1 - cAlpha) * Math.exp jStat.normal.inv(1 - gamma / 2, 0, 1) *
           Math.sqrt 2 * k / (r * (k - 1))
       kfIntervalRight = 1 - (1 - cAlpha) * Math.exp -1 * jStat.normal.inv(1 - gamma / 2, 0, 1) *
           Math.sqrt 2 * k / (r * (k - 1))
 
-      #calculate logit confidence intervals
+
+      # calculate bootstrap confidence intervals
+      #  calculate acceleration term using Jackknife
+      alphaCapIthDeleted = []
+      for idx in [0..r - 1] # get sample estimates when Ith row is deleted
+        rowsBeforeIdx = matrix.slice 0, idx
+        rowsAfterIdx = matrix.slice idx + 1
+        matrixWithoutIdxRow = rowsBeforeIdx.concat rowsAfterIdx
+        alphaCapIthDeleted.push(_getCAlpha matrixWithoutIdxRow)
+      alphaCapJackknife = (alphaCapIthDeleted.reduce (t, s) -> t + s) / r
+      accelAlphaNum = (alphaCapIthDeleted.map (x) -> x - alphaCapJackknife).map (x) -> Math.pow(x, 3)
+      accelAlphaNum = accelAlphaNum.reduce (t, s) -> t + s
+      accelAlphaDenom = (alphaCapIthDeleted.map (x) -> x - alphaCapJackknife).map (x) -> Math.pow(x, 2)
+      accelAlphaDenom = 6 * Math.pow((accelAlphaDenom.reduce (t, s) -> t + s), 3/2)
+      accelerationAlpha = accelAlphaNum / accelAlphaDenom
+
+      # calculate bias correction using bootstrapping
+      B = 100 # number of bootstrap samples
+      alphaBootstrapped = [] # bootstrap sample estimates
+      for sample in [0..B - 1]
+        sampleMatrix = []
+        for idx in [0..r - 1]
+          newRowIdx = Math.floor(Math.random() * r)
+          sampleMatrix.push(matrix[newRowIdx])
+        alphaBootstrapped.push(_getCAlpha(sampleMatrix))
+      smallerAlphas = (val for val in alphaBootstrapped when val < cAlpha)
+      zCapZero = jStat.normal.inv(smallerAlphas.length / B, 0, 1)
+
+      # calculate gammas for interval
+      gamma1Num = zCapZero + jStat.normal.inv(gamma / 2, 0, 1)
+      gamma1Denom =1 - cAlpha * (zCapZero + jStat.normal.inv(gamma / 2, 0, 1))
+      gamma1 = jStat.normal.cdf(zCapZero + gamma1Num / gamma1Denom, 0, 1)
+      gamma2Num = zCapZero + jStat.normal.inv(1 - gamma / 2, 0, 1)
+      gamma2Denom = 1 - cAlpha * (zCapZero + jStat.normal.inv(1 - gamma / 2, 0, 1))
+      gamma2 = jStat.normal.cdf(zCapZero + gamma2Num / gamma2Denom, 0, 1)
+      bootstrapPercentiles = [jStat.percentile(alphaBootstrapped, gamma1), jStat.percentile(alphaBootstrapped, gamma2)]
+      bootstrapPercentiles = bootstrapPercentiles.sort()
+
+
+      # calculate logit confidence intervals
       thetaCap = Math.log(cAlpha / (1 - cAlpha))
       varCapThetaCap = varCapAlphaCap * Math.pow(1 / cAlpha + 1 / (1 - cAlpha), 2)
       thetaAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt(varCapThetaCap)
@@ -143,16 +191,19 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       logitIntervalLeft = Math.exp(thetaIntervalLeft) / (1 + Math.exp(thetaIntervalLeft))
       logitIntervalRight = Math.exp(thetaIntervalRight) / (1 + Math.exp(thetaIntervalRight))
 
-      _cAlphaConfIntervals =
-        idIntervals: [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
-        kfIntervals: [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
-        logitIntervals: [Math.max(0, logitIntervalLeft), Math.min(1, logitIntervalRight)]
 
+      _cAlphaConfIntervals =
+        idInterval: [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
+        kfInterval: [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
+        logitInterval: [Math.max(0, logitIntervalLeft), Math.min(1, logitIntervalRight)]
+        bootstrapInterval: [Math.max(0, bootstrapPercentiles[0]), Math.min(1, bootstrapPercentiles[1])]
+
+    # Intraclass correlation coefficient
+    #  https://en.wikipedia.org/wiki/Intraclass_correlation#Modern_ICC_definitions:_simpler_formula_but_positive_bias
+    #  http://www.real-statistics.com/reliability/intraclass-correlation/
+    #  http://statwiki.ucdavis.edu/Statistical_Computing/Analysis_of_Variance/Two-Factor_ANOVA_model_with_n_%3D_1_(no_replication)
     _getIcc = (matrix) ->
-      # Intraclass correlation coefficient
-      #  https://en.wikipedia.org/wiki/Intraclass_correlation#Modern_ICC_definitions:_simpler_formula_but_positive_bias
-      #  http://www.real-statistics.com/reliability/intraclass-correlation/
-      #  http://statwiki.ucdavis.edu/Statistical_Computing/Analysis_of_Variance/Two-Factor_ANOVA_model_with_n_%3D_1_(no_replication)
+      matrix = jStat(matrix)
       k = jStat.cols matrix
       r = jStat.rows matrix
 
@@ -172,11 +223,11 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       # Calculate Intraclass Correlation Coefficient
       icc = ((msRows - msErr) / k) / ((msRows - msErr) / k + (msCols - msErr) / r + msErr)
 
+    # Split-Half Reliability coefficient
+    #  http://www.real-statistics.com/reliability/split-half-methodology/
+    #  https://en.wikipedia.org/wiki/Spearman–Brown prediction formula
     _getSpliHalfReliability = (matrix) ->
-      # Split-Half Reliability coefficient
-      #  http://www.real-statistics.com/reliability/split-half-methodology/
-      #  https://en.wikipedia.org/wiki/Spearman–Brown prediction formula
-
+      matrix = jStat(matrix)
       k = jStat.cols matrix
       r = jStat.rows matrix
 
@@ -193,8 +244,9 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       rCorrCoef = jStat.corrcoeff oddSum, evenSum
       adjRCorrCoef = rCorrCoef * nGroups / (1 + (nGroups - 1) * rCorrCoef)
 
+    # Calculating Kuder–Richardson Formula 20 (KR-20)
     _getKr20 = (matrix) ->
-      # Calculating Kuder–Richardson Formula 20 (KR-20)
+      matrix = jStat(matrix)
       zeroMatrix = matrix.subtract 1
       if jStat.sum(jStat(zeroMatrix).sum()) isnt 0
         kr20 = 'Not a binary data'
@@ -213,9 +265,10 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
         icc: _getIcc(_matrix)
         kr20: _getKr20(_matrix)
         adjRCorrCoef: _getSpliHalfReliability(_matrix)
-        idIntervals: _cAlphaConfIntervals.idIntervals
-        kfIntervals: _cAlphaConfIntervals.kfIntervals
-        logitIntervals: _cAlphaConfIntervals.logitIntervals
+        idInterval: _cAlphaConfIntervals.idInterval
+        kfInterval: _cAlphaConfIntervals.kfInterval
+        logitInterval: _cAlphaConfIntervals.logitInterval
+        bootstrapInterval: _cAlphaConfIntervals.bootstrapInterval
 
     calculate: _calculate
     getAlpha: _getAlpha
