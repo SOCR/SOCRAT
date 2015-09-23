@@ -62,7 +62,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfInterval)
       $scope.cronAlphaLogitInterval = prettifyArrayOutput(data.logitInterval)
       $scope.cronAlphaBootstrapInterval = prettifyArrayOutput(data.bootstrapInterval)
-      $scope.cronAlphaAdfInterval = prettifyArrayOutput(data.cronAlphaAdfInterval)
+      $scope.cronAlphaAdfInterval = prettifyArrayOutput(data.adfInterval)
       $scope.splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
   ])
 
@@ -134,7 +134,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       matrixSquared = jStat.create k, (i, j) -> return 0
       for row, i in matrix.transpose()
         for col, j in matrix.transpose()
-          matrixSquared[i][j] = (a * col[k] for k, a of row).reduce (t, s) -> t + s
+          matrixSquared[i][j] = (a * col[l] for l, a of row).reduce (t, s) -> t + s
       colMeans = matrix.mean() # row vector
       colMeansSquared = jStat.create k, (i, j) -> return 0
       for i in [0..k-1]
@@ -158,8 +158,8 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
         jac[j][j] = dwrtvar
 
       trac = 0
-      for isub in [0..r]
-        v = jStat(matrix).row(isub).map (x, i) -> x - colMeans[i] # row vector
+      for isub in [0..r - 1]
+        v = jStat(matrix).row(isub)[0].map (x, i) -> x - colMeans[i] # row vector
         wcv = jStat.create k, (i, j) -> return 0
         wcvSum = 0
         for i in [0..k-1]
