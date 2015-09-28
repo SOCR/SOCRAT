@@ -62,7 +62,7 @@ getData = angular.module('app_analysis_getData', [
 # ###
 # @name: app_analysis_getData_inputCache
 # @type: service
-# @description :Caches data. Changes to handsontable is stored here
+# @description: Caches data. Changes to handsontable is stored here
 # and synced after some time. Changes in db is heard and reflected on
 # handsontable.
 # ###
@@ -91,7 +91,7 @@ getData = angular.module('app_analysis_getData', [
       if data? or  $stateParams.projectId? or $stateParams.forkId?
         _data = data unless data is 'edit'
 
-        #clear any previous db update broadcast messages.
+        # clear any previous db update broadcast messages
         clearTimeout _timer
 
         deferred = $q.defer()
@@ -410,22 +410,22 @@ getData = angular.module('app_analysis_getData', [
     transclude: true
 
     # to the name attribute on the directive element.
-    #the template for the directive.
-    template: "<div></div>"
-
+    # the template for the directive.
+    template: "<div class='hot-scroll-container' style='height: 300px'></div>"
 
     #the controller for the directive
     controller: ($scope) ->
 
     replace: true #replace the directive element with the output of the template.
 
-    #the link method does the work of setting the directive
-    # up, things like bindings, jquery calls, etc are done in here
-    # It is run before the controller
+    # the link method does the work of setting the directive
+    #  up, things like bindings, jquery calls, etc are done in here
+    #  It is run before the controller
     link: (scope, elem, attr) ->
 
       N_SPARE_COLS = 1
       N_SPARE_ROWS = 1
+      DEFAULT_ROW_HEIGHT = 24
 
       # useful to identify which handsontable instance to update
       scope.purpose = attr.purpose
@@ -435,8 +435,8 @@ getData = angular.module('app_analysis_getData', [
 
         data = obj.getData()
         header = obj.getColHeader()
-        nCols = obj.countVisibleCols()
-        nRows = obj.countVisibleRows()
+        nCols = obj.countCols()
+        nRows = obj.countRows()
 
         table =
           data: data
@@ -446,6 +446,8 @@ getData = angular.module('app_analysis_getData', [
 
       scope.update = (evt, arg) ->
         console.log 'handsontable: update called'
+
+        currHeight = elem.height()
 
         #check if data is in the right format
         if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
@@ -473,19 +475,22 @@ getData = angular.module('app_analysis_getData', [
 
         obj['change'] = true
         obj['afterChange'] = (change, source) ->
-          #saving data to be globally accessible.
-          # only place from where data is saved before DB: inputCache.
-          # onSave, data is picked up from inputCache.
+          # saving data to be globally accessible.
+          #  only place from where data is saved before DB: inputCache.
+          #  onSave, data is picked up from inputCache.
           if source is 'loadData' or 'paste'
-            tableData = _format $(this)[0]
+            ht = $(this)[0]
+            tableData = _format ht
             dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
             inputCache.set dataFrame
+            ht.updateSettings
+              height: Math.max currHeight, ht.countRows() * DEFAULT_ROW_HEIGHT
           else
             inputCache.set source
 
         try
-          #hook for pushing data changes to handsontable.
-          #Tight coupling :-/
+          # hook for pushing data changes to handsontable
+          # TODO: get rid of tight coupling :-/
           ht = elem.handsontable obj
           window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
         catch e
