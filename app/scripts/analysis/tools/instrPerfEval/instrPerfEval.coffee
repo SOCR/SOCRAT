@@ -122,9 +122,14 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
 
     # Confidence intervals for Crobach's Alpha
-    #  TSAGRIS, MICHAIL, CONSTANTINOS C. FRANGOS, and CHRISTOS C. FRANGOS.
+    #  1. TSAGRIS, MICHAIL, CONSTANTINOS C. FRANGOS, and CHRISTOS C. FRANGOS.
     #   "Confidence intervals for Cronbach’s reliability coefficient."
     #   http://www.wseas.us/e-library/conferences/2013/Vouliagmeni/CCC/CCC-25.pdf
+    #  2. Maydeu-Olivares, Alberto, Donna L. Coffman, and Wolfgang M. Hartmann.
+    #   "Asymptotically distribution-free (ADF) interval estimation of coefficient alpha."
+    #   Psychological methods 12.2 (2007): 157.
+    #   http://www.ub.edu/gdne/amaydeusp_archivos/ADF%20CIs%20for%20alpha%20PM07.pdf
+
     _getCAlphaConfIntervals = (matrix, cAlpha, gamma) ->
       matrix = jStat(matrix)
       k = jStat.cols matrix
