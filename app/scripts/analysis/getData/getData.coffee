@@ -75,61 +75,59 @@ getData = angular.module('app_analysis_getData', [
   (manager, $q, $stateParams, $rootScope, $timeout) ->
 
     sb = manager.getSb()
-    _data = []
+    _data = {}
     _timer = null
-    ret = {}
-    ret.ht = null
+    _ht = null
 
-    ret.get = ->
+    _getData = ->
       _data
 
-    ret.set = (data) ->
+    _saveDataToDb = (data, deferred) ->
+      $rootScope.$broadcast 'app:push notification',
+        initial:
+          msg: 'Data is being saved in the database...'
+          type: 'alert-info'
+        success:
+          msg: 'Successfully loaded data into database'
+          type: 'alert-success'
+        failure:
+          msg: 'Error in Database'
+          type: 'alert-error'
+        promise: deferred.promise
+
+      sb.publish
+        msg: 'save data'
+        data:
+          dataFrame: data
+          tableName: $stateParams.projectId + ':' + $stateParams.forkId
+          promise: deferred
+        msgScope: ['getData']
+        callback: ->
+          console.log 'handsontable data updated to db'
+
+    _setData = (data) ->
       console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
 
       # TODO: fix checking existance of parameters to default table name #SOCR-140
-
       if data? or  $stateParams.projectId? or $stateParams.forkId?
         _data = data unless data is 'edit'
 
         # clear any previous db update broadcast messages
         clearTimeout _timer
-
-        deferred = $q.defer()
-
-        _timer =  $timeout ( ->
-
-          $rootScope.$broadcast 'app:push notification',
-            initial:
-              msg: 'Data is being saved in the database...'
-              type: 'alert-info'
-            success:
-              msg: 'Successfully loaded data into database'
-              type: 'alert-success'
-            failure:
-              msg: 'Error in Database'
-              type: 'alert-error'
-            promise:deferred.promise
-
-          sb.publish
-            msg: 'save data'
-            data:
-              dataFrame: _data
-              tableName: $stateParams.projectId + ':' + $stateParams.forkId
-              promise: deferred
-            msgScope: ['getData']
-            callback: ->
-              console.log 'handsontable data updated to db'
-
-        ), 1000
+        _deferred = $q.defer()
+        _timer = $timeout ((data, deferred) -> _saveDataToDb(data, deferred))(_data, _deferred), 1000
         true
 
       else
         console.log "no data passed to inputCache"
         false
 
-    ret.push = (data) ->
+    _pushData = (data) ->
       this.ht.loadData data
-    ret
+
+    get: _getData
+    set: _setData
+    push: _pushData
 ])
 
 
