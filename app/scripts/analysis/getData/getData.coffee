@@ -454,7 +454,7 @@ getData = angular.module('app_analysis_getData', [
             startRows: Object.keys(arg.data[1]).length
             startCols: arg.columns.length
             colHeaders: arg.columnHeader
-            columns:arg.columns
+            columns: arg.columns
             minSpareRows: N_SPARE_ROWS
         else if arg.default is true
           obj =
@@ -464,6 +464,9 @@ getData = angular.module('app_analysis_getData', [
             colHeaders: true
             minSpareRows: N_SPARE_ROWS
             minSpareCols: N_SPARE_COLS
+            allowInsertRow: true
+            allowInsertColumn: true
+            rowHeaders: false
         else
           $exceptionHandler
             message: 'handsontable configuration is missing'
