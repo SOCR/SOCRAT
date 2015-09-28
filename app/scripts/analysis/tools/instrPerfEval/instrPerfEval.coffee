@@ -55,14 +55,18 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
 
       data = alphaCalculator.getAlpha()
 
-      $scope.cronAlpha = Number(data.cronAlpha).toFixed(3)
+      cAlpha = Number data.cronAlpha
+      if not isNaN(cAlpha)
+        $scope.cronAlpha = cAlpha.toFixed(3)
+        $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idInterval)
+        $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfInterval)
+        $scope.cronAlphaLogitInterval = prettifyArrayOutput(data.logitInterval)
+        $scope.cronAlphaBootstrapInterval = prettifyArrayOutput(data.bootstrapInterval)
+        $scope.cronAlphaAdfInterval = prettifyArrayOutput(data.adfInterval)
+
       $scope.icc = Number(data.icc).toFixed(3)
       $scope.kr20 = if data.kr20 is 'Not a binary data' then data.kr20 else Number(data.kr20).toFixed(3)
-      $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idInterval)
-      $scope.cronAlphaKfInterval = prettifyArrayOutput(data.kfInterval)
-      $scope.cronAlphaLogitInterval = prettifyArrayOutput(data.logitInterval)
-      $scope.cronAlphaBootstrapInterval = prettifyArrayOutput(data.bootstrapInterval)
-      $scope.cronAlphaAdfInterval = prettifyArrayOutput(data.adfInterval)
+
       $scope.splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
   ])
 
