@@ -41,7 +41,7 @@ getData = angular.module('app_analysis_getData', [
     _sb = null
 
     _msgList =
-      outgoing: ['take data', 'handsontable updated']
+      outgoing: ['save data']
       incoming: ['get data']
       scope: ['getData']
 
@@ -62,7 +62,7 @@ getData = angular.module('app_analysis_getData', [
 # ###
 # @name: app_analysis_getData_inputCache
 # @type: service
-# @description :Caches data. Changes to handsontable is stored here
+# @description: Caches data. Changes to handsontable is stored here
 # and synced after some time. Changes in db is heard and reflected on
 # handsontable.
 # ###
@@ -75,58 +75,59 @@ getData = angular.module('app_analysis_getData', [
   (manager, $q, $stateParams, $rootScope, $timeout) ->
 
     sb = manager.getSb()
-    _data = []
+    _data = {}
     _timer = null
-    ret = {}
-    ret.ht = null
+    _ht = null
 
-    ret.get = ->
+    _getData = ->
       _data
 
-    ret.set = (data) ->
+    _saveDataToDb = (data, deferred) ->
+      $rootScope.$broadcast 'app:push notification',
+        initial:
+          msg: 'Data is being saved in the database...'
+          type: 'alert-info'
+        success:
+          msg: 'Successfully loaded data into database'
+          type: 'alert-success'
+        failure:
+          msg: 'Error in Database'
+          type: 'alert-error'
+        promise: deferred.promise
+
+      sb.publish
+        msg: 'save data'
+        data:
+          dataFrame: data
+          tableName: $stateParams.projectId + ':' + $stateParams.forkId
+          promise: deferred
+        msgScope: ['getData']
+        callback: ->
+          console.log 'handsontable data updated to db'
+
+    _setData = (data) ->
       console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
-      if data? and  $stateParams.projectId? and $stateParams.forkId?
+
+      # TODO: fix checking existance of parameters to default table name #SOCR-140
+      if data? or  $stateParams.projectId? or $stateParams.forkId?
         _data = data unless data is 'edit'
 
-        #clear any previous db update broadcast messages.
+        # clear any previous db update broadcast messages
         clearTimeout _timer
-
-        deferred = $q.defer()
-
-        _timer =  $timeout ( ->
-
-          $rootScope.$broadcast 'app:push notification',
-            initial:
-              msg: 'Data is being saved in the database...'
-              type: 'alert-info'
-            success:
-              msg: 'Successfully loaded data into database'
-              type: 'alert-success'
-            failure:
-              msg: 'Error in Database'
-              type: 'alert-error'
-            promise:deferred.promise
-
-          sb.publish
-            msg: 'handsontable updated'
-            data:
-              dataFrame: _data
-              tableName: $stateParams.projectId + ':' + $stateParams.forkId
-              promise: deferred
-            msgScope: ['getData']
-            callback: ->
-              console.log 'handsontable data updated to db'
-
-        ), 4000
+        _deferred = $q.defer()
+        _timer = $timeout ((data, deferred) -> _saveDataToDb(data, deferred))(_data, _deferred), 1000
         true
 
       else
         console.log "no data passed to inputCache"
         false
 
-    ret.push = (data) ->
+    _pushData = (data) ->
       this.ht.loadData data
-    ret
+
+    get: _getData
+    set: _setData
+    push: _pushData
 ])
 
 
@@ -376,7 +377,7 @@ getData = angular.module('app_analysis_getData', [
       # using pop to remove empty last row
       tableData.data.pop()
       # and column
-      #row.pop() for row in tableData.data
+      row.pop() for row in tableData.data
 
       # remove empty last column for header
       tableData.header.pop()
@@ -407,22 +408,22 @@ getData = angular.module('app_analysis_getData', [
     transclude: true
 
     # to the name attribute on the directive element.
-    #the template for the directive.
-    template: "<div></div>"
-
+    # the template for the directive.
+    template: "<div class='hot-scroll-container' style='height: 300px'></div>"
 
     #the controller for the directive
     controller: ($scope) ->
 
     replace: true #replace the directive element with the output of the template.
 
-    #the link method does the work of setting the directive
-    # up, things like bindings, jquery calls, etc are done in here
-    # It is run before the controller
+    # the link method does the work of setting the directive
+    #  up, things like bindings, jquery calls, etc are done in here
+    #  It is run before the controller
     link: (scope, elem, attr) ->
 
       N_SPARE_COLS = 1
       N_SPARE_ROWS = 1
+      DEFAULT_ROW_HEIGHT = 24
 
       # useful to identify which handsontable instance to update
       scope.purpose = attr.purpose
@@ -432,8 +433,8 @@ getData = angular.module('app_analysis_getData', [
 
         data = obj.getData()
         header = obj.getColHeader()
-        nCols = obj.countVisibleCols()
-        nRows = obj.countVisibleRows()
+        nCols = obj.countCols()
+        nRows = obj.countRows()
 
         table =
           data: data
@@ -444,6 +445,8 @@ getData = angular.module('app_analysis_getData', [
       scope.update = (evt, arg) ->
         console.log 'handsontable: update called'
 
+        currHeight = elem.height()
+
         #check if data is in the right format
         if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
           obj =
@@ -451,7 +454,7 @@ getData = angular.module('app_analysis_getData', [
             startRows: Object.keys(arg.data[1]).length
             startCols: arg.columns.length
             colHeaders: arg.columnHeader
-            columns:arg.columns
+            columns: arg.columns
             minSpareRows: N_SPARE_ROWS
         else if arg.default is true
           obj =
@@ -461,25 +464,31 @@ getData = angular.module('app_analysis_getData', [
             colHeaders: true
             minSpareRows: N_SPARE_ROWS
             minSpareCols: N_SPARE_COLS
+            allowInsertRow: true
+            allowInsertColumn: true
+            rowHeaders: false
         else
           $exceptionHandler
             message: 'handsontable configuration is missing'
 
         obj['change'] = true
         obj['afterChange'] = (change, source) ->
-          #saving data to be globally accessible.
-          # only place from where data is saved before DB: inputCache.
-          # onSave, data is picked up from inputCache.
+          # saving data to be globally accessible.
+          #  only place from where data is saved before DB: inputCache.
+          #  onSave, data is picked up from inputCache.
           if source is 'loadData' or 'paste'
-            tableData = _format $(this)[0]
+            ht = $(this)[0]
+            tableData = _format ht
             dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
             inputCache.set dataFrame
+            ht.updateSettings
+              height: Math.max currHeight, ht.countRows() * DEFAULT_ROW_HEIGHT
           else
             inputCache.set source
 
         try
-          #hook for pushing data changes to handsontable.
-          #Tight coupling :-/
+          # hook for pushing data changes to handsontable
+          # TODO: get rid of tight coupling :-/
           ht = elem.handsontable obj
           window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
         catch e

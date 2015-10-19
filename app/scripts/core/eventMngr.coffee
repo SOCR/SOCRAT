@@ -35,4 +35,5 @@ eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
     subscribeForEvents: _subscribeForEvents
     publish: pubSub.publish
     subscribe: pubSub.subscribe
+    unsubscribe: pubSub.unsubscribe
 ])

@@ -23,9 +23,9 @@ App = angular.module('app', [
   'app_database'
    # Analysis modules
   'app_analysis_getData'
+  'app_analysis_wrangleData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
-  'app_analysis_instrPerfEvalView'
   'app_analysis_instrPerfEval'
 ])
 
@@ -90,21 +90,21 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
       )
-      .state('cleanData'
-        url: '/cleanData'
+      .state('wrangleData'
+        url: '/wrangleData'
         views:
           'main':
-            templateUrl: 'partials/analysis/cleanData/main.html'
+            templateUrl: 'partials/analysis/wrangleData/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/cleanData/sidebar.html'
+            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
       )
       .state('tools'
         url: '/tools'
         views:
           'main':
-            templateUrl: 'partials/analysis/tools/instrPerfEvalView/main.html'
+            templateUrl: 'partials/analysis/tools/instrPerfEval/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/tools/instrPerfEvalView/sidebar.html'
+            templateUrl: 'partials/analysis/tools/instrPerfEval/sidebar.html'
       )
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
@@ -116,12 +116,12 @@ App.run([
   'core'
   'app_database_constructor'
   'app_analysis_getData_constructor'
+  'app_analysis_wrangleData_constructor'
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
-  'app_analysis_instrPerfEvalView_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView) ->
+  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -134,18 +134,8 @@ App.run([
       msgTo: 'numbers added'
       scopeTo: ['qualRobEstView']
     ,
-      msgFrom: 'calculate'
-      scopeFrom: ['instrPerfEvalView']
-      msgTo: 'calculate'
-      scopeTo: ['instrPerfEval']
-    ,
-      msgFrom: 'calculated'
-      scopeFrom: ['instrPerfEval']
-      msgTo: 'calculated'
-      scopeTo: ['instrPerfEvalView']
-    ,
-      msgFrom: 'save table'
-      scopeFrom: ['getData', 'app.utils.importer']
+      msgFrom: 'save data'
+      scopeFrom: ['getData', 'wrangleData']
       msgTo: 'save table'
       scopeTo: ['database']
     ,
@@ -159,21 +149,26 @@ App.run([
       msgTo: 'upload csv'
       scopeTo: ['app.utils.importer']
     ,
+      # TODO: make message mapping dynamic #SOCRFW-151
       msgFrom: 'get table'
-      scopeFrom: ['instrPerfEvalView']
+      scopeFrom: ['instrPerfEval']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
       msgTo: 'take table'
-      scopeTo: ['instrPerfEvalView']
+      scopeTo: ['instrPerfEval']
     ,
-    # When /getData handonstable is updated, DB needs to be updated with the lastest values.
-      msgFrom: 'handsontable updated'
-      scopeFrom: ['getData']
-      msgTo: 'save table'
+      msgFrom: 'get data'
+      scopeFrom: ['wrangleData']
+      msgTo: 'get table'
       scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'wrangle data'
+      scopeTo: ['wrangleData']
     ]
 
     core.setEventsMapping map
@@ -184,14 +179,14 @@ App.run([
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
 
-    core.register 'instrPerfEvalView', instrPerfEvalView
-    core.start 'instrPerfEvalView'
-
     core.register 'instrPerfEval', instrPerfEval
     core.start 'instrPerfEval'
 
     core.register 'getData', getData
     core.start 'getData'
+
+    core.register 'wrangleData', wrangleData
+    core.start 'wrangleData'
 
     core.register 'database', db
     core.start 'database'

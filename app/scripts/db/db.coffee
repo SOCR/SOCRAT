@@ -258,7 +258,7 @@ db.factory 'app_database_handler', [
   'app_database_dataAdaptor'
   ($q, _db, dataAdaptor) ->
 
-    #set all the callbacks here.
+    # set all the callbacks here.
     _setSb = ((_db) ->
       window.db = _db
       (sb) ->
@@ -291,22 +291,16 @@ db.factory 'app_database_handler', [
               # invoke callback
               _data = method.event.apply null, _data
 
-              #convert to dataFrame in case of get request
+              # convert data to DataFrame if returning it
               _data = dataAdaptor.toDataFrame _data if msg is 'get table'
 
-              #incase of save table, promise is passed in data.
+              # all publish calls should pass a promise in the data object
+              # if promise is not defined, create one and pass it along
               deferred = data.promise
               if typeof deferred isnt 'undefined'
                 if _data isnt false then deferred.resolve() else deferred.reject()
               else
-                _data
-
-              # if _data is false
-              #  if typeof data.promise isnt 'undefined'
-              #    data.promise.reject 'table operation failed'
-              #  false
-              # all publish calls should pass a promise in the data object.
-              # if promise is not defined, create one and pass it along.
+                _data.promise = $q.defer()
 
               console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
@@ -314,7 +308,6 @@ db.factory 'app_database_handler', [
                 msg: method.outgoing
                 data: _data
                 msgScope: ['database']
-
     )(_db)
 
     setSb: _setSb
