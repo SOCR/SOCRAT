@@ -41,6 +41,7 @@ module.exports = (config) ->
       'bower_components/ngHandsontable/dist/ngHandsontable.js'
       'bower_components/wrangler/lib/datavore/datavore-d0.1.js'
       'bower_components/wrangler/dw.js'
+      'bower_components/jstat/dist/jstat.js'
       'bower_components/angular-mocks/angular-mocks.js'
       # endbower
       # bower:coffee
