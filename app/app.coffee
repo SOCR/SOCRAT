@@ -24,8 +24,8 @@ App = angular.module('app', [
    # Analysis modules
   'app_analysis_getData'
   'app_analysis_wrangleData'
-  'app_analysis_qualRobEstView'
-  'app_analysis_qualRobEst'
+#  'app_analysis_qualRobEstView'
+#  'app_analysis_qualRobEst'
   'app_analysis_instrPerfEval'
 ])
 
@@ -117,37 +117,38 @@ App.run([
   'app_database_constructor'
   'app_analysis_getData_constructor'
   'app_analysis_wrangleData_constructor'
-  'app_analysis_qualRobEst_constructor'
-  'app_analysis_qualRobEstView_constructor'
+#  'app_analysis_qualRobEst_constructor'
+#  'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
+#  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval) ->
 
     map = [
-      msgFrom: 'add numbers'
-      scopeFrom: ['qualRobEstView']
-      msgTo: 'add numbers'
-      scopeTo: ['qualRobEst']
-    ,
-      msgFrom: 'numbers added'
-      scopeFrom: ['qualRobEst']
-      msgTo: 'numbers added'
-      scopeTo: ['qualRobEstView']
-    ,
+#      msgFrom: 'add numbers'
+#      scopeFrom: ['qualRobEstView']
+#      msgTo: 'add numbers'
+#      scopeTo: ['qualRobEst']
+#    ,
+#      msgFrom: 'numbers added'
+#      scopeFrom: ['qualRobEst']
+#      msgTo: 'numbers added'
+#      scopeTo: ['qualRobEstView']
+#    ,
       msgFrom: 'save data'
       scopeFrom: ['getData', 'wrangleData']
       msgTo: 'save table'
       scopeTo: ['database']
-    ,
-      msgFrom:'table saved'
-      scopeFrom: ['database']
-      msgTo: '234'
-      scopeTo: ['qualRobEst']
-    ,
-      msgFrom: 'upload csv'
-      scopeFrom: ['getData']
-      msgTo: 'upload csv'
-      scopeTo: ['app.utils.importer']
+#    ,
+#      msgFrom:'table saved'
+#      scopeFrom: ['database']
+#      msgTo: '234'
+#      scopeTo: ['qualRobEst']
+#    ,
+#      msgFrom: 'upload csv'
+#      scopeFrom: ['getData']
+#      msgTo: 'upload csv'
+#      scopeTo: ['app.utils.importer']
     ,
       # TODO: make message mapping dynamic #SOCRFW-151
       msgFrom: 'get table'
@@ -173,23 +174,23 @@ App.run([
 
     core.setEventsMapping map
 
-    core.register 'qualRobEstView', qualRobEstView
-    core.start 'qualRobEstView'
-
-    core.register 'qualRobEst', qualRobEst
-    core.start 'qualRobEst'
-
-    core.register 'instrPerfEval', instrPerfEval
-    core.start 'instrPerfEval'
+#    core.register 'qualRobEstView', qualRobEstView
+#    core.start 'qualRobEstView'
+#
+#    core.register 'qualRobEst', qualRobEst
+#    core.start 'qualRobEst'
 
     core.register 'getData', getData
     core.start 'getData'
 
+    core.register 'database', db
+    core.start 'database'
+
     core.register 'wrangleData', wrangleData
     core.start 'wrangleData'
 
-    core.register 'database', db
-    core.start 'database'
+    core.register 'instrPerfEval', instrPerfEval
+    core.start 'instrPerfEval'
 
     #core.register 'importer', importer
     #core.start 'importer'

@@ -19,6 +19,11 @@ module.exports = (config) ->
       # bower:js
       'bower_components/jquery/dist/jquery.js'
       'bower_components/angular/angular.js'
+      'bower_components/jquery-layout/source/stable/jquery.layout.js'
+      'bower_components/jquery-highlight/jquery.highlight.js'
+      'bower_components/jquery-hoverintent/jquery.hoverIntent.js'
+      'bower_components/datatables/media/js/jquery.dataTables.js'
+      'bower_components/d3/d3.js'
       'bower_components/bootstrap/dist/js/bootstrap.js'
       'bower_components/angular-animate/angular-animate.js'
       'bower_components/angular-cookies/angular-cookies.js'
@@ -34,6 +39,8 @@ module.exports = (config) ->
       'bower_components/pikaday/pikaday.js'
       'bower_components/handsontable/dist/handsontable.js'
       'bower_components/ngHandsontable/dist/ngHandsontable.js'
+      'bower_components/wrangler/lib/datavore/datavore-d0.1.js'
+      'bower_components/wrangler/dw.js'
       'bower_components/angular-mocks/angular-mocks.js'
       # endbower
       # bower:coffee

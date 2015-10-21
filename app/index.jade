@@ -8,13 +8,23 @@ html(lang='en', ng-app='app')
     meta(name='author', content='')
     title(ng-bind-template='{{pageTitle}}')
     // bower:css
+    link(rel='stylesheet', href='bower_components/datatables/media/css/jquery.dataTables.css')
     link(rel='stylesheet', href='bower_components/bootstrap/dist/css/bootstrap.css')
     link(rel='stylesheet', href='bower_components/pikaday/css/pikaday.css')
     link(rel='stylesheet', href='bower_components/handsontable/dist/handsontable.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/editor.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/layout.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/table.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/wrangler.css')
     // endbower
     // bower:js
     script(src='bower_components/jquery/dist/jquery.js')
     script(src='bower_components/angular/angular.js')
+    script(src='bower_components/jquery-layout/source/stable/jquery.layout.js')
+    script(src='bower_components/jquery-highlight/jquery.highlight.js')
+    script(src='bower_components/jquery-hoverintent/jquery.hoverIntent.js')
+    script(src='bower_components/datatables/media/js/jquery.dataTables.js')
+    script(src='bower_components/d3/d3.js')
     script(src='bower_components/bootstrap/dist/js/bootstrap.js')
     script(src='bower_components/angular-animate/angular-animate.js')
     script(src='bower_components/angular-cookies/angular-cookies.js')
@@ -30,6 +40,8 @@ html(lang='en', ng-app='app')
     script(src='bower_components/pikaday/pikaday.js')
     script(src='bower_components/handsontable/dist/handsontable.js')
     script(src='bower_components/ngHandsontable/dist/ngHandsontable.js')
+    script(src='bower_components/wrangler/lib/datavore/datavore-d0.1.js')
+    script(src='bower_components/wrangler/dw.js')
     // endbower
   body(ng-controller='AppCtrl')
     .container-fluid
@@ -51,7 +63,7 @@ html(lang='en', ng-app='app')
       nav.navbar.navbar-default.navbar-static-top
         .container
           .navbar-header
-            button.navbar-toggle(type='button', data-toggle='collapse',data-target='.analysis-toolbar')
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.analysis-toolbar')
               span.icon-bar
               span.icon-bar
               span.icon-bar
