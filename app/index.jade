@@ -32,37 +32,37 @@ html(lang='en', ng-app='app')
     script(src='bower_components/ngHandsontable/dist/ngHandsontable.js')
     // endbower
   body(ng-controller='AppCtrl')
-    .wrapper
-      .navbar.navbar-static-top.navbar-inverse
-        .navbar-inner
-          .container-fluid
-            button.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
+    .container-fluid
+      nav.navbar.navbar-static-top.navbar-inverse
+        .container-fluid
+          .navbar-header
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
               span.icon-bar
               span.icon-bar
               span.icon-bar
-            a(href='/').brand SOCR
-            .nav-collapse
-              div(ng-include="'partials/nav.html'")
-              p.navbar-text.pull-right Logged in as&nbsp;
-                a(href='#').navbar-link.
-                  {{username}}
+            a(href='/').navbar-brand SOCR
+          .navbar-collapse
+            div(ng-include="'partials/nav.html'")
+            p.navbar-text.pull-right Logged in as&nbsp;
+              a(href='#').navbar-link.
+                {{username}}
 
       //tooblar navigation for statistical analysis
-      .navbar.navbar-static-top
-        .navbar-inner
-          .container
-            button.btn.btn-navbar(data-toggle='collapse',data-target='.analysis-toolbar')
+      nav.navbar.navbar-default.navbar-static-top
+        .container
+          .navbar-header
+            button.navbar-toggle(type='button', data-toggle='collapse',data-target='.analysis-toolbar')
               span.icon-bar
               span.icon-bar
               span.icon-bar
-            a(href='/').brand Analysis
-            .nav-collapse.analysis-toolbar
-              div(ng-include="'partials/analysis-nav.html'")
-              notification
+            a(href='/').navbar-brand Analysis
+          .navbar-collapse.analysis-toolbar
+            div(ng-include="'partials/analysis-nav.html'")
+            notification
 
       //Main content section
       .main-content.container-fluid
-        .row-fluid
+        .row
           div(ng-controller="sidebarCtrl")
             div(ng-class="getClass()").sub-menu.well
               i(ng-click="toggle()").icon-circle-arrow-left
