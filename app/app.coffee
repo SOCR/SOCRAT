@@ -21,11 +21,16 @@ App = angular.module('app', [
   'app_services'
   'app_mediator'
   'app_database'
-   # Analysis modules
+  #charts module
+  'app_analysis_chartsView'
+  # Analysis modules
   'app_analysis_getData'
   'app_analysis_wrangleData'
   'app_analysis_qualRobEstView'
   'app_analysis_qualRobEst'
+  #charts analysis
+  'app_analysis_chartsView'
+  'app_analysis_charts'
   'app_analysis_instrPerfEval'
 ])
 
@@ -106,9 +111,18 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/tools/instrPerfEval/sidebar.html'
       )
+
+      .state('charts'
+        url: '/charts/:projectId/:forkId'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/charts/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/charts/sidebar.html'
+      )
+
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
-
 ])
 
 App.run([
@@ -120,8 +134,10 @@ App.run([
   'app_analysis_qualRobEst_constructor'
   'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
+  'app_analysis_chartsView_constructor'
+  'app_analysis_charts_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
+  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval, chartsView, charts) ->
 
     map = [
       msgFrom: 'add numbers'
@@ -169,6 +185,16 @@ App.run([
       scopeFrom: ['database']
       msgTo: 'wrangle data'
       scopeTo: ['wrangleData']
+    ,
+      msgFrom: 'get table'
+      scopeFrom: ['chartsView']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['chartsView']
     ]
 
     core.setEventsMapping map
@@ -178,6 +204,12 @@ App.run([
 
     core.register 'qualRobEst', qualRobEst
     core.start 'qualRobEst'
+
+    core.register 'chartsView', chartsView
+    core.start 'chartsView'
+
+    #core.register 'charts', charts
+    #core.start 'charts'
 
     core.register 'instrPerfEval', instrPerfEval
     core.start 'instrPerfEval'
@@ -199,6 +231,5 @@ App.run([
       console.log arguments
 
     console.log 'run block of app module'
-
 ])
 
