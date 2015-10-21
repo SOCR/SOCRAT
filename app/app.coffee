@@ -8,8 +8,8 @@
   Run block of "app" is executed in the last.
 ###
 App = angular.module('app', [
-  'ui'
-  'ui.compat'
+  'ui.router'
+  'ui.router.compat'
   'ngCookies'
   'ngResource'
   'ngSanitize'

@@ -1,0 +1,38 @@
+{
+  "author": "Alexandr Kalinin<alxndrkalinin@gmail.com>, Selvam Palanimalai<selvam1991@gmail.com>",
+  "name": "SOCRAT: SOCR Analytics Toolkit",
+  "version": "0.1.3-1",
+  "description": "Flexible HTML5/JS toolkit for interactive data analysis and visuzalization",
+  "homepage": "https://github.com/SOCRedu/SOCR-framework",
+  "dependencies": {
+    "angular": "^1.3.0",
+    "bootstrap": "^3.2.0",
+    "angular-animate": "^1.3.0",
+    "angular-cookies": "^1.3.0",
+    "angular-messages": "^1.3.0",
+    "angular-resource": "^1.3.0",
+    "angular-route": "^1.3.0",
+    "angular-sanitize": "^1.3.0",
+    "angular-touch": "^1.3.0",
+    "angular-ui": "~0.4.0",
+    "angular-ui-router": "~0.2.15",
+    "angular-bootstrap": "~0.14.2",
+    "jstat": "~1.4.6",
+    "ngHandsontable": "angular-ui-handsontable#~0.7.0",
+    "wrangler": "https://github.com/StanfordHCI/wrangler.git"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.3.0"
+  },
+  "appPath": "app",
+  "moduleName": "expApp",
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "less/bootstrap.less",
+        "dist/css/bootstrap.css",
+        "dist/js/bootstrap.js"
+      ]
+    }
+  }
+}

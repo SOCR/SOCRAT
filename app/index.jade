@@ -7,14 +7,30 @@ html(lang='en', ng-app='app')
     meta(name='description', content='')
     meta(name='author', content='')
     title(ng-bind-template='{{pageTitle}}')
-    link(rel='stylesheet', href='css/app.css')
-    script.
-      window.brunch = window.brunch || {};
-      window.brunch['auto-reload'] = {
-        enabled: true
-      };
-    script(src='js/vendor.js')
-    script(src='js/app.js')
+    // bower:css
+    link(rel='stylesheet', href='bower_components/bootstrap/dist/css/bootstrap.css')
+    link(rel='stylesheet', href='bower_components/pikaday/css/pikaday.css')
+    link(rel='stylesheet', href='bower_components/handsontable/dist/handsontable.css')
+    // endbower
+    // bower:js
+    script(src='bower_components/jquery/dist/jquery.js')
+    script(src='bower_components/angular/angular.js')
+    script(src='bower_components/bootstrap/dist/js/bootstrap.js')
+    script(src='bower_components/angular-animate/angular-animate.js')
+    script(src='bower_components/angular-cookies/angular-cookies.js')
+    script(src='bower_components/angular-messages/angular-messages.js')
+    script(src='bower_components/angular-resource/angular-resource.js')
+    script(src='bower_components/angular-route/angular-route.js')
+    script(src='bower_components/angular-sanitize/angular-sanitize.js')
+    script(src='bower_components/angular-touch/angular-touch.js')
+    script(src='bower_components/angular-ui-router/release/angular-ui-router.js')
+    script(src='bower_components/angular-bootstrap/ui-bootstrap-tpls.js')
+    script(src='bower_components/zeroclipboard/dist/ZeroClipboard.js')
+    script(src='bower_components/moment/moment.js')
+    script(src='bower_components/pikaday/pikaday.js')
+    script(src='bower_components/handsontable/dist/handsontable.js')
+    script(src='bower_components/ngHandsontable/dist/ngHandsontable.js')
+    // endbower
   body(ng-controller='AppCtrl')
     .wrapper
       .navbar.navbar-static-top.navbar-inverse
@@ -30,8 +46,8 @@ html(lang='en', ng-app='app')
               p.navbar-text.pull-right Logged in as&nbsp;
                 a(href='#').navbar-link.
                   {{username}}
-      
-      //tooblar navigation for statistical analysis 
+
+      //tooblar navigation for statistical analysis
       .navbar.navbar-static-top
         .navbar-inner
           .container
@@ -57,3 +73,8 @@ html(lang='en', ng-app='app')
       .push
 
     div(ng-include="'partials/footer.html'")
+
+    // Include styles and scripts
+    // include: "type": "css", "files": "styles/**/*.css"
+    script(src='app.js')
+    // include: "type": "js", "files": "scripts/**/*.js"

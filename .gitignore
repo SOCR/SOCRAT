@@ -1,13 +1,14 @@
-app/assets/
-.idea/
-node_modules/
-test/test-results.xml
+/node_modules
+/.sass-cache
+/bower_components
+/.idea
+/test/test-results.xml
 *.log
 
 # Public files (generated)#
 ===============
-_public/
-app/assets/
+/dist
+/.tmp
 
 #OS generated files #
 =====================
@@ -18,3 +19,5 @@ app/assets/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+
