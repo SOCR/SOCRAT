@@ -65,7 +65,7 @@ html(lang='en', ng-app='app')
         .row
           div(ng-controller="sidebarCtrl")
             div(ng-class="getClass()").sub-menu.well
-              i(ng-click="toggle()").icon-circle-arrow-left
+              i(ng-click="toggle()").glyphicon-circle-arrow-left
               div(ng-show="view()")
                 div(ui-view="sidebar",ng-animate="{enter:'fade-enter'}")
           div(ng-controller='mainCtrl')
