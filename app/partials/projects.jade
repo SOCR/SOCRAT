@@ -1,21 +1,12 @@
 .panel.panel-default
-  h5 Project 1
   ul.list-group
-    li.list-group-item Story 1
-        button(type="button").pull-right fork
-    li.list-group-item Story 2
-        button(type="button").pull-right fork
-  h5 Create project
-  ul.list-group
-    li.list-group-item(href="#") Add Project
-        button(type="button").pull-right
-          i.glyphicon-plus-sign
-    //li
-    //  br
-    //  input(ng-model="message")
-    //  button(ng-click="sendMsg()").btn-small.btn send Message
-    //  br
-    //  br
-    //  input(ng-model="messageReceived")
-    //  button(ng-click="unsubMsg()").btn-small.btn Stop Listener
-
+    li.list-group-item
+      strong(ng-bind-template='Project: {{activeProjectName}}')
+    li.list-group-item.disabled Story 1
+        button(type="button").pull-right.btn.btn-success.btn-xs.disabled fork
+    li.list-group-item.disabled Story 2
+        button(type="button").pull-right.btn.btn-success.btn-xs.disabled fork
+    li.list-group-item(href="#").disabled
+      strong Create new project
+      button(type="button").pull-right.btn-link.disabled
+        span.glyphicon.glyphicon-plus-sign(aria-label="Add Project")

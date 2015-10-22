@@ -85,6 +85,8 @@ app = angular.module('app_controllers', ['app_mediator'])
 
     console.log 'controller block for sidebarCtrl'
     $scope.state = 'show'
+    # TODO: add dynamic project loading and naming #SOCRFW-24
+    $scope.activeProjectName = 'default'
 
     # view function
     $scope.view = ->
