@@ -89,7 +89,8 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       csv += row.toString() + '\n' for row in dataFrame.data
 
-      csv
+      # remove last carriage return to prevent adding empty row
+      csv = csv.slice 0, -1
 
     _toDvTable = (dataFrame) ->
 
