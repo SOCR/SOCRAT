@@ -7,48 +7,78 @@ html(lang='en', ng-app='app')
     meta(name='description', content='')
     meta(name='author', content='')
     title(ng-bind-template='{{pageTitle}}')
-    link(rel='stylesheet', href='css/app.css')
-    script.
-      window.brunch = window.brunch || {};
-      window.brunch['auto-reload'] = {
-        enabled: true
-      };
-    script(src='js/vendor.js')
-    script(src='js/app.js')
+    // bower:css
+    link(rel='stylesheet', href='bower_components/datatables/media/css/jquery.dataTables.css')
+    link(rel='stylesheet', href='bower_components/pikaday/css/pikaday.css')
+    link(rel='stylesheet', href='bower_components/handsontable/dist/handsontable.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/editor.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/layout.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/table.css')
+    link(rel='stylesheet', href='bower_components/wrangler/style/wrangler.css')
+    link(rel='stylesheet', href='bower_components/bootstrap/dist/css/bootstrap.css')
+    // endbower
+    // bower:js
+    script(src='bower_components/jquery/dist/jquery.js')
+    script(src='bower_components/angular/angular.js')
+    script(src='bower_components/jquery-layout/source/stable/jquery.layout.js')
+    script(src='bower_components/jquery-highlight/jquery.highlight.js')
+    script(src='bower_components/jquery-hoverintent/jquery.hoverIntent.js')
+    script(src='bower_components/datatables/media/js/jquery.dataTables.js')
+    script(src='bower_components/d3/d3.js')
+    script(src='bower_components/angular-animate/angular-animate.js')
+    script(src='bower_components/angular-cookies/angular-cookies.js')
+    script(src='bower_components/angular-messages/angular-messages.js')
+    script(src='bower_components/angular-resource/angular-resource.js')
+    script(src='bower_components/angular-route/angular-route.js')
+    script(src='bower_components/angular-sanitize/angular-sanitize.js')
+    script(src='bower_components/angular-touch/angular-touch.js')
+    script(src='bower_components/angular-ui-router/release/angular-ui-router.js')
+    script(src='bower_components/zeroclipboard/dist/ZeroClipboard.js')
+    script(src='bower_components/moment/moment.js')
+    script(src='bower_components/pikaday/pikaday.js')
+    script(src='bower_components/handsontable/dist/handsontable.js')
+    script(src='bower_components/ngHandsontable/dist/ngHandsontable.js')
+    script(src='bower_components/wrangler/lib/datavore/datavore-d0.1.js')
+    script(src='bower_components/wrangler/dw.js')
+    script(src='bower_components/bootstrap/dist/js/bootstrap.js')
+    script(src='bower_components/angular-bootstrap/ui-bootstrap-tpls.js')
+    script(src='bower_components/jstat/dist/jstat.js')
+    // endbower
   body(ng-controller='AppCtrl')
-    .wrapper
-      .navbar.navbar-static-top.navbar-inverse
-        .navbar-inner
-          .container-fluid
-            button.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
+    .container-fluid
+      nav.navbar.navbar-static-top.navbar-inverse
+        .container-fluid
+          .navbar-header
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
               span.icon-bar
               span.icon-bar
               span.icon-bar
-            a(href='/').brand SOCR
-            .nav-collapse
-              div(ng-include="'partials/nav.html'")
-              p.navbar-text.pull-right Logged in as&nbsp;
-                a(href='#').navbar-link.
-                  {{username}}
-      
-      //tooblar navigation for statistical analysis 
-      .navbar.navbar-static-top
-        .navbar-inner
-          .container
-            button.btn.btn-navbar(data-toggle='collapse',data-target='.analysis-toolbar')
+            a(href='/').navbar-brand SOCR
+          .navbar-collapse
+            div(ng-include="'partials/nav.html'")
+            p.navbar-text.pull-right Logged in as&nbsp;
+              a(href='#').navbar-link.
+                {{username}}
+
+      //tooblar navigation for statistical analysis
+      nav.navbar.navbar-default.navbar-static-top
+        .container
+          .navbar-header
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.analysis-toolbar')
               span.icon-bar
               span.icon-bar
               span.icon-bar
-            a(href='/').brand Analysis
-            .nav-collapse.analysis-toolbar
-              div(ng-include="'partials/analysis-nav.html'")
-      
+            a(href='/').navbar-brand Analysis
+          .navbar-collapse.analysis-toolbar
+            div(ng-include="'partials/analysis-nav.html'")
+            notification
+
       //Main content section
       .main-content.container-fluid
-        .row-fluid
+        .row
           div(ng-controller="sidebarCtrl")
             div(ng-class="getClass()").sub-menu.well
-              i(ng-click="toggle()").icon-circle-arrow-left
+              span(ng-click="toggle()", ng-class="arrowDirection")
               div(ng-show="view()")
                 div(ui-view="sidebar",ng-animate="{enter:'fade-enter'}")
           div(ng-controller='mainCtrl')
@@ -56,3 +86,8 @@ html(lang='en', ng-app='app')
       .push
 
     div(ng-include="'partials/footer.html'")
+
+    // Include styles and scripts
+    // include: "type": "css", "files": "styles/**/*.css"
+    script(src='app.js')
+    // include: "type": "js", "files": "scripts/**/*.js"

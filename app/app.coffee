@@ -8,11 +8,12 @@
   Run block of "app" is executed in the last.
 ###
 App = angular.module('app', [
-  'ui'
-  'ui.compat'
+  'ui.router'
+  'ui.router.compat'
   'ngCookies'
   'ngResource'
   'ngSanitize'
+  #'app.utils.importer'
   'app_core'
   'app_controllers'
   'app_directives'
@@ -20,14 +21,19 @@ App = angular.module('app', [
   'app_services'
   'app_mediator'
   'app_database'
-   # Analysis modules
+  #charts module
+  'app_analysis_chartsView'
+  # Analysis modules
   'app_analysis_getData'
-  'app_analysis_qualRobEstView'
-  'app_analysis_qualRobEst'
+  'app_analysis_wrangleData'
+#  'app_analysis_qualRobEstView'
+#  'app_analysis_qualRobEst'
+  'app_analysis_instrPerfEval'
 ])
 
 App.config([
   '$locationProvider'
+  #urlRouterProvider is not required
   '$urlRouterProvider'
   '$stateProvider'
   ($locationProvider, $urlRouterProvider, $stateProvider) ->
@@ -51,7 +57,6 @@ App.config([
             templateUrl: 'partials/nav/home.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            controller: 'projectCtrl'
       )
       .state('guide'
         url: '/guide'
@@ -60,7 +65,6 @@ App.config([
             templateUrl: 'partials/nav/guide-me.html'
           'sidebar':
             templateUrl: 'partials/projects.html'
-            controller: 'projectCtrl'
       )
       .state('contact'
         url: '/contact'
@@ -73,70 +77,151 @@ App.config([
         views:
           'main':
             templateUrl: 'partials/analysis/getData/main.html'
-            controller: 'getDataMainCtrl'
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
-            controller: 'getDataSidebarCtrl'
       )
-      .state('cleanData'
-        url: '/cleanData'
+      .state('getData.project'
+        url: '/:projectId/:forkId'
+        resolve:
+          checkDb: ($stateParams, app_database_dv) ->
+            res = app_database_dv.exists $stateParams.projectId + ':' + $stateParams.forkId
+            console.log "does DB exist for this project? "+res
         views:
           'main':
-            templateUrl: 'partials/analysis/cleanData/main.html'
+            templateUrl: 'partials/analysis/getData/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/cleanData/sidebar.html'
+            templateUrl: 'partials/analysis/getData/sidebar.html'
+      )
+      .state('wrangleData'
+        url: '/wrangleData'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/wrangleData/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
       )
       .state('tools'
         url: '/tools'
         views:
           'main':
-            templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-            controller: 'qualRobEstViewMainCtrl'
+            templateUrl: 'partials/analysis/tools/instrPerfEval/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
-            controller: 'qualRobEstViewSidebarCtrl'
+            templateUrl: 'partials/analysis/tools/instrPerfEval/sidebar.html'
       )
+
+      .state('charts'
+        url: '/charts/:projectId/:forkId'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/charts/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/charts/sidebar.html'
+      )
+
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
-
 ])
 
 App.run([
+  '$rootScope'
   'core'
   'app_database_constructor'
-  'app_analysis_qualRobEst_constructor'
-  'app_analysis_qualRobEstView_constructor'
-  (core, db, qualRobEst,qualRobEstView) ->
-
-    console.log "run block of app module"
+  'app_analysis_getData_constructor'
+  'app_analysis_wrangleData_constructor'
+#  'app_analysis_qualRobEst_constructor'
+#  'app_analysis_qualRobEstView_constructor'
+  'app_analysis_instrPerfEval_constructor'
+  'app_analysis_chartsView_constructor'
+  'app_analysis_charts_constructor'
+  #'app.utils.importer'
+#  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval) ->
 
     map = [
-      msgFrom: 'add numbers'
-      scopeFrom: ['qualRobEstView']
-      msgTo: 'add numbers'
-      scopeTo: ['qualRobEst']
+#      msgFrom: 'add numbers'
+#      scopeFrom: ['qualRobEstView']
+#      msgTo: 'add numbers'
+#      scopeTo: ['qualRobEst']
+#    ,
+#      msgFrom: 'numbers added'
+#      scopeFrom: ['qualRobEst']
+#      msgTo: 'numbers added'
+#      scopeTo: ['qualRobEstView']
+#    ,
+      msgFrom: 'save data'
+      scopeFrom: ['getData', 'wrangleData']
+      msgTo: 'save table'
+      scopeTo: ['database']
+#    ,
+#      msgFrom:'table saved'
+#      scopeFrom: ['database']
+#      msgTo: '234'
+#      scopeTo: ['qualRobEst']
+#    ,
+#      msgFrom: 'upload csv'
+#      scopeFrom: ['getData']
+#      msgTo: 'upload csv'
+#      scopeTo: ['app.utils.importer']
     ,
-      msgFrom: 'numbers added'
-      scopeFrom: ['qualRobEst']
-      msgTo: 'numbers added'
-      scopeTo: ['qualRobEstView']
+      # TODO: make message mapping dynamic #SOCRFW-151
+      msgFrom: 'get table'
+      scopeFrom: ['instrPerfEval']
+      msgTo: 'get table'
+      scopeTo: ['database']
     ,
-      msgFrom:'save table'
-      scopeFrom: ['getData']
-      msgTo:'save table'
-      scopeTo:['database']
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['instrPerfEval']
+    ,
+      msgFrom: 'get data'
+      scopeFrom: ['wrangleData']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'wrangle data'
+      scopeTo: ['wrangleData']
+    ,
+      msgFrom: 'get table'
+      scopeFrom: ['chartsView']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['chartsView']
     ]
 
     core.setEventsMapping map
 
-    core.register 'qualRobEstView', qualRobEstView
-    core.start 'qualRobEstView'
+#    core.register 'qualRobEstView', qualRobEstView
+#    core.start 'qualRobEstView'
+#
+#    core.register 'qualRobEst', qualRobEst
+#    core.start 'qualRobEst'
 
-    core.register 'qualRobEst', qualRobEst
-    core.start 'qualRobEst'
+    core.register 'getData', getData
+    core.start 'getData'
 
-#    core.register 'db', db
-#    core.start 'db'
+    core.register 'database', db
+    core.start 'database'
 
+    core.register 'wrangleData', wrangleData
+    core.start 'wrangleData'
+
+    core.register 'instrPerfEval', instrPerfEval
+    core.start 'instrPerfEval'
+
+    #core.register 'importer', importer
+    #core.start 'importer'
+
+    $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
+      console.log 'APP: state change: '
+      console.log arguments
+
+    console.log 'run block of app module'
 ])
 
