@@ -1,11 +1,12 @@
-## SOCR One Framework
-A scalable and highly flexible HTML5/JS framework for the [SOCR](http://socr.ucla.edu) tools to perform statistical analysis.
+## SOCRAT: [SOCR](http://socr.umich.edu) Analytics Toolbox
 
-[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=data_bridge_SOCRFW#56)](https://travis-ci.org/SOCRedu/SOCR-framework)
-[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=data_bridge_SOCRFW#56)](https://gemnasium.com/SOCRedu/SOCR-framework)
+A scalable and highly flexible HTML5/JS platform to build and run in-browser applications for interactive data analysis and visualization.
 
 * Web site: http://socr.umich.edu
 * Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
+
+[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=master)](https://travis-ci.org/SOCRedu/SOCR-framework)
+[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=master)](https://gemnasium.com/SOCRedu/SOCR-framework)
 
 Motivation 
 --------------
@@ -15,49 +16,64 @@ As far as the technology is concerned, currently all the applications are writte
 Goal
 ------
 The world is going the HTML5 way. Browsers are becoming more powerful. 
-We intend to create new framework which will serve users across all platforms. We will be primarily using `CoffeeScript` (compiles to `JavaScript`) for all the computations and presentation. Given the fact that today’s browsers have powerful javaScript engines (`v8`, `SpiderMonkey`), we will perform all the calculations on the browser with **no server dependency**. File management, database, computation will be performed inside the browser.
+We intend to create a toolbox which will serve users on all platforms. We are primarily using `CoffeeScript` (compiles to `JavaScript`) for all the computations and presentation. Given the fact that today’s browsers have powerful javaScript engines (`v8`, `SpiderMonkey`), we perform all the calculations on the browser with no server dependency. File management, database, computation will be performed inside the browser.
 
  Technologies/Packages
 ----------------
- [`AngularJS`](http://angularjs.org) 
- [`Brunch`](http://brunch.io) 
  [`CoffeeScript`](http://coffeescript.org/)
- [`HTML5`](http://html5rocks.com/)
- [`Node.js`](http://nodejs.org/) 
- [`Twitter Bootstrap`](twitter.github.com/bootstrap/) 
- [`D3.js`](http://d3js.org) 
+ [`Jade`](http://jade-lang.com/)
+ [`Less`](http://lesscss.org/)
+ [`Grunt`](http://gruntjs.com/) 
+ [`Node.js`](http://nodejs.org/)
+
+ Dependencies
+--------------
+ [`Bootstrap`](http://getbootstrap.com/)
+ [`jQuery`](https://jquery.com/)
+ [`AngularJS`](http://angularjs.org)
+ [`D3.js`](http://d3js.org)
+ [`Handsontable`](http://handsontable.com/)
+ [`jStat`](https://jstat.github.io/)
+ [`Wrangler`](http://vis.stanford.edu/wrangler/)
 
 Installation
 ------------
-Incase you wish to contribute to the project, please follow these steps to setup your enviroment.
-First, Install [nodejs](http://nodejs.org/) and npm if you havent. [gist](https://gist.github.com/isaacs/579814)
+In case you wish to create your own module or contribute to the project, follow these steps to setup your enviroment.
+First, install [nodejs](http://nodejs.org/) if you havent. npm is the package manager for Node.js and comes bundled with it.
 
-Go ahead and clone the repository.
+Second, install Bower and Grunt
+
+    $> npm install -g bower grunt-cli
+
+Second, update bower with `npm update -g bower`
+
+Then clone the repository.
 
     $> git clone https://github.com/SOCRedu/SOCR-framework.git FOLDER_NAME/
 
 Now, lets install all the dependent node packages for this project. Go into the FOLDER_NAME/ folder and run,
 
     $> npm install
+    $> bower install
 
-This will install all the dependencies mentioned in package.json file.
+This will install all the dependencies mentioned in package.json and bower.json files.
 
 We are almost there! All the dependencies have been installed now. 
     
-Start the server! See the application running at localhost:3000!
+Start the server! See the application running at localhost:9000!
 
-    $> scripts/server.sh
+    $> grunt serve
     
 To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
 
-    $> scripts/test.sh
+    $> grunt test
 
 Copyright and License 
 ----------------------
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2015 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License

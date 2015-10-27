@@ -4,7 +4,7 @@
 
 services = angular.module('app_services', [])
 
-services.factory 'version', -> "0.0.1.0"
+services.factory 'version', -> "0.0.1.4"
 
 #services.config([
 #  ()->
