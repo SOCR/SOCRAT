@@ -85,6 +85,8 @@ app = angular.module('app_controllers', ['app_mediator'])
 
     console.log 'controller block for sidebarCtrl'
     $scope.state = 'show'
+    $scope.arrowDirection = 'glyphicon glyphicon-chevron-left'
+
     # TODO: add dynamic project loading and naming #SOCRFW-24
     $scope.activeProjectName = 'default'
 
@@ -94,14 +96,17 @@ app = angular.module('app_controllers', ['app_mediator'])
         true
       else
         false
+
     # toggle function
     $scope.toggle = ->
       if $scope.state is 'hidden'
         $scope.state = 'show'
         appConfig.sidebar = 'visible'
+        $scope.arrowDirection = 'glyphicon glyphicon-chevron-left'
       else
         $scope.state = 'hidden'
         appConfig.sidebar = 'hidden'
+        $scope.arrowDirection = 'glyphicon glyphicon-chevron-right'
       $scope.$emit 'change in view'
 
     $scope.getClass = ->
@@ -117,8 +122,10 @@ app = angular.module('app_controllers', ['app_mediator'])
   '$document'
   ($scope, appConfig, $doc) ->
     console.log $doc
+
     #initial width is set .col-md-9
     $scope.width = 'col-md-9'
+
     #updating main view
     $scope.$on 'update view', ()->
       if appConfig.sidebar is 'visible' and appConfig.history is 'hidden'
