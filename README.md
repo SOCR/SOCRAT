@@ -8,6 +8,37 @@ A scalable and highly flexible HTML5/JS platform to build and run in-browser app
 [![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=master)](https://travis-ci.org/SOCRedu/SOCR-framework)
 [![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=master)](https://gemnasium.com/SOCRedu/SOCR-framework)
 
+Installation
+------------
+In case you wish to create your own module or contribute to the project, follow these steps to setup your enviroment.
+
+First, install [nodejs](http://nodejs.org/) if you havent. npm is the package manager for Node.js and comes bundled with it.
+
+Install Bower and Grunt,
+
+    $> npm install -g bower grunt-cli
+    $> npm update -b bower
+
+Clone the repository.
+
+    $> git clone https://github.com/SOCR/SOCRAT.git 
+
+Now, lets install all the dependencies. Go into the root folder,
+    $> cd SOCRAT
+    $> npm install
+    $> bower install
+
+This will install all the dependencies mentioned in package.json and bower.json files.
+
+Start the server! See the application running at localhost:9000!
+
+    $> grunt serve
+    
+To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
+
+    $> grunt test
+
+
 Motivation 
 --------------
 [SOCR](http://socr.umich.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
@@ -35,38 +66,6 @@ We intend to create a toolbox which will serve users on all platforms. We are pr
  [`Handsontable`](http://handsontable.com/)
  [`jStat`](https://jstat.github.io/)
  [`Wrangler`](http://vis.stanford.edu/wrangler/)
-
-Installation
-------------
-In case you wish to create your own module or contribute to the project, follow these steps to setup your enviroment.
-First, install [nodejs](http://nodejs.org/) if you havent. npm is the package manager for Node.js and comes bundled with it.
-
-Second, install Bower and Grunt
-
-    $> npm install -g bower grunt-cli
-
-Second, update bower with `npm update -g bower`
-
-Then clone the repository.
-
-    $> git clone https://github.com/SOCRedu/SOCR-framework.git FOLDER_NAME/
-
-Now, lets install all the dependent node packages for this project. Go into the FOLDER_NAME/ folder and run,
-
-    $> npm install
-    $> bower install
-
-This will install all the dependencies mentioned in package.json and bower.json files.
-
-We are almost there! All the dependencies have been installed now. 
-    
-Start the server! See the application running at localhost:9000!
-
-    $> grunt serve
-    
-To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
-
-    $> grunt test
 
 Copyright and License 
 ----------------------
