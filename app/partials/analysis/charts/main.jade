@@ -1,5 +1,6 @@
-div(ng-controller='chartsMainCtrl')
-    h2 Charts
+div(ng-controller="chartsMainCtrl")
+  h2 Charts
+    button(ng-click="dataConsole()").btn.btn-default Print Data
     div(ng-switch='currentPlot')
       div(ng-switch-when='none')
         span.alert Please choose variables and plot type.

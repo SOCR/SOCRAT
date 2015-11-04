@@ -70,30 +70,6 @@ charts.factory( 'app_analysis_charts_manager', [
           context: console
 ])
 
-.controller('chartsMainCtrl', [
-    'app_analysis_charts_manager'
-    '$scope'
-    (ctrlMngr, $scope) ->
-      console.log 'chartsMainCtrl executed'
-
-      sb = ctrlMngr.getSb()
-      token = sb.subscribe
-        msg:'take table'
-        msgScope:'charts'
-        listener: (msg, data) ->
-          console.log data
-          dataConsole data
-
-      sb.publish
-        msg:'get table'
-        msgScope:'charts'
-        callback: -> sb.unsubscribe token
-
-      dataConsole = (data) ->
-        console.log data
-
-
-])
 
 
 
