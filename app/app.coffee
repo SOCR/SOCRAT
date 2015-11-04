@@ -22,13 +22,14 @@ App = angular.module('app', [
   'app_mediator'
   'app_database'
   #charts module
-  'app_analysis_chartsView'
+  #'app_analysis_chartsView'
   # Analysis modules
   'app_analysis_getData'
   'app_analysis_wrangleData'
 #  'app_analysis_qualRobEstView'
 #  'app_analysis_qualRobEst'
   'app_analysis_instrPerfEval'
+  'app_analysis_charts'
 ])
 
 App.config([
@@ -110,7 +111,7 @@ App.config([
       )
 
       .state('charts'
-        url: '/charts/:projectId/:forkId'
+        url: '/charts'
         views:
           'main':
             templateUrl: 'partials/analysis/charts/main.html'
@@ -131,11 +132,11 @@ App.run([
 #  'app_analysis_qualRobEst_constructor'
 #  'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
-  'app_analysis_chartsView_constructor'
+#  'app_analysis_chartsView_constructor'
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-  ($rootScope, core, db, getData, wrangleData, instrPerfEval) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval, charts) ->
 
     map = [
 #      msgFrom: 'add numbers'
@@ -193,8 +194,17 @@ App.run([
       scopeFrom: ['database']
       msgTo: 'take table'
       scopeTo: ['chartsView']
-    ]
-
+    ,
+      msgFrom: 'get data'
+      scopeFrom: ['charts']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'chart data'
+      scopeTo: ['charts']
+]
     core.setEventsMapping map
 
 #    core.register 'qualRobEstView', qualRobEstView
@@ -217,6 +227,8 @@ App.run([
 
     #core.register 'importer', importer
     #core.start 'importer'
+    core.register 'charts', charts
+    core.start 'charts'
 
     $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
       console.log 'APP: state change: '
