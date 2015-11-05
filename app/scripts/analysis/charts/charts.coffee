@@ -1,3 +1,4 @@
+'use strict'
 ###
   @dependencies: None
   @author: Selvam Palanimalai
@@ -16,8 +17,8 @@ charts.factory('app_analysis_charts_constructor', [
       manager.setSb sb unless !sb?
 
       init: (opt) ->
-        console.log 'db init called'
-        manager.listenToIncomeEvents()
+        console.log 'charts init called'
+
 
       destroy: () ->
 
@@ -31,69 +32,45 @@ charts.factory('app_analysis_charts_constructor', [
 ###
 charts.factory( 'app_analysis_charts_manager', [
   ()->
-    sb = null
+    _sb = null
 
-    msgList =
+    _msgList =
       outgoing: ['get table']
       incoming: ['take table']
       scope: ['charts']
 
-    eventManager = (msg, data) ->
-      try
-        _data = msgList.income[msg].method.apply null,data
-        #last item in data is a promise.
-        data[data.length - 1].resolve _data if _data isnt false
-      catch e
-        console.log e.message
-        alert 'error in database'
+    _setSb = (sb) ->
+      _sb = sb
 
-      sb.publish
-        msg: msgList.income[msg].outcome
-        data: _data
-        msgScope: msgList.scope
+    _getSb = () ->
+      _sb
 
-    setSb: (_sb) ->
-      return false if _sb is undefined
-      sb = _sb
+    _getMsgList = () ->
+      _msgList
 
-    getMsgList: () ->
-      msgList
-
-    listenToIncomeEvents: () ->
-#app_analysis_charts_compute()
-      for msg of msgList.income
-        console.log 'subscribed for ' + msg
-        sb.subscribe
-          msg: msg
-          listener: eventManager
-          msgScope: msgList.scope
-          context: console
+    getSb: _getSb
+    setSb: _setSb
+    getMsgList: _getMsgList
 ])
 
-.controller('chartsMainCtrl', [
+
+
+.controller('VarCtrl', [
     'app_analysis_charts_manager'
     '$scope'
     (ctrlMngr, $scope) ->
-      console.log 'chartsMainCtrl executed'
-
       sb = ctrlMngr.getSb()
+
       token = sb.subscribe
-        msg:'take table'
-        msgScope:'charts'
-        listener: (msg, data) ->
-          console.log data
-          dataConsole data
+      msg:'take table'
+      msgScope:'charts'
+      listener: (msg, data) ->
+        $scope.data = data
+        console.log data
 
       sb.publish
         msg:'get table'
-        msgScope:'charts'
+        msgScope:['charts']
         callback: -> sb.unsubscribe token
-
-      dataConsole = (data) ->
-        console.log data
-
-
 ])
-
-
 

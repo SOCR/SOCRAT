@@ -1,17 +1,18 @@
-div
-    form
-        fieldset
-            legend Project
-            label fork&nbsp;
-                input(ng-model="currentFork",disabled = true).input-small
-            legend Plots
-            label Choose one&nbsp;
-                select(ng-model="currentPlot")
-                    option(ng-repeat='p in plots') {{p.label}}
-            legend Variables
-            label X&nbsp;
-            select(ng-model="xVariable")
-                option(ng-repeat="v in variables") {{v}}
-            label Y&nbsp;
-            select(ng-model="yVariable")
-                option(ng-repeat="v in variables") {{v}}
+h4 Variables
+select#chooseGraph(value="Choose a graph")
+  option(value = "0", selected="selected") Choose a graph
+  option(value = "1") Bar Graph
+  option(value = "2") Scatter Plot
+  option(value = "3") Histogram
+  option(value = "4") Bubble Chart
+  option(value = "5") Pie Chart
+
+div.container-fluid
+  div.row-fluid
+    div(ng-controller="VarCtrl").span6
+      select(ng-model ="data")
+        option(ng-repeat="v in data", mulitple="multiple") {{v}}
+    div.span6
+//add variable options.
+
+

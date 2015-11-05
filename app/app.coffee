@@ -195,14 +195,14 @@ App.run([
       msgTo: 'take table'
       scopeTo: ['chartsView']
     ,
-      msgFrom: 'get data'
+      msgFrom: 'get table'
       scopeFrom: ['charts']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
-      msgTo: 'chart data'
+      msgTo: 'take table'
       scopeTo: ['charts']
 ]
     core.setEventsMapping map

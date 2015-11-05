@@ -1,13 +1,11 @@
-div(ng-controller="chartsMainCtrl")
-  h2 Charts
-    button(ng-click="dataConsole()").btn.btn-default Print Data
-    div(ng-switch='currentPlot')
-      div(ng-switch-when='none')
-        span.alert Please choose variables and plot type.
+div.container-fluid
+  h4 Graphs
+  div.row-fluid
+    div#graphhere.span12
+      ul#addtop.nav.nav-tabs
+      div#addbody.tab-content
 
-      nvd3-line-chart#exampleId(ng-switch-when='line',data='data', width='{{width}}', height='{{height}}', showxaxis='true', showyaxis='true')
-        svg
 
-      nvd3-cumulative-line-chart#showXAxisExample(ng-switch-when='cumulativeLine',data='data', width='550', height='350', showxaxis='false', showyaxis='true', x='xFunction()', y='yFunction()', xaxistickformat='xAxisTickFormatFunction()', margin='{left:50,top:50,bottom:50,right:50}')
-        svg
+
+
 
