@@ -1,36 +1,24 @@
 'use strict'
-###
-  @dependencies: None
-  @author: Selvam Palanimalai
-###
-charts = (angular.module 'app_analysis_charts', [])
 
-###
-  @description: Constructor for this module.
-  @type: factory
-###
-charts.factory('app_analysis_charts_constructor', [
+charts = angular.module('app_analysis_charts', [])
+
+.factory('app_analysis_charts_constructor', [
   'app_analysis_charts_manager'
   (manager)->
     (sb)->
-      msgList = manager.getMsgList()
+
       manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
 
       init: (opt) ->
         console.log 'charts init called'
 
-
       destroy: () ->
 
-      msgList: msgList
+      msgList: _msgList
 ])
 
-###
-  @description: Manager for all communication b/w modules.
-    Only this service inside this module, has access to sandbox.
-  @type: service
-###
-charts.factory( 'app_analysis_charts_manager', [
+.factory( 'app_analysis_charts_manager', [
   ()->
     _sb = null
 
@@ -53,20 +41,20 @@ charts.factory( 'app_analysis_charts_manager', [
     getMsgList: _getMsgList
 ])
 
-
-
 .controller('VarCtrl', [
     'app_analysis_charts_manager'
     '$scope'
     (ctrlMngr, $scope) ->
+      console.log 'VarCtrl executed'
+
       sb = ctrlMngr.getSb()
 
       token = sb.subscribe
-      msg:'take table'
-      msgScope:'charts'
-      listener: (msg, data) ->
-        $scope.data = data
-        console.log data
+        msg:'take table'
+        msgScope:['charts']
+        listener: (msg, data) ->
+          $scope.data = data
+          console.log data
 
       sb.publish
         msg:'get table'
@@ -74,3 +62,8 @@ charts.factory( 'app_analysis_charts_manager', [
         callback: -> sb.unsubscribe token
 ])
 
+.factory('app_analysis_charts_dataTransform',[
+  '$scope'
+    transform = (data) ->
+
+])
