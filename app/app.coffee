@@ -22,7 +22,7 @@ App = angular.module('app', [
   'app_mediator'
   'app_database'
   #charts module
-  'app_analysis_chartsView'
+  'app_analysis_charts'
   # Analysis modules
   'app_analysis_getData'
   'app_analysis_wrangleData'
@@ -131,7 +131,6 @@ App.run([
 #  'app_analysis_qualRobEst_constructor'
 #  'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
-  'app_analysis_chartsView_constructor'
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
