@@ -1,0 +1,12 @@
+div(ng-controller="kMeansSidebarCtrl")
+  form
+    fieldset
+      legend Data parameters
+      //label Number of columns&nbsp;
+      //    input(ng-model="nCols").input-small
+      label Labels column&nbsp;
+          input(ng-model="labelCol").input-small
+      label k&nbsp;
+          input(ng-model="k").input-small
+      div
+        button(type="submit", ng-click="run()").btn.btn-primary Run
