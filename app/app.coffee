@@ -29,6 +29,7 @@ App = angular.module('app', [
 #  'app_analysis_qualRobEstView'
 #  'app_analysis_qualRobEst'
   'app_analysis_instrPerfEval'
+  'app_analysis_kMeans'
 ])
 
 App.config([
@@ -100,15 +101,22 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/wrangleData/sidebar.html'
       )
+#      .state('tools'
+#        url: '/tools'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/tools/instrPerfEval/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/tools/instrPerfEval/sidebar.html'
+#      )
       .state('tools'
         url: '/tools'
         views:
           'main':
-            templateUrl: 'partials/analysis/tools/instrPerfEval/main.html'
+            templateUrl: 'partials/analysis/tools/kMeans/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/tools/instrPerfEval/sidebar.html'
+            templateUrl: 'partials/analysis/tools/kMeans/sidebar.html'
       )
-
       .state('charts'
         url: '/charts/:projectId/:forkId'
         views:
@@ -131,10 +139,11 @@ App.run([
 #  'app_analysis_qualRobEst_constructor'
 #  'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
+  'app_analysis_kMeans_constructor'
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-  ($rootScope, core, db, getData, wrangleData, instrPerfEval) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval, kMeans) ->
 
     map = [
 #      msgFrom: 'add numbers'
@@ -172,6 +181,16 @@ App.run([
       scopeFrom: ['database']
       msgTo: 'take table'
       scopeTo: ['instrPerfEval']
+    ,
+      msgFrom: 'get data'
+      scopeFrom: ['kMeans']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take data'
+      scopeTo: ['kMeans']
     ,
       msgFrom: 'get data'
       scopeFrom: ['wrangleData']
@@ -213,6 +232,9 @@ App.run([
 
     core.register 'instrPerfEval', instrPerfEval
     core.start 'instrPerfEval'
+
+    core.register 'kMeans', kMeans
+    core.start 'kMeans'
 
     #core.register 'importer', importer
     #core.start 'importer'

@@ -1,12 +1,14 @@
 div(ng-controller="kMeansSidebarCtrl")
   form
     fieldset
-      legend Data parameters
-      //label Number of columns&nbsp;
-      //    input(ng-model="nCols").input-small
+      legend Parameters
       label Labels column&nbsp;
-          input(ng-model="labelCol").input-small
+        input(ng-model="labelCol").input-small
       label k&nbsp;
-          input(ng-model="k").input-small
+        input(ng-model="k").input-small
+      label Distance&nbsp;
+        input(ng-model="dist").input-small
+      label Initialization&nbsp;
+        input(ng-model="initMethod").input-small
       div
         button(type="submit", ng-click="run()").btn.btn-primary Run
