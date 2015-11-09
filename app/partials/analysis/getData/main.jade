@@ -4,6 +4,12 @@ div(ng-controller='getDataMainCtrl')
   p.lead To perform any analysis, you need data to begin with. Choose one of the available methods
     |to get the data into the web-app.
 
+  div.socrData(collapse="showState.socrData")
+    h3 SOCR Datasets
+    select(style="width:100%; margin:0px",ng-model="option")
+      option(value='KNEE_PAIN') Simulated SOCR Knee Pain Centroid Location Data
+    button.btn.btn-medium(ng-click="getSocrData()") Load
+
   div.worldBank(collapse="showState.worldBank")
     h3 WorldBank Data
     span Size:
