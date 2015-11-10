@@ -186,16 +186,6 @@ App.run([
       scopeTo: ['wrangleData']
     ,
       msgFrom: 'get table'
-      scopeFrom: ['chartsView']
-      msgTo: 'get table'
-      scopeTo: ['database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['database']
-      msgTo: 'take table'
-      scopeTo: ['chartsView']
-    ,
-      msgFrom: 'get table'
       scopeFrom: ['charts']
       msgTo: 'get table'
       scopeTo: ['database']

@@ -2,7 +2,7 @@
 
 charts = angular.module('app_analysis_charts', [])
 
-.factory('app_analysis_charts_constructor', [
+charts.factory('app_analysis_charts_constructor', [
   'app_analysis_charts_manager'
   (manager)->
     (sb)->
@@ -18,7 +18,7 @@ charts = angular.module('app_analysis_charts', [])
       msgList: _msgList
 ])
 
-.factory( 'app_analysis_charts_manager', [
+charts.factory( 'app_analysis_charts_manager', [
   ()->
     _sb = null
 
@@ -41,13 +41,17 @@ charts = angular.module('app_analysis_charts', [])
     getMsgList: _getMsgList
 ])
 
-.controller('VarCtrl', [
+charts.controller('VarCtrl', [
     'app_analysis_charts_manager'
     '$scope'
-    (ctrlMngr, $scope) ->
+    '$stateParams'
+    '$q'
+    (ctrlMngr, $scope, $stateParams, $q) ->
       console.log 'VarCtrl executed'
 
       sb = ctrlMngr.getSb()
+
+     # deferred = $q.defer()
 
       token = sb.subscribe
         msg:'take table'
@@ -60,10 +64,14 @@ charts = angular.module('app_analysis_charts', [])
         msg:'get table'
         msgScope:['charts']
         callback: -> sb.unsubscribe token
+        data:
+          tableName: $stateParams.projectId + ':' + $stateParams.forkId
+          #promise: deferred
 ])
 
-.factory('app_analysis_charts_dataTransform',[
+charts.factory('app_analysis_charts_dataTransform',[
   '$scope'
-    transform = (data) ->
+  ($scope) ->
+    transform = () ->
 
 ])
