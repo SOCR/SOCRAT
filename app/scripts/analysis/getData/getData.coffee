@@ -188,44 +188,6 @@ getData = angular.module('app_analysis_getData', [
             # handsontable directive to update.
             purpose: 'json'
 
-        when 'socrData'
-          # create the callback
-          cb = (data, status) ->
-            # obj[0] will contain meta deta
-            # obj[1] will contain array
-            _col = []
-            _column = []
-            tree = []
-
-            count = (obj) ->
-              try
-                if typeof obj is 'object' and obj isnt null
-                  for key in Object.keys obj
-                    tree.push key
-                    count obj[key]
-                    tree.pop()
-                else
-                  _col.push tree.join('.')
-                return _col
-              catch e
-                console.log e.message
-              return true
-
-            # generate titles and references
-            count data[1][0]
-            # format data
-            for c in _col
-              _column.push
-                data: c
-
-            # return object
-            data: data
-            columns: _column
-            columnHeader: _col
-            # purpose is helps in pin pointing which
-            # handsontable directive to update.
-            purpose: 'json'
-
         else
           #default implementation
           cb = (data, status) ->
@@ -360,6 +322,8 @@ getData = angular.module('app_analysis_getData', [
           # Pass a message to update the handsontable div.
           # data is the formatted data which plugs into the
           # handontable.
+
+          # TODO: getData module shouldn't know about controllers listening for handsontable update
           $scope.$emit 'update handsontable', data
           # Switch the accordion from getJson to grid.
           #$scope.$emit("change in showStates","grid")
@@ -379,8 +343,12 @@ getData = angular.module('app_analysis_getData', [
         download: true,
         complete: (dataResults) ->
           if dataResults and dataResults.data?.length > 0
-            _data = dataResults.data
-            _data.pop()
+            _data =
+              columnHeader: dataResults.data.shift()
+              data: [null, dataResults.data]
+              # purpose is helps in pin pointing which
+              # handsontable directive to update.
+              purpose: 'json'
             console.log 'resolved'
             # pass a message to update the handsontable div
             # data is the formatted data which plugs into the
@@ -459,6 +427,7 @@ getData = angular.module('app_analysis_getData', [
         nCols: tableData.nCols - nSpareCols
 
     _toHandsontable = () ->
+      # TODO: implement for poping up data when coming back from analysis tabs
 
     toDataFrame: _toDataFrame
     toHandsontable: _toHandsontable
@@ -514,14 +483,18 @@ getData = angular.module('app_analysis_getData', [
         currHeight = elem.height()
 
         #check if data is in the right format
-        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
+#        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
+        if arg? and typeof arg.data is 'object'
           obj =
             data: arg.data[1]
-            startRows: Object.keys(arg.data[1]).length
-            startCols: arg.columns.length
+#            startRows: Object.keys(arg.data[1]).length
+#            startCols: arg.columns.length
             colHeaders: arg.columnHeader
-            columns: arg.columns
+#            columns: arg.columns
             minSpareRows: N_SPARE_ROWS
+            minSpareCols: N_SPARE_COLS
+            allowInsertRow: true
+            allowInsertColumn: true
         else if arg.default is true
           obj =
             data: [
