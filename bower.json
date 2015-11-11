@@ -21,7 +21,7 @@
     "angular-ui": "~0.4.0",
     "angular-ui-router": "~0.2.15",
     "ngHandsontable": "angular-ui-handsontable#~0.7.0",
-    "wrangler": "https://github.com/StanfordHCI/wrangler.git",
+    "wrangler": "https://github.com/alxndrkalinin/wrangler.git",
     "bootstrap": "^3.2.0",
     "angular-bootstrap": "~0.14.2",
     "jstat": "~1.4.6",
