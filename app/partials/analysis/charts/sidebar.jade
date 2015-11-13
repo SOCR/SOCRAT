@@ -1,6 +1,5 @@
-div(ng-controller="VarCtrl")
-  h4 Variables
-  select#chooseGraph(value="Choose a graph")
+div
+  select.form-control#chooseGraph(value="Choose a graph")
     option(value = "0", selected="selected") Choose a graph
     option(value = "1") Bar Graph
     option(value = "2") Scatter Plot
@@ -8,12 +7,6 @@ div(ng-controller="VarCtrl")
     option(value = "4") Bubble Chart
     option(value = "5") Pie Chart
 
-  div.container-fluid
-    div.row-fluid
-      div.span6
-        select(ng-model ="data")
-          option(ng-repeat="v in data", mulitple="multiple") {{v}}
-      div.span6
 //add variable options.
 
 
