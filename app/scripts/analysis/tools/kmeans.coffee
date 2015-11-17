@@ -74,7 +74,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
       # subscribe for incoming message with data
       token = sb.subscribe
-        msg: 'take table'
+        msg: 'take data'
         msgScope: ['kMeans']
         listener: (msg, data) ->
           _data = data
@@ -84,7 +84,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
           kmeans.calculate data, $scope.confLevel
 
       sb.publish
-        msg: 'get table'
+        msg: 'get data'
         msgScope: ['kMeans']
         callback: -> sb.unsubscribe token
         data:
@@ -97,8 +97,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     _data = []
 
-    _data =
-      result: _matrix
+#    _data =
+#      result: _matrix
 
     _getUniqueLabels = (labels) ->
       labels.filter (x, i, a) -> i is a.indexOf x
