@@ -65,10 +65,10 @@ charts = angular.module('app_analysis_charts', [])
       console.log 'sidechartsCtrl executed'
       $scope.selector1={};
       $scope.selector2={};
-      $rootScope.indexes = {x:"", y:""}
-      $scope.change = (selector,headers, indexes) ->
+      $rootScope.indexes = {graph:"", x:"", y:""}
+      $scope.change = (selector,headers, ind) ->
         for h in headers
-          if selector.value is h.value then $rootScope[indexes] = h.key
+          if selector.value is h.value then $rootScope.indexes[ind] = parseFloat h.key
 
       sb = ctrlMngr.getSb()
 
@@ -90,7 +90,12 @@ charts = angular.module('app_analysis_charts', [])
         data:
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
 
-      $scope.$on('$destroy', $rootScope.dataT2);
+      $scope.graphs = [{name:'Bar Graph', value:0},{name:'Scatter Plot', value:1},{name:'Histogram', value:2},{name:'Bubble Chart', value:3},{name:'Pie Chart', value:4}]
+      $scope.graphSelect = {}
+
+      $scope.change1 = ()->
+        console.log $scope.graphSelect
+        $rootScope.indexes.graph = $scope.graphSelect.name
 
   ])
 
