@@ -1,10 +1,6 @@
 div.container-fluid(ng-controller="mainchartsCtrl")
-
-  h4 Variables
-  div.row-fluid
-    select.form-control(ng-model ="varNames.selectedVar" ng-options="v for v in varNames.variables")
-      //option(ng-repeat="v in varNames") {{v}}
   h4 Graphs
+  button(ng-click="print()") Log data
   div.row-fluid
     div#graphhere.span12
       ul#addtop.nav.nav-tabs

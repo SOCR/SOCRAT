@@ -44,35 +44,55 @@ charts = angular.module('app_analysis_charts', [])
 .controller('mainchartsCtrl', [
     'app_analysis_charts_manager'
     '$scope'
+    '$rootScope'
+    (ctrlMngr,$scope,$rootScope) ->
+      console.log 'mainchartsCtrl executed'
+
+      $scope.print = () ->
+        console.log $rootScope.dataT2
+        console.log $rootScope.indexes
+
+])
+
+.controller('sidechartsCtrl',[
+    'app_analysis_charts_manager'
+    '$scope'
+    '$rootScope'
     '$stateParams'
     '$q'
     'app_analysis_charts_dataTransform'
-    (ctrlMngr, $scope, $stateParams, $q, dataTransform) ->
-      console.log 'VarCtrl executed'
+    (ctrlMngr, $scope, $rootScope, $stateParams, $q, dataTransform) ->
+      console.log 'sidechartsCtrl executed'
+      $scope.selector1={};
+      $scope.selector2={};
+      $rootScope.indexes = {x:"", y:""}
+      $scope.change = (selector,headers, indexes) ->
+        for h in headers
+          if selector.value is h.value then $rootScope[indexes] = h.key
 
       sb = ctrlMngr.getSb()
 
-     # deferred = $q.defer()
+      # deferred = $q.defer()
 
       token = sb.subscribe
         msg:'take table'
         msgScope:['charts']
         listener: (msg, _data) ->
-          $scope.data = _data
-          console.log _data
-          $scope.varNames = {variables: _data.header, selectedVar: null}
+          $scope.headers = d3.entries _data.header
           $scope.dataT = dataTransform.transpose(_data.data)
-          console.log $scope.dataT
-          console.log dataTransform.transform($scope.dataT)
-          console.log $scope.varNames.variables
+          $rootScope.dataT2 = dataTransform.transform($scope.dataT)
+          console.log $rootScope.dataT2
+
       sb.publish
         msg:'get table'
         msgScope:['charts']
         callback: -> sb.unsubscribe token
         data:
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
-          #promise: deferred
-])
+
+      $scope.$on('$destroy', $rootScope.dataT2);
+
+  ])
 
 .factory('app_analysis_charts_dataTransform',[
   () ->
@@ -82,7 +102,6 @@ charts = angular.module('app_analysis_charts', [])
     _transform = (data) ->
       arr = []
       for col in data
-        #console.log col
         obj = {}
         for value, i in col
           obj[i] = value
@@ -91,3 +110,5 @@ charts = angular.module('app_analysis_charts', [])
     transform: _transform
     transpose:_transpose
 ])
+
+

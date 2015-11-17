@@ -1,4 +1,4 @@
-div
+div(ng-controller="sidechartsCtrl")
   select.form-control#chooseGraph(value="Choose a graph")
     option(value = "0", selected="selected") Choose a graph
     option(value = "1") Bar Graph
@@ -6,7 +6,14 @@ div
     option(value = "3") Histogram
     option(value = "4") Bubble Chart
     option(value = "5") Pie Chart
-
-//add variable options.
+  h4 Variables
+  div.form-inline
+    div.form-horizontal
+      label(for = "x") Add X
+      select#x.form-control(ng-change = "change(selector1,headers,x)" ng-model = "selector1" ng-options = "v as v.value for v in headers")
+    div.form-horizontal
+      label(for = "y") Add Y
+      select#y.form-control(ng-change = "change(selector2,headers,y)" ng-model = "selector2" ng-options = "v as v.value for v in headers")
+  //add variable options.
 
 
