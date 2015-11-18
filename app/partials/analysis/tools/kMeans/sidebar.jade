@@ -1,14 +1,26 @@
 div(ng-controller="kMeansSidebarCtrl")
   form
-    fieldset
-      legend Parameters
-      label Labels column&nbsp;
-        input(ng-model="labelCol").input-small
-      label k&nbsp;
-        input(ng-model="k").input-small
-      label Distance&nbsp;
-        input(ng-model="dist").input-small
-      label Initialization&nbsp;
-        input(ng-model="initMethod").input-small
-      div
-        button(type="submit", ng-click="run()").btn.btn-primary Run
+    legend Parameters
+    div.form-group
+      label Labels column &nbsp;
+      //- show data header column names
+      select(ng-model="labelCol", ng-options="col for col in cols").form-control
+    div.form-group
+      label k &nbsp;
+      // k from 2 to 10, uses d3.scale.category10()
+      //- generate options for k from 2 to 10
+      - var k = 2
+      select(ng-model="k").form-control
+        while k <= 10
+          option(value=k)= k++
+    div.form-group
+      label Distance &nbsp;
+      select(ng-model="dist").form-control
+        each dist in ['Euclidean', 'Mahalanobis', 'Manhattan', 'Maximum']
+          option(value=dist)= dist
+    div.form-group
+      label Initialization &nbsp;
+      select(ng-model="initMethod").form-control
+        each method in ['Forgy', 'Random Partition']
+          option(value=method)= method
+    button(type="submit", ng-click="run()").btn.btn-primary Run

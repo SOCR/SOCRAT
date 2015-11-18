@@ -65,7 +65,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
       sb = ctrlMngr.getSb()
 
-      $scope.labelCol = '1'
+      $scope.cols = []
       $scope.k = '2'
       $scope.dist = 'Euclidean'
       $scope.initMethod = 'Forgy'
@@ -78,10 +78,11 @@ kMeans = angular.module('app_analysis_kMeans', [])
         msgScope: ['kMeans']
         listener: (msg, data) ->
           _data = data
-          $scope.nRows = _data.data?.length
-          $scope.nCols = _data.data[0]?.length
+          $scope.cols = _data.header
+          [..., lastCol] = $scope.cols
+          $scope.labelCol = lastCol
           console.log data
-          kmeans.calculate data, $scope.confLevel
+#          kmeans.run data
 
       sb.publish
         msg: 'get data'
