@@ -2,9 +2,22 @@ div(ng-controller="kMeansSidebarCtrl")
   form
     legend Parameters
     div.form-group
-      label Labels column &nbsp;
+      label X column &nbsp;
       //- show data header column names
-      select(ng-model="labelCol", ng-options="col for col in cols").form-control
+      select(ng-model="xCol", ng-options="col for col in cols").form-control
+    div.form-group
+      label Y column &nbsp;
+      //- show data header column names
+      select(ng-model="yCol", ng-options="col for col in cols").form-control
+    div.checkbox
+      label
+        input(type="checkbox", ng-model="labelson")
+        | Use labels column
+    div.form-group
+      fieldset(ng-disabled="!labelson")
+        label Labels column &nbsp;
+        //- show data header column names
+        select(ng-model="labelCol", ng-options="col for col in cols").form-control
     div.form-group
       label k &nbsp;
       // k from 2 to 10, uses d3.scale.category10()
