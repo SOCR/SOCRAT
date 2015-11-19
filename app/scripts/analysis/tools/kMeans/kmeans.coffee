@@ -276,10 +276,13 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _runKMeans = (data, k, maxIter, centroids, distanceType, uniqueLabels, trueLabels=null) ->
 
       evaluateAccuracy = (labels, trueLabels, uniqueLabels) ->
+        # TODO: make accuracy work for k > 2
         accs = [0]
         for k in uniqueLabels
+          # get true indices for label k
           kLabelIdxs = (i for x, i in trueLabels when x is k)
-          kLabels = (x for x, i in labels when i in kLabelIdxs)
+          # get calculated labels by true indices
+          kLabels = (uniqueLabels[x] for x, i in labels when i in kLabelIdxs)
           kTrueLabels = (x for x in trueLabels when x is k)
           accK = kLabels.map((x, idx) -> x - kTrueLabels[idx]).reduce (r, s) -> r + s
           accs.push Math.abs(accK)
