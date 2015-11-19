@@ -52,54 +52,72 @@ kMeans = angular.module('app_analysis_kMeans', [])
         if arr?
           arr = arr.map (x) -> x.toFixed 3
           '[' + arr.toString().split(',').join('; ') + ']'
+
+      _redraw = () ->
+      _drawDataPoints = ->
+
+      # TODO: consider using messages instead
+      graph =
+        redraw: _redraw
+        drawDataPoints: _drawDataPoints
+      kmeans.setGraph graph
   ])
 
 .controller('kMeansSidebarCtrl', [
-    'app_analysis_kMeans_manager'
-    'app_analysis_kMeans_calculator'
-    '$scope'
-    '$stateParams'
-    '$q'
-    (ctrlMngr, kmeans, $scope, $stateParams, $q) ->
-      console.log 'kMeansSidebarCtrl executed'
+  'app_analysis_kMeans_manager'
+  'app_analysis_kMeans_calculator'
+  '$scope'
+  '$stateParams'
+  '$q'
+  (ctrlMngr, kmeans, $scope, $stateParams, $q) ->
+    console.log 'kMeansSidebarCtrl executed'
 
-      sb = ctrlMngr.getSb()
+    sb = ctrlMngr.getSb()
 
-      $scope.cols = []
-      $scope.k = '2'
-      $scope.dist = 'Euclidean'
-      $scope.initMethod = 'Forgy'
+    $scope.cols = []
+    $scope.k = '2'
+    $scope.dist = 'Euclidean'
+    $scope.initMethod = 'Forgy'
 
-      deferred = $q.defer()
+    deferred = $q.defer()
 
-      # subscribe for incoming message with data
-      token = sb.subscribe
-        msg: 'take data'
-        msgScope: ['kMeans']
-        listener: (msg, data) ->
-          _data = data
-          $scope.cols = _data.header
-          [..., lastCol] = $scope.cols
-          $scope.labelCol = lastCol
-          console.log data
-#          kmeans.run data
+    # subscribe for incoming message with data
+    token = sb.subscribe
+      msg: 'take data'
+      msgScope: ['kMeans']
+      listener: (msg, data) ->
+        _data = data
+        $scope.cols = _data.header
+        [firstCol, secondCol, ..., lastCol] = $scope.cols
+        $scope.xCol = firstCol
+        $scope.yCol = secondCol
+        $scope.labelCol = lastCol
+        $scope.run = ->
+          xCol = _data.header.indexOf $scope.xCol
+          yCol = _data.header.indexOf $scope.yCol
+          data = ([row[xCol], row[yCol]] for row in _data.data)
+          kmeans.run data, $scope.k, $scope.dist, $scope.initMethod, $scope.labelCol
 
-      sb.publish
-        msg: 'get data'
-        msgScope: ['kMeans']
-        callback: -> sb.unsubscribe token
-        data:
-          tableName: $stateParams.projectId + ':' + $stateParams.forkId
-          promise: deferred
+    sb.publish
+      msg: 'get data'
+      msgScope: ['kMeans']
+      callback: -> sb.unsubscribe token
+      data:
+        tableName: $stateParams.projectId + ':' + $stateParams.forkId
+        promise: deferred
   ])
 
 .factory('app_analysis_kMeans_calculator', [
   () ->
 
     _data = []
+    _graph = null
 
 #    _data =
 #      result: _matrix
+
+    _setGraph = (graph) ->
+      _graph = graph
 
     _getUniqueLabels = (labels) ->
       labels.filter (x, i, a) -> i is a.indexOf x
@@ -349,14 +367,15 @@ kMeans = angular.module('app_analysis_kMeans', [])
       else
         interval = setInterval run, 1000
 
-    _init = (obj, ctrl) ->
-      data = obj.data
+    _init = (data, k, distanceType, initMethod, labels) ->
       data = (row.map(Number) for row in data)
-      labels = obj.labels
       labels = labels.map (x) -> Number(x[0])
       computeAcc = on
 
-      distanceType = ctrl.getDistanceType()
+      distanceType = distanceType.toLowerCase()
+      initMethod = initMethod.toLowerCase()
+
+#      distanceType = ctrl.getDistanceType()
       uniqueLabels = _getUniqueLabels(labels)
 
       k = Number k
@@ -365,9 +384,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
       if k isnt 2
         computeAcc = off
 
-      ctrl.drawDataPoints data
+      _graph.drawDataPoints data
 
-      initMethod = ctrl.getInitMethod()
+#      initMethod = ctrl.getInitMethod()
       if initMethod is 'forgy'
         centroids = _initCentroids data, k
         initLabels = _assignSamples data, centroids, 'euclidean'
@@ -375,10 +394,11 @@ kMeans = angular.module('app_analysis_kMeans', [])
         initLabels = _initLabels data.length - 1, k
         centroids = _updateMeans data, uniqueLabels, initLabels
 
-      ctrl.redraw data, centroids.map((x) -> x.val), initLabels
+      _graph.redraw data, centroids.map((x) -> x.val), initLabels
 
       console.log 'Starting K-Means'
       _runKMeans data, labels, k, maxIter, centroids, distanceType, uniqueLabels, computeAcc
 
-      run: _init
+    run: _init
+    setGraph: _setGraph
   ])
