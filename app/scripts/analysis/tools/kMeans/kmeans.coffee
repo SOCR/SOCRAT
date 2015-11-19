@@ -95,8 +95,13 @@ kMeans = angular.module('app_analysis_kMeans', [])
         $scope.run = ->
           xCol = _data.header.indexOf $scope.xCol
           yCol = _data.header.indexOf $scope.yCol
+          if $scope.labelson
+            labelCol = _data.header.indexOf $scope.labelCol
+            labels = (row[labelCol] for row in _data.data)
+          else
+            labels = null
           data = ([row[xCol], row[yCol]] for row in _data.data)
-          kmeans.run data, $scope.k, $scope.dist, $scope.initMethod, $scope.labelCol
+          kmeans.run data, $scope.k, $scope.dist, $scope.initMethod, labels
 
     sb.publish
       msg: 'get data'
@@ -112,6 +117,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     _data = []
     _graph = null
+    _computeAcc = off
+    _maxIter = 20
 
 #    _data =
 #      result: _matrix
@@ -266,7 +273,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         labels.push distances.indexOf(Math.min.apply @, distances)
       labels
 
-    _runKMeans = (data, trueLabels, k, maxIter, centroids, distanceType, uniqueLabels, computeAcc) ->
+    _runKMeans = (data, k, maxIter, centroids, distanceType, uniqueLabels, trueLabels=null) ->
 
       evaluateAccuracy = (labels, trueLabels, uniqueLabels) ->
         accs = [0]
@@ -279,7 +286,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         acc = (trueLabels.length - accs.reduce((r, s) -> r + s)) / trueLabels.length
         acc = if acc < 0.5 then 1 - acc else acc
 
-      step = (data, centroids, trueLabels) ->
+      step = (data, centroids) ->
         maxIter--
         console.log 'Iteration: ' + maxIter
         console.log 'Centroids: '
@@ -292,7 +299,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         console.table means
         if not _arrayEqual means.map((x) -> x.idx), centroids.map((x) -> x.idx)
           centroids = means
-          Controller.redraw(data, means.map((x) -> x.val), labels)
+          _graph.redraw(data, means.map((x) -> x.val), labels)
         else
           maxIter = 0
 
@@ -302,21 +309,21 @@ kMeans = angular.module('app_analysis_kMeans', [])
       run = () ->
       # main loop
         if maxIter
-          res = step data, centroids, trueLabels
+          res = step data, centroids
           centroids = res.centroids
           labels = res.labels
         else
           clearInterval interval
           console.log 'K-Means done.'
-          if computeAcc
+          if _computeAcc
             labels = _assignSamples data, centroids, distanceType
             acc = evaluateAccuracy labels, trueLabels, uniqueLabels
             console.log 'Accuracy: ' + acc * 100 + '%'
           else
             acc = ''
-          Core.fireEvent
-            msg: 'kmeans_done'
-            data: acc * 100
+#          Core.fireEvent
+#            msg: 'kmeans_done'
+#            data: acc * 100
 
       runMahalanobis = () ->
       # main loop
@@ -336,7 +343,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
             if ctrIdx isnt lbls[i]
               lbls[i] = ctrIdx
               centroids = _updateMeans data, centroids, lbls
-              Controller.redraw(data, centroids.map((x) -> x.val), lbls)
+              _graph.redraw(data, centroids.map((x) -> x.val), lbls)
               for ctr, j in centroids
                 covMats[j] = _updatePrecisionMatrix(data, j, lbls)
 
@@ -346,15 +353,14 @@ kMeans = angular.module('app_analysis_kMeans', [])
         else
           clearInterval interval
           console.log 'K-Means done.'
-          #        labels = _assignSamples data, centroids, distanceType
-          if computeAcc
+          if _computeAcc
             acc = evaluateAccuracy lbls, trueLabels, uniqueLabels
             console.log 'Accuracy: ' + acc * 100 + '%'
           else
             acc = ''
-          Core.fireEvent
-            msg: 'kmeans_done'
-            data: acc * 100
+#          Core.fireEvent
+#            msg: 'kmeans_done'
+#            data: acc * 100
 
       if distanceType is 'mahalanobis'
         labels = _assignSamples data, centroids, 'euclidean'
@@ -367,22 +373,22 @@ kMeans = angular.module('app_analysis_kMeans', [])
       else
         interval = setInterval run, 1000
 
-    _init = (data, k, distanceType, initMethod, labels) ->
+    _init = (data, k, distanceType, initMethod, labels=null) ->
       data = (row.map(Number) for row in data)
-      labels = labels.map (x) -> Number(x[0])
-      computeAcc = on
-
-      distanceType = distanceType.toLowerCase()
-      initMethod = initMethod.toLowerCase()
-
-#      distanceType = ctrl.getDistanceType()
-      uniqueLabels = _getUniqueLabels(labels)
 
       k = Number k
       console.log 'K: ' + k
 
-      if k isnt 2
-        computeAcc = off
+      if labels
+        uniqueLabels = _getUniqueLabels(labels)
+        # compute accuracy only when # of clusters is equal to number of unique labels
+        _computeAcc = if uniqueLabels.length is k then on else off
+      else
+        uniqueLabels = [0..k-1]
+        _computeAcc = off
+
+      distanceType = distanceType.toLowerCase()
+      initMethod = initMethod.toLowerCase()
 
       _graph.drawDataPoints data
 
@@ -397,7 +403,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       _graph.redraw data, centroids.map((x) -> x.val), initLabels
 
       console.log 'Starting K-Means'
-      _runKMeans data, labels, k, maxIter, centroids, distanceType, uniqueLabels, computeAcc
+      _runKMeans data, k, _maxIter, centroids, distanceType, uniqueLabels, labels
 
     run: _init
     setGraph: _setGraph
