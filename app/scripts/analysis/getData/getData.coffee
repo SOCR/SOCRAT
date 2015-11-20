@@ -339,9 +339,6 @@ getData = angular.module('app_analysis_getData', [
 
       url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
 
-#      Papa.parse url,
-#        download: true,
-#        complete: (dataResults) ->
       d3.text url,
         (dataResults) ->
           if dataResults?.length > 0
