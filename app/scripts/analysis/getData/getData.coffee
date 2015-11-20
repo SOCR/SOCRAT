@@ -339,13 +339,16 @@ getData = angular.module('app_analysis_getData', [
 
       url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
 
-      Papa.parse url,
-        download: true,
-        complete: (dataResults) ->
-          if dataResults and dataResults.data?.length > 0
+#      Papa.parse url,
+#        download: true,
+#        complete: (dataResults) ->
+      d3.text url,
+        (dataResults) ->
+          if dataResults?.length > 0
+            dataResults = d3.csv.parseRows dataResults
             _data =
-              columnHeader: dataResults.data.shift()
-              data: [null, dataResults.data]
+              columnHeader: dataResults.shift()
+              data: [null, dataResults]
               # purpose is helps in pin pointing which
               # handsontable directive to update.
               purpose: 'json'
