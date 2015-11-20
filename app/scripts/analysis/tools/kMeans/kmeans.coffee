@@ -52,15 +52,6 @@ kMeans = angular.module('app_analysis_kMeans', [])
         if arr?
           arr = arr.map (x) -> x.toFixed 3
           '[' + arr.toString().split(',').join('; ') + ']'
-
-      _redraw = () ->
-      _drawDataPoints = ->
-
-      # TODO: consider using messages instead
-      graph =
-        redraw: _redraw
-        drawDataPoints: _drawDataPoints
-      kmeans.setGraph graph
   ])
 
 .controller('kMeansSidebarCtrl', [
@@ -115,13 +106,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
 .factory('app_analysis_kMeans_calculator', [
   () ->
 
-    _data = []
     _graph = null
     _computeAcc = off
     _maxIter = 20
-
-#    _data =
-#      result: _matrix
 
     _setGraph = (graph) ->
       _graph = graph
@@ -411,3 +398,92 @@ kMeans = angular.module('app_analysis_kMeans', [])
     run: _init
     setGraph: _setGraph
   ])
+
+.directive 'appKmeans', [
+  'app_analysis_kMeans_calculator'
+  (kMeans) ->
+    restrict: 'E'
+    template: "<svg width='100%' height='600'></svg>"
+    link: (scope, elem, attr) ->
+
+      _graph = null
+      _xScale = null
+      _yScale = null
+      _color = null
+      _meanLayer = null
+
+#      _getDistanceType = () ->
+#        $('.distInput input:radio:checked').val()
+#
+#      _getDataset = () ->
+#        $('.dataInput input:radio:checked').val()
+#
+#      _getInitMethod = () ->
+#        $('.initInput input:radio:checked').val()
+#
+#      _getKValue = () ->
+#        $('.kInput select').val()
+#
+#      _setStartButtonListener = (func) ->
+#        $('.runKMeans').click () ->
+#          event.preventDefault()
+#          _clearChart()
+#          func()
+
+      _drawDataPoints = (dataPoints) ->
+        pointDots = _graph.selectAll('.pointDots').data(dataPoints)
+        pointDots.enter().append('circle').attr('class','pointDots')
+        .attr('r', 3)
+        .attr('cx', (d) -> _xScale(d[0]))
+        .attr('cy', (d) -> _yScale(d[1]))
+
+      _clearChart = () ->
+        _graph.selectAll('.pointDots').remove()
+        _graph.selectAll('g > g > *').remove()
+
+      _redraw = (dataPoints, means, assignments) ->
+        assignmentLines = _meanLayer.selectAll('.assignmentLines').data(assignments)
+        assignmentLines.enter().append('line').attr('class','assignmentLines')
+        .attr('x1', (d, i) -> _xScale(dataPoints[i][0]))
+        .attr('y1', (d, i) -> _yScale(dataPoints[i][1]))
+        .attr('x2', (d, i) -> _xScale(means[d][0]))
+        .attr('y2', (d, i) -> _yScale(means[d][1]))
+        .attr('stroke', (d) -> _color(d))
+
+        assignmentLines.transition().duration(500)
+        .attr('x2', (d, i) -> _xScale(means[d][0]))
+        .attr('y2', (d, i) -> _yScale(means[d][1]))
+        .attr('stroke', (d) -> _color(d))
+
+        meanDots = _meanLayer.selectAll('.meanDots').data(means)
+        meanDots.enter().append('circle').attr('class','meanDots')
+        .attr('r', 5)
+        .attr('stroke', (d, i) -> _color(i))
+        .attr('stroke-width', 3)
+        .attr('fill', 'white')
+        .attr('cx', (d) -> _xScale(d[0]))
+        .attr('cy', (d) -> _yScale(d[1]))
+
+        meanDots.transition().duration(500)
+        .attr('cx', (d) -> _xScale(d[0]))
+        .attr('cy', (d) -> _yScale(d[1]))
+        meanDots.exit().remove()
+
+      _publishResult = (data) ->
+        $('.kMeansAcc').text data + '%'
+
+      rawSvg = elem.find("svg")[0]
+      svg = d3.select(rawSvg)
+      _graph = svg.append('g').attr('transform', 'translate(350,350)')
+      _meanLayer = _graph.append('g')
+      _xScale = d3.scale.linear().domain([0,10]).range([0,300])
+      _yScale = d3.scale.linear().domain([0,10]).range([0,300])
+      _color = d3.scale.category10()
+
+      kMeans.setGraph
+        redraw: _redraw
+        drawDataPoints: _drawDataPoints
+        clearChart: _clearChart
+
+      console.log 'appKmeans directive linked'
+]
