@@ -337,7 +337,9 @@ getData = angular.module('app_analysis_getData', [
       if $scope.option is undefined
         $scope.option = 'KNEE_PAIN'
 
-      url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
+      # TODO: host on SOCR server
+#      url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
+      url = 'https://www.googledrive.com/host//0BzJubeARG-hsQlNiLXhnOWJfaHc'
 
       d3.text url,
         (dataResults) ->

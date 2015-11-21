@@ -43,7 +43,6 @@ module.exports = (config) ->
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js'
       'bower_components/jstat/dist/jstat.js'
       'bower_components/jsfeat/build/jsfeat.js'
-      'bower_components/papaparse/papaparse.js'
       'bower_components/angular-mocks/angular-mocks.js'
       # endbower
       # bower:coffee

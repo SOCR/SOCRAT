@@ -45,13 +45,34 @@ kMeans = angular.module('app_analysis_kMeans', [])
     'app_analysis_kMeans_manager'
     'app_analysis_kMeans_calculator'
     '$scope'
-    (ctrlMngr, kmeans, $scope) ->
+    (ctrlMngr, kMeans, $scope) ->
       console.log 'kMeansMainCtrl executed'
+
+      _dataPoints = null
+      _means = null
+      _assignments = null
 
       prettifyArrayOutput = (arr) ->
         if arr?
           arr = arr.map (x) -> x.toFixed 3
           '[' + arr.toString().split(',').join('; ') + ']'
+
+      updateChartData = () ->
+        $scope.dataPoints = _dataPoints
+        $scope.means = _means
+        $scope.assignments = _assignments
+
+      _update = (dataPoints, means=null, assignments=null) ->
+        _dataPoints = dataPoints
+        _means = means if means
+        _assignments = assignments if assignments
+        updateChartData()
+
+      graph =
+        update: _update
+
+      updateChartData()
+      kMeans.setGraph graph
   ])
 
 .controller('kMeansSidebarCtrl', [
@@ -289,7 +310,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         console.table means
         if not _arrayEqual means.map((x) -> x.idx), centroids.map((x) -> x.idx)
           centroids = means
-          _graph.redraw(data, means.map((x) -> x.val), labels)
+          _graph.update(data, means.map((x) -> x.val), labels)
         else
           maxIter = 0
 
@@ -333,7 +354,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
             if ctrIdx isnt lbls[i]
               lbls[i] = ctrIdx
               centroids = _updateMeans data, centroids, lbls
-              _graph.redraw(data, centroids.map((x) -> x.val), lbls)
+              _graph.update(data, centroids.map((x) -> x.val), lbls)
               for ctr, j in centroids
                 covMats[j] = _updatePrecisionMatrix(data, j, lbls)
 
@@ -380,9 +401,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
       distanceType = distanceType.toLowerCase()
       initMethod = initMethod.toLowerCase()
 
-      _graph.drawDataPoints data
+      _graph.update data
 
-#      initMethod = ctrl.getInitMethod()
       if initMethod is 'forgy'
         centroids = _initCentroids data, k
         initLabels = _assignSamples data, centroids, 'euclidean'
@@ -390,7 +410,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         initLabels = _initLabels data.length - 1, k
         centroids = _updateMeans data, uniqueLabels, initLabels
 
-      _graph.redraw data, centroids.map((x) -> x.val), initLabels
+      _graph.update data, centroids.map((x) -> x.val), initLabels
 
       console.log 'Starting K-Means'
       _runKMeans data, k, _maxIter, centroids, distanceType, uniqueLabels, labels
@@ -400,8 +420,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
   ])
 
 .directive 'appKmeans', [
+  '$parse'
   'app_analysis_kMeans_calculator'
-  (kMeans) ->
+  ($parse, kMeans) ->
     restrict: 'E'
     template: "<svg width='100%' height='600'></svg>"
     link: (scope, elem, attr) ->
@@ -412,34 +433,12 @@ kMeans = angular.module('app_analysis_kMeans', [])
       _color = null
       _meanLayer = null
 
-#      _getDistanceType = () ->
-#        $('.distInput input:radio:checked').val()
-#
-#      _getDataset = () ->
-#        $('.dataInput input:radio:checked').val()
-#
-#      _getInitMethod = () ->
-#        $('.initInput input:radio:checked').val()
-#
-#      _getKValue = () ->
-#        $('.kInput select').val()
-#
-#      _setStartButtonListener = (func) ->
-#        $('.runKMeans').click () ->
-#          event.preventDefault()
-#          _clearChart()
-#          func()
-
       _drawDataPoints = (dataPoints) ->
         pointDots = _graph.selectAll('.pointDots').data(dataPoints)
         pointDots.enter().append('circle').attr('class','pointDots')
         .attr('r', 3)
         .attr('cx', (d) -> _xScale(d[0]))
         .attr('cy', (d) -> _yScale(d[1]))
-
-      _clearChart = () ->
-        _graph.selectAll('.pointDots').remove()
-        _graph.selectAll('g > g > *').remove()
 
       _redraw = (dataPoints, means, assignments) ->
         assignmentLines = _meanLayer.selectAll('.assignmentLines').data(assignments)
@@ -469,9 +468,6 @@ kMeans = angular.module('app_analysis_kMeans', [])
         .attr('cy', (d) -> _yScale(d[1]))
         meanDots.exit().remove()
 
-      _publishResult = (data) ->
-        $('.kMeansAcc').text data + '%'
-
       rawSvg = elem.find("svg")[0]
       svg = d3.select(rawSvg)
       _graph = svg.append('g').attr('transform', 'translate(350,350)')
@@ -480,10 +476,13 @@ kMeans = angular.module('app_analysis_kMeans', [])
       _yScale = d3.scale.linear().domain([0,10]).range([0,300])
       _color = d3.scale.category10()
 
-      kMeans.setGraph
-        redraw: _redraw
-        drawDataPoints: _drawDataPoints
-        clearChart: _clearChart
+      scope.$watchCollection 'dataPoints', (newDataPoints) ->
+        if newDataPoints
+          _drawDataPoints newDataPoints
+
+      scope.$watchCollection 'assignments', (newAssignments) ->
+        if newAssignments
+          _redraw scope.dataPoints, scope.means, newAssignments
 
       console.log 'appKmeans directive linked'
 ]
