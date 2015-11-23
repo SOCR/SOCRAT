@@ -1,4 +1,5 @@
 div(ng-controller="sidechartsCtrl")
+  h4 Graphs
   select.form-control#chooseGraph(value="Choose a graph" ng-change="change1()" ng-model = "graphSelect" ng-options = "g as g.name for g in graphs")
   h4 Variables
   div.form-inline
@@ -9,5 +10,5 @@ div(ng-controller="sidechartsCtrl")
       label(for = "y") Add Y
       select#y.form-control(ng-change = "change(selector2,headers,'y')" ng-model = "selector2" ng-options = "v as v.value for v in headers")
   //add variable options.
-
+  button.btn.btn-default(ng-click = "createGraph()") Graph
 

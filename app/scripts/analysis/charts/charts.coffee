@@ -45,14 +45,46 @@ charts = angular.module('app_analysis_charts', [])
     'app_analysis_charts_manager'
     '$scope'
     '$rootScope'
-    (ctrlMngr,$scope,$rootScope) ->
+    'app_analysis_charts_graphs'
+    (ctrlMngr,$scope,$rootScope, graphs) ->
       console.log 'mainchartsCtrl executed'
 
+
+      $scope.tabs = ['Bar Graph', 'Scatter Plot', 'Histogram', 'Bubble Chart', 'Pie Chart']
       $scope.print = () ->
         console.log $rootScope.dataT2
         console.log $rootScope.indexes
+        x = $rootScope.indexes.x
+        y = $rootScope.indexes.y
+        console.log $rootScope.dataT2[x]
+        console.log $rootScope.dataT2[y]
 
+      #id = $rootScope.indexes.graph
+      #graph = $rootScope.indexes.graph
+
+      graphDivs = (id,graph) ->
+        #$scope.$on 'graphDiv', (id,graph) =>
+        #console.log id
+        #graphs.appendHead(id,graph)
+        #graphs.appendBody(id)
+        console.log id, graph
+
+      $rootScope.$on 'graphDiv', () =>
+        graphDivs($rootScope.indexes.x,$rootScope.indexes.graph)
 ])
+
+.directive('myTabs', () ->
+  return {
+    replace: false,
+    transclude: true,
+    template: '<li><a data-toggle = "tab" href="{{indexes.graph}}">{{indexes.graph}}</a></li>'
+  }
+)
+.directive('tabBody', () ->
+  return {
+    template: '<div id="{{indexes.graph}}" class = "tab-pane fade" ></div>'
+  }
+)
 
 .controller('sidechartsCtrl',[
     'app_analysis_charts_manager'
@@ -69,6 +101,10 @@ charts = angular.module('app_analysis_charts', [])
       $scope.change = (selector,headers, ind) ->
         for h in headers
           if selector.value is h.value then $rootScope.indexes[ind] = parseFloat h.key
+
+      $scope.createGraph = () ->
+        $rootScope.$emit 'graphDiv'
+        console.log $rootScope.indexes
 
       sb = ctrlMngr.getSb()
 
@@ -94,8 +130,10 @@ charts = angular.module('app_analysis_charts', [])
       $scope.graphSelect = {}
 
       $scope.change1 = ()->
-        console.log $scope.graphSelect
+        #console.log $scope.graphSelect
         $rootScope.indexes.graph = $scope.graphSelect.name
+
+
 
   ])
 
@@ -112,8 +150,30 @@ charts = angular.module('app_analysis_charts', [])
           obj[i] = value
         d3.entries obj
 
+
+
+
     transform: _transform
     transpose:_transpose
+])
+
+.factory('app_analysis_charts_graphs',[
+  () ->
+    _createGraphMain = (id, name, scope) ->
+      scope.$on('graphDiv') ->
+        _appendHead(id, name)
+        _appendBody(id)
+
+    _appendBody = (iid) ->
+      d3.select('#addbody').append('div').attr('id', iid).attr('class', 'tab-pane fade')
+
+    _appendHead = (iid,name) ->
+      #$('#addtop').append 'li a(data-toggle="tab" href=#'+id+') '+name
+      d3.select('#addtop').append('li').append('a').attr('data-toggle','tab').attr('href', '#'+iid).attr('text',name)
+
+    createGraphMain: _createGraphMain
+    appendBody: _appendBody
+    appendHead: _appendHead
 ])
 
 
