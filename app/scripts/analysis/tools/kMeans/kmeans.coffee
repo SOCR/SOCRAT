@@ -3,77 +3,79 @@
 kMeans = angular.module('app_analysis_kMeans', [])
 
 .factory('app_analysis_kMeans_constructor', [
-    'app_analysis_kMeans_manager'
-    (manager) ->
-      (sb) ->
+  'app_analysis_kMeans_manager'
+  (manager) ->
+    (sb) ->
 
-        manager.setSb sb unless !sb?
-        _msgList = manager.getMsgList()
+      manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
 
-        init: (opt) ->
-          console.log 'kMeans init invoked'
+      init: (opt) ->
+        console.log 'kMeans init invoked'
 
-        destroy: () ->
+      destroy: () ->
 
-        msgList: _msgList
-  ])
+      msgList: _msgList
+])
 
 .factory('app_analysis_kMeans_manager', [
-    () ->
-      _sb = null
+  () ->
+    _sb = null
 
-      _msgList =
-        outgoing: ['get data']
-        incoming: ['take data']
-        scope: ['kMeans']
+    _msgList =
+      outgoing: ['get data']
+      incoming: ['take data']
+      scope: ['kMeans']
 
-      _setSb = (sb) ->
-        _sb = sb
+    _setSb = (sb) ->
+      _sb = sb
 
-      _getSb = () ->
-        _sb
+    _getSb = () ->
+      _sb
 
-      _getMsgList = () ->
-        _msgList
+    _getMsgList = () ->
+      _msgList
 
-      getSb: _getSb
-      setSb: _setSb
-      getMsgList: _getMsgList
-  ])
+    getSb: _getSb
+    setSb: _setSb
+    getMsgList: _getMsgList
+])
 
 .controller('kMeansMainCtrl', [
-    'app_analysis_kMeans_manager'
-    'app_analysis_kMeans_calculator'
-    '$scope'
-    (ctrlMngr, kMeans, $scope) ->
-      console.log 'kMeansMainCtrl executed'
+  'app_analysis_kMeans_manager'
+  'app_analysis_kMeans_calculator'
+  '$scope'
+  '$timeout'
+  (ctrlMngr, kMeans, $scope, $timeout) ->
+    console.log 'kMeansMainCtrl executed'
 
-      _dataPoints = null
-      _means = null
-      _assignments = null
+    _dataPoints = null
+    _means = null
+    _assignments = null
 
-      prettifyArrayOutput = (arr) ->
-        if arr?
-          arr = arr.map (x) -> x.toFixed 3
-          '[' + arr.toString().split(',').join('; ') + ']'
+    prettifyArrayOutput = (arr) ->
+      if arr?
+        arr = arr.map (x) -> x.toFixed 3
+        '[' + arr.toString().split(',').join('; ') + ']'
 
-      updateChartData = () ->
-        $scope.dataPoints = _dataPoints
-        $scope.means = _means
-        $scope.assignments = _assignments
+    updateChartData = () ->
+      $scope.dataPoints = _dataPoints
+      $scope.means = _means
+      $scope.assignments = _assignments
 
-      _update = (dataPoints, means=null, assignments=null) ->
-        _dataPoints = dataPoints
-        _means = means if means
-        _assignments = assignments if assignments
-        updateChartData()
+    _update = (dataPoints, means=null, assignments=null) ->
+      _dataPoints = dataPoints
+      _means = means if means
+      _assignments = assignments if assignments
+      # safe enforce $scope.$digest to activate directive watchers
+      $timeout updateChartData
 
-      graph =
-        update: _update
+    graph =
+      update: _update
 
-      updateChartData()
-      kMeans.setGraph graph
-  ])
+    updateChartData()
+    kMeans.setGraph graph
+])
 
 .controller('kMeansSidebarCtrl', [
   'app_analysis_kMeans_manager'
@@ -122,7 +124,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       data:
         tableName: $stateParams.projectId + ':' + $stateParams.forkId
         promise: deferred
-  ])
+])
 
 .factory('app_analysis_kMeans_calculator', [
   () ->
