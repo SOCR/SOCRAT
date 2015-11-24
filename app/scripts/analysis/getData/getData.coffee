@@ -338,8 +338,13 @@ getData = angular.module('app_analysis_getData', [
         $scope.option = 'KNEE_PAIN'
 
       # TODO: host on SOCR server
-      url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
+
+      # knee pain
+#      url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
+      # not so easy
 #      url = 'https://www.googledrive.com/host//0BzJubeARG-hsQlNiLXhnOWJfaHc'
+      # iris
+      url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 
       d3.text url,
         (dataResults) ->

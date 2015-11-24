@@ -460,11 +460,19 @@ kMeans = angular.module('app_analysis_kMeans', [])
       _meanLayer = null
 
       _drawDataPoints = (dataPoints) ->
+        _meanLayer.selectAll('.meanDots').remove()
+        _meanLayer.selectAll('.assignmentLines').remove()
+
         pointDots = _graph.selectAll('.pointDots').data(dataPoints)
         pointDots.enter().append('circle').attr('class','pointDots')
         .attr('r', 3)
         .attr('cx', (d) -> _xScale(d[0]))
         .attr('cy', (d) -> _yScale(d[1]))
+
+        pointDots.transition().duration(100)
+        .attr('cx', (d) -> _xScale(d[0]))
+        .attr('cy', (d) -> _yScale(d[1]))
+        pointDots.exit().remove()
 
       _redraw = (dataPoints, means, assignments) ->
         assignmentLines = _meanLayer.selectAll('.assignmentLines').data(assignments)
@@ -500,7 +508,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       _meanLayer = _graph.append('g')
       _color = d3.scale.category10()
 
-      scope.$watchCollection 'dataPoints', (newDataPoints) ->
+      scope.$watch 'dataPoints', (newDataPoints) ->
         if newDataPoints
           xDataPoints = (row[0] for row in newDataPoints)
           yDataPoints = (row[1] for row in newDataPoints)
@@ -511,6 +519,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
           _xScale = d3.scale.linear().domain([minXDataPoint, maxXDataPoint]).range([0, 600])
           _yScale = d3.scale.linear().domain([minYDataPoint, maxYDataPoint]).range([0, 500])
           _drawDataPoints newDataPoints
+      , on
 
       scope.$watchCollection 'assignments', (newAssignments) ->
         if newAssignments
