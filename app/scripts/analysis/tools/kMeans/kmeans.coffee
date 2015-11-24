@@ -429,6 +429,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
     template: "<svg width='100%' height='600'></svg>"
     link: (scope, elem, attr) ->
 
+      MARGIN_LEFT = 40
+      MARGIN_TOP = 20
+
       _graph = null
       _xScale = null
       _yScale = null
@@ -472,14 +475,20 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
       rawSvg = elem.find("svg")[0]
       svg = d3.select(rawSvg)
-      _graph = svg.append('g').attr('transform', 'translate(350,350)')
+      _graph = svg.append('g').attr('transform', 'translate(' +  MARGIN_LEFT + ',' + MARGIN_TOP + ')')
       _meanLayer = _graph.append('g')
-      _xScale = d3.scale.linear().domain([0,10]).range([0,300])
-      _yScale = d3.scale.linear().domain([0,10]).range([0,300])
       _color = d3.scale.category10()
 
       scope.$watchCollection 'dataPoints', (newDataPoints) ->
         if newDataPoints
+          xDataPoints = (row[0] for row in newDataPoints)
+          yDataPoints = (row[1] for row in newDataPoints)
+          minXDataPoint = d3.min xDataPoints
+          maxXDataPoint = d3.max xDataPoints
+          minYDataPoint = d3.min yDataPoints
+          maxYDataPoint = d3.max yDataPoints
+          _xScale = d3.scale.linear().domain([minXDataPoint, maxXDataPoint]).range([0, 600])
+          _yScale = d3.scale.linear().domain([minYDataPoint, maxYDataPoint]).range([0, 500])
           _drawDataPoints newDataPoints
 
       scope.$watchCollection 'assignments', (newAssignments) ->
