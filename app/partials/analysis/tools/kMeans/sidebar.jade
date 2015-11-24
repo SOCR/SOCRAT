@@ -36,4 +36,5 @@ div(ng-controller="kMeansSidebarCtrl")
       select(ng-model="initMethod").form-control
         each method in ['Forgy', 'Random Partition']
           option(value=method)= method
-    button(type="submit", ng-click="run()").btn.btn-primary Run
+    button(type="submit", aria-label="Run k-Means", ng-click="run()", ng-disabled="kmeanson").btn.btn-primary Run&nbsp;
+      span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")

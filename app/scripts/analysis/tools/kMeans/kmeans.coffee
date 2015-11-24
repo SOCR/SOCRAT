@@ -44,9 +44,10 @@ kMeans = angular.module('app_analysis_kMeans', [])
 .controller('kMeansMainCtrl', [
   'app_analysis_kMeans_manager'
   'app_analysis_kMeans_calculator'
+  '$rootScope'
   '$scope'
   '$timeout'
-  (ctrlMngr, kMeans, $scope, $timeout) ->
+  (ctrlMngr, kMeans, $rootScope, $scope, $timeout) ->
     console.log 'kMeansMainCtrl executed'
 
     _dataPoints = null
@@ -57,6 +58,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
       if arr?
         arr = arr.map (x) -> x.toFixed 3
         '[' + arr.toString().split(',').join('; ') + ']'
+
+    showResults = (results) ->
 
     updateChartData = () ->
       $scope.dataPoints = _dataPoints
@@ -70,8 +73,13 @@ kMeans = angular.module('app_analysis_kMeans', [])
       # safe enforce $scope.$digest to activate directive watchers
       $timeout updateChartData
 
+    _finish = (results=null) ->
+      $rootScope.$broadcast 'kmeans:done', results
+      showResults results
+
     graph =
       update: _update
+      showResults: _finish
 
     updateChartData()
     kMeans.setGraph graph
@@ -83,7 +91,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
   '$scope'
   '$stateParams'
   '$q'
-  (ctrlMngr, kmeans, $scope, $stateParams, $q) ->
+  '$timeout'
+  (ctrlMngr, kmeans, $scope, $stateParams, $q, $timeout) ->
     console.log 'kMeansSidebarCtrl executed'
 
     sb = ctrlMngr.getSb()
@@ -92,6 +101,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
     $scope.k = '2'
     $scope.dist = 'Euclidean'
     $scope.initMethod = 'Forgy'
+    $scope.kmeanson = on
+    $scope.running = 'hidden'
 
     deferred = $q.defer()
 
@@ -106,6 +117,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         $scope.xCol = firstCol
         $scope.yCol = secondCol
         $scope.labelCol = lastCol
+        $scope.kmeanson = off
         $scope.run = ->
           xCol = _data.header.indexOf $scope.xCol
           yCol = _data.header.indexOf $scope.yCol
@@ -115,7 +127,14 @@ kMeans = angular.module('app_analysis_kMeans', [])
           else
             labels = null
           data = ([row[xCol], row[yCol]] for row in _data.data)
-          kmeans.run data, $scope.k, $scope.dist, $scope.initMethod, labels
+          $scope.kmeanson = on
+          $scope.running = 'spinning'
+          kmeans.run data, $scope.k, $scope.dist, $scope.initMethod
+          $scope.$on 'kmeans:done', (event, results) ->
+            # use timeout to call $digest
+            $timeout ->
+              $scope.kmeanson = off
+              $scope.running = 'hidden'
 
     sb.publish
       msg: 'get data'
@@ -334,9 +353,10 @@ kMeans = angular.module('app_analysis_kMeans', [])
             console.log 'Accuracy: ' + acc * 100 + '%'
           else
             acc = ''
-#          Core.fireEvent
-#            msg: 'kmeans_done'
-#            data: acc * 100
+          _graph.showResults
+            centroids: centroids
+            labels: labels
+            accuracy: acc
 
       runMahalanobis = () ->
       # main loop
@@ -371,9 +391,10 @@ kMeans = angular.module('app_analysis_kMeans', [])
             console.log 'Accuracy: ' + acc * 100 + '%'
           else
             acc = ''
-#          Core.fireEvent
-#            msg: 'kmeans_done'
-#            data: acc * 100
+          _graph.showResults
+            centroids: centroids
+            labels: labels
+            accuracy: acc
 
       if distanceType is 'mahalanobis'
         labels = _assignSamples data, centroids, 'euclidean'
