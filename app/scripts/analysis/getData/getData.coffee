@@ -301,6 +301,17 @@ getData = angular.module('app_analysis_getData', [
   (getDataEventMngr, $scope, showState, jsonParser, state) ->
     console.log 'getDataMainCtrl executed'
 
+    # available SOCR Datasets
+    $scope.socrDatasets = [
+      id: 'IRIS'
+      name: 'Iris Flower Dataset'
+    ,
+      id: 'KNEE_PAIN'
+      name: 'Simulated SOCR Knee Pain Centroid Location Data'
+    ]
+    # select first one by default
+    $scope.socrdataset = $scope.socrDatasets[0]
+
     $scope.getWB = ->
       # default value
       if $scope.size is undefined
@@ -333,18 +344,12 @@ getData = angular.module('app_analysis_getData', [
         )
 
     $scope.getSocrData = ->
-      # default option
-      if $scope.option is undefined
-        $scope.option = 'KNEE_PAIN'
-
-      # TODO: host on SOCR server
-
-      # knee pain
-#      url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
-      # not so easy
-#      url = 'https://www.googledrive.com/host//0BzJubeARG-hsQlNiLXhnOWJfaHc'
-      # iris
-      url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
+      switch $scope.socrdataset.id
+        # TODO: host on SOCR server
+        when 'IRIS' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
+        when 'KNEE_PAIN' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
+        # default option
+        else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 
       d3.text url,
         (dataResults) ->
