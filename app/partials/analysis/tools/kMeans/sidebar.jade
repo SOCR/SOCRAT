@@ -20,12 +20,7 @@ div(ng-controller="kMeansSidebarCtrl")
         select(ng-model="labelCol", ng-options="col for col in cols").form-control
     div.form-group
       label k &nbsp;
-      // k from 2 to 10, uses d3.scale.category10()
-      //- generate options for k from 2 to 10
-      - var k = 2
-      select(ng-model="k").form-control
-        while k <= 10
-          option(value=k)= k++
+      select(ng-model="k", ng-options="k for k in ks").form-control
     div.form-group
       label Distance &nbsp;
       select(ng-model="dist").form-control

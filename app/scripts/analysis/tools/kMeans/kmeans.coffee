@@ -53,6 +53,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _dataPoints = null
     _means = null
     _assignments = null
+    $scope.showresults = off
 
     prettifyArrayOutput = (arr) ->
       if arr?
@@ -60,6 +61,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         '[' + arr.toString().split(',').join('; ') + ']'
 
     showResults = (results) ->
+      $scope.showresults = on
 
     updateChartData = () ->
       $scope.dataPoints = _dataPoints
@@ -95,54 +97,83 @@ kMeans = angular.module('app_analysis_kMeans', [])
   (ctrlMngr, kmeans, $scope, $stateParams, $q, $timeout) ->
     console.log 'kMeansSidebarCtrl executed'
 
-    sb = ctrlMngr.getSb()
+    DEFAULT_CONTROL_VALUES =
+      k: 2
+      distance: 'Euclidean'
+      initialisation: 'Forgy'
 
-    $scope.cols = []
-    $scope.k = '2'
-    $scope.dist = 'Euclidean'
-    $scope.initMethod = 'Forgy'
-    $scope.kmeanson = on
-    $scope.running = 'hidden'
+    # set initial values for sidebar controls
+    initSidebarControls = (initControlValues) ->
+      kLimits = kmeans.getMinMaxK()
+      $scope.ks = [kLimits.minK..kLimits.maxK]
+      $scope.cols = []
+      $scope.kmeanson = on
+      $scope.running = 'hidden'
 
-    deferred = $q.defer()
+      $scope.k = initControlValues.k if initControlValues.k in $scope.ks
+      $scope.dist = initControlValues.distance
+      $scope.initMethod = initControlValues.initialisation
+
+    # update data-dependent sidebar controls
+    updateSidebarControls = (data) ->
+      $scope.cols = data.header
+      [firstCol, secondCol, ..., lastCol] = $scope.cols
+      $scope.xCol = firstCol
+      $scope.yCol = secondCol
+      $scope.labelCol = lastCol
+      $scope.kmeanson = off
+
+    # get requested columns from data
+    parseDataForKMeans = (data) ->
+      xCol = data.header.indexOf $scope.xCol
+      yCol = data.header.indexOf $scope.yCol
+      if $scope.labelson
+        labelCol = data.header.indexOf $scope.labelCol
+        labels = (row[labelCol] for row in data.data)
+      else
+        labels = null
+      data = ([row[xCol], row[yCol]] for row in data.data)
+      obj =
+        data: data
+        labels: labels
+
+    # call k-means service with parsed data and current controls values
+    callKMeans = (data) ->
+      $scope.kmeanson = on
+      $scope.running = 'spinning'
+      kmeans.run data, $scope.k, $scope.dist, $scope.initMethod
+      $scope.$on 'kmeans:done', (event, results) ->
+        # use timeout to call $digest
+        $timeout ->
+          $scope.kmeanson = off
+          $scope.running = 'hidden'
 
     # subscribe for incoming message with data
-    token = sb.subscribe
-      msg: 'take data'
-      msgScope: ['kMeans']
-      listener: (msg, data) ->
-        _data = data
-        $scope.cols = _data.header
-        [firstCol, secondCol, ..., lastCol] = $scope.cols
-        $scope.xCol = firstCol
-        $scope.yCol = secondCol
-        $scope.labelCol = lastCol
-        $scope.kmeanson = off
-        $scope.run = ->
-          xCol = _data.header.indexOf $scope.xCol
-          yCol = _data.header.indexOf $scope.yCol
-          if $scope.labelson
-            labelCol = _data.header.indexOf $scope.labelCol
-            labels = (row[labelCol] for row in _data.data)
-          else
-            labels = null
-          data = ([row[xCol], row[yCol]] for row in _data.data)
-          $scope.kmeanson = on
-          $scope.running = 'spinning'
-          kmeans.run data, $scope.k, $scope.dist, $scope.initMethod
-          $scope.$on 'kmeans:done', (event, results) ->
-            # use timeout to call $digest
-            $timeout ->
-              $scope.kmeanson = off
-              $scope.running = 'hidden'
+    subscribeForData = ->
+      token = sb.subscribe
+        msg: 'take data'
+        msgScope: ['kMeans']
+        listener: (msg, data) ->
+          updateSidebarControls(data)
+          $scope.run = ->
+            _data = parseDataForKMeans data
+            callKMeans _data
 
-    sb.publish
-      msg: 'get data'
-      msgScope: ['kMeans']
-      callback: -> sb.unsubscribe token
-      data:
-        tableName: $stateParams.projectId + ':' + $stateParams.forkId
-        promise: deferred
+    # ask core for data
+    sendDataRequest = (deferred, token) ->
+      sb.publish
+        msg: 'get data'
+        msgScope: ['kMeans']
+        callback: -> sb.unsubscribe token
+        data:
+          tableName: $stateParams.projectId + ':' + $stateParams.forkId
+          promise: deferred
+
+    sb = ctrlMngr.getSb()
+    deferred = $q.defer()
+    initSidebarControls DEFAULT_CONTROL_VALUES
+    token = subscribeForData()
+    sendDataRequest(deferred, token)
 ])
 
 .factory('app_analysis_kMeans_calculator', [
@@ -151,6 +182,12 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _graph = null
     _computeAcc = off
     _maxIter = 20
+    _minK = 2
+    _maxK = 10
+
+    _getMinMaxK = ->
+      minK: _minK
+      maxK: _maxK
 
     _setGraph = (graph) ->
       _graph = graph
@@ -407,8 +444,10 @@ kMeans = angular.module('app_analysis_kMeans', [])
       else
         interval = setInterval run, 1000
 
-    _init = (data, k, distanceType, initMethod, labels=null) ->
-      data = (row.map(Number) for row in data)
+    _init = (data, k, distanceType, initMethod) ->
+
+      labels = data.labels
+      data = (row.map(Number) for row in data.data)
 
       k = Number k
       console.log 'K: ' + k
@@ -440,12 +479,12 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     run: _init
     setGraph: _setGraph
+    getMinMaxK: _getMinMaxK
   ])
 
 .directive 'appKmeans', [
   '$parse'
-  'app_analysis_kMeans_calculator'
-  ($parse, kMeans) ->
+  ($parse) ->
     restrict: 'E'
     template: "<svg width='100%' height='600'></svg>"
     link: (scope, elem, attr) ->
