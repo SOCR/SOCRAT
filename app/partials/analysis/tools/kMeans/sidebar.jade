@@ -23,13 +23,9 @@ div(ng-controller="kMeansSidebarCtrl")
       select(ng-model="k", ng-options="k for k in ks").form-control
     div.form-group
       label Distance &nbsp;
-      select(ng-model="dist").form-control
-        each dist in ['Euclidean', 'Mahalanobis', 'Manhattan', 'Maximum']
-          option(value=dist)= dist
+      select(ng-model="dist", ng-options="dist for dist in distances").form-control
     div.form-group
       label Initialization &nbsp;
-      select(ng-model="initMethod").form-control
-        each method in ['Forgy', 'Random Partition']
-          option(value=method)= method
+      select(ng-model="initMethod", ng-options="init for init in inits").form-control
     button(type="submit", aria-label="Run k-Means", ng-click="run()", ng-disabled="kmeanson").btn.btn-primary Run&nbsp;
       span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")

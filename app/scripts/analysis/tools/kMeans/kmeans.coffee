@@ -104,15 +104,19 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     # set initial values for sidebar controls
     initSidebarControls = (initControlValues) ->
-      kLimits = kmeans.getMinMaxK()
-      $scope.ks = [kLimits.minK..kLimits.maxK]
+
+      params = kmeans.getParameters()
+      $scope.ks = [params.minK..params.maxK]
+      $scope.distances = params.distances
+      $scope.inits = params.initMethods
+
       $scope.cols = []
       $scope.kmeanson = on
       $scope.running = 'hidden'
 
       $scope.k = initControlValues.k if initControlValues.k in $scope.ks
-      $scope.dist = initControlValues.distance
-      $scope.initMethod = initControlValues.initialisation
+      $scope.dist = initControlValues.distance if initControlValues.distance in $scope.distances
+      $scope.initMethod = initControlValues.initialisation if initControlValues.initialisation in $scope.inits
 
     # update data-dependent sidebar controls
     updateSidebarControls = (data) ->
@@ -184,10 +188,14 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _maxIter = 20
     _minK = 2
     _maxK = 10
+    _distances = ['Euclidean', 'Mahalanobis', 'Manhattan', 'Maximum']
+    _initMethods = ['Forgy', 'Random Partition']
 
-    _getMinMaxK = ->
+    _getParameters = ->
       minK: _minK
       maxK: _maxK
+      distances: _distances
+      initMethods: _initMethods
 
     _setGraph = (graph) ->
       _graph = graph
@@ -479,7 +487,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     run: _init
     setGraph: _setGraph
-    getMinMaxK: _getMinMaxK
+    getParameters: _getParameters
   ])
 
 .directive 'appKmeans', [
