@@ -45,12 +45,10 @@ charts = angular.module('app_analysis_charts', [])
     'app_analysis_charts_manager'
     '$scope'
     '$rootScope'
-    'app_analysis_charts_graphs'
-    (ctrlMngr,$scope,$rootScope, graphs) ->
+    (ctrlMngr,$scope,$rootScope) ->
       console.log 'mainchartsCtrl executed'
 
 
-      $scope.tabs = ['Bar Graph', 'Scatter Plot', 'Histogram', 'Bubble Chart', 'Pie Chart']
       $scope.print = () ->
         console.log $rootScope.dataT2
         console.log $rootScope.indexes
@@ -59,14 +57,7 @@ charts = angular.module('app_analysis_charts', [])
         console.log $rootScope.dataT2[x]
         console.log $rootScope.dataT2[y]
 
-      #id = $rootScope.indexes.graph
-      #graph = $rootScope.indexes.graph
-
       graphDivs = (id,graph) ->
-        #$scope.$on 'graphDiv', (id,graph) =>
-        #console.log id
-        #graphs.appendHead(id,graph)
-        #graphs.appendBody(id)
         console.log id, graph
 
       $rootScope.$on 'graphDiv', () =>
@@ -75,14 +66,14 @@ charts = angular.module('app_analysis_charts', [])
 
 .directive('myTabs', () ->
   return {
-    replace: false,
-    transclude: true,
-    template: '<li><a data-toggle = "tab" href="{{indexes.graph}}">{{indexes.graph}}</a></li>'
+  replace: false,
+  transclude: true,
+  template: '<li><a data-toggle = "tab" href="{{indexes.graph}}">{{indexes.graph}}</a></li>'
   }
 )
 .directive('tabBody', () ->
   return {
-    template: '<div id="{{indexes.graph}}" class = "tab-pane fade" ></div>'
+  template: '<div id="{{indexes.graph}}" class = "tab-pane fade" ><svg style="width:500px, height:500px"></svg></div>'
   }
 )
 
@@ -98,6 +89,10 @@ charts = angular.module('app_analysis_charts', [])
       $scope.selector1={};
       $scope.selector2={};
       $rootScope.indexes = {graph:"", x:"", y:""}
+
+      $scope.graphs = [{name:'Bar Graph', value:0},{name:'Scatter Plot', value:1},{name:'Histogram', value:2},{name:'Bubble Chart', value:3},{name:'Pie Chart', value:4}]
+      $scope.graphSelect = {}
+
       $scope.change = (selector,headers, ind) ->
         for h in headers
           if selector.value is h.value then $rootScope.indexes[ind] = parseFloat h.key
@@ -105,6 +100,10 @@ charts = angular.module('app_analysis_charts', [])
       $scope.createGraph = () ->
         $rootScope.$emit 'graphDiv'
         console.log $rootScope.indexes
+
+      $scope.change1 = ()->
+        $rootScope.indexes.graph = $scope.graphSelect.name
+
 
       sb = ctrlMngr.getSb()
 
@@ -114,7 +113,7 @@ charts = angular.module('app_analysis_charts', [])
         msg:'take table'
         msgScope:['charts']
         listener: (msg, _data) ->
-          $scope.headers = d3.entries _data.header
+          $rootScope.headers = d3.entries _data.header
           $scope.dataT = dataTransform.transpose(_data.data)
           $rootScope.dataT2 = dataTransform.transform($scope.dataT)
           console.log $rootScope.dataT2
@@ -125,14 +124,6 @@ charts = angular.module('app_analysis_charts', [])
         callback: -> sb.unsubscribe token
         data:
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
-
-      $scope.graphs = [{name:'Bar Graph', value:0},{name:'Scatter Plot', value:1},{name:'Histogram', value:2},{name:'Bubble Chart', value:3},{name:'Pie Chart', value:4}]
-      $scope.graphSelect = {}
-
-      $scope.change1 = ()->
-        #console.log $scope.graphSelect
-        $rootScope.indexes.graph = $scope.graphSelect.name
-
 
 
   ])
@@ -157,23 +148,40 @@ charts = angular.module('app_analysis_charts', [])
     transpose:_transpose
 ])
 
-.factory('app_analysis_charts_graphs',[
-  () ->
-    _createGraphMain = (id, name, scope) ->
-      scope.$on('graphDiv') ->
-        _appendHead(id, name)
-        _appendBody(id)
+.directive 'd3Charts', [
+  '$parse'
+  ($parse) ->
+    restrict: 'E'
+    template: "<svg width='100%' height='600'></svg>"
+    link: (scope, elem, attr) ->
 
-    _appendBody = (iid) ->
-      d3.select('#addbody').append('div').attr('id', iid).attr('class', 'tab-pane fade')
+      values = d3.range(1000).map(d3.random.bates(10))
+      formatCount = d3.format(",.0f")
+      margin = {top: 10, right: 30, bottom: 30, left: 30}
+      width = 960 - margin.left - margin.right
+      height = 500 - margin.top - margin.bottom
+      x = d3.scale.linear().domain([0,1]).range([0,width])
 
-    _appendHead = (iid,name) ->
-      #$('#addtop').append 'li a(data-toggle="tab" href=#'+id+') '+name
-      d3.select('#addtop').append('li').append('a').attr('data-toggle','tab').attr('href', '#'+iid).attr('text',name)
+      data = d3.layout.histogram().bins(x.ticks(20))(values)
 
-    createGraphMain: _createGraphMain
-    appendBody: _appendBody
-    appendHead: _appendHead
-])
+      yMax = d3.max data, (d) ->
+        return d.y
+      xAxis = d3.svg.axis().scale(x).orient("bottom")
+      y = d3.scale.linear().domain([0,yMax]).range([height, 0])
+      rawSvg = elem.find("svg")[0]
+      svg = d3.select(rawSvg)
+      _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
+      _drawHist = (data) ->
+        _graph.selectAll('.bar').remove()
+
+        bar = _graph.selectAll('.bar').data(data).enter().append("g").attr("class", "bar").attr("transform",(d) => return "translate(" + x(d.x) + "," + y(d.y) + ")")
+        bar.append('rect').attr('x', 1).attr('width', x(data[0].dx) - 1).attr 'height', (d) ->
+          height - y(d.y)
+        _graph.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis)
+
+      _drawHist data
+      console.log data
+      console.log values
+]
 
