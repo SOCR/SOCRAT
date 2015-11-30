@@ -99,7 +99,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
   '$stateParams'
   '$q'
   '$timeout'
-  (ctrlMngr, kmeans, $scope, $stateParams, $q, $timeout) ->
+  (msgManager, kmeans, $scope, $stateParams, $q, $timeout) ->
     console.log 'kMeansSidebarCtrl executed'
 
     DEFAULT_CONTROL_VALUES =
@@ -178,7 +178,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
           promise: deferred
 
-    sb = ctrlMngr.getSb()
+    sb = msgManager.getSb()
     deferred = $q.defer()
     initSidebarControls DEFAULT_CONTROL_VALUES
     token = subscribeForData()
