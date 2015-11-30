@@ -19,7 +19,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
 ])
 
 .factory('app_analysis_kMeans_manager', [
-  () ->
+  '$rootScope'
+  ($rootScope) ->
     _sb = null
 
     _msgList =
@@ -36,18 +37,22 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _getMsgList = () ->
       _msgList
 
+    # wrapper function for controller communications
+    _broadcast = (msg, data) ->
+      $rootScope.$broadcast msg, data
+
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
+    broadcast: _broadcast
 ])
 
 .controller('kMeansMainCtrl', [
   'app_analysis_kMeans_manager'
   'app_analysis_kMeans_calculator'
-  '$rootScope'
   '$scope'
   '$timeout'
-  (ctrlMngr, kMeans, $rootScope, $scope, $timeout) ->
+  (msgManager, kMeans, $scope, $timeout) ->
     console.log 'kMeansMainCtrl executed'
 
     _dataPoints = null
@@ -76,7 +81,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       $timeout updateChartData
 
     _finish = (results=null) ->
-      $rootScope.$broadcast 'kmeans:done', results
+      msgManager.broadcast 'kmeans:done', results
       showResults results
 
     graph =
