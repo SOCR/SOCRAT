@@ -42,110 +42,113 @@ charts = angular.module('app_analysis_charts', [])
 ])
 
 .controller('mainchartsCtrl', [
-    'app_analysis_charts_manager'
-    '$scope'
-    '$rootScope'
-    (ctrlMngr,$scope,$rootScope) ->
-      console.log 'mainchartsCtrl executed'
+  'app_analysis_charts_manager'
+  '$scope'
+  '$rootScope'
+  'app_analysis_charts_dataTransform'
+  (ctrlMngr,$scope) ->
+    console.log 'mainchartsCtrl executed'
+    _chart_data = null
 
+    $scope.tabs = {}
+    $scope.print = () ->
+      console.log $scope.chart_data
 
-      $scope.print = () ->
-        console.log $rootScope.dataT2
-        console.log $rootScope.indexes
-        x = $rootScope.indexes.x
-        y = $rootScope.indexes.y
-        console.log $rootScope.dataT2[x]
-        console.log $rootScope.dataT2[y]
-
-      graphDivs = (id,graph) ->
-        console.log id, graph
-
-      $rootScope.$on 'graphDiv', () =>
-        graphDivs($rootScope.indexes.x,$rootScope.indexes.graph)
+    $scope.$on 'charts:graphDiv', (event, data) ->
+      _chart_data = data
+      console.log data
+      $scope.tabs append {
+        name: _chart_data.name
+      }
 ])
 
 .directive('myTabs', () ->
   return {
   replace: false,
   transclude: true,
-  template: '<li><a data-toggle = "tab" href="{{indexes.graph}}">{{indexes.graph}}</a></li>'
+  template: '<li><a data-toggle = "tab" href="{{t as t.name for t in tabs}}">{{t as t.name for t in tabs}}</a></li>'
   }
 )
 .directive('tabBody', () ->
   return {
-  template: '<div id="{{indexes.graph}}" class = "tab-pane fade" ><svg style="width:500px, height:500px"></svg></div>'
+  template: '<div id="{{t as t.name for t in tabs}}" class = "tab-pane fade" ><svg style="width:500px, height:500px"></svg></div>'
   }
 )
 
 .controller('sidechartsCtrl',[
-    'app_analysis_charts_manager'
-    '$scope'
-    '$rootScope'
-    '$stateParams'
-    '$q'
-    'app_analysis_charts_dataTransform'
-    (ctrlMngr, $scope, $rootScope, $stateParams, $q, dataTransform) ->
-      console.log 'sidechartsCtrl executed'
-      $scope.selector1={};
-      $scope.selector2={};
-      $rootScope.indexes = {graph:"", x:"", y:""}
+  'app_analysis_charts_manager'
+  '$scope'
+  '$rootScope'
+  '$stateParams'
+  '$q'
+  'app_analysis_charts_dataTransform'
+  (ctrlMngr, $scope, $rootScope, $stateParams, $q, dataTransform) ->
+    console.log 'sidechartsCtrl executed'
+    _chartData = null
+    $scope.selector1={};
+    $scope.selector2={};
+    $scope.graphInfo = {graph:"", x:"", y:""}
+    $scope.graphs = [{name:'Bar Graph', value:0},{name:'Scatter Plot', value:1},{name:'Histogram', value:2},{name:'Bubble Chart', value:3},{name:'Pie Chart', value:4}]
+    $scope.graphSelect = {}
 
-      $scope.graphs = [{name:'Bar Graph', value:0},{name:'Scatter Plot', value:1},{name:'Histogram', value:2},{name:'Bubble Chart', value:3},{name:'Pie Chart', value:4}]
-      $scope.graphSelect = {}
+    $scope.change = (selector,headers, ind) ->
+      for h in headers
+        if selector.value is h.value then $scope.graphInfo[ind] = parseFloat h.key
 
-      $scope.change = (selector,headers, ind) ->
-        for h in headers
-          if selector.value is h.value then $rootScope.indexes[ind] = parseFloat h.key
+    $scope.createGraph = (results) ->
+      results = {
+        xVar: _chartData[$scope.graphInfo.x]
+        yVar: _chartData[$scope.graphInfo.y]
+        name: $scope.graphInfo.graph
+      }
+      #[_chartData[$scope.graphInfo.x], _chartData[$scope.graphInfo.y]]
+      $rootScope.$broadcast 'charts:graphDiv', results
 
-      $scope.createGraph = () ->
-        $rootScope.$emit 'graphDiv'
-        console.log $rootScope.indexes
-
-      $scope.change1 = ()->
-        $rootScope.indexes.graph = $scope.graphSelect.name
-
-
-      sb = ctrlMngr.getSb()
-
-      # deferred = $q.defer()
-
-      token = sb.subscribe
-        msg:'take table'
-        msgScope:['charts']
-        listener: (msg, _data) ->
-          $rootScope.headers = d3.entries _data.header
-          $scope.dataT = dataTransform.transpose(_data.data)
-          $rootScope.dataT2 = dataTransform.transform($scope.dataT)
-          console.log $rootScope.dataT2
-
-      sb.publish
-        msg:'get table'
-        msgScope:['charts']
-        callback: -> sb.unsubscribe token
-        data:
-          tableName: $stateParams.projectId + ':' + $stateParams.forkId
+    $scope.change1 = ()->
+      $scope.graphInfo.graph = $scope.graphSelect.name
 
 
-  ])
+    sb = ctrlMngr.getSb()
+
+    # deferred = $q.defer()
+
+    token = sb.subscribe
+      msg:'take table'
+      msgScope:['charts']
+      listener: (msg, _data) ->
+        $scope.headers = d3.entries _data.header
+        _chartData = dataTransform.format(_data.data)
+
+    sb.publish
+      msg:'get table'
+      msgScope:['charts']
+      callback: -> sb.unsubscribe token
+      data:
+        tableName: $stateParams.projectId + ':' + $stateParams.forkId
+
+
+])
 
 .factory('app_analysis_charts_dataTransform',[
   () ->
+
     _transpose = (data) ->
       data[0].map (col, i) -> data.map (row) -> row[i]
 
     _transform = (data) ->
-      arr = []
       for col in data
         obj = {}
         for value, i in col
           obj[i] = value
         d3.entries obj
 
-
-
+    _format = (data) ->
+      return _transform(_transpose(data))
 
     transform: _transform
     transpose:_transpose
+    format: _format
+
 ])
 
 .directive 'd3Charts', [
@@ -184,4 +187,3 @@ charts = angular.module('app_analysis_charts', [])
       console.log data
       console.log values
 ]
-
