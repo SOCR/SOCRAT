@@ -355,18 +355,30 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _runKMeans = (data, k, maxIter, centroids, distanceType, uniqueLabels, trueLabels=null) ->
 
       evaluateAccuracy = (labels, trueLabels, uniqueLabels) ->
-        # TODO: make accuracy work for k > 2
-        accs = [0]
+        accuracy = {}
+        # unique labels available for assignment
+        uniqueEstLabels = _getUniqueLabels labels
+
         for k in uniqueLabels
           # get true indices for label k
-          kLabelIdxs = (i for x, i in trueLabels when x is k)
+          kTrueLabelIdxs = (i for x, i in trueLabels when x is k)
           # get calculated labels by true indices
-          kLabels = (uniqueLabels[x] for x, i in labels when i in kLabelIdxs)
-          kTrueLabels = (x for x in trueLabels when x is k)
-          accK = kLabels.map((x, idx) -> x - kTrueLabels[idx]).reduce (r, s) -> r + s
-          accs.push Math.abs(accK)
-        acc = (trueLabels.length - accs.reduce((r, s) -> r + s)) / trueLabels.length
-        acc = if acc < 0.5 then 1 - acc else acc
+          kEstLabels = (x for x, i in labels when i in kTrueLabelIdxs) # numeric
+          estLabelCounts = uniqueEstLabels.map (uniqueEstLabel) ->
+            # count number of occurrences for each unique estimated label
+            counts = kEstLabels.reduce (n, val) ->
+              n + (val is uniqueEstLabel)
+            , 0
+            counts
+          # find first most abundant label index
+          mostFrequentEstLabelIdx = estLabelCounts.indexOf Math.max.apply(null, estLabelCounts) # numeric
+          currentEstLabel = uniqueEstLabels[mostFrequentEstLabelIdx]
+          # remove label that was taken
+          uniqueEstLabels.splice mostFrequentEstLabelIdx, 1
+          accuracy[k] = estLabelCounts[mostFrequentEstLabelIdx] / kTrueLabelIdxs.length
+
+        accs = (acc for own label, acc of accuracy)
+        accuracy['average'] = accs.reduce((r, s) -> r + s) / accs.length
 
       step = (data, centroids) ->
         maxIter--
@@ -400,7 +412,6 @@ kMeans = angular.module('app_analysis_kMeans', [])
           if _computeAcc
             labels = _assignSamples data, centroids, distanceType
             acc = evaluateAccuracy labels, trueLabels, uniqueLabels
-            console.log 'Accuracy: ' + acc * 100 + '%'
           else
             acc = ''
           _graph.showResults
@@ -438,7 +449,6 @@ kMeans = angular.module('app_analysis_kMeans', [])
           console.log 'K-Means done.'
           if _computeAcc
             acc = evaluateAccuracy lbls, trueLabels, uniqueLabels
-            console.log 'Accuracy: ' + acc * 100 + '%'
           else
             acc = ''
           _graph.showResults
