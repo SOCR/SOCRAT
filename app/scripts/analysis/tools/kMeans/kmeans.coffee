@@ -157,12 +157,12 @@ kMeans = angular.module('app_analysis_kMeans', [])
     callKMeans = (data) ->
       $scope.kmeanson = on
       $scope.running = 'spinning'
-      kmeans.run data, $scope.k, $scope.dist, $scope.initMethod
       $scope.$on 'kmeans:done', (event, results) ->
         # use timeout to call $digest
         $timeout ->
           $scope.kmeanson = off
           $scope.running = 'hidden'
+      kmeans.run data, $scope.k, $scope.dist, $scope.initMethod
 
     # subscribe for incoming message with data
     subscribeForData = ->
@@ -409,7 +409,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
         labels: labels
 
       reportAccuracy = (estLabels, trueLabels, uniqueLabels) ->
-        acc = evaluateAccuracy estLabels, trueLabels, uniqueLabels
+        acc = {}
+        if _computeAcc
+          acc = evaluateAccuracy estLabels, trueLabels, uniqueLabels
         _graph.showResults acc
 
       run = () ->
@@ -423,7 +425,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
           console.log 'K-Means done.'
           if _computeAcc
             labels = _assignSamples data, centroids, distanceType
-            reportAccuracy labels, trueLabels, uniqueLabels
+          reportAccuracy labels, trueLabels, uniqueLabels
 
       runMahalanobis = () ->
       # main loop
@@ -453,8 +455,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         else
           clearInterval interval
           console.log 'K-Means done.'
-          if _computeAcc
-            reportAccuracy lbls, trueLabels, uniqueLabels
+          reportAccuracy lbls, trueLabels, uniqueLabels
 
       if distanceType is 'mahalanobis'
         labels = _assignSamples data, centroids, 'euclidean'
