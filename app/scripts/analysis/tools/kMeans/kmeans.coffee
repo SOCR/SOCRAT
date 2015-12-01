@@ -59,14 +59,20 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _means = null
     _assignments = null
     $scope.showresults = off
+    $scope.avgAccuracy = ''
+    $scope.accs = {}
 
     prettifyArrayOutput = (arr) ->
       if arr?
         arr = arr.map (x) -> x.toFixed 3
         '[' + arr.toString().split(',').join('; ') + ']'
 
-    showResults = (results) ->
-      $scope.showresults = on
+    showResults = (accuracy) ->
+      if Object.keys(accuracy).length isnt 0
+        $scope.avgAccuracy = accuracy.average.toFixed(2)
+        delete accuracy.average
+        $scope.accs = accuracy
+        $scope.showresults = on
 
     updateChartData = () ->
       $scope.dataPoints = _dataPoints
@@ -74,6 +80,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       $scope.assignments = _assignments
 
     _update = (dataPoints, means=null, assignments=null) ->
+      $scope.showresults = off if $scope.showresults is on
       _dataPoints = dataPoints
       _means = means if means
       _assignments = assignments if assignments
@@ -379,6 +386,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
         accs = (acc for own label, acc of accuracy)
         accuracy['average'] = accs.reduce((r, s) -> r + s) / accs.length
+        accuracy
 
       step = (data, centroids) ->
         maxIter--
@@ -400,6 +408,10 @@ kMeans = angular.module('app_analysis_kMeans', [])
         centroids: centroids
         labels: labels
 
+      reportAccuracy = (estLabels, trueLabels, uniqueLabels) ->
+        acc = evaluateAccuracy estLabels, trueLabels, uniqueLabels
+        _graph.showResults acc
+
       run = () ->
       # main loop
         if maxIter
@@ -411,13 +423,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
           console.log 'K-Means done.'
           if _computeAcc
             labels = _assignSamples data, centroids, distanceType
-            acc = evaluateAccuracy labels, trueLabels, uniqueLabels
-          else
-            acc = ''
-          _graph.showResults
-            centroids: centroids
-            labels: labels
-            accuracy: acc
+            reportAccuracy labels, trueLabels, uniqueLabels
 
       runMahalanobis = () ->
       # main loop
@@ -448,13 +454,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
           clearInterval interval
           console.log 'K-Means done.'
           if _computeAcc
-            acc = evaluateAccuracy lbls, trueLabels, uniqueLabels
-          else
-            acc = ''
-          _graph.showResults
-            centroids: centroids
-            labels: labels
-            accuracy: acc
+            reportAccuracy lbls, trueLabels, uniqueLabels
 
       if distanceType is 'mahalanobis'
         labels = _assignSamples data, centroids, 'euclidean'
