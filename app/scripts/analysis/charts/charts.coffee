@@ -50,16 +50,17 @@ charts = angular.module('app_analysis_charts', [])
     console.log 'mainchartsCtrl executed'
     _chart_data = null
 
-    $scope.tabs = {}
+    $scope.tabs = []
     $scope.print = () ->
       console.log $scope.chart_data
 
     $scope.$on 'charts:graphDiv', (event, data) ->
       _chart_data = data
       console.log data
-      $scope.tabs append {
+      $scope.tabs.push {
         name: _chart_data.name
       }
+      console.log $scope.tabs
 ])
 
 .directive('myTabs', () ->
@@ -183,6 +184,7 @@ charts = angular.module('app_analysis_charts', [])
           height - y(d.y)
         _graph.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis)
 
+      scope.$watch 
       _drawHist data
       console.log data
       console.log values
