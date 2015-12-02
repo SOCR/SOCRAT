@@ -149,10 +149,11 @@ getData = angular.module('app_analysis_getData', [
       console.log deferred.promise
 
       switch opts.type
+
         when 'worldBank'
-          #create the callback
+          # create the callback
           cb = (data, status) ->
-            # obj[0] will contain meta deta.
+            # obj[0] will contain meta deta
             # obj[1] will contain array
             _col = []
             _column = []
@@ -172,27 +173,28 @@ getData = angular.module('app_analysis_getData', [
                 console.log e.message
               return true
 
-            #generate titles and references
+            # generate titles and references
             count data[1][0]
             # format data
             for c in _col
               _column.push
                 data: c
 
-            #return object
+            # return object
             data: data
             columns: _column
             columnHeader: _col
             # purpose is helps in pin pointing which
             # handsontable directive to update.
             purpose: 'json'
+
         else
           #default implementation
           cb = (data, status) ->
             console.log data
             return data
 
-      # using broadcast because msg sent from rootScope.
+      # using broadcast because msg sent from rootScope
       $rootScope.$broadcast 'app:push notification',
         initial:
           msg: 'Asking worldbank...'
@@ -205,7 +207,7 @@ getData = angular.module('app_analysis_getData', [
           type: 'alert-error'
         promise: deferred.promise
 
-      #make the call using the cb we just created
+      # make the call using the cb we just created
       $http.jsonp(
         opts.url
         )
@@ -219,6 +221,7 @@ getData = angular.module('app_analysis_getData', [
             console.log 'promise rejected'
             deferred.reject 'promise is rejected'
         )
+
       deferred.promise
 ])
 
@@ -233,13 +236,13 @@ getData = angular.module('app_analysis_getData', [
   '$stateParams'
   'app_analysis_getData_inputCache'
   ($q, $scope, getDataEventMngr, jsonParser, $stateParams, inputCache) ->
-    #get the sandbox made for this module
-    #sb = getDataSb.getSb()
-    #console.log 'sandbox created'
+    # get the sandbox made for this module
+    # sb = getDataSb.getSb()
+    # console.log 'sandbox created'
     $scope.jsonUrl = 'url..'
     flag = true
 
-    #showGrid
+    # showGrid
     $scope.show = (val) ->
       switch val
         when 'grid'
@@ -252,13 +255,16 @@ getData = angular.module('app_analysis_getData', [
             $scope.$emit 'update handsontable', data
           $scope.$emit 'change in showStates', 'grid'
 
+        when 'socrData'
+          $scope.$emit 'change in showStates', 'socrData'
+
         when 'worldBank'
           $scope.$emit 'change in showStates', 'worldBank'
 
         when  'generate'
           $scope.$emit 'change in showStates', 'generate'
 
-  #getJson
+    # getJson
     $scope.getJson = ->
       console.log $scope.jsonUrl
 
@@ -280,11 +286,10 @@ getData = angular.module('app_analysis_getData', [
           console.log 'rejected'
         )
 
-    #get url data
+    # get url data
     $scope.getUrl = ->
 
     $scope.getGrid = ->
-    return
 ])
 
 .controller('getDataMainCtrl', [
@@ -296,11 +301,22 @@ getData = angular.module('app_analysis_getData', [
   (getDataEventMngr, $scope, showState, jsonParser, state) ->
     console.log 'getDataMainCtrl executed'
 
+    # available SOCR Datasets
+    $scope.socrDatasets = [
+      id: 'IRIS'
+      name: 'Iris Flower Dataset'
+    ,
+      id: 'KNEE_PAIN'
+      name: 'Simulated SOCR Knee Pain Centroid Location Data'
+    ]
+    # select first one by default
+    $scope.socrdataset = $scope.socrDatasets[0]
+
     $scope.getWB = ->
-      #default value
+      # default value
       if $scope.size is undefined
         $scope.size = 100
-      #default option
+      # default option
       if $scope.option is undefined
         $scope.option = '4.2_BASIC.EDU.SPENDING'
 
@@ -317,6 +333,8 @@ getData = angular.module('app_analysis_getData', [
           # Pass a message to update the handsontable div.
           # data is the formatted data which plugs into the
           # handontable.
+
+          # TODO: getData module shouldn't know about controllers listening for handsontable update
           $scope.$emit 'update handsontable', data
           # Switch the accordion from getJson to grid.
           #$scope.$emit("change in showStates","grid")
@@ -325,8 +343,36 @@ getData = angular.module('app_analysis_getData', [
           console.log 'rejected:' + msg
         )
 
+    $scope.getSocrData = ->
+      switch $scope.socrdataset.id
+        # TODO: host on SOCR server
+        when 'IRIS' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
+        when 'KNEE_PAIN' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
+        # default option
+        else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
+
+      d3.text url,
+        (dataResults) ->
+          if dataResults?.length > 0
+            dataResults = d3.csv.parseRows dataResults
+            _data =
+              columnHeader: dataResults.shift()
+              data: [null, dataResults]
+              # purpose is helps in pin pointing which
+              # handsontable directive to update.
+              purpose: 'json'
+            console.log 'resolved'
+            # pass a message to update the handsontable div
+            # data is the formatted data which plugs into the
+            #  handontable.
+            $scope.$emit 'update handsontable', _data
+            # switch the accordion from getJson to grid
+            # $scope.$emit("change in showStates","grid")
+          else
+            console.log 'rejected:' + msg
+
     try
-      _showState = new showState(['grid', 'worldBank', 'generate'], $scope)
+      _showState = new showState(['grid', 'socrData', 'worldBank', 'generate'], $scope)
     catch e
       console.log e.message
 
@@ -342,7 +388,7 @@ getData = angular.module('app_analysis_getData', [
 .factory('showState', ->
   (obj, scope) ->
     if arguments.length is 0
-      #return false if no arguments are provided
+      # return false if no arguments are provided
       return false
     _obj = obj
 
@@ -351,7 +397,7 @@ getData = angular.module('app_analysis_getData', [
     for i in obj
       scope.showState[i] = true
 
-    # index is the array key.
+    # index is the array key
     set: (index) ->
       if scope.showState[index]?
         for i in _obj
@@ -393,6 +439,7 @@ getData = angular.module('app_analysis_getData', [
         nCols: tableData.nCols - nSpareCols
 
     _toHandsontable = () ->
+      # TODO: implement for poping up data when coming back from analysis tabs
 
     toDataFrame: _toDataFrame
     toHandsontable: _toHandsontable
@@ -448,14 +495,18 @@ getData = angular.module('app_analysis_getData', [
         currHeight = elem.height()
 
         #check if data is in the right format
-        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
+#        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
+        if arg? and typeof arg.data is 'object'
           obj =
             data: arg.data[1]
-            startRows: Object.keys(arg.data[1]).length
-            startCols: arg.columns.length
+#            startRows: Object.keys(arg.data[1]).length
+#            startCols: arg.columns.length
             colHeaders: arg.columnHeader
-            columns: arg.columns
+#            columns: arg.columns
             minSpareRows: N_SPARE_ROWS
+            minSpareCols: N_SPARE_COLS
+            allowInsertRow: true
+            allowInsertColumn: true
         else if arg.default is true
           obj =
             data: [

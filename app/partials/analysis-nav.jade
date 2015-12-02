@@ -1,11 +1,18 @@
-//main navigation template
+// main navigation template
 ul.nav.navbar-nav
   li(ng-class="getClass('/getData')")
     a(ng-href='#/getData') Raw Data
   li(ng-class="getClass('/wrangleData')")
     a(ng-href='#/wrangleData') Wrangle Data
-  li(ng-class="getClass('/tools')")
-    a(ng-href='#/tools') Tools
+  li.dropdown
+    a(href="#", data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false").dropdown-toggle
+      | Tools
+      span.caret
+    ul.dropdown-menu
+      li(ng-class="getClass('/tools/instrperfeval')")
+        a(ng-href='#/tools/instrperfeval') Instrument Performance Evaluation
+      li(ng-class="getClass('/tools/kmeans')")
+        a(ng-href='#/tools/kmeans') 2D k-Means Clustering
   li(ng-class="getClass('/charts')")
       a(ng-href='#/charts') Charts
   li(ng-class="getClass('/results')")
