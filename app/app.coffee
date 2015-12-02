@@ -101,21 +101,21 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/wrangleData/sidebar.html'
       )
-#      .state('tools'
-#        url: '/tools'
-#        views:
-#          'main':
-#            templateUrl: 'partials/analysis/tools/instrPerfEval/main.html'
-#          'sidebar':
-#            templateUrl: 'partials/analysis/tools/instrPerfEval/sidebar.html'
-#      )
-      .state('tools'
-        url: '/tools'
+      .state('instrperfeval'
+        url: '/tools/instrperfeval'
         views:
           'main':
-            templateUrl: 'partials/analysis/tools/kMeans/main.html'
+            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/main.html'
           'sidebar':
-            templateUrl: 'partials/analysis/tools/kMeans/sidebar.html'
+            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/sidebar.html'
+      )
+      .state('kmeans'
+        url: '/tools/kmeans'
+        views:
+          'main':
+            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/main.html'
+          'sidebar':
+            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
       )
       .state('charts'
         url: '/charts/:projectId/:forkId'
