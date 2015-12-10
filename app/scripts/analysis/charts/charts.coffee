@@ -484,6 +484,7 @@ charts = angular.module('app_analysis_charts', [])
       data = null
       _graph = null
       pairedData = null
+      pieData = null
 
       makePairs = (data) ->
         pairedData = []
@@ -493,6 +494,68 @@ charts = angular.module('app_analysis_charts', [])
           tmp = JSON.stringify({x: data.xVar[i].value , y:data.yVar[i].value})
           pairedData.push(JSON.parse(tmp))
           i++
+
+      getMax = (data) ->
+        max = data[0].value
+        for d in data
+          val = parseFloat d.value
+          if val > max
+            max = val
+        console.log max
+        return max
+
+      getMin = (data) ->
+        min = data[0].value
+        for d in data
+          val = parseFloat d.value
+          if val < min
+            min = val
+        console.log min
+        return min
+
+      makepieData = (xVar) ->
+        pieMax = getMax(xVar)
+        pieMin = getMin(xVar)
+        a = 0
+        b = 0
+        c = 0
+        d = 0
+        e = 0
+        f = 0
+        g = 0
+        rangeInt = (pieMax - pieMin)/7
+        console.log pieMin+rangeInt
+        for da in xVar
+          val = parseFloat da.value
+          console.log val, pieMin+rangeInt
+          if val < (pieMin+rangeInt)
+            a++
+            console.log a
+          else if (pieMin+rangeInt) <= val < (pieMin+2*rangeInt)
+            b++
+            console.log b
+          else if (pieMin+2*rangeInt) <= val < (pieMin+3*rangeInt)
+            c++
+          else if (pieMin+3*rangeInt) <= val < (pieMin+4*rangeInt)
+            d++
+          else if (pieMin+4*rangeInt) <= val < (pieMin+5*rangeInt)
+            e++
+          else if (pieMin+5*rangeInt) <= val < (pieMin+6*rangeInt)
+            f++
+          else if (pieMin+6*rangeInt) <= val < (pieMin+7*rangeInt)
+            g++
+#          switch val
+#            when val < (pieMin+rangeInt) then a++
+#            when val >= (pieMin+rangeInt) and val < (pieMin+2*rangeInt) then b++
+#            when val >= (pieMin+2*rangeInt) and val < (pieMin+3*rangeInt) then c++
+#            when val >= (pieMin+3*rangeInt) and val < (pieMin+4*rangeInt) then d++
+#            when val >= (pieMin+4*rangeInt) and val < (pieMin+5*rangeInt) then e++
+#            when val >= (pieMin+5*rangeInt) and val < (pieMin+6*rangeInt) then f++
+#            when val >= (pieMin+6*rangeInt) and val < (pieMin+7*rangeInt) then g++
+        obj = {"first":a, "second":b, "third":c, "fourth":d, "fifth":e, "sixth":f, "seventh":g}
+        pieData = d3.entries obj
+        console.log pieData
+        return pieData
 
       _drawBar = () ->
 
@@ -744,47 +807,52 @@ charts = angular.module('app_analysis_charts', [])
         radius = Math.min(width, height) / 2
 
         arc = d3.svg.arc()
-        .outerRadius(radius - 10)
+        .outerRadius(radius)
         .innerRadius(0)
 
         labelArc = d3.svg.arc()
-        .outerRadius(radius - 40)
-        .innerRadius(radius - 40)
+        .outerRadius(radius-10)
+        .innerRadius(radius-10)
 
-        color = d3.scale.ordinal()
-        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
+        color = d3.scale.category20b()
 
         pie = d3.layout.pie()
-        .sort(null)
-        #.value(function(d) { return d.population; })
-        .value (d) -> d.y
-
+        #.value (d) -> d.count
+        .value (d) -> parseFloat d.value
         type = (d) ->
           d.y = +d.y
           return d
 
-        g = _graph.selectAll(".arc")
-        .data(pie(pairedData))
-        .enter().append("g")
-        .attr("class", "arc");
-
-        g.append("path")
-        .attr("d", arc)
+        _graph.selectAll('path')
+              .data(pie(pieData))
+              .enter()
+              .append('path')
+              .attr('d', arc)
+              .attr('fill', (d,i) -> color(d.data.key))
+#
+      #g = _graph.selectAll(".arc")
+#        .data(pie(pairedData))
+#        .enter().append("g")
+#        .attr("class", "arc");
+#
+#        g.append("path")
+#        .attr("d", arc)
         #.style("fill", function(d) { return color(d.data.age); });
-        .style("fill", (d) -> color(d.x))
+        #.style("fill", (d) -> color(d.x))
 
-        g.append("text")
+        #g.append("text")
         #.attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-        .attr("transform", (d) -> "translate(" + labelArc.centroid(d) + ")")
-        .attr("dy", ".35em")
+        #.attr("transform", (d) -> "translate(" + labelArc.centroid(d) + ")")
+        #.attr("dy", ".35em")
         #.text(function(d) { return d.data.age; });
-        .text (d) -> d.x
+        #.text (d) -> d.x
 
       scope.$watch 'chartData', (newChartData) ->
         if newChartData
           data = newChartData
           console.log data
           makePairs(data)
+          makepieData(data.xVar)
           #id = '#'+ newInfo.name
           svg = d3.select(elem.find("svg")[0])
           #svg.select("#remove").remove()
@@ -809,6 +877,7 @@ charts = angular.module('app_analysis_charts', [])
             when 'Histogram'
               _drawHist()
             when 'Pie Chart'
+              _graph = svg.append('g').attr("transform", "translate(300,300)").attr("id", "remove")
               _drawPie()
             when 'Scatter Plot'
               _drawScatterplot()
