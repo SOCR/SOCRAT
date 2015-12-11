@@ -829,23 +829,7 @@ charts = angular.module('app_analysis_charts', [])
               .append('path')
               .attr('d', arc)
               .attr('fill', (d,i) -> color(d.data.key))
-#
-      #g = _graph.selectAll(".arc")
-#        .data(pie(pairedData))
-#        .enter().append("g")
-#        .attr("class", "arc");
-#
-#        g.append("path")
-#        .attr("d", arc)
-        #.style("fill", function(d) { return color(d.data.age); });
-        #.style("fill", (d) -> color(d.x))
 
-        #g.append("text")
-        #.attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-        #.attr("transform", (d) -> "translate(" + labelArc.centroid(d) + ")")
-        #.attr("dy", ".35em")
-        #.text(function(d) { return d.data.age; });
-        #.text (d) -> d.x
 
       scope.$watch 'chartData', (newChartData) ->
         if newChartData
@@ -858,16 +842,7 @@ charts = angular.module('app_analysis_charts', [])
           #svg.select("#remove").remove()
           svg.selectAll('*').remove()
           _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id", "remove")
-#          if data.name is "Histogram"
-#            _drawHist()
-#          else if data.name is "Scatter Plot"
-#            _drawScatterplot()
-#          else if data.name is "Bubble Chart"
-#            _drawBubble()
-#          else if data.name is "Bar Graph"
-#            _drawBar()
-#          else if data.name is "Pie Chart"
-#            _drawPie()
+
 
           switch data.name
             when 'Bar Graph'
