@@ -1,17 +1,13 @@
-div(ng-controller="chartsSidebarCtrl")
-    form
-        fieldset
-            legend Project
-            label fork&nbsp;
-                input(ng-model="currentFork",disabled = true).input-small
-            legend Plots
-            label Choose one&nbsp;
-                select(ng-model="currentPlot")
-                    option(ng-repeat='p in plots') {{p.label}}
-            legend Variables
-            label X&nbsp;
-            select(ng-model="xVariable")
-                option(ng-repeat="v in variables") {{v}}
-            label Y&nbsp;
-            select(ng-model="yVariable")
-                option(ng-repeat="v in variables") {{v}}
+div(ng-controller="sidechartsCtrl")
+  h4 Graphs
+  select.form-control#chooseGraph(value="Choose a graph" ng-change="change1()" ng-model = "graphSelect" ng-options = "g as g.name for g in graphs")
+  h4 Variables
+  div.form-inline
+    div.form-horizontal
+      label(for = "x") Add X
+      select#x.form-control(ng-change = "change(selector1,headers,'x')" ng-model = "selector1" ng-options = "v as v.value for v in headers")
+    div.form-horizontal
+      label(for = "y") Add Y
+      select#y.form-control(ng-change = "change(selector2,headers,'y')" ng-model = "selector2" ng-options = "v as v.value for v in headers")
+  //add variable options.
+  button.btn.btn-default(ng-click = "createGraph()") Graph
