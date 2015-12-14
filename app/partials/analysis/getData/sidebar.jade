@@ -2,13 +2,16 @@ div(ng-controller="getDataSidebarCtrl")
   span Traditional spreadsheet where you can copy-paste your data and edit it as you like!
   button.btn.btn-info.btn-sm(ng-click="show('grid')") Show
   hr
+  span Use one of the predefined SOCR datasets.
+  button.btn.btn-info.btn-sm(ng-click="show('socrData')") Use
+  hr
   span Use the exhaustive WorldBank data to fuel your analysis.
   button.btn.btn-info.btn-sm(ng-click="show('worldBank')") Use
   hr
   span Use the inbuilt experiment to generate data for your analysis.
   button.btn.btn-info.btn-sm(ng-click="show('generate')") Generate
   hr
-  span Enter json url here. We will try to give the best output!
+  span Enter JSON URL here to parse
   input(ng-model="jsonUrl",type="text",
   tooltip="Enter url here...",tooltip-trigger="focus",
   tooltip-placement="right").input-medium

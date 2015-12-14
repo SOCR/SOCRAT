@@ -42,8 +42,12 @@ module.exports = (config) ->
       'bower_components/bootstrap/dist/js/bootstrap.js'
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js'
       'bower_components/jstat/dist/jstat.js'
+<<<<<<< HEAD
       'bower_components/crossfilter/crossfilter.js'
       'bower_components/dcjs/dc.js'
+=======
+      'bower_components/jsfeat/build/jsfeat.js'
+>>>>>>> master
       'bower_components/angular-mocks/angular-mocks.js'
       # endbower
       # bower:coffee

@@ -1,0 +1,31 @@
+div(ng-controller="kMeansSidebarCtrl")
+  form
+    legend Parameters
+    div.form-group
+      label X column &nbsp;
+      //- show data header column names
+      select(ng-model="xCol", ng-options="col for col in cols").form-control
+    div.form-group
+      label Y column &nbsp;
+      //- show data header column names
+      select(ng-model="yCol", ng-options="col for col in cols").form-control
+    div.checkbox
+      label
+        input(type="checkbox", ng-model="labelson")
+        | Use labels column
+    div.form-group
+      fieldset(ng-disabled="!labelson")
+        label Labels column &nbsp;
+        //- show data header column names
+        select(ng-model="labelCol", ng-options="col for col in cols").form-control
+    div.form-group
+      label k &nbsp;
+      select(ng-model="k", ng-options="k for k in ks").form-control
+    div.form-group
+      label Distance &nbsp;
+      select(ng-model="dist", ng-options="dist for dist in distances").form-control
+    div.form-group
+      label Initialization &nbsp;
+      select(ng-model="initMethod", ng-options="init for init in inits").form-control
+    button(type="submit", aria-label="Run k-Means", ng-click="run()", ng-disabled="kmeanson").btn.btn-primary Run&nbsp;
+      span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
