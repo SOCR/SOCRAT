@@ -528,7 +528,9 @@ charts = angular.module('app_analysis_charts', [])
         console.log pieMin+rangeInt
         for da in xVar
           val = parseFloat da.value
+
 #          console.log val, pieMin+rangeInt
+
           if val < (pieMin+rangeInt)
             a++
 #            console.log a
@@ -608,13 +610,17 @@ charts = angular.module('app_analysis_charts', [])
         console.log arr
 
         arr1 = data.xVar.map (d) -> parseFloat d.value
+
 #        x = d3.scale.linear().domain([0,10]).range([0,width])
+
         x = d3.scale.linear().domain([0,d3.max arr]).range([0,width])
         dataHist = d3.layout.histogram().bins(x.ticks(5))(arr)
         console.log dataHist
         yMax = d3.max dataHist, (d) ->
           return d.y
+
 #        y = d3.scale.linear().domain([0,yMax]).range([height, 0])
+
         y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
 
         yAxis = d3.svg.axis().scale(y).orient("left")
@@ -644,6 +650,7 @@ charts = angular.module('app_analysis_charts', [])
         .style("text-anchor", "end")
         .text data.yLab
 
+
 #        _graph.select('g').remove()
         bar = _graph.selectAll('.bar')
         .data(dataHist).enter()
@@ -651,12 +658,14 @@ charts = angular.module('app_analysis_charts', [])
 #        .attr("class", "bar")
 #        .attr("transform",(d) -> return "translate(" + x(d.x) + "," + y(d.y) + ")")
 
+
         bar.append('rect')
         .style("fill", "steelblue")
         .attr('x', (d,i) -> i*5 + x d.x)
         .attr('y', (d) -> height - y d.y)
         .attr('width', (d) -> x d.dx)
         .attr('height', (d) -> y d.y)
+
 
 #        bar.on('mouseover', () -> d3.select('rect').style('fill', "red"))
 
@@ -668,6 +677,7 @@ charts = angular.module('app_analysis_charts', [])
             .attr('fill', '#fff')
             .attr('text-anchor', 'middle')
             .text (d) -> d.y
+
 
       _drawScatterplot = () ->
 
@@ -840,16 +850,17 @@ charts = angular.module('app_analysis_charts', [])
           return d
 
         g =  _graph.selectAll('path')
-          .data(pie(pieData))
-          .enter()
-          .append('path')
-          .attr('d', arc)
-          .attr('fill', (d,i) -> color(d.data.key))
+        .data(pie(pieData))
+        .enter()
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', (d,i) -> color(d.data.key))
 
         g.append("text")
-          .attr("transform", (d) -> "translate("+ labelArc.centroid(d) +")")
-          .attr("dy", ".35em")
-          .text (d) -> d.key
+        .attr("transform", (d) -> "translate("+ labelArc.centroid(d) +")")
+        .attr("dy", ".35em")
+        .text (d) -> d.key
+
 
 
       scope.$watch 'chartData', (newChartData) ->

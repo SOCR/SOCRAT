@@ -145,6 +145,7 @@ App.run([
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
   ($rootScope, core, db, getData, wrangleData, instrPerfEval, kMeans, charts) ->
 
+
     map = [
 #      msgFrom: 'add numbers'
 #      scopeFrom: ['qualRobEstView']
@@ -211,6 +212,7 @@ App.run([
       scopeFrom: ['database']
       msgTo: 'take table'
       scopeTo: ['charts']
+
     ]
 
     core.setEventsMapping map
@@ -240,6 +242,8 @@ App.run([
     core.start 'charts'
     #core.register 'importer', importer
     #core.start 'importer'
+    core.register 'charts', charts
+    core.start 'charts'
 
     $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
       console.log 'APP: state change: '
