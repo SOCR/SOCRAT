@@ -467,10 +467,10 @@ charts = angular.module('app_analysis_charts', [])
 .directive 'd3Charts', [
   () ->
     restrict:'E'
-    template:"<svg width='100%' height='600'></svg>"
+    template:"<div class='graph-container' style='height: 600px;width: 100%'></div>"
     link: (scope, elem, attr) ->
       margin = {top: 10, right: 30, bottom: 30, left: 30}
-      width = 960 - margin.left - margin.right
+      width = 900 - margin.left - margin.right
       height = 500 - margin.top - margin.bottom
       x = null
       y = null
@@ -483,6 +483,7 @@ charts = angular.module('app_analysis_charts', [])
       svg = null
       data = null
       _graph = null
+      container = null
       pairedData = null
       pieData = null
 
@@ -527,13 +528,13 @@ charts = angular.module('app_analysis_charts', [])
         console.log pieMin+rangeInt
         for da in xVar
           val = parseFloat da.value
-          console.log val, pieMin+rangeInt
+#          console.log val, pieMin+rangeInt
           if val < (pieMin+rangeInt)
             a++
-            console.log a
+#            console.log a
           else if (pieMin+rangeInt) <= val < (pieMin+2*rangeInt)
             b++
-            console.log b
+#            console.log b
           else if (pieMin+2*rangeInt) <= val < (pieMin+3*rangeInt)
             c++
           else if (pieMin+3*rangeInt) <= val < (pieMin+4*rangeInt)
@@ -606,15 +607,18 @@ charts = angular.module('app_analysis_charts', [])
           arr.push parseFloat d.value
         console.log arr
 
-        y = d3.scale.linear().domain([0,yMax]).range([height, 0])
-        x = d3.scale.linear().domain([0,1]).range([0,width])
-        yAxis = d3.svg.axis().scale(y).orient("left")
-        xAxis = d3.svg.axis().scale(x).orient("bottom")
-
+        arr1 = data.xVar.map (d) -> parseFloat d.value
+#        x = d3.scale.linear().domain([0,10]).range([0,width])
+        x = d3.scale.linear().domain([0,d3.max arr]).range([0,width])
         dataHist = d3.layout.histogram().bins(x.ticks(5))(arr)
         console.log dataHist
         yMax = d3.max dataHist, (d) ->
           return d.y
+#        y = d3.scale.linear().domain([0,yMax]).range([height, 0])
+        y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
+
+        yAxis = d3.svg.axis().scale(y).orient("left")
+        xAxis = d3.svg.axis().scale(x).orient("bottom")
 
         # x axis
         _graph.append("g")
@@ -640,18 +644,30 @@ charts = angular.module('app_analysis_charts', [])
         .style("text-anchor", "end")
         .text data.yLab
 
-        #_graph.select('g').remove()
+#        _graph.select('g').remove()
         bar = _graph.selectAll('.bar')
         .data(dataHist).enter()
         .append("g")
-        .attr("class", "bar")
-        .attr("transform",(d) -> return "translate(" + x(d.x) + "," + y(d.y) + ")")
+#        .attr("class", "bar")
+#        .attr("transform",(d) -> return "translate(" + x(d.x) + "," + y(d.y) + ")")
+
         bar.append('rect')
         .style("fill", "steelblue")
-        .attr('x', 1)
-        .attr('width', x(dataHist[0].dx) - 1)
-        .attr 'height', (d) -> height - y(d.y)
+        .attr('x', (d,i) -> i*5 + x d.x)
+        .attr('y', (d) -> height - y d.y)
+        .attr('width', (d) -> x d.dx)
+        .attr('height', (d) -> y d.y)
 
+#        bar.on('mouseover', () -> d3.select('rect').style('fill', "red"))
+
+        bar.append('text')
+            .attr('x', (d) -> x d.x)
+            .attr('y', (d) -> height - y d.y)
+            .attr('dx', (d) -> .5*x d.dx)
+            .attr('dy', '20px')
+            .attr('fill', '#fff')
+            .attr('text-anchor', 'middle')
+            .text (d) -> d.y
 
       _drawScatterplot = () ->
 
@@ -711,7 +727,7 @@ charts = angular.module('app_analysis_charts', [])
         .text data.yLab
 
         # add the tooltip area to the webpage
-        tooltip = svg
+        tooltip = container
         .append('div')
         .attr('class', 'tooltip')
         .style('opacity', 0)
@@ -814,7 +830,7 @@ charts = angular.module('app_analysis_charts', [])
         .outerRadius(radius-10)
         .innerRadius(radius-10)
 
-        color = d3.scale.category20b()
+        color = d3.scale.category10()
 
         pie = d3.layout.pie()
 #.value (d) -> d.count
@@ -823,12 +839,17 @@ charts = angular.module('app_analysis_charts', [])
           d.y = +d.y
           return d
 
-        _graph.selectAll('path')
-        .data(pie(pieData))
-        .enter()
-        .append('path')
-        .attr('d', arc)
-        .attr('fill', (d,i) -> color(d.data.key))
+        g =  _graph.selectAll('path')
+          .data(pie(pieData))
+          .enter()
+          .append('path')
+          .attr('d', arc)
+          .attr('fill', (d,i) -> color(d.data.key))
+
+        g.append("text")
+          .attr("transform", (d) -> "translate("+ labelArc.centroid(d) +")")
+          .attr("dy", ".35em")
+          .text (d) -> d.key
 
 
       scope.$watch 'chartData', (newChartData) ->
@@ -838,9 +859,10 @@ charts = angular.module('app_analysis_charts', [])
           makePairs(data)
           makepieData(data.xVar)
           #id = '#'+ newInfo.name
-          svg = d3.select(elem.find("svg")[0])
+          container = d3.select(elem.find('div')[0])
+          container.selectAll('*').remove()
+          svg = container.append('svg').attr("width", width).attr("height", height + margin.top + margin.bottom)
           #svg.select("#remove").remove()
-          svg.selectAll('*').remove()
           _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id", "remove")
 
 
