@@ -108,18 +108,6 @@ charts = angular.module('app_analysis_charts', [])
             scope.showGraph[i] = true
 )
 
-.directive('myTabs', () ->
-  return {
-  replace: false,
-  transclude: true,
-  template: '<li><a data-toggle = "tab" href="{{t as t.name for t in tabs}}">{{t as t.name for t in tabs}}</a></li>'
-  }
-)
-.directive('tabBody', () ->
-  return {
-  template: '<div id="{{t as t.name for t in tabs}}" class = "tab-pane fade" ><svg style="width:500px, height:500px"></svg></div>'
-  }
-)
 
 .controller('sidechartsCtrl',[
   'app_analysis_charts_manager'
@@ -133,9 +121,10 @@ charts = angular.module('app_analysis_charts', [])
     _chartData = null
     _headers = null
     #_graphInfo = null
-    $scope.selector1={};
-    $scope.selector2={};
-    $scope.graphInfo = {graph:"", x:"", y:""}
+    $scope.selector1={}
+    $scope.selector2={}
+    $scope.selector3={}
+    $scope.graphInfo = {graph:"", x:"", y:"",z:""}
     $scope.graphs = [{name:'Bar Graph', value:0},{name:'Scatter Plot', value:1},{name:'Histogram', value:2},{name:'Bubble Chart', value:3},{name:'Pie Chart', value:4}]
     $scope.graphSelect = {}
 
@@ -144,11 +133,50 @@ charts = angular.module('app_analysis_charts', [])
         if selector.value is h.value then $scope.graphInfo[ind] = parseFloat h.key
 
     $scope.createGraph = (results) ->
+      graphFormat = () ->
+        obj = []
+        if $scope.graphInfo.y is "" and $scope.graphInfo.z is ""
+          obj = []
+          i=1
+          while i < _chartData[0].length
+            tmp = {}
+            tmp = JSON.stringify({x: _chartData[$scope.graphInfo.x][i].value})
+            obj.push(JSON.parse(tmp))
+            i++
+        else if $scope.graphInfo.y isnt "" and $scope.graphInfo.z is ""
+          obj = []
+          i=1
+          while i < _chartData[0].length
+            tmp = {}
+            tmp = JSON.stringify({x: _chartData[$scope.graphInfo.x][i].value , y:_chartData[$scope.graphInfo.y][i].value})
+            obj.push(JSON.parse(tmp))
+            i++
+        else
+          obj = []
+          i=1
+          while i < _chartData[0].length
+            tmp = {}
+            tmp = JSON.stringify({x: _chartData[$scope.graphInfo.x][i].value , y:_chartData[$scope.graphInfo.y][i].value, z:_chartData[$scope.graphInfo.z][i].value})
+            obj.push(JSON.parse(tmp))
+            i++
+
+        console.log obj
+        return obj
+      console.log $scope.graphInfo
+      graphFormat()
+      results1 = {
+        data: graphFormat,
+        xLab: _headers[$scope.graphInfo.x],
+        yLab: _headers[$scope.graphInfo.y],
+        zLab: _headers[$scope.graphInfo.z]
+      }
       results = {
         xVar: _chartData[$scope.graphInfo.x]
         xLab: _headers[$scope.graphInfo.x]
         yVar: _chartData[$scope.graphInfo.y]
         yLab: _headers[$scope.graphInfo.y]
+        zVar: _chartData[$scope.graphInfo.z]
+        zLab: _headers[$scope.graphInfo.z]
         name: $scope.graphInfo.graph
       }
       #_graphInfo = results
@@ -209,9 +237,9 @@ charts = angular.module('app_analysis_charts', [])
 .directive 'd3Charts', [
   () ->
     restrict:'E'
-    template:"<div class='graph-container' style='height: 600px;width: 100%'></div>"
+    template:"<div class='graph-container' style='height: 600px;width:100%'></div>"
     link: (scope, elem, attr) ->
-      margin = {top: 10, right: 30, bottom: 30, left: 30}
+      margin = {top: 10, right: 30, bottom: 30, left:30}
       width = 900 - margin.left - margin.right
       height = 500 - margin.top - margin.bottom
       x = null
@@ -228,15 +256,28 @@ charts = angular.module('app_analysis_charts', [])
       container = null
       pairedData = null
       pieData = null
+      bubbleData = null
+
+      makeBubble = (data) ->
+        bubbleData = []
+        i=1
+
+        while i < data.xVar.length
+          tmp = {}
+          tmp = JSON.stringify({x: data.xVar[i].value , y:data.yVar[i].value, z:data.zVar[i].value})
+          bubbleData.push(JSON.parse(tmp))
+          i++
 
       makePairs = (data) ->
         pairedData = []
         i=1
+
         while i < data.xVar.length
           tmp = {}
           tmp = JSON.stringify({x: data.xVar[i].value , y:data.yVar[i].value})
           pairedData.push(JSON.parse(tmp))
           i++
+        console.log pairedData
 
       getMax = (data) ->
         max = data[0].value
@@ -289,6 +330,13 @@ charts = angular.module('app_analysis_charts', [])
             f++
           else if (pieMin+6*rangeInt) <= val < (pieMin+7*rangeInt)
             g++
+        first = (pieMin+rangeInt).toFixed(2)+"-"+(pieMin).toFixed(2)
+        second = (pieMin+2*rangeInt).toFixed(2)+"-"+(pieMin+rangeInt).toFixed(2)
+        third = (pieMin+3*rangeInt).toFixed(2)+"-"+(pieMin+2*rangeInt).toFixed(2)
+        fourth = (pieMin+4*rangeInt).toFixed(2)+"-"+(pieMin+3*rangeInt).toFixed(2)
+        fifth = (pieMin+5*rangeInt).toFixed(2)+"-"+(pieMin+4*rangeInt).toFixed(2)
+        sixth = (pieMin+6*rangeInt).toFixed(2)+"-"+(pieMin+5*rangeInt).toFixed(2)
+        seventh = (pieMin+7*rangeInt).toFixed(2)+"-"+(pieMin+6*rangeInt).toFixed(2)
         #          switch val
         #            when val < (pieMin+rangeInt) then a++
         #            when val >= (pieMin+rangeInt) and val < (pieMin+2*rangeInt) then b++
@@ -297,7 +345,15 @@ charts = angular.module('app_analysis_charts', [])
         #            when val >= (pieMin+4*rangeInt) and val < (pieMin+5*rangeInt) then e++
         #            when val >= (pieMin+5*rangeInt) and val < (pieMin+6*rangeInt) then f++
         #            when val >= (pieMin+6*rangeInt) and val < (pieMin+7*rangeInt) then g++
-        obj = {"first":a, "second":b, "third":c, "fourth":d, "fifth":e, "sixth":f, "seventh":g}
+        obj = {}
+        obj[first] = a
+        obj[second] = b
+        obj[third] = c
+        obj[fourth] = d
+        obj[fifth] = e
+        obj[sixth] = f
+        obj[seventh] = g
+
         pieData = d3.entries obj
         console.log pieData
         return pieData
@@ -346,84 +402,129 @@ charts = angular.module('app_analysis_charts', [])
       _drawHist = () ->
 #values = d3.range(1000).map(d3.random.bates(10))
 #console.log values
+        container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','25')
+        bins = null
+        dataHist = null
+
         arr = []
         for d in data.xVar
           arr.push parseFloat d.value
         console.log arr
 
         arr1 = data.xVar.map (d) -> parseFloat d.value
-
-#        x = d3.scale.linear().domain([0,10]).range([0,width])
-
         x = d3.scale.linear().domain([0,d3.max arr]).range([0,width])
-        dataHist = d3.layout.histogram().bins(x.ticks(5))(arr)
-        console.log dataHist
-        yMax = d3.max dataHist, (d) ->
-          return d.y
-
-#        y = d3.scale.linear().domain([0,yMax]).range([height, 0])
-
-        y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
-
-        yAxis = d3.svg.axis().scale(y).orient("left")
-        xAxis = d3.svg.axis().scale(x).orient("bottom")
-
-        # x axis
-        _graph.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call xAxis
-        .append('text')
-        .attr('class', 'label')
-        .attr('x', width)
-        .attr('y', -6)
-        .style('text-anchor', 'end')
-        .text data.xLab.value
-
-        # y axis
-        _graph.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr('class', 'label')
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text "Count"
-
-
+        d3.select('#slider')
+        .on('change', () ->
+          bins = parseInt this.value
+          console.log bins
+          dataHist = d3.layout.histogram().bins(bins)(arr)
+          console.log dataHist
 #        _graph.select('g').remove()
-        bar = _graph.selectAll('.bar')
-        .data(dataHist).enter()
-        .append("g")
+
+          y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
+
+          yAxis = d3.svg.axis().scale(y).orient("left")
+          xAxis = d3.svg.axis().scale(x).orient("bottom")
+
+          _graph.selectAll('g').remove()
+          _graph.select('.x axis').remove()
+          _graph.select('.y axis').remove()
+# x axis
+          _graph.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call xAxis
+          .append('text')
+          .attr('class', 'label')
+          .attr('x', width)
+          .attr('y', -6)
+          .style('text-anchor', 'end')
+          .text data.xLab.value
+
+# y axis
+          _graph.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .append("text")
+          .attr('class', 'label')
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text "Count"
+
+          bar = _graph.selectAll('.bar')
+          .data(dataHist)
+
+          bar.exit().remove()
+
+          bar.enter()
+          .append("g")
 #        .attr("class", "bar")
 #        .attr("transform",(d) -> return "translate(" + x(d.x) + "," + y(d.y) + ")")
 
 
-        bar.append('rect')
-        .style("fill", "steelblue")
-        .attr('x', (d,i) -> i*5 + x d.x)
-        .attr('y', (d) -> height - y d.y)
-        .attr('width', (d) -> x d.dx)
-        .attr('height', (d) -> y d.y)
+          bar.append('rect')
+          .style("fill", "steelblue")
+          .attr('x', (d,i) -> i*5 + x d.x)
+          .attr('y', (d) -> height - y d.y)
+          .attr('width', (d) -> x d.dx)
+          .attr('height', (d) -> y d.y)
+          .on('mouseenter', () -> d3.select(this).transition().attr('fill', 'orange'))
+          .on('mouseleave', () -> d3.select(this).transition().attr('fill', 'steelblue'))
+
+          bar.append('text')
+          .attr('x', (d) -> x d.x)
+          .attr('y', (d) -> height - y d.y)
+          .attr('dx', (d) -> .5*x d.dx)
+          .attr('dy', '20px')
+          .attr('fill', '#fff')
+          .attr('text-anchor', 'middle')
+          .text (d) -> d.y
+
+        )
+
+        #        x = d3.scale.linear().domain([0,10]).range([0,width])
 
 
-#        bar.on('mouseover', () -> d3.select('rect').style('fill', "red"))
+#        dataHist = d3.layout.histogram().bins(x.ticks(5))(arr)
+#        console.log dataHist
+#        yMax = d3.max dataHist, (d) ->
+#          return d.y
 
-        bar.append('text')
-            .attr('x', (d) -> x d.x)
-            .attr('y', (d) -> height - y d.y)
-            .attr('dx', (d) -> .5*x d.dx)
-            .attr('dy', '20px')
-            .attr('fill', '#fff')
-            .attr('text-anchor', 'middle')
-            .text (d) -> d.y
+#        y = d3.scale.linear().domain([0,yMax]).range([height, 0])
+
+
+
+
+#        bar = _graph.selectAll('.bar')
+#        .data(dataHist).enter()
+#        .append("g")
+#
+#
+#        bar.append('rect')
+#        .style("fill", "steelblue")
+#        .attr('x', (d,i) -> i*5 + x d.x)
+#        .attr('y', (d) -> height - y d.y)
+#        .attr('width', (d) -> x d.dx)
+#        .attr('height', (d) -> y d.y)
+#
+#
+##        bar.on('mouseover', () -> d3.select('rect').style('fill', "red"))
+#
+#        bar.append('text')
+#            .attr('x', (d) -> x d.x)
+#            .attr('y', (d) -> height - y d.y)
+#            .attr('dx', (d) -> .5*x d.dx)
+#            .attr('dy', '20px')
+#            .attr('fill', '#fff')
+#            .attr('text-anchor', 'middle')
+#            .text (d) -> d.y
 
 
       _drawScatterplot = () ->
 
-
+        makePairs(data)
         xMin = d3.min pairedData, (d) -> parseFloat d.x
         yMin = d3.min pairedData, (d) -> parseFloat d.y
 
@@ -439,8 +540,8 @@ charts = angular.module('app_analysis_charts', [])
         #.attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id", "remove")
 
         console.log pairedData
-#        x.domain([d3.min(pairedData, (d)->d.x), d3.max(pairedData, (d)->d.x)])
-#        y.domain([d3.min(pairedData, (d)->d.x), d3.max(pairedData, (d)->d.y)])
+        #        x.domain([d3.min(pairedData, (d)->d.x), d3.max(pairedData, (d)->d.x)])
+        #        y.domain([d3.min(pairedData, (d)->d.x), d3.max(pairedData, (d)->d.y)])
 
         # values
         xValue = (d)->d.x
@@ -524,11 +625,12 @@ charts = angular.module('app_analysis_charts', [])
         .text((d)-> d)
 
       _drawBubble = () ->
-        xMin = d3.min pairedData, (d) -> parseFloat d.x
-        yMin = d3.min pairedData, (d) -> parseFloat d.y
+        makeBubble(data)
+        xMin = d3.min bubbleData, (d) -> parseFloat d.x
+        yMin = d3.min bubbleData, (d) -> parseFloat d.y
 
-        xMax = d3.max pairedData, (d) -> parseFloat d.x
-        yMax = d3.max pairedData, (d) -> parseFloat d.y
+        xMax = d3.max bubbleData, (d) -> parseFloat d.x
+        yMax = d3.max bubbleData, (d) -> parseFloat d.y
 
         x = d3.scale.linear().domain([xMin,xMax]).range([ 0, width ])
         y = d3.scale.linear().domain([yMin,yMax]).range([ height, 0 ])
@@ -540,8 +642,8 @@ charts = angular.module('app_analysis_charts', [])
 #        x = d3.scale.linear().range([ 0, width ])
 #        y = d3.scale.linear().range([ height, 0 ])
         r = d3.scale.linear()
-              .domain([0, d3.max(pairedData, (d)-> parseFloat d.y)])
-              .range([0,5])
+              .domain([d3.min(bubbleData, (d)-> parseFloat d.z), d3.max(bubbleData, (d)-> parseFloat d.z)])
+              .range([3,15])
 #        xAxis = d3.svg.axis().scale(x).orient('bottom')
 #        yAxis = d3.svg.axis().scale(y).orient('left')
 
@@ -575,7 +677,7 @@ charts = angular.module('app_analysis_charts', [])
 
         # create circle
         _graph.selectAll('.circle')
-        .data(pairedData)
+        .data(bubbleData)
         .enter().append('circle')
         .attr('fill', 'yellow')
         .attr('opacity', '0.7')
@@ -583,9 +685,10 @@ charts = angular.module('app_analysis_charts', [])
         .attr('stroke-width', '2px')
         .attr('cx', (d)->x d.x)
         .attr('cy', (d)->y d.y)
-        .attr('r', (d)-> Math.sqrt(Math.abs(height - d.y)/10))
+        .attr('r', (d)-> r d.z)
 
       _drawPie = () ->
+        makepieData(data.xVar)
         radius = Math.min(width, height) / 2
 
         arc = d3.svg.arc()
@@ -596,11 +699,11 @@ charts = angular.module('app_analysis_charts', [])
         .outerRadius(radius-10)
         .innerRadius(radius-10)
 
-        color = d3.scale.category10()
+        color = d3.scale.ordinal().range(["#ffffcc","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84"])
 
         arcOver = d3.svg.arc()
                     .outerRadius(radius + 10)
-                    .innerRadius(0+10)
+#                    .innerRadius(0+10)
 
         pie = d3.layout.pie()
 #.value (d) -> d.count
@@ -632,14 +735,13 @@ charts = angular.module('app_analysis_charts', [])
         if newChartData
           data = newChartData
           console.log data
-          makePairs(data)
-          makepieData(data.xVar)
+
           #id = '#'+ newInfo.name
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
           svg = container.append('svg').attr("width", width).attr("height", height + margin.top + margin.bottom)
           #svg.select("#remove").remove()
-          _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id", "remove")
+          _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
 
           switch data.name
@@ -650,7 +752,7 @@ charts = angular.module('app_analysis_charts', [])
             when 'Histogram'
               _drawHist()
             when 'Pie Chart'
-              _graph = svg.append('g').attr("transform", "translate(300,300)").attr("id", "remove")
+              _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
               _drawPie()
             when 'Scatter Plot'
               _drawScatterplot()
