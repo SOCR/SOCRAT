@@ -242,9 +242,32 @@ getData = angular.module('app_analysis_getData', [
     $scope.jsonUrl = 'url..'
     flag = true
 
+    $scope.options = [
+      { 
+        text : "Traditional spreadsheet where you can copy-paste your data and edit it as you like!"
+        buttonLabel: "Show"
+        buttonParam:"grid"
+      }
+      {
+        text : "Use one of the predefined SOCR datasets."
+        buttonLabel : "Use"
+        buttonParam : "socrData"
+      }
+      {
+        text : "Use the exhaustive WorldBank data to fuel your analysis."
+        buttonLabel : "Use"
+        buttonParam : "worldBank"
+      }
+      {
+        text : "Use the inbuilt experiment to generate data for your analysis."
+        buttonLabel : "Generate"
+        buttonParam : "generate"
+      }  
+    ]
+
     # showGrid
-    $scope.show = (val) ->
-      switch val
+    $scope.show = (event) ->
+      switch event.target.dataset.param
         when 'grid'
           if flag is true
             flag = false
