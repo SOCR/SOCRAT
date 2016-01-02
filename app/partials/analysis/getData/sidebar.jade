@@ -5,7 +5,8 @@ div(ng-controller="getDataSidebarCtrl")
     div(class="sr-sidebar-right-item")
       button.btn.btn-info.btn-sm(ng-click="show($event)",data-param="{{option.buttonParam}}") {{option.buttonLabel}}
     hr
-  
+
+//  
   div(class="sr-sidebar-left-item")
     span Enter JSON URL here to parse
     input(ng-model="jsonUrl",type="text",

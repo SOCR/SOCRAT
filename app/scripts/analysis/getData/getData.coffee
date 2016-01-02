@@ -258,11 +258,11 @@ getData = angular.module('app_analysis_getData', [
         buttonLabel : "Use"
         buttonParam : "worldBank"
       }
-      {
-        text : "Use the inbuilt experiment to generate data for your analysis."
-        buttonLabel : "Generate"
-        buttonParam : "generate"
-      }  
+      #{
+      #  text : "Use the inbuilt experiment to generate data for your analysis."
+      #  buttonLabel : "Generate"
+      #  buttonParam : "generate"
+      #}  
     ]
 
     # showGrid
