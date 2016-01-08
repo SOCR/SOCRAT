@@ -1,16 +1,16 @@
 div(ng-controller="sidechartsCtrl")
   h4 Graphs
-  select.form-control#chooseGraph(value="Choose a graph" ng-change="change1()" ng-model = "graphSelect" ng-options = "g as g.name for g in graphs")
+  select.form-control#chooseGraph(value="Choose a graph" ng-change="changeName()" ng-model = "graphSelect" ng-options = "g as g.name for g in graphs")
   h4 Variables
   div.form-inline
     div.form-horizontal
       label(for = "x") Add X
-      select#x.form-control(ng-change = "change(selector1,headers,'x')" ng-model = "selector1" ng-options = "v as v.value for v in headers")
+      select#x.form-control(ng-change = "changeVar(selector1,headers,'x');" ng-model = "selector1" ng-options = "v as v.value for v in headers")
     div.form-horizontal
       label(for = "y") Add Y
-      select#y.form-control(ng-change = "change(selector2,headers,'y')" ng-model = "selector2" ng-options = "v as v.value for v in headers")
+      select#y.form-control(ng-change = "changeVar(selector2,headers,'y');" ng-model = "selector2" ng-options = "v as v.value for v in headers")
     div.form-horizontal
       label(for = "z") Add Z
-      select#z.form-control(ng-change = "change(selector3,headers,'z')" ng-model = "selector3" ng-options = "v as v.value for v in headers")
+      select#z.form-control(ng-change = "changeVar(selector3,headers,'z');" ng-model = "selector3" ng-options = "v as v.value for v in headers")
   //add variable options.
   button.btn.btn-default(ng-click = "createGraph()") Graph
