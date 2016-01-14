@@ -291,6 +291,28 @@ charts = angular.module('app_analysis_charts', [])
         .style("text-anchor", "end")
         .text "Count"
 
+
+        # create bar elements
+        _graph.selectAll('rect')
+        .data(pairedData)
+        .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x',(d)-> x d.x  )
+        .attr('width', 30)
+        .attr('y', (d)-> y d.y )
+        .attr('height', (d)-> (height - y d.y) )
+        .attr('fill', 'steelblue')
+
+      _drawHist = () ->
+#values = d3.range(1000).map(d3.random.bates(10))
+#console.log values
+        arr = []
+        for d in data.xVar
+          arr.push parseFloat d.value
+        console.log arr
+
+        arr1 = data.xVar.map (d) -> parseFloat d.value
+
         stack = d3.layout.stack()
         console.log(stack(data))
         groups = _graph.selectAll('g').data(stack(data)).enter().append('g')
@@ -441,6 +463,11 @@ charts = angular.module('app_analysis_charts', [])
 
 #        makePairs(data)
 
+        xMin = d3.min pairedData, (d) -> parseFloat d.x
+        yMin = d3.min pairedData, (d) -> parseFloat d.y
+
+        xMax = d3.max pairedData, (d) -> parseFloat d.x
+        yMax = d3.max pairedData, (d) -> parseFloat d.y
 
         x = d3.scale.linear().domain([xMin,xMax]).range([ 0, width ])
         y = d3.scale.linear().domain([yMin,yMax]).range([ height, 0 ])
@@ -471,7 +498,6 @@ charts = angular.module('app_analysis_charts', [])
         .attr('y', -6)
         .style('text-anchor', 'end')
         .text gdata.xLab.value
-
         # y axis
         _graph.append("g")
         .attr("class", "y axis")
@@ -483,6 +509,7 @@ charts = angular.module('app_analysis_charts', [])
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .text gdata.yLab.value
+
 
         # add the tooltip area to the webpage
         tooltip = container
@@ -506,31 +533,39 @@ charts = angular.module('app_analysis_charts', [])
         .on('mouseout', (d)->
           tooltip. transition().duration(500).style('opacity', 0))
 
-#        # draw legend
-#        legend = _graph.selectAll('.legend')
-#        .data(color.domain())
-#        .enter().append('g')
-#        .attr('class', 'legend')
-#        .attr('transform', (d, i)-> 'translate(0,' + i * 20 + ')')
-#        .text gdata.yLab.value
-#
-#        # draw legend colored rectangles
-#        legend.append('rect')
-#        .attr('x', width - 18)
-#        .attr('width', 18)
-#        .attr('height', 18)
-#        .style('fill', color)
-#
-#        # draw legend text
-#        legend.append('text')
-#        .attr('x', width - 24)
-#        .attr('y', 9)
-#        .attr('dy', '.35em')
-#        .style('text-anchor', 'end')
-#        .text((d)-> d)
 
       _drawBubble = () ->
 #        makeBubble(data)
+        # draw legend
+        legend = _graph.selectAll('.legend')
+        .data(color.domain())
+        .enter().append('g')
+        .attr('class', 'legend')
+        .attr('transform', (d, i)-> 'translate(0,' + i * 20 + ')')
+        .text data.yLab.value
+
+        # draw legend colored rectangles
+        legend.append('rect')
+        .attr('x', width - 18)
+        .attr('width', 18)
+        .attr('height', 18)
+        .style('fill', color)
+
+        # draw legend text
+        legend.append('text')
+        .attr('x', width - 24)
+        .attr('y', 9)
+        .attr('dy', '.35em')
+        .style('text-anchor', 'end')
+        .text((d)-> d)
+
+      _drawBubble = () ->
+        xMin = d3.min pairedData, (d) -> parseFloat d.x
+        yMin = d3.min pairedData, (d) -> parseFloat d.y
+
+        xMax = d3.max pairedData, (d) -> parseFloat d.x
+        yMax = d3.max pairedData, (d) -> parseFloat d.y
+
         x = d3.scale.linear().domain([xMin,xMax]).range([ 0, width ])
         y = d3.scale.linear().domain([yMin,yMax]).range([ height, 0 ])
         xAxis = d3.svg.axis().scale(x).orient('bottom')
@@ -559,6 +594,7 @@ charts = angular.module('app_analysis_charts', [])
         .style('text-anchor', 'end')
         .text gdata.xLab.value
 
+
         # y axis
         _graph.append("g")
         .attr("class", "y axis")
@@ -570,6 +606,7 @@ charts = angular.module('app_analysis_charts', [])
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .text gdata.yLab.value
+
 
 
         # create circle
@@ -608,6 +645,10 @@ charts = angular.module('app_analysis_charts', [])
                     .outerRadius(radius + 10)
 #                    .innerRadius(0+10)
 
+        arcOver = d3.svg.arc()
+                    .outerRadius(radius + 10)
+                    .innerRadius(0+10)
+
         pie = d3.layout.pie()
 #.value (d) -> d.count
         .value (d) -> parseFloat d.value
@@ -632,7 +673,6 @@ charts = angular.module('app_analysis_charts', [])
             .attr('transform', (d) -> 'translate('+arc.centroid(d)+')')
             .attr('text-anchor', 'middle')
             .text (d) -> d.data.key
-
 
 
       scope.$watch 'chartData', (newChartData) ->
