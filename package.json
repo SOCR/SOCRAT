@@ -33,12 +33,15 @@
     "grunt-usemin": "^3.0.0",
     "grunt-wiredep": "^2.0.0",
     "jade": "^1.11.0",
+    "jasmine-core": "^2.4.1",
     "jit-grunt": "^0.9.1",
     "jshint-stylish": "^1.0.0",
+    "karma": "^0.13.0",
     "karma-coffee-preprocessor": "*",
     "karma-jasmine": "*",
-    "karma-phantomjs-launcher": "*",
+    "karma-phantomjs2-launcher": "^0.4.0",
     "less": "^2.5.3",
+    "phantomjs2": "^2.0.2",
     "time-grunt": "^1.0.0"
   },
   "engines": {
@@ -46,5 +49,6 @@
   },
   "scripts": {
     "test": "grunt test"
-  }
+  },
+  "license": "MIT"
 }
