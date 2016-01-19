@@ -200,66 +200,33 @@ charts = angular.module('app_analysis_charts', [])
       pieData = null
       gdata = null
 
-      makepieData = (data) ->
+      makePieData = (data) ->
         pieMax = d3.max(data, (d)->parseFloat d.x)
         pieMin = d3.min(data, (d)->parseFloat d.x)
-        a = 0
-        b = 0
-        c = 0
-        d = 0
-        e = 0
-        f = 0
-        g = 0
-        rangeInt = (pieMax - pieMin)/7
-#        console.log pieMin+rangeInt
-        for da in data
-          val = parseFloat da.x
-
-#          console.log val, pieMin+rangeInt
-
-          if val < (pieMin+rangeInt)
-            a++
-#            console.log a
-          else if (pieMin+rangeInt) <= val < (pieMin+2*rangeInt)
-            b++
-#            console.log b
-          else if (pieMin+2*rangeInt) <= val < (pieMin+3*rangeInt)
-            c++
-          else if (pieMin+3*rangeInt) <= val < (pieMin+4*rangeInt)
-            d++
-          else if (pieMin+4*rangeInt) <= val < (pieMin+5*rangeInt)
-            e++
-          else if (pieMin+5*rangeInt) <= val < (pieMin+6*rangeInt)
-            f++
-          else if (pieMin+6*rangeInt) <= val < (pieMin+7*rangeInt)
-            g++
-        first = (pieMin+rangeInt).toFixed(2)+"-"+(pieMin).toFixed(2)
-        second = (pieMin+2*rangeInt).toFixed(2)+"-"+(pieMin+rangeInt).toFixed(2)
-        third = (pieMin+3*rangeInt).toFixed(2)+"-"+(pieMin+2*rangeInt).toFixed(2)
-        fourth = (pieMin+4*rangeInt).toFixed(2)+"-"+(pieMin+3*rangeInt).toFixed(2)
-        fifth = (pieMin+5*rangeInt).toFixed(2)+"-"+(pieMin+4*rangeInt).toFixed(2)
-        sixth = (pieMin+6*rangeInt).toFixed(2)+"-"+(pieMin+5*rangeInt).toFixed(2)
-        seventh = (pieMin+7*rangeInt).toFixed(2)+"-"+(pieMin+6*rangeInt).toFixed(2)
-        #          switch val
-        #            when val < (pieMin+rangeInt) then a++
-        #            when val >= (pieMin+rangeInt) and val < (pieMin+2*rangeInt) then b++
-        #            when val >= (pieMin+2*rangeInt) and val < (pieMin+3*rangeInt) then c++
-        #            when val >= (pieMin+3*rangeInt) and val < (pieMin+4*rangeInt) then d++
-        #            when val >= (pieMin+4*rangeInt) and val < (pieMin+5*rangeInt) then e++
-        #            when val >= (pieMin+5*rangeInt) and val < (pieMin+6*rangeInt) then f++
-        #            when val >= (pieMin+6*rangeInt) and val < (pieMin+7*rangeInt) then g++
+        maxPiePieces = 7  # set magic constant to variable
+        rangeInt = Math.ceil((pieMax - pieMin)/maxPiePieces)
+        piePieces = new Array(maxPiePieces - 1)  # create array with numbers of pie pieces
+        i=0
+        while i < maxPiePieces
+          piePieces[i] = []
+          i++
+        pieceIndex = (x)->
+          # The input of this function should be data.x
+          # It will return the index number of the pie piece
+          Math.floor((x - pieMin)/rangeInt)
+        for el in data
+          index = pieceIndex(el.x)
+          piePieces[index].push(el.x) # assign each el.x to a piePiece
+          console.log "piePieces[" + index + "]=" + piePieces[index]
+        i=0
         obj = {}
-        obj[first] = a
-        obj[second] = b
-        obj[third] = c
-        obj[fourth] = d
-        obj[fifth] = e
-        obj[sixth] = f
-        obj[seventh] = g
-
+        while i < maxPiePieces
+          obj[i] = piePieces[i].length
+          i++
         pieData = d3.entries obj
-#        console.log pieData
         return pieData
+
+
 
       _drawStack = () ->
         x = d3.scale.linear().range([ 0, width ])
@@ -591,7 +558,7 @@ charts = angular.module('app_analysis_charts', [])
           tooltip. transition().duration(500).style('opacity', 0))
 
       _drawPie = () ->
-        makepieData(data)
+        makePieData(data)
         radius = Math.min(width, height) / 2
 
         arc = d3.svg.arc()
