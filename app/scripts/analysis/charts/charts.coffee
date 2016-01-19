@@ -232,7 +232,6 @@ charts = angular.module('app_analysis_charts', [])
       makePieData = (data) ->
         pieMax = d3.max(data, (d)->parseFloat d.x)
         pieMin = d3.min(data, (d)->parseFloat d.x)
-<<<<<<< HEAD
         maxPiePieces = 7  # set magic constant to variable
         rangeInt = Math.ceil((pieMax - pieMin)/maxPiePieces)
         piePieces = new Array(maxPiePieces - 1)  # create array with numbers of pie pieces
@@ -249,62 +248,11 @@ charts = angular.module('app_analysis_charts', [])
           piePieces[index].push(el.x) # assign each el.x to a piePiece
           console.log "piePieces[" + index + "]=" + piePieces[index]
         i=0
-=======
-        a = 0
-        b = 0
-        c = 0
-        d = 0
-        e = 0
-        f = 0
-        g = 0
-        rangeInt = (pieMax - pieMin)/7
-        #        console.log pieMin+rangeInt
-        for da in data
-          val = parseFloat da.x
-
-          #          console.log val, pieMin+rangeInt
-
-          if val < (pieMin+rangeInt)
-            a++
-#            console.log a
-          else if (pieMin+rangeInt) <= val < (pieMin+2*rangeInt)
-            b++
-#            console.log b
-          else if (pieMin+2*rangeInt) <= val < (pieMin+3*rangeInt)
-            c++
-          else if (pieMin+3*rangeInt) <= val < (pieMin+4*rangeInt)
-            d++
-          else if (pieMin+4*rangeInt) <= val < (pieMin+5*rangeInt)
-            e++
-          else if (pieMin+5*rangeInt) <= val < (pieMin+6*rangeInt)
-            f++
-          else if (pieMin+6*rangeInt) <= val < (pieMin+7*rangeInt)
-            g++
-        first = (pieMin+rangeInt).toFixed(2)+"-"+(pieMin).toFixed(2)
-        second = (pieMin+2*rangeInt).toFixed(2)+"-"+(pieMin+rangeInt).toFixed(2)
-        third = (pieMin+3*rangeInt).toFixed(2)+"-"+(pieMin+2*rangeInt).toFixed(2)
-        fourth = (pieMin+4*rangeInt).toFixed(2)+"-"+(pieMin+3*rangeInt).toFixed(2)
-        fifth = (pieMin+5*rangeInt).toFixed(2)+"-"+(pieMin+4*rangeInt).toFixed(2)
-        sixth = (pieMin+6*rangeInt).toFixed(2)+"-"+(pieMin+5*rangeInt).toFixed(2)
-        seventh = (pieMin+7*rangeInt).toFixed(2)+"-"+(pieMin+6*rangeInt).toFixed(2)
-        #          switch val
-        #            when val < (pieMin+rangeInt) then a++
-        #            when val >= (pieMin+rangeInt) and val < (pieMin+2*rangeInt) then b++
-        #            when val >= (pieMin+2*rangeInt) and val < (pieMin+3*rangeInt) then c++
-        #            when val >= (pieMin+3*rangeInt) and val < (pieMin+4*rangeInt) then d++
-        #            when val >= (pieMin+4*rangeInt) and val < (pieMin+5*rangeInt) then e++
-        #            when val >= (pieMin+5*rangeInt) and val < (pieMin+6*rangeInt) then f++
-        #            when val >= (pieMin+6*rangeInt) and val < (pieMin+7*rangeInt) then g++
->>>>>>> 20c9283ae8f5a5e2c5d5021bac18b0e8d071dd30
         obj = {}
         while i < maxPiePieces
           obj[i] = piePieces[i].length
           i++
         pieData = d3.entries obj
-<<<<<<< HEAD
-=======
-        #        console.log pieData
->>>>>>> 20c9283ae8f5a5e2c5d5021bac18b0e8d071dd30
         return pieData
 
 
