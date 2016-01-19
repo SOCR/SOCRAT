@@ -239,6 +239,21 @@ App.run([
     #core.register 'importer', importer
     #core.start 'importer'
 
+    # add module to the list of Tools to appear in Tools tab dropdown
+    tools = [
+      id: 'instrPerfEval'
+      name: 'Instrument Performance Evaluation'
+      url: '/tools/instrperfeval'
+    ,
+      id: 'kMeans'
+      name: '2D k-Means Clustering'
+      url: '/tools/kmeans'
+    ]
+
+    # subscribe for request from MainCtrl for list of tool modules
+    $rootScope.$on 'app:get_tools', (event, args) ->
+      $rootScope.$broadcast 'app:set_tools', tools
+
     $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
       console.log 'APP: state change: '
       console.log arguments

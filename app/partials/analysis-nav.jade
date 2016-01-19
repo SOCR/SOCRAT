@@ -6,13 +6,11 @@ ul.nav.navbar-nav
     a(ng-href='#/wrangleData') Wrangle Data
   li.dropdown
     a(href="#", data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false").dropdown-toggle
-      | Tools
+      | Tools &nbsp;
       span.caret
     ul.dropdown-menu
-      li(ng-class="getClass('/tools/instrperfeval')")
-        a(ng-href='#/tools/instrperfeval') Instrument Performance Evaluation
-      li(ng-class="getClass('/tools/kmeans')")
-        a(ng-href='#/tools/kmeans') 2D k-Means Clustering
+      li(ng-repeat="tool in tools", ng-class="getClass(tool.url)")
+        a(ng-href='#{{tool.url}}') {{tool.name}}
   li(ng-class="getClass('/charts')")
       a(ng-href='#/charts') Charts
   li(ng-class="getClass('/results')")
