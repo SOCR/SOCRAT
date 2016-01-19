@@ -189,25 +189,158 @@ charts = angular.module('app_analysis_charts', [])
     format: _format
 ])
 
-.service('app_analysis_charts_plotGraphs',[
+.factory 'graphs', [
   () ->
-    margin = {top: 10, right: 40, bottom: 30, left:40}
-    width = 700 - margin.left - margin.right
-    height = 500 - margin.top - margin.bottom
+    _drawScatterplot = (data,ranges,width,height,_graph,container,gdata) ->
 
-    _setScale = (ranges) ->
       x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ 0, width ])
       y = d3.scale.linear().domain([ranges.yMin,ranges.yMax]).range([ height, 0 ])
       xAxis = d3.svg.axis().scale(x).orient('bottom')
       yAxis = d3.svg.axis().scale(y).orient('left')
 
-    setScale: _setScale
-])
+      # values
+      xValue = (d)->parseFloat d.x
+      yValue = (d)->parseFloat d.y
 
+      # map dot coordination
+      xMap = (d)-> x xValue(d)
+      yMap = (d)-> y yValue(d)
+
+      # set up fill color
+      cValue = (d)-> d.y
+      color = d3.scale.category10()
+
+      # x axis
+      _graph.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call xAxis
+      .append('text')
+      .attr('class', 'label')
+      .attr('x', width)
+      .attr('y', -6)
+#          .style('text-anchor', 'end')
+      .text gdata.xLab.value
+
+      # y axis
+      _graph.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr('class', 'label')
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+#          .style("text-anchor", "end")
+      .text gdata.yLab.value
+
+      # add the tooltip area to the webpage
+      tooltip = container
+      .append('div')
+      .attr('class', 'tooltip')
+      #          .style('opacity', 0)
+
+      # draw dots
+      _graph.selectAll('.dot')
+      .data(data)
+      .enter().append('circle')
+      .attr('class', 'dot')
+      .attr('r', 5)
+      .attr('cx', xMap)
+      .attr('cy', yMap)
+      .style('fill', (d)->color cValue(d))
+      .on('mouseover', (d)->
+        tooltip.transition().duration(200).style('opacity', .9)
+        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">(' + xValue(d)+ ',' + yValue(d) + ')</div>')
+        .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
+      .on('mouseout', (d)->
+        tooltip. transition().duration(500).style('opacity', 0))
+
+    _drawHist = (data,container) ->
+      container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','5')
+      bins = null
+      dataHist = null
+
+      arr = data.map (d) -> parseFloat d.x
+      x = d3.scale.linear().domain([0,d3.max arr]).range([0,width])
+
+
+      plotHist = (bins) ->
+        dataHist = d3.layout.histogram().bins(bins)(arr)
+
+        y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
+
+        yAxis = d3.svg.axis().scale(y).orient("left")
+        xAxis = d3.svg.axis().scale(x).orient("bottom")
+
+        _graph.selectAll('g').remove()
+        _graph.select('.x axis').remove()
+        _graph.select('.y axis').remove()
+
+        # x axis
+        _graph.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call xAxis
+        .append('text')
+        .attr('class', 'label')
+        .attr('x', width)
+        .attr('y', -6)
+#            .style('text-anchor', 'end')
+        .text gdata.xLab.value
+
+        # y axis
+        _graph.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr('class', 'label')
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+#            .style("text-anchor", "end")
+        .text "Count"
+
+        bar = _graph.selectAll('.bar')
+        .data(dataHist)
+
+        bar.enter()
+        .append("g")
+
+        bar.append('rect')
+#            .style('fill', 'steelblue')
+        .attr('x', (d,i) -> i*5 + x d.x)
+        .attr('y', (d) -> height - y d.y)
+        .attr('width', (d) -> x d.dx)
+        .attr('height', (d) -> y d.y)
+        .on('mouseover', () -> d3.select(this).transition().style('fill', 'orange'))
+        .on('mouseout', () -> d3.select(this).transition().style('fill', 'steelblue'))
+
+        bar.append('text')
+        .attr('x', (d,i) -> i*5 + x d.x)
+        .attr('y', (d) -> height - y d.y)
+        .attr('dx', (d) -> .5*x d.dx)
+        .attr('dy', '20px')
+        .attr('fill', '#fff')
+        .attr('text-anchor', 'middle')
+        .attr('z-index', 1)
+        .text (d) -> d.y
+
+      plotHist(5) #pre-set value of slider
+
+      d3.select('#slider')
+      .on('change', () ->
+        bins = parseInt this.value
+        plotHist(bins)
+      )
+
+    drawScatterplot: _drawScatterplot
+    drawHist: _drawHist
+]
 
 .directive 'd3Charts', [
-  'app_analysis_charts_plotGraphs'
-  (plotGraphs) ->
+  'graphs'
+  (graphs) ->
     restrict: 'E'
     template: "<div class='graph-container' style='height: 600px'></div>"
     link: (scope, elem, attr) ->
@@ -228,6 +361,7 @@ charts = angular.module('app_analysis_charts', [])
       container = null
       pieData = null
       gdata = null
+      ranges = null
 
       makePieData = (data) ->
         pieMax = d3.max(data, (d)->parseFloat d.x)
@@ -341,148 +475,9 @@ charts = angular.module('app_analysis_charts', [])
         .attr('height', (d)-> (height - y d.y) )
         .attr('fill', 'steelblue')
 
-      _drawHist = () ->
-        container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','5')
-        bins = null
-        dataHist = null
-
-        arr = data.map (d) -> parseFloat d.x
-        x = d3.scale.linear().domain([0,d3.max arr]).range([0,width])
 
 
-        plotHist = (bins) ->
-          dataHist = d3.layout.histogram().bins(bins)(arr)
 
-          y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
-
-          yAxis = d3.svg.axis().scale(y).orient("left")
-          xAxis = d3.svg.axis().scale(x).orient("bottom")
-
-          _graph.selectAll('g').remove()
-          _graph.select('.x axis').remove()
-          _graph.select('.y axis').remove()
-
-          # x axis
-          _graph.append("g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call xAxis
-          .append('text')
-          .attr('class', 'label')
-          .attr('x', width)
-          .attr('y', -6)
-#            .style('text-anchor', 'end')
-          .text gdata.xLab.value
-
-          # y axis
-          _graph.append("g")
-          .attr("class", "y axis")
-          .call(yAxis)
-          .append("text")
-          .attr('class', 'label')
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", ".71em")
-#            .style("text-anchor", "end")
-          .text "Count"
-
-          bar = _graph.selectAll('.bar')
-          .data(dataHist)
-
-          bar.enter()
-          .append("g")
-
-          bar.append('rect')
-#            .style('fill', 'steelblue')
-          .attr('x', (d,i) -> i*5 + x d.x)
-          .attr('y', (d) -> height - y d.y)
-          .attr('width', (d) -> x d.dx)
-          .attr('height', (d) -> y d.y)
-          .on('mouseover', () -> d3.select(this).transition().style('fill', 'orange'))
-          .on('mouseout', () -> d3.select(this).transition().style('fill', 'steelblue'))
-
-          bar.append('text')
-          .attr('x', (d,i) -> i*5 + x d.x)
-          .attr('y', (d) -> height - y d.y)
-          .attr('dx', (d) -> .5*x d.dx)
-          .attr('dy', '20px')
-          .attr('fill', '#fff')
-          .attr('text-anchor', 'middle')
-          .attr('z-index', 1)
-          .text (d) -> d.y
-
-        plotHist(5) #pre-set value of slider
-
-        d3.select('#slider')
-        .on('change', () ->
-          bins = parseInt this.value
-          plotHist(bins)
-        )
-
-      _drawScatterplot = () ->
-
-        x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ 0, width ])
-        y = d3.scale.linear().domain([ranges.yMin,yMax]).ranges.range([ height, 0 ])
-        xAxis = d3.svg.axis().scale(x).orient('bottom')
-        yAxis = d3.svg.axis().scale(y).orient('left')
-
-        # values
-        xValue = (d)->parseFloat d.x
-        yValue = (d)->parseFloat d.y
-
-        # map dot coordination
-        xMap = (d)-> x xValue(d)
-        yMap = (d)-> y yValue(d)
-
-        # set up fill color
-        cValue = (d)-> d.y
-        color = d3.scale.category10()
-
-        # x axis
-        _graph.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call xAxis
-        .append('text')
-        .attr('class', 'label')
-        .attr('x', width)
-        .attr('y', -6)
-#          .style('text-anchor', 'end')
-        .text gdata.xLab.value
-
-        # y axis
-        _graph.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr('class', 'label')
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-#          .style("text-anchor", "end")
-        .text gdata.yLab.value
-
-        # add the tooltip area to the webpage
-        tooltip = container
-        .append('div')
-        .attr('class', 'tooltip')
-#          .style('opacity', 0)
-
-        # draw dots
-        _graph.selectAll('.dot')
-        .data(data)
-        .enter().append('circle')
-        .attr('class', 'dot')
-        .attr('r', 5)
-        .attr('cx', xMap)
-        .attr('cy', yMap)
-        .style('fill', (d)->color cValue(d))
-        .on('mouseover', (d)->
-          tooltip.transition().duration(200).style('opacity', .9)
-          tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">(' + xValue(d)+ ',' + yValue(d) + ')</div>')
-          .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
-        .on('mouseout', (d)->
-          tooltip. transition().duration(500).style('opacity', 0))
 
 #        #        # draw legend
 #          legend = _graph.selectAll('.legend')
@@ -558,14 +553,14 @@ charts = angular.module('app_analysis_charts', [])
         .attr('opacity', '0.7')
         .attr('stroke', 'orange')
         .attr('stroke-width', '2px')
-        .attr('cx', (d)->x d.x)
-        .attr('cy', (d)->y d.y)
-        .attr('r', (d)-> r d.z)
-        .on('mouseover', (d)->
+        .attr('cx', (d) -> x d.x)
+        .attr('cy', (d) -> y d.y)
+        .attr('r', (d) -> r d.z)
+        .on('mouseover', (d) ->
           tooltip.transition().duration(200).style('opacity', .9)
           tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.zLab.value+': '+ rValue(d)+'</div>')
           .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
-        .on('mouseout', (d)->
+        .on('mouseout', () ->
           tooltip. transition().duration(500).style('opacity', 0))
 
       _drawPie = () ->
@@ -625,12 +620,12 @@ charts = angular.module('app_analysis_charts', [])
           #svg.select("#remove").remove()
           _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-          results =
+          ranges =
             xMin: d3.min data, (d) -> parseFloat d.x
             yMin: d3.min data, (d) -> parseFloat d.y
 
-            xMan: d3.max data, (d) -> parseFloat d.x
-            yMan: d3.max data, (d) -> parseFloat d.y
+            xMax: d3.max data, (d) -> parseFloat d.x
+            yMax: d3.max data, (d) -> parseFloat d.y
 
           switch gdata.name
             when 'Bar Graph'
@@ -638,13 +633,14 @@ charts = angular.module('app_analysis_charts', [])
             when 'Bubble Chart'
               _drawBubble()
             when 'Histogram'
-              _drawHist()
+              graphs.drawHist(data,container)
             when 'Pie Chart'
               _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
               _drawPie()
             when 'Scatter Plot'
-              _drawScatterplot()
+              graphs.drawScatterplot(data,ranges, width, height, _graph, container,gdata)
             when 'Stacked Bar Chart'
               _drawStack()
   ]
+
 
