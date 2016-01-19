@@ -9,7 +9,14 @@ ul.nav.navbar-nav
       | Tools &nbsp;
       span.caret
     ul.dropdown-menu
-      li(ng-repeat="tool in tools", ng-class="getClass(tool.url)")
+      li
+        form.form-inline
+          div.form-group
+            label(for="nav-tool-search").sr-only Search tools
+            div.btn-group
+              input#nav-tool-search(ng-model='query', type='text', placeholder='Search for...').form-control
+              span#nav-clear-tool-search(ng-click="query=''").glyphicon.glyphicon-remove-circle
+      li(ng-repeat="tool in tools | filter:query", ng-class="getClass(tool.url)")
         a(ng-href='#{{tool.url}}') {{tool.name}}
   li(ng-class="getClass('/charts')")
       a(ng-href='#/charts') Charts
