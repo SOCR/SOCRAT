@@ -353,7 +353,7 @@ charts = angular.module('app_analysis_charts', [])
       maxPiePieces = 7  # set magic constant to variable
       rangeInt = Math.ceil((pieMax - pieMin)/maxPiePieces)
       piePieces = new Array(maxPiePieces - 1)  # create array with numbers of pie pieces
-      for i in [1..maxPiePieces-1] by 1
+      for i in [0..maxPiePieces-1] by 1
         piePieces[i] = []
 
       for el in data
@@ -362,7 +362,7 @@ charts = angular.module('app_analysis_charts', [])
         console.log "piePieces[" + index + "]=" + piePieces[index]
 
       obj = {}
-      for i in [1..maxPiePieces-1] by 1
+      for i in [0..maxPiePieces-1] by 1
         obj[i] = piePieces[i].length
 
       pieData = d3.entries obj
