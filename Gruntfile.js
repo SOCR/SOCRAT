@@ -476,7 +476,7 @@ module.exports = function (grunt) {
     less: {
       development: {
         options: {
-          paths: ["styles/css"]
+          paths: ["styles"]
         },
         files: [ {
           cwd: "<%= yeoman.app %>",
@@ -560,8 +560,8 @@ module.exports = function (grunt) {
     'ngAnnotate',
     'copy:dist',
     'cdnify',
-    'cssmin',
-    'uglify',
+    //'cssmin',
+    //'uglify',
     'filerev',
     'usemin',
     'htmlmin'

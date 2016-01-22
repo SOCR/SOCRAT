@@ -24,7 +24,8 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 ])
 
 .factory('app_analysis_wrangleData_manager', [
-  () ->
+  '$rootScope'
+  ($rootScope) ->
     _sb = null
 
     _msgList =
@@ -41,9 +42,14 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     _getMsgList = () ->
       _msgList
 
+    # wrapper function for controller communications
+    _broadcast = (msg, data) ->
+      $rootScope.$broadcast msg, data
+
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
+    broadcast: _broadcast
 ])
 
 .factory('app_analysis_wrangleData_dataRetriever', [
@@ -211,25 +217,35 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     'app_analysis_wrangleData_manager'
     ($scope, wrangleDataEventMngr) ->
       console.log 'wrangleDataSidebarCtrl executed'
+
+      # hide sidebar
       $scope.$parent.toggle()
+      # bring sidebar back on exit
+      $scope.$on 'wrangler:done', (event, results) ->
+        $scope.$parent.toggle()
   ])
 
 .controller('wrangleDataMainCtrl', [
-    '$rootScope'
-    'app_analysis_wrangleData_wrangler'
-    ($rootScope, wrangler) ->
+  '$scope'
+  '$rootScope'
+  'app_analysis_wrangleData_wrangler'
+  'app_analysis_wrangleData_manager'
+  ($scope, $rootScope, wrangler, msgManager) ->
 
-      #TODO: isolate dw from global scope
-      w = dw.wrangle()
+    # TODO: isolate dw from global scope
+    w = dw.wrangle()
 
-      # listen to state change and save data when exiting Wrangle Data
-      stateListener = $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
-        if fromState.name? and fromState.name is 'wrangleData'
-          wrangler.saveData()
-          stateListener()
-
-          console.log 'wrangleDataMainCtrl executed'
-  ])
+    # listen to state change and save data when exiting Wrangle Data
+    stateListener = $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
+      if fromState.name? and fromState.name is 'wrangleData'
+        # save data to db on exit from wrangler
+        wrangler.saveData()
+        # signal to show sidebar
+        msgManager.broadcast 'wrangler:done'
+        # unsubscribe
+        stateListener()
+        console.log 'wrangleDataMainCtrl executed'
+])
 
 .directive 'datawrangler', [
   '$exceptionHandler'
