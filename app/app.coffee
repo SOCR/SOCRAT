@@ -118,7 +118,7 @@ App.config([
             templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
       )
       .state('charts'
-        url: '/charts/:projectId/:forkId'
+        url: '/charts'
         views:
           'main':
             templateUrl: 'partials/analysis/charts/main.html'
@@ -143,7 +143,8 @@ App.run([
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-  ($rootScope, core, db, getData, wrangleData, instrPerfEval, kMeans) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval, kMeans, charts) ->
+
 
     map = [
 #      msgFrom: 'add numbers'
@@ -203,14 +204,15 @@ App.run([
       scopeTo: ['wrangleData']
     ,
       msgFrom: 'get table'
-      scopeFrom: ['chartsView']
+      scopeFrom: ['charts']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
       msgTo: 'take table'
-      scopeTo: ['chartsView']
+      scopeTo: ['charts']
+
     ]
 
     core.setEventsMapping map
@@ -236,8 +238,12 @@ App.run([
     core.register 'kMeans', kMeans
     core.start 'kMeans'
 
+    core.register 'charts', charts
+    core.start 'charts'
     #core.register 'importer', importer
     #core.start 'importer'
+    core.register 'charts', charts
+    core.start 'charts'
 
     # add module to the list of Tools to appear in Tools tab dropdown
     tools = [
