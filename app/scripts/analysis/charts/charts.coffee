@@ -485,28 +485,29 @@ charts = angular.module('app_analysis_charts', [])
       xAxis = d3.svg.axis().scale(x).orient('bottom')
       yAxis = d3.svg.axis().scale(y).orient('left')
       x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-      y.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.y)])
+      y.domain([d3.min(data, (d)->parseFloat d.y), d3.max(data, (d)->parseFloat d.y)])
 
-      _graph.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+
+      _graph.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + height + ')')
       .call xAxis
       .append('text')
       .attr('class', 'label')
-      .attr('x', width)
-      .attr('y', 30)
-    #          .style('text-anchor', 'end')
+      .attr('transform', 'translate(' + (width / 2) + ',' + 30 + ')')
       .text gdata.xLab.value
 
-      _graph.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-    #          .style("text-anchor", "end")
-      .text "Count"
+      _graph.append('g')
+      .attr('class', 'y axis')
+      .call yAxis
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', -70 )
+      .attr('x', -(height / 2))
+      .attr('dy', '1em')
+      .text gdata.yLab.value
+
+      rectWidth = width / data.length
 
     # create bar elements
       _graph.selectAll('rect')
@@ -514,9 +515,9 @@ charts = angular.module('app_analysis_charts', [])
       .enter().append('rect')
       .attr('class', 'bar')
       .attr('x',(d)-> x d.x  )
-      .attr('width', 30)
+      .attr('width', rectWidth)
       .attr('y', (d)-> y d.y )
-      .attr('height', (d)-> (height - y d.y) )
+      .attr('height', (d)-> Math.abs(height - y d.y) )
       .attr('fill', 'steelblue')
     drawBar: _drawBar
 ]
@@ -531,7 +532,7 @@ charts = angular.module('app_analysis_charts', [])
     restrict: 'E'
     template: "<div class='graph-container' style='height: 600px'></div>"
     link: (scope, elem, attr) ->
-      margin = {top: 10, right: 40, bottom: 30, left:40}
+      margin = {top: 10, right: 40, bottom: 50, left:80}
       width = 750 - margin.left - margin.right
       height = 500 - margin.top - margin.bottom
       svg = null
