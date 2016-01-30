@@ -18,13 +18,13 @@ app = angular.module('app_controllers', ['app_mediator'])
   '$location'
   '$resource'
   '$rootScope'
-  'pubSub'
-  ($scope, $location, $resource, $rootScope,pubSub) ->
+  ($scope, $location, $resource, $rootScope) ->
     console.log 'controller block for AppCtrl'
-    # Uses the url to determine if the selected
-    # menu item should have the class active.
 
-    # Listening to all changes in the view
+    # create a list of modules for Tools tab dropdown
+    $scope.tools = []
+
+    # listening to all changes in the view
     $scope.$on 'change in view', ->
       $scope.$broadcast 'update view', null
 
@@ -33,11 +33,15 @@ app = angular.module('app_controllers', ['app_mediator'])
       $scope.$broadcast 'update showStates', data
 
     $scope.$on 'update handsontable', (obj, data) ->
-      console.log data
+      console.log 'update in handsontable'
       $scope.$broadcast data.purpose + ':load data to handsontable', data
 
-    # $scope.$on 'get Data from handsontable', ->
-      # $scope.$broadcast 'get Data from handsontable'
+    # listen on message from App.run block to register Tools in menu
+    $scope.$on 'app:set_tools', (event, data) ->
+      console.log 'registering tools'
+      $scope.tools = data
+    # request Tools list from App.run
+    $rootScope.$broadcast 'app:get_tools'
 
     $scope.$location = $location
     $scope.username = 'Guest'
@@ -53,6 +57,8 @@ app = angular.module('app_controllers', ['app_mediator'])
     #   getClass('/orders') # returns ''
     #
 
+    # uses the url to determine if the selected
+    #  menu item should have the class active
     $scope.getClass = (id) ->
       if $scope.activeNavId.substring(0, id.length) == id
         'active'
@@ -60,10 +66,10 @@ app = angular.module('app_controllers', ['app_mediator'])
         ''
 
     # callback
-    updateUsername = (event, data) ->
-      $scope.username = data
+#    updateUsername = (event, data) ->
+#      $scope.username = data
 
-    pubSub.subscribe 'username changed', updateUsername
+#    pubSub.subscribe 'username changed', updateUsername
 
 ])
 

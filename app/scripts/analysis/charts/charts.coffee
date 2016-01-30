@@ -294,7 +294,7 @@ charts = angular.module('app_analysis_charts', [])
         .attr('class', 'label')
         .attr('x', width)
         .attr('y', -6)
-    #            .style('text-anchor', 'end')
+#            .style('text-anchor', 'end')
         .text gdata.xLab.value
 
         # y axis
@@ -306,7 +306,7 @@ charts = angular.module('app_analysis_charts', [])
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
         .attr("dy", ".71em")
-    #            .style("text-anchor", "end")
+#            .style("text-anchor", "end")
         .text "Count"
 
         bar = _graph.selectAll('.bar')
@@ -316,7 +316,7 @@ charts = angular.module('app_analysis_charts', [])
         .append("g")
 
         bar.append('rect')
-    #            .style('fill', 'steelblue')
+#            .style('fill', 'steelblue')
         .attr('x', (d,i) -> i*5 + x d.x)
         .attr('y', (d) -> height - y d.y)
         .attr('width', (d) -> x d.dx)
@@ -387,7 +387,7 @@ charts = angular.module('app_analysis_charts', [])
       #                    .innerRadius(0+10)
 
       pie = d3.layout.pie()
-      #.value (d) -> d.count
+#.value (d) -> d.count
       .value (d) -> parseFloat d.value
       type = (d) ->
         d.y = +d.y
@@ -430,9 +430,9 @@ charts = angular.module('app_analysis_charts', [])
       tooltip = container
       .append('div')
       .attr('class', 'tooltip')
-    #          .style('opacity', 0)
+      #          .style('opacity', 0)
 
-    # x axis
+      # x axis
       _graph.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -441,10 +441,10 @@ charts = angular.module('app_analysis_charts', [])
       .attr('class', 'label')
       .attr('x', width)
       .attr('y', -6)
-    #          .style('text-anchor', 'end')
+#          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
-    # y axis
+      # y axis
       _graph.append("g")
       .attr("class", "y axis")
       .call(yAxis)
@@ -453,11 +453,11 @@ charts = angular.module('app_analysis_charts', [])
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
-    #          .style("text-anchor", "end")
+#          .style("text-anchor", "end")
       .text gdata.yLab.value
 
 
-    # create circle
+      # create circle
       _graph.selectAll('.circle')
       .data(data)
       .enter().append('circle')
@@ -509,7 +509,7 @@ charts = angular.module('app_analysis_charts', [])
 
       rectWidth = width / data.length
 
-    # create bar elements
+      # create bar elements
       _graph.selectAll('rect')
       .data(data)
       .enter().append('rect')
@@ -573,6 +573,5 @@ charts = angular.module('app_analysis_charts', [])
               pie.drawPie(data,width,height,_graph)
             when 'Scatter Plot'
               scatterplot.drawScatterplot(data,ranges,width,height,_graph,container,gdata)
-  ]
-
+]
 
