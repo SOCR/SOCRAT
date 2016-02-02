@@ -334,7 +334,7 @@ charts = angular.module('app_analysis_charts', [])
 
         bar.append('rect')
 #            .style('fill', 'steelblue')
-        .attr('x', (d,i) -> i*5 + x d.x)
+        .attr('x', (d,i) -> x d.x)
         .attr('y', (d) -> height - y d.y)
         .attr('width', (d) -> x d.dx)
         .attr('height', (d) -> y d.y)
@@ -342,7 +342,7 @@ charts = angular.module('app_analysis_charts', [])
         .on('mouseout', () -> d3.select(this).transition().style('fill', 'steelblue'))
 
         bar.append('text')
-        .attr('x', (d,i) -> i*5 + x d.x)
+        .attr('x', (d,i) -> x d.x)
         .attr('y', (d) -> height - y d.y)
         .attr('dx', (d) -> .5*x d.dx)
         .attr('dy', '20px')
@@ -369,6 +369,7 @@ charts = angular.module('app_analysis_charts', [])
       pieMin = d3.min(data, (d)->parseFloat d.x)
       maxPiePieces = 7  # set magic constant to variable
       rangeInt = Math.ceil((pieMax - pieMin)/maxPiePieces)
+      console.log rangeInt
       piePieces = new Array(maxPiePieces - 1)  # create array with numbers of pie pieces
       for i in [0..maxPiePieces-1] by 1
         piePieces[i] = []
@@ -383,6 +384,8 @@ charts = angular.module('app_analysis_charts', [])
         obj[i] = piePieces[i].length
 
       pieData = d3.entries obj
+      for d in pieData
+        d.key = (d.key*rangeInt)+pieMin
       return pieData
 
     _drawPie = (data,width,height,_graph) ->
