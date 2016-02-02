@@ -72,6 +72,7 @@ charts = angular.module('app_analysis_charts', [])
     $scope.selector2 = {}
     $scope.selector3 = {}
 
+
     $scope.graphInfo =
       graph: ""
       x: ""
@@ -218,7 +219,7 @@ charts = angular.module('app_analysis_charts', [])
       .append('text')
       .attr('class', 'label')
       .attr('x', width)
-      .attr('y', -6)
+      .attr('y', 10)
 #          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
@@ -266,6 +267,7 @@ charts = angular.module('app_analysis_charts', [])
   () ->
     _drawHist = (_graph,data,container,gdata,width,height) ->
       container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','5')
+      container.append('p').text('Bin Slider')
       bins = null
       dataHist = null
 
@@ -293,7 +295,7 @@ charts = angular.module('app_analysis_charts', [])
         .append('text')
         .attr('class', 'label')
         .attr('x', width)
-        .attr('y', -6)
+        .attr('y', 10)
 #            .style('text-anchor', 'end')
         .text gdata.xLab.value
 
@@ -440,7 +442,7 @@ charts = angular.module('app_analysis_charts', [])
       .append('text')
       .attr('class', 'label')
       .attr('x', width)
-      .attr('y', -6)
+      .attr('y', 10)
 #          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
