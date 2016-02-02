@@ -233,8 +233,7 @@ charts = angular.module('app_analysis_charts', [])
       .call xAxis
       .append('text')
       .attr('class', 'label')
-      .attr('x', width)
-      .attr('y', 10)
+      .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
 #          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
@@ -245,7 +244,8 @@ charts = angular.module('app_analysis_charts', [])
       .append("text")
       .attr('class', 'label')
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr('y', -50 )
+      .attr('x', -(height / 2))
       .attr("dy", ".71em")
 #          .style("text-anchor", "end")
       .text gdata.yLab.value
@@ -309,8 +309,7 @@ charts = angular.module('app_analysis_charts', [])
         .call xAxis
         .append('text')
         .attr('class', 'label')
-        .attr('x', width)
-        .attr('y', 10)
+        .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
 #            .style('text-anchor', 'end')
         .text gdata.xLab.value
 
@@ -321,7 +320,8 @@ charts = angular.module('app_analysis_charts', [])
         .append("text")
         .attr('class', 'label')
         .attr("transform", "rotate(-90)")
-        .attr("y", 6)
+        .attr('y', -50 )
+        .attr('x', -(height / 2))
         .attr("dy", ".71em")
 #            .style("text-anchor", "end")
         .text "Count"
@@ -456,8 +456,7 @@ charts = angular.module('app_analysis_charts', [])
       .call(xAxis)
       .append('text')
       .attr('class', 'label')
-      .attr('x', width)
-      .attr('y', 10)
+      .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
 #          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
@@ -468,7 +467,8 @@ charts = angular.module('app_analysis_charts', [])
       .append("text")
       .attr('class', 'label')
       .attr("transform", "rotate(-90)")
-      .attr("y", 10)
+      .attr('y', -50 )
+      .attr('x', -(height / 2))
       .attr("dy", ".71em")
 #          .style("text-anchor", "end")
       .text gdata.yLab.value
@@ -511,7 +511,8 @@ charts = angular.module('app_analysis_charts', [])
       .call xAxis
       .append('text')
       .attr('class', 'label')
-      .attr('transform', 'translate(' + (width / 2) + ',' + 30 + ')')
+      .attr('x', width-80)
+      .attr('y', 30)
       .text gdata.xLab.value
 
       _graph.append('g')
@@ -519,8 +520,8 @@ charts = angular.module('app_analysis_charts', [])
       .call yAxis
       .append('text')
       .attr('transform', 'rotate(-90)')
-      .attr('y', -70 )
-      .attr('x', -(height / 2))
+      .attr("x", -80)
+      .attr("y", -40)
       .attr('dy', '1em')
       .text gdata.yLab.value
 
