@@ -82,18 +82,33 @@ charts = angular.module('app_analysis_charts', [])
     $scope.graphs = [
       name: 'Bar Graph'
       value: 0
+      x: true
+      y: false
+      z: false
     ,
       name: 'Scatter Plot'
       value: 1
+      x: true
+      y: true
+      z: false
     ,
       name: 'Histogram'
       value: 2
+      x: true
+      y: false
+      z: false
     ,
       name: 'Bubble Chart'
       value: 3
+      x: true
+      y: true
+      z: true
     ,
       name: 'Pie Chart'
       value: 4
+      x: true
+      y: false
+      z: false
     ]
     $scope.graphSelect = {}
 
@@ -453,7 +468,7 @@ charts = angular.module('app_analysis_charts', [])
       .append("text")
       .attr('class', 'label')
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr("y", 10)
       .attr("dy", ".71em")
 #          .style("text-anchor", "end")
       .text gdata.yLab.value
