@@ -11,6 +11,10 @@ div(ng-controller="kMeansSidebarCtrl")
       select(ng-model="yCol", ng-options="col for col in cols").form-control
     div.checkbox
       label
+        input(type="checkbox", ng-model="wholedataseton")
+        | Cluster whole dataset (visualize 2D projection)
+    div.checkbox
+      label
         input(type="checkbox", ng-model="labelson")
         | Use labels column
     div.form-group

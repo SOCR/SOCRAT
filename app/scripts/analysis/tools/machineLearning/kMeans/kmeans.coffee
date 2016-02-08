@@ -130,7 +130,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       $scope.dist = initControlValues.distance if initControlValues.distance in $scope.distances
       $scope.initMethod = initControlValues.initialisation if initControlValues.initialisation in $scope.inits
 
-    # update data-dependent sidebar controls
+    # update data-driven sidebar controls
     updateSidebarControls = (data) ->
       $scope.cols = data.header
       [firstCol, secondCol, ..., lastCol] = $scope.cols
@@ -143,15 +143,26 @@ kMeans = angular.module('app_analysis_kMeans', [])
     parseDataForKMeans = (data) ->
       xCol = data.header.indexOf $scope.xCol
       yCol = data.header.indexOf $scope.yCol
+      # if usage of labels is on
       if $scope.labelson
         labelCol = data.header.indexOf $scope.labelCol
         labels = (row[labelCol] for row in data.data)
       else
         labels = null
+      # if clustering on the whole dataset is on
+      if $scope.wholedataseton
+        rawData = data.data
+        rawData = ([row.filter((el, idx) -> idx not in [xCol, yCol])] for row in rawData)
+      else
+        rawData = null
+      # get data for 2 chosen columns to plot
       data = ([row[xCol], row[yCol]] for row in data.data)
       obj =
         data: data
         labels: labels
+        rawData: rawData
+        xCol: xCol
+        yCol: yCol
 
     # call k-means service with parsed data and current controls values
     callKMeans = (data) ->
@@ -197,6 +208,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     _graph = null
     _computeAcc = off
+    _clusterWholeDataset = off
+    _xCol = null
+    _yCol = null
     _maxIter = 20
     _minK = 2
     _maxK = 10
@@ -211,6 +225,11 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     _setGraph = (graph) ->
       _graph = graph
+
+    _updateGraph = (data, centroids=null, labels=null) ->
+      if _clusterWholeDataset
+        data = ([row[_xCol], row[_yCol]] for row in data)
+      _graph.update data, centroids, labels
 
     _getUniqueLabels = (labels) ->
       labels.filter (x, i, a) -> i is a.indexOf x
@@ -401,7 +420,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         console.table means
         if not _arrayEqual means.map((x) -> x.idx), centroids.map((x) -> x.idx)
           centroids = means
-          _graph.update(data, means.map((x) -> x.val), labels)
+          _updateGraph(data, means.map((x) -> x.val), labels)
         else
           maxIter = 0
 
@@ -445,7 +464,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
             if ctrIdx isnt lbls[i]
               lbls[i] = ctrIdx
               centroids = _updateMeans data, centroids, lbls
-              _graph.update(data, centroids.map((x) -> x.val), lbls)
+              _updateGraph(data, centroids.map((x) -> x.val), lbls)
               for ctr, j in centroids
                 covMats[j] = _updatePrecisionMatrix(data, j, lbls)
 
@@ -471,7 +490,14 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _init = (data, k, distanceType, initMethod) ->
 
       labels = data.labels
-      data = (row.map(Number) for row in data.data)
+
+      if data.rawData
+        _clusterWholeDataset = on
+        _xCol = data.xCol
+        _yCol = data.yCol
+        data = (row.map(Number) for row in data.rawData)
+      else
+        data = (row.map(Number) for row in data.data)
 
       k = Number k
       console.log 'K: ' + k
@@ -487,7 +513,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       distanceType = distanceType.toLowerCase()
       initMethod = initMethod.toLowerCase()
 
-      _graph.update data
+      _updateGraph data
 
       if initMethod is 'forgy'
         centroids = _initCentroids data, k
@@ -496,7 +522,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         initLabels = _initLabels data.length - 1, k
         centroids = _updateMeans data, uniqueLabels, initLabels
 
-      _graph.update data, centroids.map((x) -> x.val), initLabels
+      _updateGraph data, centroids.map((x) -> x.val), initLabels
 
       console.log 'Starting K-Means'
       _runKMeans data, k, _maxIter, centroids, distanceType, uniqueLabels, labels
