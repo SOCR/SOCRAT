@@ -152,7 +152,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       # if clustering on the whole dataset is on
       if $scope.wholedataseton
         rawData = data.data
-        rawData = ([row.filter((el, idx) -> idx not in [xCol, yCol])] for row in rawData)
+        rawData = (row.filter((el, idx) -> idx isnt labelCol) for row in rawData)
       else
         rawData = null
       # get data for 2 chosen columns to plot
