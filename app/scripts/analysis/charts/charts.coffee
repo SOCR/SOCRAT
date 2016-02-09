@@ -85,30 +85,36 @@ charts = angular.module('app_analysis_charts', [])
       x: true
       y: false
       z: false
+      message: "Choose a numerical variable for x and a categorical variable for y."
     ,
       name: 'Scatter Plot'
       value: 1
       x: true
       y: true
       z: false
+      message: "Choose an x variable and a y variable."
     ,
       name: 'Histogram'
       value: 2
       x: true
       y: false
       z: false
+      message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
     ,
       name: 'Bubble Chart'
       value: 3
       x: true
       y: true
       z: true
+      message: "Choose an x variable, a y variable and a radius variable."
     ,
       name: 'Pie Chart'
       value: 4
       x: true
       y: false
       z: false
+      message: "Choose one variable to put into a pie chart."
+
     ]
     $scope.graphSelect = {}
 
@@ -205,6 +211,31 @@ charts = angular.module('app_analysis_charts', [])
     format: _format
 ])
 
+#.factory 'stackedBar', [
+#  () ->
+#    _drawStack = (width, height, ) ->
+#      x = d3.scale.ordinal()
+#            .rangeRoundBands([0, width], .1)
+#
+#      y = d3.scale.linear()
+#            .rangeRound([height, 0])
+#
+#      color = d3.scale.ordinal()
+#                .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
+#
+#      xAxis = d3.svg.axis()
+#              .scale(x)
+#              .orient("bottom")
+#
+#      yAxis = d3.svg.axis()
+#              .scale(y)
+#              .orient("left")
+#              .tickFormat(d3.format(".2s"))
+#
+#
+#    drawStack:_drawStack
+#]
+
 .factory 'scatterplot', [
   () ->
     _drawScatterplot = (data,ranges,width,height,_graph,container,gdata) ->
@@ -282,7 +313,7 @@ charts = angular.module('app_analysis_charts', [])
   () ->
     _drawHist = (_graph,data,container,gdata,width,height) ->
       container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','5')
-      container.append('p').text('Bin Slider')
+
       bins = null
       dataHist = null
 
@@ -291,6 +322,8 @@ charts = angular.module('app_analysis_charts', [])
 
 
       plotHist = (bins) ->
+        $('#slidertext').remove()
+        container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
         dataHist = d3.layout.histogram().bins(bins)(arr)
 
         y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
@@ -385,7 +418,7 @@ charts = angular.module('app_analysis_charts', [])
 
       pieData = d3.entries obj
       for d in pieData
-        d.key = (d.key*rangeInt)+pieMin
+        d.key = (d.key*rangeInt)+pieMin+"-"+((d.key-1)*rangeInt)+pieMin
       return pieData
 
     _drawPie = (data,width,height,_graph) ->
