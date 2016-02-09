@@ -227,8 +227,11 @@ kMeans = angular.module('app_analysis_kMeans', [])
       _graph = graph
 
     _updateGraph = (data, centroids=null, labels=null) ->
+      # update graph with 2D projection data
       if _clusterWholeDataset
         data = ([row[_xCol], row[_yCol]] for row in data)
+        if centroids
+          centroids = ([centroid[_xCol], centroid[_yCol]] for centroid in centroids)
       _graph.update data, centroids, labels
 
     _getUniqueLabels = (labels) ->
