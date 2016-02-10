@@ -500,6 +500,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         _yCol = data.yCol
         data = (row.map(Number) for row in data.rawData)
       else
+        _clusterWholeDataset = off
         data = (row.map(Number) for row in data.data)
 
       k = Number k
