@@ -72,6 +72,7 @@ charts = angular.module('app_analysis_charts', [])
     $scope.selector2 = {}
     $scope.selector3 = {}
 
+
     $scope.graphInfo =
       graph: ""
       x: ""
@@ -81,18 +82,39 @@ charts = angular.module('app_analysis_charts', [])
     $scope.graphs = [
       name: 'Bar Graph'
       value: 0
+      x: true
+      y: false
+      z: false
+      message: "Choose a numerical variable for x and a categorical variable for y."
     ,
       name: 'Scatter Plot'
       value: 1
+      x: true
+      y: true
+      z: false
+      message: "Choose an x variable and a y variable."
     ,
       name: 'Histogram'
       value: 2
+      x: true
+      y: false
+      z: false
+      message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
     ,
       name: 'Bubble Chart'
       value: 3
+      x: true
+      y: true
+      z: true
+      message: "Choose an x variable, a y variable and a radius variable."
     ,
       name: 'Pie Chart'
       value: 4
+      x: true
+      y: false
+      z: false
+      message: "Choose one variable to put into a pie chart."
+
     ]
     $scope.graphSelect = {}
 
@@ -189,6 +211,31 @@ charts = angular.module('app_analysis_charts', [])
     format: _format
 ])
 
+#.factory 'stackedBar', [
+#  () ->
+#    _drawStack = (width, height, ) ->
+#      x = d3.scale.ordinal()
+#            .rangeRoundBands([0, width], .1)
+#
+#      y = d3.scale.linear()
+#            .rangeRound([height, 0])
+#
+#      color = d3.scale.ordinal()
+#                .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
+#
+#      xAxis = d3.svg.axis()
+#              .scale(x)
+#              .orient("bottom")
+#
+#      yAxis = d3.svg.axis()
+#              .scale(y)
+#              .orient("left")
+#              .tickFormat(d3.format(".2s"))
+#
+#
+#    drawStack:_drawStack
+#]
+
 .factory 'scatterplot', [
   () ->
     _drawScatterplot = (data,ranges,width,height,_graph,container,gdata) ->
@@ -217,8 +264,7 @@ charts = angular.module('app_analysis_charts', [])
       .call xAxis
       .append('text')
       .attr('class', 'label')
-      .attr('x', width)
-      .attr('y', -6)
+      .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
 #          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
@@ -229,7 +275,8 @@ charts = angular.module('app_analysis_charts', [])
       .append("text")
       .attr('class', 'label')
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr('y', -50 )
+      .attr('x', -(height / 2))
       .attr("dy", ".71em")
 #          .style("text-anchor", "end")
       .text gdata.yLab.value
@@ -266,6 +313,7 @@ charts = angular.module('app_analysis_charts', [])
   () ->
     _drawHist = (_graph,data,container,gdata,width,height) ->
       container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','5')
+
       bins = null
       dataHist = null
 
@@ -274,6 +322,8 @@ charts = angular.module('app_analysis_charts', [])
 
 
       plotHist = (bins) ->
+        $('#slidertext').remove()
+        container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
         dataHist = d3.layout.histogram().bins(bins)(arr)
 
         y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
@@ -292,9 +342,8 @@ charts = angular.module('app_analysis_charts', [])
         .call xAxis
         .append('text')
         .attr('class', 'label')
-        .attr('x', width)
-        .attr('y', -6)
-    #            .style('text-anchor', 'end')
+        .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+#            .style('text-anchor', 'end')
         .text gdata.xLab.value
 
         # y axis
@@ -304,9 +353,10 @@ charts = angular.module('app_analysis_charts', [])
         .append("text")
         .attr('class', 'label')
         .attr("transform", "rotate(-90)")
-        .attr("y", 6)
+        .attr('y', -50 )
+        .attr('x', -(height / 2))
         .attr("dy", ".71em")
-    #            .style("text-anchor", "end")
+#            .style("text-anchor", "end")
         .text "Count"
 
         bar = _graph.selectAll('.bar')
@@ -316,8 +366,8 @@ charts = angular.module('app_analysis_charts', [])
         .append("g")
 
         bar.append('rect')
-    #            .style('fill', 'steelblue')
-        .attr('x', (d,i) -> i*5 + x d.x)
+#            .style('fill', 'steelblue')
+        .attr('x', (d,i) -> x d.x)
         .attr('y', (d) -> height - y d.y)
         .attr('width', (d) -> x d.dx)
         .attr('height', (d) -> y d.y)
@@ -325,7 +375,7 @@ charts = angular.module('app_analysis_charts', [])
         .on('mouseout', () -> d3.select(this).transition().style('fill', 'steelblue'))
 
         bar.append('text')
-        .attr('x', (d,i) -> i*5 + x d.x)
+        .attr('x', (d,i) -> x d.x)
         .attr('y', (d) -> height - y d.y)
         .attr('dx', (d) -> .5*x d.dx)
         .attr('dy', '20px')
@@ -352,6 +402,7 @@ charts = angular.module('app_analysis_charts', [])
       pieMin = d3.min(data, (d)->parseFloat d.x)
       maxPiePieces = 7  # set magic constant to variable
       rangeInt = Math.ceil((pieMax - pieMin)/maxPiePieces)
+      console.log rangeInt
       piePieces = new Array(maxPiePieces - 1)  # create array with numbers of pie pieces
       for i in [0..maxPiePieces-1] by 1
         piePieces[i] = []
@@ -366,6 +417,8 @@ charts = angular.module('app_analysis_charts', [])
         obj[i] = piePieces[i].length
 
       pieData = d3.entries obj
+      for d in pieData
+        d.key = (d.key*rangeInt)+pieMin+"-"+((d.key-1)*rangeInt)+pieMin
       return pieData
 
     _drawPie = (data,width,height,_graph) ->
@@ -387,7 +440,7 @@ charts = angular.module('app_analysis_charts', [])
       #                    .innerRadius(0+10)
 
       pie = d3.layout.pie()
-      #.value (d) -> d.count
+#.value (d) -> d.count
       .value (d) -> parseFloat d.value
       type = (d) ->
         d.y = +d.y
@@ -430,34 +483,34 @@ charts = angular.module('app_analysis_charts', [])
       tooltip = container
       .append('div')
       .attr('class', 'tooltip')
-    #          .style('opacity', 0)
+      #          .style('opacity', 0)
 
-    # x axis
+      # x axis
       _graph.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
       .append('text')
       .attr('class', 'label')
-      .attr('x', width)
-      .attr('y', -6)
-    #          .style('text-anchor', 'end')
+      .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+#          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
-    # y axis
+      # y axis
       _graph.append("g")
       .attr("class", "y axis")
       .call(yAxis)
       .append("text")
       .attr('class', 'label')
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr('y', -50 )
+      .attr('x', -(height / 2))
       .attr("dy", ".71em")
-    #          .style("text-anchor", "end")
+#          .style("text-anchor", "end")
       .text gdata.yLab.value
 
 
-    # create circle
+      # create circle
       _graph.selectAll('.circle')
       .data(data)
       .enter().append('circle')
@@ -485,38 +538,40 @@ charts = angular.module('app_analysis_charts', [])
       xAxis = d3.svg.axis().scale(x).orient('bottom')
       yAxis = d3.svg.axis().scale(y).orient('left')
       x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-      y.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.y)])
+      y.domain([d3.min(data, (d)->parseFloat d.y), d3.max(data, (d)->parseFloat d.y)])
 
-      _graph.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+
+      _graph.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + height + ')')
       .call xAxis
       .append('text')
       .attr('class', 'label')
-      .attr('x', width)
+      .attr('x', width-80)
       .attr('y', 30)
-    #          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
-      _graph.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-    #          .style("text-anchor", "end")
-      .text "Count"
+      _graph.append('g')
+      .attr('class', 'y axis')
+      .call yAxis
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr("x", -80)
+      .attr("y", -40)
+      .attr('dy', '1em')
+      .text gdata.yLab.value
 
-    # create bar elements
+      rectWidth = width / data.length
+
+      # create bar elements
       _graph.selectAll('rect')
       .data(data)
       .enter().append('rect')
       .attr('class', 'bar')
       .attr('x',(d)-> x d.x  )
-      .attr('width', 30)
+      .attr('width', rectWidth)
       .attr('y', (d)-> y d.y )
-      .attr('height', (d)-> (height - y d.y) )
+      .attr('height', (d)-> Math.abs(height - y d.y) )
       .attr('fill', 'steelblue')
     drawBar: _drawBar
 ]
@@ -531,7 +586,7 @@ charts = angular.module('app_analysis_charts', [])
     restrict: 'E'
     template: "<div class='graph-container' style='height: 600px'></div>"
     link: (scope, elem, attr) ->
-      margin = {top: 10, right: 40, bottom: 30, left:40}
+      margin = {top: 10, right: 40, bottom: 50, left:80}
       width = 750 - margin.left - margin.right
       height = 500 - margin.top - margin.bottom
       svg = null
@@ -572,6 +627,5 @@ charts = angular.module('app_analysis_charts', [])
               pie.drawPie(data,width,height,_graph)
             when 'Scatter Plot'
               scatterplot.drawScatterplot(data,ranges,width,height,_graph,container,gdata)
-  ]
-
+]
 
