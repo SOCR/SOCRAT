@@ -311,14 +311,14 @@ charts = angular.module('app_analysis_charts', [])
 
 .factory 'histogram',[
   () ->
-    _drawHist = (_graph,data,container,gdata,width,height) ->
+    _drawHist = (_graph,data,container,gdata,width,height,ranges) ->
       container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','5')
 
       bins = null
       dataHist = null
 
       arr = data.map (d) -> parseFloat d.x
-      x = d3.scale.linear().domain([0,d3.max arr]).range([0,width])
+      x = d3.scale.linear().domain([ranges.xMin, ranges.xMax]).range([0,width])
 
 
       plotHist = (bins) ->
@@ -326,7 +326,7 @@ charts = angular.module('app_analysis_charts', [])
         container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
         dataHist = d3.layout.histogram().bins(bins)(arr)
 
-        y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
+        y = d3.scale.linear().domain([0,d3.max dataHist.map (i) -> i.length]).range([height,0])
 
         yAxis = d3.svg.axis().scale(y).orient("left")
         xAxis = d3.svg.axis().scale(x).orient("bottom")
@@ -365,19 +365,21 @@ charts = angular.module('app_analysis_charts', [])
         bar.enter()
         .append("g")
 
+        rect_width = width/bins
         bar.append('rect')
-#            .style('fill', 'steelblue')
-        .attr('x', (d,i) -> x d.x)
+        .attr('x', (d) -> x d.x)
         .attr('y', (d) -> height - y d.y)
-        .attr('width', (d) -> x d.dx)
+        .attr('width', rect_width)
         .attr('height', (d) -> y d.y)
+        .attr("stroke","white")
+        .attr("stroke-width",1)
         .on('mouseover', () -> d3.select(this).transition().style('fill', 'orange'))
         .on('mouseout', () -> d3.select(this).transition().style('fill', 'steelblue'))
 
         bar.append('text')
-        .attr('x', (d,i) -> x d.x)
+        .attr('x', (d) -> x d.x)
         .attr('y', (d) -> height - y d.y)
-        .attr('dx', (d) -> .5*x d.dx)
+        .attr('dx', (d) -> .5*rect_width)
         .attr('dy', '20px')
         .attr('fill', '#fff')
         .attr('text-anchor', 'middle')
@@ -602,7 +604,7 @@ charts = angular.module('app_analysis_charts', [])
             when 'Bubble Chart'
               bubble.drawBubble(ranges,width,height,_graph,data,gdata,container)
             when 'Histogram'
-              histogram.drawHist(_graph,data,container,gdata,width,height)
+              histogram.drawHist(_graph,data,container,gdata,width,height,ranges)
             when 'Pie Chart'
               _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
               pie.drawPie(data,width,height,_graph)
