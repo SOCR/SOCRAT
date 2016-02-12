@@ -113,6 +113,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
       k: 2
       distance: 'Euclidean'
       initialisation: 'Forgy'
+      labelson: true
+      wholedataseton: true
+      accuracyon: false
 
     # set initial values for sidebar controls
     initSidebarControls = (initControlValues) ->
@@ -125,10 +128,16 @@ kMeans = angular.module('app_analysis_kMeans', [])
       $scope.cols = []
       $scope.kmeanson = on
       $scope.running = 'hidden'
+      $scope.uniqueLabels =
+        labelCol: null
+        num: null
 
       $scope.k = initControlValues.k if initControlValues.k in $scope.ks
       $scope.dist = initControlValues.distance if initControlValues.distance in $scope.distances
       $scope.initMethod = initControlValues.initialisation if initControlValues.initialisation in $scope.inits
+      $scope.labelson = initControlValues.labelson
+      $scope.wholedataseton = initControlValues.wholedataseton
+      $scope.accuracyon = initControlValues.accuracyon
 
     # update data-driven sidebar controls
     updateSidebarControls = (data) ->
@@ -138,31 +147,59 @@ kMeans = angular.module('app_analysis_kMeans', [])
       $scope.yCol = secondCol
       $scope.labelCol = lastCol
       $scope.kmeanson = off
+      if $scope.labelson
+        $scope.numUniqueLabels = detectKValue data
+
+    setDetectedKValue = (detectedK) ->
+      if detectedK.num <= 10
+        $scope.uniqueLabels = detectedK
+        $scope.k = detectedK.num
+        # TODO: add success messages
+      else
+        # TODO: create popup with warning message
+        console.log 'KMEANS: k is more than 10'
+
+    detectKValue = (data) ->
+      # extra check that labels are on
+      if $scope.labelson
+        labelCol = data.header.indexOf $scope.labelCol
+        labels = (row[labelCol] for row in data.data)
+        uniqueLabels = labels.filter (x, i, a) -> i is a.indexOf x
+        uniqueLabels =
+          labelCol: $scope.labelCol
+          num: uniqueLabels.length
 
     # get requested columns from data
     parseDataForKMeans = (data) ->
       xCol = data.header.indexOf $scope.xCol
       yCol = data.header.indexOf $scope.yCol
+
       # if usage of labels is on
       if $scope.labelson
         labelCol = data.header.indexOf $scope.labelCol
         labels = (row[labelCol] for row in data.data)
       else
         labels = null
+
       # if clustering on the whole dataset is on
       if $scope.wholedataseton
-        rawData = data.data
-        rawData = (row.filter((el, idx) -> idx isnt labelCol) for row in rawData)
+        rawData =
+        if labels
+          data = (row.filter((el, idx) -> idx isnt labelCol) for row in data.data)
       else
-        rawData = null
-      # get data for 2 chosen columns to plot
-      data = ([row[xCol], row[yCol]] for row in data.data)
+        # get data for 2 chosen columns
+        data = ([row[xCol], row[yCol]] for row in data.data)
+
+      # re-check if possible to compute accuracy
+      if $scope.labelson and $scope.k is $scope.numUniqueLabels and $scope.accuracyon
+        acc = on
+
       obj =
         data: data
         labels: labels
-        rawData: rawData
         xCol: xCol
         yCol: yCol
+        acc: acc
 
     # call k-means service with parsed data and current controls values
     callKMeans = (data) ->
@@ -182,6 +219,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
         msgScope: ['kMeans']
         listener: (msg, data) ->
           updateSidebarControls(data)
+          $scope.detectKValue = ->
+            detectedK = detectKValue data
+            setDetectedKValue detectedK
           $scope.run = ->
             _data = parseDataForKMeans data
             callKMeans _data
@@ -490,18 +530,18 @@ kMeans = angular.module('app_analysis_kMeans', [])
       else
         interval = setInterval run, 1000
 
-    _init = (data, k, distanceType, initMethod) ->
+    _init = (obj, k, distanceType, initMethod) ->
 
-      labels = data.labels
+      labels = obj.labels
 
-      if data.rawData
+      if obj.data[0].length > 2
         _clusterWholeDataset = on
-        _xCol = data.xCol
-        _yCol = data.yCol
-        data = (row.map(Number) for row in data.rawData)
+        _xCol = obj.xCol
+        _yCol = obj.yCol
       else
         _clusterWholeDataset = off
-        data = (row.map(Number) for row in data.data)
+
+      data = (row.map(Number) for row in obj.data)
 
       k = Number k
       console.log 'K: ' + k
@@ -509,7 +549,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
       if labels
         uniqueLabels = _getUniqueLabels(labels)
         # compute accuracy only when # of clusters is equal to number of unique labels
-        _computeAcc = if uniqueLabels.length is k then on else off
+#        _computeAcc = if uniqueLabels.length is k then on else off
+        _computeAcc = obj.acc
       else
         uniqueLabels = [0..k-1]
         _computeAcc = off
