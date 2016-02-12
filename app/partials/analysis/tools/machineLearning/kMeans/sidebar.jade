@@ -1,6 +1,10 @@
 div(ng-controller="kMeansSidebarCtrl")
   form
     legend Parameters
+    div.checkbox
+      label
+        input(type="checkbox", ng-model="wholedataseton")
+        | Cluster whole dataset (visualize 2D projection)
     div.form-group
       label X column &nbsp;
       //- show data header column names
@@ -9,23 +13,41 @@ div(ng-controller="kMeansSidebarCtrl")
       label Y column &nbsp;
       //- show data header column names
       select(ng-model="yCol", ng-options="col for col in cols").form-control
-    div.checkbox
-      label
-        input(type="checkbox", ng-model="labelson")
-        | Use labels column
     div.form-group
       fieldset(ng-disabled="!labelson")
         label Labels column &nbsp;
         //- show data header column names
         select(ng-model="labelCol", ng-options="col for col in cols").form-control
+    div.checkbox
+      label
+        input(type="checkbox", ng-model="labelson")
+        | Labels present
     div.form-group
       label k &nbsp;
       select(ng-model="k", ng-options="k for k in ks").form-control
+    div.checkbox(ng-hide="!labelson")
+      label
+        input(
+        type="checkbox"
+        ng-model="accuracyon"
+        ng-disabled="k !== numUniqueLabels.num || labelCol !== numUniqueLabels.labelCol")
+        | Compute accuracy
     div.form-group
       label Distance &nbsp;
       select(ng-model="dist", ng-options="dist for dist in distances").form-control
     div.form-group
       label Initialization &nbsp;
       select(ng-model="initMethod", ng-options="init for init in inits").form-control
-    button(type="submit", aria-label="Run k-Means", ng-click="run()", ng-disabled="kmeanson").btn.btn-primary Run&nbsp;
+    button.btn.btn-info(
+      type="submit"
+      aria-label="Get k value"
+      ng-click="detectKValue()"
+      ng-disabled="!labelson")
+      | Detect k
+    button.btn.btn-primary(
+      type="submit"
+      aria-label="Run k-Means"
+      ng-click="run()"
+      ng-disabled="kmeanson")
+      | Run&nbsp;
       span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
