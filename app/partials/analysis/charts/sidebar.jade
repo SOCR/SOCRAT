@@ -4,6 +4,9 @@ div(ng-controller="sideChartsCtrl")
   h4 Variables
   div
     p {{graphSelect.message}}
+    div(ng-show=categorical).form-inline
+      input(ng-model="selectorCat" type="checkbox" id="categorical")
+      p X is a categorical variable
   div.form-inline
     div.form-horizontal(ng-show="graphSelect.x")
       label(for = "x") Add X
