@@ -130,7 +130,7 @@ charts = angular.module('app_analysis_charts', [])
 
           for i in [1...len] by 1
             tmp =
-              x: parseFloat _chartData[$scope.graphInfo.x][i].value
+              x:  _chartData[$scope.graphInfo.x][i].value
             obj.push tmp
 
         else if $scope.graphInfo.y isnt "" and $scope.graphInfo.z is ""
@@ -138,8 +138,8 @@ charts = angular.module('app_analysis_charts', [])
 
           for i in [1...len] by 1
             tmp =
-              x: parseFloat _chartData[$scope.graphInfo.x][i].value
-              y: parseFloat _chartData[$scope.graphInfo.y][i].value
+              x:  _chartData[$scope.graphInfo.x][i].value
+              y:  _chartData[$scope.graphInfo.y][i].value
             obj.push tmp
 
         else
@@ -147,9 +147,9 @@ charts = angular.module('app_analysis_charts', [])
 
           for i in [1...len] by 1
             tmp =
-              x: parseFloat _chartData[$scope.graphInfo.x][i].value
-              y: parseFloat _chartData[$scope.graphInfo.y][i].value
-              z: parseFloat _chartData[$scope.graphInfo.z][i].value
+              x:  _chartData[$scope.graphInfo.x][i].value
+              y:  _chartData[$scope.graphInfo.y][i].value
+              z:  _chartData[$scope.graphInfo.z][i].value
             obj.push tmp
 
         return obj
@@ -311,14 +311,14 @@ charts = angular.module('app_analysis_charts', [])
 
 .factory 'histogram',[
   () ->
-    _drawHist = (_graph,data,container,gdata,width,height) ->
+    _drawHist = (_graph,data,container,gdata,width,height,ranges) ->
       container.append('input').attr('id', 'slider').attr('type','range').attr('min', '1').attr('max','10').attr('step', '1').attr('value','5')
 
       bins = null
       dataHist = null
 
       arr = data.map (d) -> parseFloat d.x
-      x = d3.scale.linear().domain([0,d3.max arr]).range([0,width])
+      x = d3.scale.linear().domain([ranges.xMin, ranges.xMax]).range([0,width])
 
 
       plotHist = (bins) ->
@@ -326,7 +326,7 @@ charts = angular.module('app_analysis_charts', [])
         container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
         dataHist = d3.layout.histogram().bins(bins)(arr)
 
-        y = d3.scale.linear().domain([0, d3.max dataHist.map (i) -> i.length]).range([0, height])
+        y = d3.scale.linear().domain([0,d3.max dataHist.map (i) -> i.length]).range([height,0])
 
         yAxis = d3.svg.axis().scale(y).orient("left")
         xAxis = d3.svg.axis().scale(x).orient("bottom")
@@ -365,19 +365,21 @@ charts = angular.module('app_analysis_charts', [])
         bar.enter()
         .append("g")
 
+        rect_width = width/bins
         bar.append('rect')
-#            .style('fill', 'steelblue')
-        .attr('x', (d,i) -> x d.x)
+        .attr('x', (d) -> x d.x)
         .attr('y', (d) -> height - y d.y)
-        .attr('width', (d) -> x d.dx)
+        .attr('width', rect_width)
         .attr('height', (d) -> y d.y)
+        .attr("stroke","white")
+        .attr("stroke-width",1)
         .on('mouseover', () -> d3.select(this).transition().style('fill', 'orange'))
         .on('mouseout', () -> d3.select(this).transition().style('fill', 'steelblue'))
 
         bar.append('text')
-        .attr('x', (d,i) -> x d.x)
+        .attr('x', (d) -> x d.x)
         .attr('y', (d) -> height - y d.y)
-        .attr('dx', (d) -> .5*x d.dx)
+        .attr('dx', (d) -> .5*rect_width)
         .attr('dy', '20px')
         .attr('fill', '#fff')
         .attr('text-anchor', 'middle')
@@ -396,74 +398,55 @@ charts = angular.module('app_analysis_charts', [])
 
 .factory 'pie', [
   () ->
-    pieData = null
+    valueSum = 0
     makePieData = (data) ->
-      pieMax = d3.max(data, (d)->parseFloat d.x)
-      pieMin = d3.min(data, (d)->parseFloat d.x)
-      maxPiePieces = 7  # set magic constant to variable
-      rangeInt = Math.ceil((pieMax - pieMin)/maxPiePieces)
-      console.log rangeInt
-      piePieces = new Array(maxPiePieces - 1)  # create array with numbers of pie pieces
-      for i in [0..maxPiePieces-1] by 1
-        piePieces[i] = []
-
-      for el in data
-        index = Math.floor((el.x - pieMin)/rangeInt)
-        piePieces[index].push(el.x) # assign each el.x to a piePiece
-        console.log "piePieces[" + index + "]=" + piePieces[index]
-
-      obj = {}
-      for i in [0..maxPiePieces-1] by 1
-        obj[i] = piePieces[i].length
-
-      pieData = d3.entries obj
-      for d in pieData
-        d.key = (d.key*rangeInt)+pieMin+"-"+((d.key-1)*rangeInt)+pieMin
-      return pieData
+      counts = {}
+      for i in [0..data.length-1] by 1
+        currentVar = data[i].x
+        counts[currentVar] = counts[currentVar] || 0
+        counts[currentVar]++
+        valueSum++
+      obj = d3.entries counts
+      return obj
 
     _drawPie = (data,width,height,_graph) ->
-      makePieData(data)
       radius = Math.min(width, height) / 2
-
       arc = d3.svg.arc()
       .outerRadius(radius)
       .innerRadius(0)
 
-      labelArc = d3.svg.arc()
-      .outerRadius(radius-10)
-      .innerRadius(radius-10)
-
-      color = d3.scale.ordinal().range(["#ffffcc","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84"])
-
+      #color = d3.scale.ordinal().range(["#ffffcc","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84"])
+      color = d3.scale.category20c()
       arcOver = d3.svg.arc()
       .outerRadius(radius + 10)
-      #                    .innerRadius(0+10)
 
       pie = d3.layout.pie()
-#.value (d) -> d.count
-      .value (d) -> parseFloat d.value
-      type = (d) ->
-        d.y = +d.y
-        return d
+      .value((d)-> d.value)
+      .sort(null)
+
+      formatted_data = makePieData(data)
+      console.log pie(formatted_data)
 
       arcs = _graph.selectAll(".arc")
-      .data(pie(pieData))
+      .data(pie(formatted_data))
       .enter()
       .append('g')
       .attr("class", "arc")
 
       arcs.append('path')
       .attr('d', arc)
-      .attr('fill', (d) -> color(d.data.key))
-      .on('mouseenter', (d) -> d3.select(this).attr("stroke","white").transition().attr("d", arcOver).attr("stroke-width",5))
+      .attr('fill', (d) -> color(d.data.value))
+      .on('mouseenter', (d) -> d3.select(this).attr("stroke","white") .transition().attr("d", arcOver).attr("stroke-width",3))
       .on('mouseleave', (d) -> d3.select(this).transition().attr('d', arc).attr("stroke", "none"))
 
       arcs.append('text')
       .attr('id','tooltip')
       .attr('transform', (d) -> 'translate('+arc.centroid(d)+')')
       .attr('text-anchor', 'middle')
-      .text (d) -> d.data.key
+      .text (d) -> d.data.key + ': ' + parseFloat(100*d.data.value/valueSum).toFixed(2) + '%'
+
     drawPie: _drawPie
+
 ]
 
 .factory 'bubble', [
@@ -621,7 +604,7 @@ charts = angular.module('app_analysis_charts', [])
             when 'Bubble Chart'
               bubble.drawBubble(ranges,width,height,_graph,data,gdata,container)
             when 'Histogram'
-              histogram.drawHist(_graph,data,container,gdata,width,height)
+              histogram.drawHist(_graph,data,container,gdata,width,height,ranges)
             when 'Pie Chart'
               _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
               pie.drawPie(data,width,height,_graph)
