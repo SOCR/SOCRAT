@@ -23,8 +23,15 @@ div(ng-controller="kMeansSidebarCtrl")
         input(type="checkbox", ng-model="labelson")
         | Labels present
     div.form-group
-      label k &nbsp;
-      select(ng-model="k", ng-options="k for k in ks").form-control
+      fieldset.form-inline
+        label k &nbsp;
+        select(ng-model="k", ng-options="k for k in ks").form-control
+        button.btn.btn-info(
+        type="submit"
+        aria-label="Get k value"
+        ng-click="detectKValue()"
+        ng-disabled="!labelson")
+          | Detect k
     div.checkbox(ng-hide="!labelson")
       label
         input(
@@ -38,12 +45,6 @@ div(ng-controller="kMeansSidebarCtrl")
     div.form-group
       label Initialization &nbsp;
       select(ng-model="initMethod", ng-options="init for init in inits").form-control
-    button.btn.btn-info(
-      type="submit"
-      aria-label="Get k value"
-      ng-click="detectKValue()"
-      ng-disabled="!labelson")
-      | Detect k
     button.btn.btn-primary(
       type="submit"
       aria-label="Run k-Means"
