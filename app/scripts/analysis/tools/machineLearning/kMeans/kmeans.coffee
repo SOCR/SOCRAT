@@ -87,6 +87,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
       # safe enforce $scope.$digest to activate directive watchers
       $timeout updateChartData
 
+    $scope.$on 'kmeans:updateDataPoints', (event, dataPoints) ->
+      _update dataPoints
+
     _finish = (results=null) ->
       msgManager.broadcast 'kmeans:done', results
       showResults results
@@ -117,9 +120,14 @@ kMeans = angular.module('app_analysis_kMeans', [])
       wholedataseton: true
       accuracyon: false
 
+    updateDataPoints = (data) ->
+      xCol = data.header.indexOf $scope.xCol
+      yCol = data.header.indexOf $scope.yCol
+      data = ([row[xCol], row[yCol]] for row in data.data)
+      msgManager.broadcast 'kmeans:updateDataPoints', data
+
     # set initial values for sidebar controls
     initSidebarControls = (initControlValues) ->
-
       params = kmeans.getParameters()
       $scope.ks = [params.minK..params.maxK]
       $scope.distances = params.distances
@@ -149,6 +157,10 @@ kMeans = angular.module('app_analysis_kMeans', [])
       $scope.kmeanson = off
       if $scope.labelson
         $scope.numUniqueLabels = detectKValue data
+      $scope.updateDataPoints = () ->
+        updateDataPoints data
+      $timeout ->
+        updateDataPoints data
 
     setDetectedKValue = (detectedK) ->
       if detectedK.num <= 10
@@ -219,6 +231,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         msgScope: ['kMeans']
         listener: (msg, data) ->
           updateSidebarControls(data)
+          updateDataPoints(data)
           $scope.detectKValue = ->
             detectedK = detectKValue data
             setDetectedKValue detectedK
@@ -558,7 +571,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
       distanceType = distanceType.toLowerCase()
       initMethod = initMethod.toLowerCase()
 
-      _updateGraph data
+#      _updateGraph data
 
       if initMethod is 'forgy'
         centroids = _initCentroids data, k
