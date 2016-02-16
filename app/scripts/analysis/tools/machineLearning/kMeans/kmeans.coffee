@@ -191,7 +191,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         data = ([row[xCol], row[yCol]] for row in data.data)
 
       # re-check if possible to compute accuracy
-      if $scope.labelson and $scope.k is $scope.numUniqueLabels and $scope.accuracyon
+      if $scope.labelson and $scope.k is $scope.numUniqueLabels.num and $scope.accuracyon
         acc = on
 
       obj =
