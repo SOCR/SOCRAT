@@ -400,12 +400,28 @@ charts = angular.module('app_analysis_charts', [])
   () ->
     valueSum = 0
     makePieData = (data) ->
+      valueSum = 0
       counts = {}
-      for i in [0..data.length-1] by 1
-        currentVar = data[i].x
-        counts[currentVar] = counts[currentVar] || 0
-        counts[currentVar]++
-        valueSum++
+      if(!isNaN(data[0].x)) # data is number
+        pieMax = d3.max(data, (d)-> parseFloat d.x)
+        pieMin = d3.min(data, (d)-> parseFloat d.x)
+        maxPiePieces = 7  # set magic constant to variable
+        rangeInt = Math.ceil((pieMax - pieMin) / maxPiePieces)
+        counts = {}
+        for val in data
+          index = Math.floor((val.x - pieMin) / rangeInt)
+          groupName = index + "-" + (index + rangeInt)
+          console.log groupName
+          counts[groupName] = counts[groupName] || 0
+          counts[groupName]++
+          valueSum++
+      else # data is string
+        for i in [0..data.length-1] by 1
+          currentVar = data[i].x
+          counts[currentVar] = counts[currentVar] || 0
+          counts[currentVar]++
+          valueSum++
+
       obj = d3.entries counts
       return obj
 
@@ -425,7 +441,8 @@ charts = angular.module('app_analysis_charts', [])
       .sort(null)
 
       formatted_data = makePieData(data)
-      console.log pie(formatted_data)
+      console.log formatted_data
+      #console.log pie(formatted_data)
 
       arcs = _graph.selectAll(".arc")
       .data(pie(formatted_data))
