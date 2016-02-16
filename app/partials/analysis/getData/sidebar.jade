@@ -1,26 +1,31 @@
 div(ng-controller="getDataSidebarCtrl")
-  span Traditional spreadsheet where you can copy-paste your data and edit it as you like!
-  button.btn.btn-info.btn-sm(ng-click="show('grid')") Show
-  hr
-  span Use one of the predefined SOCR datasets.
-  button.btn.btn-info.btn-sm(ng-click="show('socrData')") Use
-  hr
-  span Use the exhaustive WorldBank data to fuel your analysis.
-  button.btn.btn-info.btn-sm(ng-click="show('worldBank')") Use
-  hr
-  span Use the inbuilt experiment to generate data for your analysis.
-  button.btn.btn-info.btn-sm(ng-click="show('generate')") Generate
-  hr
-  span Enter JSON URL here to parse
-  input(ng-model="jsonUrl",type="text",
-  tooltip="Enter url here...",tooltip-trigger="focus",
-  tooltip-placement="right").input-medium
-  button.btn.btn-info.btn-sm(ng-click="getJson()") Use
-  hr
-  span Enter SOCR Data url here. We will parse it for you!
-  input(type="url",ng-model="socrUrl").input-medium
-  div
-      button.btn.btn-success.btn-sm(ng-click="save()") SAVE
+  p. Data input
+  div.list-group
+    a#getDataGrid.list-group-item(
+      href="#"
+      ng-click="show('grid')"
+      ng-class="{active:selected == 'getDataGrid'}")
+      | Copy-paste to spreadsheet
+    a#getDataSocrData.list-group-item(
+      href="#"
+      ng-click="show('socrData')"
+      ng-class="{active:selected == 'getDataSocrData'}")
+      | Load SOCR dataset
+    a#getDataWorldBank.list-group-item(
+      href="#"
+      ng-click="show('worldBank')"
+      ng-class="{active:selected == 'getDataWorldBank'}")
+      | Load data from WorldBank
+    a#getDataGenerate.list-group-item.disabled(
+      href="#"
+      ng-click="show('generate')"
+      ng-class="{active:selected == 'getDataGenerate'}")
+      | Use data generator
+    a.list-group-item.disabled(href="#", ng-click="getJson()", ng-class="{active:selected == 'getDataJson'}")
+      | Parse JSON fileParse SOCR Data page
+    a.list-group-item.disabled(href="#", ng-click="save()", ng-class="{active:selected == 'getDataSocrPage'}")
+      | Parse SOCR Data page
+
 //
   accordion(close-others="true")
     accordion-group(heading="Grid")
