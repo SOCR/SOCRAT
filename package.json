@@ -4,6 +4,10 @@
   "version": "v0.1.5-alpha.3",
   "description": "Flexible HTML5/JS toolkit for interactive data analysis and visuzalization",
   "homepage": "https://github.com/SOCR/SOCRAT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SOCR/SOCRAT.git"
+  },
   "devDependencies": {
     "coffee-script": "*",
     "grunt": "^0.4.5",
