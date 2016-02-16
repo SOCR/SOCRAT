@@ -3,213 +3,213 @@
 charts = angular.module('app_analysis_charts', [])
 
 .factory('app_analysis_charts_constructor', [
-  'app_analysis_charts_manager'
-  (manager)->
-    (sb)->
+    'app_analysis_charts_manager'
+    (manager)->
+      (sb)->
 
-      manager.setSb sb unless !sb?
-      _msgList = manager.getMsgList()
+        manager.setSb sb unless !sb?
+        _msgList = manager.getMsgList()
 
-      init: (opt) ->
-        console.log '%cCHARTS: charts init called'
+        init: (opt) ->
+          console.log '%cCHARTS: charts init called'
 
-      destroy: () ->
+        destroy: () ->
 
-      msgList: _msgList
-])
+        msgList: _msgList
+  ])
 
 .factory( 'app_analysis_charts_manager', [
-  ()->
-    _sb = null
+    ()->
+      _sb = null
 
-    _msgList =
-      outgoing: ['get table']
-      incoming: ['take table']
-      scope: ['charts']
+      _msgList =
+        outgoing: ['get table']
+        incoming: ['take table']
+        scope: ['charts']
 
-    _setSb = (sb) ->
-      _sb = sb
+      _setSb = (sb) ->
+        _sb = sb
 
-    _getSb = () ->
-      _sb
+      _getSb = () ->
+        _sb
 
-    _getMsgList = () ->
-      _msgList
+      _getMsgList = () ->
+        _msgList
 
-    getSb: _getSb
-    setSb: _setSb
-    getMsgList: _getMsgList
-])
+      getSb: _getSb
+      setSb: _setSb
+      getMsgList: _getMsgList
+  ])
 
 .controller('mainChartsCtrl', [
-  'app_analysis_charts_manager'
-  '$scope'
-  (ctrlMngr,$scope) ->
-    _chart_data = null
+    'app_analysis_charts_manager'
+    '$scope'
+    (ctrlMngr,$scope) ->
+      _chart_data = null
 
-    _updateData = () ->
-      $scope.chartData = _chart_data
+      _updateData = () ->
+        $scope.chartData = _chart_data
 
-    $scope.$on 'charts:graphDiv', (event, data) ->
-      _chart_data = data
-      _updateData()
-])
+      $scope.$on 'charts:graphDiv', (event, data) ->
+        _chart_data = data
+        _updateData()
+  ])
 
 
 
 .controller('sideChartsCtrl',[
-  'app_analysis_charts_manager'
-  '$scope'
-  '$rootScope'
-  '$stateParams'
-  '$q'
-  'app_analysis_charts_dataTransform'
-  (ctrlMngr, $scope, $rootScope, $stateParams, $q, dataTransform) ->
-    _chartData = null
-    _headers = null
+    'app_analysis_charts_manager'
+    '$scope'
+    '$rootScope'
+    '$stateParams'
+    '$q'
+    'app_analysis_charts_dataTransform'
+    (ctrlMngr, $scope, $rootScope, $stateParams, $q, dataTransform) ->
+      _chartData = null
+      _headers = null
 
-    $scope.selector1 = {}
-    $scope.selector2 = {}
-    $scope.selector3 = {}
-
-
-    $scope.graphInfo =
-      graph: ""
-      x: ""
-      y: ""
-      z: ""
-
-    $scope.graphs = [
-      name: 'Bar Graph'
-      value: 0
-      x: true
-      y: false
-      z: false
-      message: "Choose a numerical variable for x and a categorical variable for y."
-    ,
-      name: 'Scatter Plot'
-      value: 1
-      x: true
-      y: true
-      z: false
-      message: "Choose an x variable and a y variable."
-    ,
-      name: 'Histogram'
-      value: 2
-      x: true
-      y: false
-      z: false
-      message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
-    ,
-      name: 'Bubble Chart'
-      value: 3
-      x: true
-      y: true
-      z: true
-      message: "Choose an x variable, a y variable and a radius variable."
-    ,
-      name: 'Pie Chart'
-      value: 4
-      x: true
-      y: false
-      z: false
-      message: "Choose one variable to put into a pie chart."
-
-    ]
-    $scope.graphSelect = {}
+      $scope.selector1 = {}
+      $scope.selector2 = {}
+      $scope.selector3 = {}
 
 
+      $scope.graphInfo =
+        graph: ""
+        x: ""
+        y: ""
+        z: ""
 
-    $scope.createGraph = () ->
-      graphFormat = () ->
-        obj = []
-        len = _chartData[0].length
+      $scope.graphs = [
+        name: 'Bar Graph'
+        value: 0
+        x: true
+        y: false
+        z: false
+        message: "Choose a numerical variable for x and a categorical variable for y."
+      ,
+        name: 'Scatter Plot'
+        value: 1
+        x: true
+        y: true
+        z: false
+        message: "Choose an x variable and a y variable."
+      ,
+        name: 'Histogram'
+        value: 2
+        x: true
+        y: false
+        z: false
+        message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
+      ,
+        name: 'Bubble Chart'
+        value: 3
+        x: true
+        y: true
+        z: true
+        message: "Choose an x variable, a y variable and a radius variable."
+      ,
+        name: 'Pie Chart'
+        value: 4
+        x: true
+        y: false
+        z: false
+        message: "Choose one variable to put into a pie chart."
 
-        if $scope.graphInfo.y is "" and $scope.graphInfo.z is ""
+      ]
+      $scope.graphSelect = {}
+
+
+
+      $scope.createGraph = () ->
+        graphFormat = () ->
           obj = []
+          len = _chartData[0].length
 
-          for i in [1...len] by 1
-            tmp =
-              x:  _chartData[$scope.graphInfo.x][i].value
-            obj.push tmp
+          if $scope.graphInfo.y is "" and $scope.graphInfo.z is ""
+            obj = []
 
-        else if $scope.graphInfo.y isnt "" and $scope.graphInfo.z is ""
-          obj = []
+            for i in [1...len] by 1
+              tmp =
+                x:  _chartData[$scope.graphInfo.x][i].value
+              obj.push tmp
 
-          for i in [1...len] by 1
-            tmp =
-              x:  _chartData[$scope.graphInfo.x][i].value
-              y:  _chartData[$scope.graphInfo.y][i].value
-            obj.push tmp
+          else if $scope.graphInfo.y isnt "" and $scope.graphInfo.z is ""
+            obj = []
 
-        else
-          obj = []
+            for i in [1...len] by 1
+              tmp =
+                x:  _chartData[$scope.graphInfo.x][i].value
+                y:  _chartData[$scope.graphInfo.y][i].value
+              obj.push tmp
 
-          for i in [1...len] by 1
-            tmp =
-              x:  _chartData[$scope.graphInfo.x][i].value
-              y:  _chartData[$scope.graphInfo.y][i].value
-              z:  _chartData[$scope.graphInfo.z][i].value
-            obj.push tmp
+          else
+            obj = []
 
-        return obj
-      send = graphFormat()
-      results =
-        data: send
-        xLab: _headers[$scope.graphInfo.x],
-        yLab: _headers[$scope.graphInfo.y],
-        zLab: _headers[$scope.graphInfo.z],
-        name: $scope.graphInfo.graph
+            for i in [1...len] by 1
+              tmp =
+                x:  _chartData[$scope.graphInfo.x][i].value
+                y:  _chartData[$scope.graphInfo.y][i].value
+                z:  _chartData[$scope.graphInfo.z][i].value
+              obj.push tmp
 
-      $rootScope.$broadcast 'charts:graphDiv', results
+          return obj
+        send = graphFormat()
+        results =
+          data: send
+          xLab: _headers[$scope.graphInfo.x],
+          yLab: _headers[$scope.graphInfo.y],
+          zLab: _headers[$scope.graphInfo.z],
+          name: $scope.graphInfo.graph
 
-    $scope.changeName = () ->
-      $scope.graphInfo.graph = $scope.graphSelect.name
-      $scope.createGraph()
+        $rootScope.$broadcast 'charts:graphDiv', results
 
-    $scope.changeVar = (selector,headers, ind) ->
-      for h in headers
-        if selector.value is h.value then $scope.graphInfo[ind] = parseFloat h.key
-      $scope.createGraph()
+      $scope.changeName = () ->
+        $scope.graphInfo.graph = $scope.graphSelect.name
+        $scope.createGraph()
 
-    sb = ctrlMngr.getSb()
+      $scope.changeVar = (selector,headers, ind) ->
+        for h in headers
+          if selector.value is h.value then $scope.graphInfo[ind] = parseFloat h.key
+        $scope.createGraph()
 
-    token = sb.subscribe
-      msg:'take table'
-      msgScope:['charts']
-      listener: (msg, _data) ->
-        _headers = d3.entries _data.header
-        $scope.headers = _headers
-        _chartData = dataTransform.format(_data.data)
+      sb = ctrlMngr.getSb()
 
-    sb.publish
-      msg:'get table'
-      msgScope:['charts']
-      callback: -> sb.unsubscribe token
-      data:
-        tableName: $stateParams.projectId + ':' + $stateParams.forkId
-])
+      token = sb.subscribe
+        msg:'take table'
+        msgScope:['charts']
+        listener: (msg, _data) ->
+          _headers = d3.entries _data.header
+          $scope.headers = _headers
+          _chartData = dataTransform.format(_data.data)
+
+      sb.publish
+        msg:'get table'
+        msgScope:['charts']
+        callback: -> sb.unsubscribe token
+        data:
+          tableName: $stateParams.projectId + ':' + $stateParams.forkId
+  ])
 
 .factory('app_analysis_charts_dataTransform',[
-  () ->
+    () ->
 
-    _transpose = (data) ->
-      data[0].map (col, i) -> data.map (row) -> row[i]
+      _transpose = (data) ->
+        data[0].map (col, i) -> data.map (row) -> row[i]
 
-    _transform = (data) ->
-      for col in data
-        obj = {}
-        for value, i in col
-          obj[i] = value
-        d3.entries obj
+      _transform = (data) ->
+        for col in data
+          obj = {}
+          for value, i in col
+            obj[i] = value
+          d3.entries obj
 
-    _format = (data) ->
-      return _transform(_transpose(data))
+      _format = (data) ->
+        return _transform(_transpose(data))
 
-    transform: _transform
-    transpose:_transpose
-    format: _format
-])
+      transform: _transform
+      transpose:_transpose
+      format: _format
+  ])
 
 #.factory 'stackedBar', [
 #  () ->
@@ -400,12 +400,28 @@ charts = angular.module('app_analysis_charts', [])
   () ->
     valueSum = 0
     makePieData = (data) ->
+      valueSum = 0
       counts = {}
-      for i in [0..data.length-1] by 1
-        currentVar = data[i].x
-        counts[currentVar] = counts[currentVar] || 0
-        counts[currentVar]++
-        valueSum++
+      if(!isNaN(data[0].x)) # data is number
+        pieMax = d3.max(data, (d)-> parseFloat d.x)
+        pieMin = d3.min(data, (d)-> parseFloat d.x)
+        maxPiePieces = 7  # set magic constant to variable
+        rangeInt = Math.ceil((pieMax - pieMin) / maxPiePieces)
+        counts = {}
+        for val in data
+          index = Math.floor((val.x - pieMin) / rangeInt)
+          groupName = index + "-" + (index + rangeInt)
+          #console.log groupName
+          counts[groupName] = counts[groupName] || 0
+          counts[groupName]++
+          valueSum++
+      else # data is string
+        for i in [0..data.length-1] by 1
+          currentVar = data[i].x
+          counts[currentVar] = counts[currentVar] || 0
+          counts[currentVar]++
+          valueSum++
+
       obj = d3.entries counts
       return obj
 
@@ -425,7 +441,8 @@ charts = angular.module('app_analysis_charts', [])
       .sort(null)
 
       formatted_data = makePieData(data)
-      console.log pie(formatted_data)
+      #console.log formatted_data
+      #console.log pie(formatted_data)
 
       arcs = _graph.selectAll(".arc")
       .data(pie(formatted_data))
@@ -457,16 +474,26 @@ charts = angular.module('app_analysis_charts', [])
       xAxis = d3.svg.axis().scale(x).orient('bottom')
       yAxis = d3.svg.axis().scale(y).orient('left')
 
-      r = d3.scale.linear()
-      .domain([d3.min(data, (d)-> parseFloat d.z), d3.max(data, (d)-> parseFloat d.z)])
-      .range([3,15])
+      zIsNumber = !isNaN(data[0].z)
 
-      rValue = (d)->parseFloat d.z
+      r = 0
+      rValue = 0
+      if(zIsNumber)
+        r = d3.scale.linear()
+        .domain([d3.min(data, (d)-> parseFloat d.z), d3.max(data, (d)-> parseFloat d.z)])
+        .range([3,15])
+        rValue = (d) -> parseFloat d.z
+      else
+        r = d3.scale.linear()
+        .domain([5, 5])
+        .range([3,15])
+        rValue = (d) -> d.z
 
       tooltip = container
       .append('div')
       .attr('class', 'tooltip')
-      #          .style('opacity', 0)
+
+      color = d3.scale.category10()
 
       # x axis
       _graph.append("g")
@@ -476,7 +503,6 @@ charts = angular.module('app_analysis_charts', [])
       .append('text')
       .attr('class', 'label')
       .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
-#          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
       # y axis
@@ -489,21 +515,31 @@ charts = angular.module('app_analysis_charts', [])
       .attr('y', -50 )
       .attr('x', -(height / 2))
       .attr("dy", ".71em")
-#          .style("text-anchor", "end")
       .text gdata.yLab.value
-
 
       # create circle
       _graph.selectAll('.circle')
       .data(data)
       .enter().append('circle')
-      .attr('fill', 'yellow')
+      .attr('fill',
+        if(zIsNumber)
+          'yellow'
+        else
+          (d) -> color(d.z))
       .attr('opacity', '0.7')
-      .attr('stroke', 'orange')
+      .attr('stroke',
+        if(zIsNumber)
+          'orange'
+        else
+          (d) -> color(d.z))
       .attr('stroke-width', '2px')
       .attr('cx', (d) -> x d.x)
       .attr('cy', (d) -> y d.y)
-      .attr('r', (d) -> r d.z)
+      .attr('r', (d) ->
+        if(zIsNumber) # if d.z is number, use d.z as radius
+          r d.z
+        else # else, set radius to be 8
+          8)
       .on('mouseover', (d) ->
         tooltip.transition().duration(200).style('opacity', .9)
         tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.zLab.value+': '+ rValue(d)+'</div>')
@@ -611,4 +647,3 @@ charts = angular.module('app_analysis_charts', [])
             when 'Scatter Plot'
               scatterplot.drawScatterplot(data,ranges,width,height,_graph,container,gdata)
 ]
-
