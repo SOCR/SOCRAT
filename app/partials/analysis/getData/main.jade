@@ -4,7 +4,7 @@ div(ng-controller='getDataMainCtrl')
   p.lead To perform any analysis, you need data to begin with. Choose one of the available methods
     |to get the data into the web-app.
 
-  form.socrData(collapse="showState.socrData")
+  form.socrData(uib-collapse="showState.socrData")
     legend SOCR Datasets
     div.form-group
       select.form-control(
@@ -12,7 +12,7 @@ div(ng-controller='getDataMainCtrl')
         ng-options="item as item.name for item in socrDatasets track by item.id")
     button.btn.btn-primary(ng-click="getSocrData()") Load
 
-  div.worldBank(collapse="showState.worldBank")
+  div.worldBank(uib-collapse="showState.worldBank")
     h3 WorldBank Data
     span Size:
       input(type="text",class="input-mini", ng-model="size")
@@ -21,7 +21,7 @@ div(ng-controller='getDataMainCtrl')
         option(value='2.4_OOSC.RATE') Out of School Children rate
       button.btn.btn-primary(ng-click="getWB()") Load
 
-  div.generate(collapse="showState.generate")
+  div.generate(uib-collapse="showState.generate")
     ul.nav.nav-pills.nav-stacked
       li
         a Binomial Coin Toss
