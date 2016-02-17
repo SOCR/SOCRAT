@@ -241,11 +241,13 @@ getData = angular.module('app_analysis_getData', [
     # console.log 'sandbox created'
     $scope.jsonUrl = 'url..'
     flag = true
+    $scope.selected = null
 
     # showGrid
     $scope.show = (val) ->
       switch val
         when 'grid'
+          $scope.selected = 'getDataGrid'
           if flag is true
             flag = false
             #initial the div for the first time
@@ -256,12 +258,15 @@ getData = angular.module('app_analysis_getData', [
           $scope.$emit 'change in showStates', 'grid'
 
         when 'socrData'
+          $scope.selected = 'getDataSocrData'
           $scope.$emit 'change in showStates', 'socrData'
 
         when 'worldBank'
+          $scope.selected = 'getDataWorldBank'
           $scope.$emit 'change in showStates', 'worldBank'
 
         when  'generate'
+          $scope.selected = 'getDataGenerate'
           $scope.$emit 'change in showStates', 'generate'
 
     # getJson

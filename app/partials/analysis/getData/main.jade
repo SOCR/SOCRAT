@@ -1,26 +1,27 @@
 div(ng-controller='getDataMainCtrl')
   h1 Get Data
-  br
+  //br
   p.lead To perform any analysis, you need data to begin with. Choose one of the available methods
     |to get the data into the web-app.
 
-  form.socrData(collapse="showState.socrData")
+  form.socrData(uib-collapse="showState.socrData")
     legend SOCR Datasets
     div.form-group
-      select(ng-model="socrdataset",\
-        ng-options="item as item.name for item in socrDatasets track by item.id").form-control
-    button.btn.btn-medium(ng-click="getSocrData()") Load
+      select.form-control(
+        ng-model="socrdataset",
+        ng-options="item as item.name for item in socrDatasets track by item.id")
+    button.btn.btn-primary(ng-click="getSocrData()") Load
 
-  div.worldBank(collapse="showState.worldBank")
+  div.worldBank(uib-collapse="showState.worldBank")
     h3 WorldBank Data
     span Size:
-      input(type="text",class="input-mini",ng-model="size")
-      select(style="width:100%;margin:0px",ng-model="option")
+      input(type="text",class="input-mini", ng-model="size")
+      select(style="width:100%;margin:0px", ng-model="option")
         option(value='4.2_BASIC.EDU.SPENDING') Education Spending
         option(value='2.4_OOSC.RATE') Out of School Children rate
-      button.btn.btn-medium(ng-click="getWB()") Go
+      button.btn.btn-primary(ng-click="getWB()") Load
 
-  div.generate(collapse="showState.generate")
+  div.generate(uib-collapse="showState.generate")
     ul.nav.nav-pills.nav-stacked
       li
         a Binomial Coin Toss
@@ -33,6 +34,7 @@ div(ng-controller='getDataMainCtrl')
       li
         a The Beta Distribution Experiment
 
+  br
   handsontable(purpose="json")
 
 
