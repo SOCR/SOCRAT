@@ -411,11 +411,7 @@ charts = angular.module('app_analysis_charts', [])
         for val in data
           index = Math.floor((val.x - pieMin) / rangeInt)
           groupName = index + "-" + (index + rangeInt)
-<<<<<<< HEAD
           #console.log groupName
-=======
-          console.log groupName
->>>>>>> 76c51bb3db5f75a44726476c1e48cfc0978b04da
           counts[groupName] = counts[groupName] || 0
           counts[groupName]++
           valueSum++
@@ -445,11 +441,7 @@ charts = angular.module('app_analysis_charts', [])
       .sort(null)
 
       formatted_data = makePieData(data)
-<<<<<<< HEAD
       #console.log formatted_data
-=======
-      console.log formatted_data
->>>>>>> 76c51bb3db5f75a44726476c1e48cfc0978b04da
       #console.log pie(formatted_data)
 
       arcs = _graph.selectAll(".arc")
