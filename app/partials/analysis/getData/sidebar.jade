@@ -2,28 +2,28 @@ div(ng-controller="getDataSidebarCtrl")
   p. Data input
   div.list-group
     a#getDataGrid.list-group-item(
-      href="#"
+      href=""
       ng-click="show('grid')"
       ng-class="{active:selected == 'getDataGrid'}")
       | Copy-paste to spreadsheet
     a#getDataSocrData.list-group-item(
-      href="#"
+      href=""
       ng-click="show('socrData')"
       ng-class="{active:selected == 'getDataSocrData'}")
       | Load SOCR dataset
     a#getDataWorldBank.list-group-item(
-      href="#"
+      href=""
       ng-click="show('worldBank')"
       ng-class="{active:selected == 'getDataWorldBank'}")
       | Load data from WorldBank
     a#getDataGenerate.list-group-item.disabled(
-      href="#"
+      href=""
       ng-click="show('generate')"
       ng-class="{active:selected == 'getDataGenerate'}")
       | Use data generator
-    a.list-group-item.disabled(href="#", ng-click="getJson()", ng-class="{active:selected == 'getDataJson'}")
+    a.list-group-item.disabled(href="", ng-click="getJson()", ng-class="{active:selected == 'getDataJson'}")
       | Parse JSON fileParse SOCR Data page
-    a.list-group-item.disabled(href="#", ng-click="save()", ng-class="{active:selected == 'getDataSocrPage'}")
+    a.list-group-item.disabled(href="", ng-click="save()", ng-class="{active:selected == 'getDataSocrPage'}")
       | Parse SOCR Data page
 
 //
