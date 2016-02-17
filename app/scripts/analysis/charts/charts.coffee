@@ -71,9 +71,7 @@ charts = angular.module('app_analysis_charts', [])
     $scope.selector1 = {}
     $scope.selector2 = {}
     $scope.selector3 = {}
-    $scope.selectorCat = false
 
-    $scope.categorical = false
 
     $scope.graphInfo =
       graph: ""
@@ -87,7 +85,7 @@ charts = angular.module('app_analysis_charts', [])
       x: true
       y: false
       z: false
-      message: "Choose a numerical variable for x and a categorical variable for y, or choose a categorical variable for x and indicate that it is categorical."
+      message: "Choose a numerical variable for x and a categorical variable for y."
     ,
       name: 'Scatter Plot'
       value: 1
@@ -123,39 +121,7 @@ charts = angular.module('app_analysis_charts', [])
 
 
     $scope.createGraph = () ->
-      if $("input[id='categorical']:checked").length > 0
-        selectorCat = true
-      else
-        selectorCat = false
-
-      categoricalGraphFormat = () ->
-        len = _chartData[0].length
-        obj = []
-
-        #check if first value is a string
-        if isNaN(parseFloat _chartData[$scope.graphInfo.x][0].value)
-          #makes array of all the categorical values
-          names = []
-          names[0] = _chartData[$scope.graphInfo.x][0].value
-          for i in [0...len] by 1
-            if jQuery.inArray(_chartData[$scope.graphInfo.x][i].value, names) == -1
-              names.push _chartData[$scope.graphInfo.x][i].value
-
-        #creates count objects with the categorical values
-        for j in [0...names.length] by 1
-          tmp =
-            label: names[j]
-            count: 0
-          obj.push tmp
-
-        #iterates through the data and adds counts
-        for k in [0...len] by 1
-          for j in [0...obj.length] by 1
-            if names[j] == _chartData[$scope.graphInfo.x][k].value
-              obj[j].count++
-
-        return obj
-      numericGraphFormat = () ->
+      graphFormat = () ->
         obj = []
         len = _chartData[0].length
 
@@ -187,10 +153,7 @@ charts = angular.module('app_analysis_charts', [])
             obj.push tmp
 
         return obj
-      if selectorCat
-        console.log categoricalGraphFormat()
-
-      send = numericGraphFormat()
+      send = graphFormat()
       results =
         data: send
         xLab: _headers[$scope.graphInfo.x],
@@ -203,10 +166,6 @@ charts = angular.module('app_analysis_charts', [])
     $scope.changeName = () ->
       $scope.graphInfo.graph = $scope.graphSelect.name
       $scope.createGraph()
-      if $scope.graphSelect.name == "Bar Graph"
-        $scope.categorical = true
-      else
-        $scope.categorical = false
 
     $scope.changeVar = (selector,headers, ind) ->
       for h in headers
@@ -441,12 +400,28 @@ charts = angular.module('app_analysis_charts', [])
   () ->
     valueSum = 0
     makePieData = (data) ->
+      valueSum = 0
       counts = {}
-      for i in [0..data.length-1] by 1
-        currentVar = data[i].x
-        counts[currentVar] = counts[currentVar] || 0
-        counts[currentVar]++
-        valueSum++
+      if(!isNaN(data[0].x)) # data is number
+        pieMax = d3.max(data, (d)-> parseFloat d.x)
+        pieMin = d3.min(data, (d)-> parseFloat d.x)
+        maxPiePieces = 7  # set magic constant to variable
+        rangeInt = Math.ceil((pieMax - pieMin) / maxPiePieces)
+        counts = {}
+        for val in data
+          index = Math.floor((val.x - pieMin) / rangeInt)
+          groupName = index + "-" + (index + rangeInt)
+          #console.log groupName
+          counts[groupName] = counts[groupName] || 0
+          counts[groupName]++
+          valueSum++
+      else # data is string
+        for i in [0..data.length-1] by 1
+          currentVar = data[i].x
+          counts[currentVar] = counts[currentVar] || 0
+          counts[currentVar]++
+          valueSum++
+
       obj = d3.entries counts
       return obj
 
@@ -466,7 +441,8 @@ charts = angular.module('app_analysis_charts', [])
       .sort(null)
 
       formatted_data = makePieData(data)
-      console.log pie(formatted_data)
+      #console.log formatted_data
+      #console.log pie(formatted_data)
 
       arcs = _graph.selectAll(".arc")
       .data(pie(formatted_data))
@@ -498,16 +474,26 @@ charts = angular.module('app_analysis_charts', [])
       xAxis = d3.svg.axis().scale(x).orient('bottom')
       yAxis = d3.svg.axis().scale(y).orient('left')
 
-      r = d3.scale.linear()
-      .domain([d3.min(data, (d)-> parseFloat d.z), d3.max(data, (d)-> parseFloat d.z)])
-      .range([3,15])
+      zIsNumber = !isNaN(data[0].z)
 
-      rValue = (d)->parseFloat d.z
+      r = 0
+      rValue = 0
+      if(zIsNumber)
+        r = d3.scale.linear()
+        .domain([d3.min(data, (d)-> parseFloat d.z), d3.max(data, (d)-> parseFloat d.z)])
+        .range([3,15])
+        rValue = (d) -> parseFloat d.z
+      else
+        r = d3.scale.linear()
+        .domain([5, 5])
+        .range([3,15])
+        rValue = (d) -> d.z
 
       tooltip = container
       .append('div')
       .attr('class', 'tooltip')
-      #          .style('opacity', 0)
+
+      color = d3.scale.category10()
 
       # x axis
       _graph.append("g")
@@ -517,7 +503,6 @@ charts = angular.module('app_analysis_charts', [])
       .append('text')
       .attr('class', 'label')
       .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
-#          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
       # y axis
@@ -530,21 +515,31 @@ charts = angular.module('app_analysis_charts', [])
       .attr('y', -50 )
       .attr('x', -(height / 2))
       .attr("dy", ".71em")
-#          .style("text-anchor", "end")
       .text gdata.yLab.value
-
 
       # create circle
       _graph.selectAll('.circle')
       .data(data)
       .enter().append('circle')
-      .attr('fill', 'yellow')
+      .attr('fill',
+        if(zIsNumber)
+          'yellow'
+        else
+          (d) -> color(d.z))
       .attr('opacity', '0.7')
-      .attr('stroke', 'orange')
+      .attr('stroke',
+        if(zIsNumber)
+          'orange'
+        else
+          (d) -> color(d.z))
       .attr('stroke-width', '2px')
       .attr('cx', (d) -> x d.x)
       .attr('cy', (d) -> y d.y)
-      .attr('r', (d) -> r d.z)
+      .attr('r', (d) ->
+        if(zIsNumber) # if d.z is number, use d.z as radius
+          r d.z
+        else # else, set radius to be 8
+          8)
       .on('mouseover', (d) ->
         tooltip.transition().duration(200).style('opacity', .9)
         tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.zLab.value+': '+ rValue(d)+'</div>')
