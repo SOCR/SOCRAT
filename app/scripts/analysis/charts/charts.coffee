@@ -254,8 +254,8 @@ charts = angular.module('app_analysis_charts', [])
       yMap = (d)-> y yValue(d)
 
       # set up fill color
-      cValue = (d)-> d.y
-      color = d3.scale.category10()
+      #cValue = (d)-> d.y
+      #color = d3.scale.category10()
 
       # x axis
       _graph.append("g")
@@ -265,7 +265,6 @@ charts = angular.module('app_analysis_charts', [])
       .append('text')
       .attr('class', 'label')
       .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
-#          .style('text-anchor', 'end')
       .text gdata.xLab.value
 
       # y axis
@@ -278,14 +277,12 @@ charts = angular.module('app_analysis_charts', [])
       .attr('y', -50 )
       .attr('x', -(height / 2))
       .attr("dy", ".71em")
-#          .style("text-anchor", "end")
       .text gdata.yLab.value
 
       # add the tooltip area to the webpage
       tooltip = container
       .append('div')
       .attr('class', 'tooltip')
-      #          .style('opacity', 0)
 
       # draw dots
       _graph.selectAll('.dot')
@@ -295,7 +292,8 @@ charts = angular.module('app_analysis_charts', [])
       .attr('r', 5)
       .attr('cx', xMap)
       .attr('cy', yMap)
-      .style('fill', (d)->color cValue(d))
+      .style('fill', 'DodgerBlue')
+      .attr('opacity', '0.5')
       .on('mouseover', (d)->
         tooltip.transition().duration(200).style('opacity', .9)
         tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">(' + xValue(d)+ ',' + yValue(d) + ')</div>')
@@ -303,10 +301,7 @@ charts = angular.module('app_analysis_charts', [])
       .on('mouseout', (d)->
         tooltip. transition().duration(500).style('opacity', 0))
 
-
-
     drawScatterplot: _drawScatterplot
-
 ]
 
 .factory 'histogram',[
@@ -319,7 +314,6 @@ charts = angular.module('app_analysis_charts', [])
 
       arr = data.map (d) -> parseFloat d.x
       x = d3.scale.linear().domain([ranges.xMin, ranges.xMax]).range([0,width])
-
 
       plotHist = (bins) ->
         $('#slidertext').remove()
@@ -343,7 +337,6 @@ charts = angular.module('app_analysis_charts', [])
         .append('text')
         .attr('class', 'label')
         .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
-#            .style('text-anchor', 'end')
         .text gdata.xLab.value
 
         # y axis
@@ -356,7 +349,6 @@ charts = angular.module('app_analysis_charts', [])
         .attr('y', -50 )
         .attr('x', -(height / 2))
         .attr("dy", ".71em")
-#            .style("text-anchor", "end")
         .text "Count"
 
         bar = _graph.selectAll('.bar')
@@ -463,7 +455,6 @@ charts = angular.module('app_analysis_charts', [])
       .text (d) -> d.data.key + ': ' + parseFloat(100*d.data.value/valueSum).toFixed(2) + '%'
 
     drawPie: _drawPie
-
 ]
 
 .factory 'bubble', [
@@ -558,7 +549,6 @@ charts = angular.module('app_analysis_charts', [])
       yAxis = d3.svg.axis().scale(y).orient('left')
       x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
       y.domain([d3.min(data, (d)->parseFloat d.y), d3.max(data, (d)->parseFloat d.y)])
-
 
       _graph.append('g')
       .attr('class', 'x axis')
