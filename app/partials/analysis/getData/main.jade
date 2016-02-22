@@ -22,7 +22,7 @@ div(ng-controller='getDataMainCtrl')
       button.btn.btn-primary(ng-click="getWB()") Load
 
   div.generate(uib-collapse="showState.generate")
-    ul.nav.nav-pills.nav-stacked
+    ul.nav.nav-pills.nav-stacked.disabled
       li
         a Binomial Coin Toss
       li
@@ -33,6 +33,15 @@ div(ng-controller='getDataMainCtrl')
         a Beta Binomial Experiment
       li
         a The Beta Distribution Experiment
+
+  form.jsonUrl(uib-collapse="showState.jsonParse")
+    legend Enter URL to parse JSON file
+    div.form-group
+      label(for="getDataJsonUrlInput").sr-only Enter URL
+      div.btn-group.btn-group-justified(role="group")
+        input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
+        span#getDataJsonUrlClear(ng-click="jsonUrl=''").glyphicon.glyphicon-remove-circle
+    button.btn.btn-primary(ng-click="getJsonByUrl()") Parse
 
   br
   handsontable(purpose="json")

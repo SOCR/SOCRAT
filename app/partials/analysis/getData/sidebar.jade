@@ -16,15 +16,21 @@ div(ng-controller="getDataSidebarCtrl")
       ng-click="show('worldBank')"
       ng-class="{active:selected == 'getDataWorldBank'}")
       | Load data from WorldBank
-    a#getDataGenerate.list-group-item.disabled(
+    a#getDataGenerate.list-group-item(
       href=""
       ng-click="show('generate')"
       ng-class="{active:selected == 'getDataGenerate'}")
       | Use data generator
-    a.list-group-item.disabled(href="", ng-click="getJson()", ng-class="{active:selected == 'getDataJson'}")
-      | Parse JSON fileParse SOCR Data page
-    a.list-group-item.disabled(href="", ng-click="save()", ng-class="{active:selected == 'getDataSocrPage'}")
-      | Parse SOCR Data page
+    a#getDataJson.list-group-item(
+      href=""
+      ng-click="show('jsonParse')"
+      ng-class="{active:selected == 'getDataJson'}")
+      | Parse JSON file by URL
+    a#getDataSocrPage.list-group-item.disabled(
+      href=""
+      ng-click="save()"
+      ng-class="{active:selected == 'getDataSocrPage'}")
+      | Parse SOCR Data page by URL
 
 //
   accordion(close-others="true")
