@@ -240,10 +240,9 @@ App.run([
 
     core.register 'charts', charts
     core.start 'charts'
+
     #core.register 'importer', importer
     #core.start 'importer'
-    core.register 'charts', charts
-    core.start 'charts'
 
     # add module to the list of Tools to appear in Tools tab dropdown
     tools = [
