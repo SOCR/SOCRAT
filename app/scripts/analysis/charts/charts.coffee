@@ -83,9 +83,9 @@ charts = angular.module('app_analysis_charts', [])
       name: 'Bar Graph'
       value: 0
       x: true
-      y: false
+      y: true
       z: false
-      message: "Choose a numerical variable for x and a categorical variable for y."
+      message: "Choose a numerical or categorical variable for x. If you have one choose a label variable for y."
     ,
       name: 'Scatter Plot'
       value: 1
@@ -163,14 +163,24 @@ charts = angular.module('app_analysis_charts', [])
 
       $rootScope.$broadcast 'charts:graphDiv', results
 
+    $scope.labelVar = false
+    $scope.labelCheck = null
     $scope.changeName = () ->
       $scope.graphInfo.graph = $scope.graphSelect.name
+
+#      if selector.value is "Bar Chart"
+#        $scope.labelVar = true
+#        $rootScope.emit 'Charts: labels y', $scope.labelCheck
+#      else
+#        $scope.labelVar = false
+
       $scope.createGraph()
 
     $scope.changeVar = (selector,headers, ind) ->
       for h in headers
         if selector.value is h.value then $scope.graphInfo[ind] = parseFloat h.key
       $scope.createGraph()
+
 
     sb = ctrlMngr.getSb()
 
@@ -211,30 +221,6 @@ charts = angular.module('app_analysis_charts', [])
     format: _format
 ])
 
-#.factory 'stackedBar', [
-#  () ->
-#    _drawStack = (width, height, ) ->
-#      x = d3.scale.ordinal()
-#            .rangeRoundBands([0, width], .1)
-#
-#      y = d3.scale.linear()
-#            .rangeRound([height, 0])
-#
-#      color = d3.scale.ordinal()
-#                .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
-#
-#      xAxis = d3.svg.axis()
-#              .scale(x)
-#              .orient("bottom")
-#
-#      yAxis = d3.svg.axis()
-#              .scale(y)
-#              .orient("left")
-#              .tickFormat(d3.format(".2s"))
-#
-#
-#    drawStack:_drawStack
-#]
 
 .factory 'scatterplot', [
   () ->
@@ -542,46 +528,238 @@ charts = angular.module('app_analysis_charts', [])
 
 .factory 'bar', [
   () ->
+    _setAxisPar = (x,y,xAxis,yAxis,type, width, height) ->
+      ord = d3.scale.ordinal()
+      lin = d3.scale.linear()
+
+      switch type
+        when "xCat" or "xCatAndyNum"
+          x = ord.rangeRoundBands([0, width], .1)
+          y = lin.range([ height, 0 ])
+        when "xNum" or "xNumAndyCat"
+          x = lin.range([ 0, width ])
+          y = ord.rangeRoundBands([height, 0], .1)
+        when "xNumAndyNum"
+          x = lin.range([ 0, width ])
+          y = lin.range([ height, 0 ])
+        else
+          alert "Two categorical variables"
+
+
+      xAxis = d3.svg.axis().scale(x).orient('bottom')
+      yAxis = d3.svg.axis().scale(y).orient('left')
+
     _drawBar = (width,height,data,_graph,gdata) ->
       x = d3.scale.linear().range([ 0, width ])
       y = d3.scale.linear().range([ height, 0 ])
+
+
       xAxis = d3.svg.axis().scale(x).orient('bottom')
       yAxis = d3.svg.axis().scale(y).orient('left')
       x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
       y.domain([d3.min(data, (d)->parseFloat d.y), d3.max(data, (d)->parseFloat d.y)])
 
-      _graph.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call xAxis
-      .append('text')
-      .attr('class', 'label')
-      .attr('x', width-80)
-      .attr('y', 30)
-      .text gdata.xLab.value
+      #without y
+      if !data[0].y
+        #Works
+        if isNaN data[0].x
+          counts = {}
+          for i in [0..data.length-1] by 1
+            currentVar = data[i].x
+            counts[currentVar] = counts[currentVar] || 0
+            counts[currentVar]++
+          counts = d3.entries counts
+#          console.log counts
+          x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
+          xAxis = d3.svg.axis().scale(x).orient('bottom')
+          x.domain(counts.map (d) -> d.key)
+          y.domain([d3.min(counts, (d)-> parseFloat d.value), d3.max(counts, (d)-> parseFloat d.value)])
 
-      _graph.append('g')
-      .attr('class', 'y axis')
-      .call yAxis
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr("x", -80)
-      .attr("y", -40)
-      .attr('dy', '1em')
-      .text gdata.yLab.value
+          _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call xAxis
+          .append('text')
+          .attr('class', 'label')
+          .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+          .text gdata.xLab.value
 
-      rectWidth = width / data.length
+          _graph.append('g')
+          .attr('class', 'y axis')
+          .call yAxis
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', -50 )
+          .attr('x', -(height / 2))
+          .attr('dy', '1em')
+          .text "Count"
 
-      # create bar elements
-      _graph.selectAll('rect')
-      .data(data)
-      .enter().append('rect')
-      .attr('class', 'bar')
-      .attr('x',(d)-> x d.x  )
-      .attr('width', rectWidth)
-      .attr('y', (d)-> y d.y )
-      .attr('height', (d)-> Math.abs(height - y d.y) )
-      .attr('fill', 'steelblue')
+          # create bar elements
+          _graph.selectAll('rect')
+          .data(counts)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x',(d)-> x d.key  )
+          .attr('width', x.rangeBand())
+          .attr('y', (d)-> y d.value )
+          .attr('height', (d)-> Math.abs(height - y d.value))
+          .attr('fill', 'steelblue')
+
+
+        else #data is numerical and only x. height is rect width, width is x of d.x,
+          #y becomes the categorical
+          y = d3.scale.ordinal().rangeRoundBands([height, 0], .1)
+          yAxis = d3.svg.axis().scale(y).orient('left')
+
+          y.domain((d) -> d.x)
+
+          _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call xAxis
+          .append('text')
+          .attr('class', 'label')
+          .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+          .text gdata.xLab.value
+
+          _graph.append('g')
+          .attr('class', 'y axis')
+          .call yAxis
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', -50 )
+          .attr('x', -(height / 2))
+          .attr('dy', '1em')
+          .text "Null"
+
+          rectWidth = height/data.length
+          # create bar elements
+          _graph.selectAll('rect')
+          .data(data)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          #.attr('x',(d)-> x d.x )
+          .attr('width', (d)-> x d.x)
+          .attr('y', (d,i)-> i*rectWidth)
+          .attr('height', rectWidth)
+          .attr('fill', 'steelblue')
+
+
+
+      #with y
+      else
+        #y is categorical
+        if isNaN data[0].y
+
+          y = d3.scale.ordinal().range([height,0])
+          y.domain(data.map (d) -> d.y)
+          yAxis = d3.svg.axis().scale(y).orient('left')
+
+          _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call xAxis
+          .append('text')
+          .attr('class', 'label')
+          .attr('x', width-80)
+          .attr('y', 30)
+          .text gdata.xLab.value
+
+          _graph.append('g')
+          .attr('class', 'y axis')
+          .call yAxis
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr("x", -80)
+          .attr("y", -40)
+          .attr('dy', '1em')
+          .text gdata.yLab.value
+
+          _graph.selectAll('rect')
+          .data(data)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x',(d)-> x d.x  )
+          .attr('width', (d) -> Math.abs(x d.x))
+          .attr('y', (d)-> y d.y )
+          .attr('height', y.rangeBand())
+          .attr('fill', 'steelblue')
+
+
+        else if isNaN data[0].x and !isNaN data[0].y
+          x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
+          xAxis = d3.svg.axis().scale(x).orient('bottom')
+          x.domain(data.map (d) -> d.x)
+          y.domain([d3.min(data, (d)-> parseFloat d.x), d3.max(data, (d)-> parseFloat d.x)])
+
+          _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call xAxis
+          .append('text')
+          .attr('class', 'label')
+          .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+          .text gdata.xLab.value
+
+          _graph.append('g')
+          .attr('class', 'y axis')
+          .call yAxis
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', -50 )
+          .attr('x', -(height / 2))
+          .attr('dy', '1em')
+          .text "Count"
+
+          # create bar elements
+          _graph.selectAll('rect')
+          .data(data)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x',(d)-> x d.x  )
+          .attr('width', x.rangeBand())
+          .attr('y', (d)-> y d.y )
+          .attr('height', (d)-> Math.abs(height - y d.y))
+          .attr('fill', 'steelblue')
+
+
+        else if !isNaN data[0].y and !isNaN data[0].x
+          rectWidth = width / data.length
+
+          _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call xAxis
+          .append('text')
+          .attr('class', 'label')
+          .attr('x', width-80)
+          .attr('y', 30)
+          .text gdata.xLab.value
+
+          _graph.append('g')
+          .attr('class', 'y axis')
+          .call yAxis
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr("x", -80)
+          .attr("y", -40)
+          .attr('dy', '1em')
+          .text gdata.yLab.value
+
+
+          # create bar elements
+          _graph.selectAll('rect')
+          .data(data)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x',(d)-> x d.x  )
+          .attr('width', rectWidth)
+          .attr('y', (d)-> y d.y )
+          .attr('height', (d)-> Math.abs(height - y d.y) )
+          .attr('fill', 'steelblue')
+
+
+
     drawBar: _drawBar
 ]
 
@@ -609,10 +787,14 @@ charts = angular.module('app_analysis_charts', [])
         if newChartData
           gdata = newChartData
           data = newChartData.data
+#          _label = null
+
+          console.log data
 
           #id = '#'+ newInfo.name
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
+          console.log "test"
           svg = container.append('svg').attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom)
           #svg.select("#remove").remove()
           _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -623,6 +805,9 @@ charts = angular.module('app_analysis_charts', [])
 
             xMax: d3.max data, (d) -> parseFloat d.x
             yMax: d3.max data, (d) -> parseFloat d.y
+
+#          $scope.on 'Charts: labels y', (events, data) ->
+#            _label = data
 
           switch gdata.name
             when 'Bar Graph'
