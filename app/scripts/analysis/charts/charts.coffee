@@ -85,7 +85,7 @@ charts = angular.module('app_analysis_charts', [])
       x: true
       y: true
       z: false
-      message: "Choose a numerical or categorical variable for x. If you have one choose a label variable for y."
+      message: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
     ,
       name: 'Scatter Plot'
       value: 1
@@ -114,6 +114,13 @@ charts = angular.module('app_analysis_charts', [])
       y: false
       z: false
       message: "Choose one variable to put into a pie chart."
+    ,
+      name: 'Stream Graph'
+      value: 5
+      x: true
+      y: true
+      z: false
+      message: "Choose two numerical variables"
 
     ]
     $scope.graphSelect = {}
@@ -168,11 +175,6 @@ charts = angular.module('app_analysis_charts', [])
     $scope.changeName = () ->
       $scope.graphInfo.graph = $scope.graphSelect.name
 
-#      if selector.value is "Bar Chart"
-#        $scope.labelVar = true
-#        $rootScope.emit 'Charts: labels y', $scope.labelCheck
-#      else
-#        $scope.labelVar = false
 
       $scope.createGraph()
 
@@ -222,9 +224,9 @@ charts = angular.module('app_analysis_charts', [])
 ])
 
 
-.factory 'scatterplot', [
+.factory 'scatterPlot', [
   () ->
-    _drawScatterplot = (data,ranges,width,height,_graph,container,gdata) ->
+    _drawScatterPlot = (data,ranges,width,height,_graph,container,gdata) ->
 
       x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ 0, width ])
       y = d3.scale.linear().domain([ranges.yMin,ranges.yMax]).range([ height, 0 ])
@@ -287,7 +289,7 @@ charts = angular.module('app_analysis_charts', [])
       .on('mouseout', (d)->
         tooltip. transition().duration(500).style('opacity', 0))
 
-    drawScatterplot: _drawScatterplot
+    drawScatterPlot: _drawScatterPlot
 ]
 
 .factory 'histogram',[
@@ -651,7 +653,7 @@ charts = angular.module('app_analysis_charts', [])
         #y is categorical
         if isNaN data[0].y
 
-          y = d3.scale.ordinal().range([height,0])
+          y = d3.scale.ordinal().rangeRoundBands([0, height], .1)
           y.domain(data.map (d) -> d.y)
           yAxis = d3.svg.axis().scale(y).orient('left')
 
@@ -679,97 +681,145 @@ charts = angular.module('app_analysis_charts', [])
           .data(data)
           .enter().append('rect')
           .attr('class', 'bar')
-          .attr('x',(d)-> x d.x  )
+          #.attr('x',(d)-> x d.x  )
           .attr('width', (d) -> Math.abs(x d.x))
           .attr('y', (d)-> y d.y )
           .attr('height', y.rangeBand())
           .attr('fill', 'steelblue')
 
 
-        else if isNaN data[0].x and !isNaN data[0].y
-          x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
-          xAxis = d3.svg.axis().scale(x).orient('bottom')
-          x.domain(data.map (d) -> d.x)
-          y.domain([d3.min(data, (d)-> parseFloat d.x), d3.max(data, (d)-> parseFloat d.x)])
+        else if !isNaN data[0].y
+          if isNaN data[0].x
+            console.log "xCat and yNum"
+            x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
+            x.domain(data.map (d) -> d.x)
+            xAxis = d3.svg.axis().scale(x).orient('bottom')
+            #y.domain([d3.min(data, (d)-> parseFloat d.y), d3.max(data, (d)-> parseFloat d.y)])
 
-          _graph.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(0,' + height + ')')
-          .call xAxis
-          .append('text')
-          .attr('class', 'label')
-          .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
-          .text gdata.xLab.value
+            _graph.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call xAxis
+            .append('text')
+            .attr('class', 'label')
+            .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+            .text gdata.xLab.value
 
-          _graph.append('g')
-          .attr('class', 'y axis')
-          .call yAxis
-          .append('text')
-          .attr('transform', 'rotate(-90)')
-          .attr('y', -50 )
-          .attr('x', -(height / 2))
-          .attr('dy', '1em')
-          .text "Count"
+            _graph.append('g')
+            .attr('class', 'y axis')
+            .call yAxis
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -50 )
+            .attr('x', -(height / 2))
+            .attr('dy', '1em')
+            .text "Count"
 
-          # create bar elements
-          _graph.selectAll('rect')
-          .data(data)
-          .enter().append('rect')
-          .attr('class', 'bar')
-          .attr('x',(d)-> x d.x  )
-          .attr('width', x.rangeBand())
-          .attr('y', (d)-> y d.y )
-          .attr('height', (d)-> Math.abs(height - y d.y))
-          .attr('fill', 'steelblue')
+            # create bar elements
+            _graph.selectAll('rect')
+            .data(data)
+            .enter().append('rect')
+            .attr('class', 'bar')
+            .attr('x',(d)-> x d.x  )
+            .attr('width', x.rangeBand())
+            .attr('y', (d)-> y d.y )
+            .attr('height', (d)-> Math.abs(height - y d.y))
+            .attr('fill', 'steelblue')
+          else
+
+        #else if !isNaN data[0].y and !isNaN data[0].x
+            rectWidth = width / data.length
+
+            _graph.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call xAxis
+            .append('text')
+            .attr('class', 'label')
+            .attr('x', width-80)
+            .attr('y', 30)
+            .text gdata.xLab.value
+
+            _graph.append('g')
+            .attr('class', 'y axis')
+            .call yAxis
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr("x", -80)
+            .attr("y", -40)
+            .attr('dy', '1em')
+            .text gdata.yLab.value
 
 
-        else if !isNaN data[0].y and !isNaN data[0].x
-          rectWidth = width / data.length
-
-          _graph.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(0,' + height + ')')
-          .call xAxis
-          .append('text')
-          .attr('class', 'label')
-          .attr('x', width-80)
-          .attr('y', 30)
-          .text gdata.xLab.value
-
-          _graph.append('g')
-          .attr('class', 'y axis')
-          .call yAxis
-          .append('text')
-          .attr('transform', 'rotate(-90)')
-          .attr("x", -80)
-          .attr("y", -40)
-          .attr('dy', '1em')
-          .text gdata.yLab.value
-
-
-          # create bar elements
-          _graph.selectAll('rect')
-          .data(data)
-          .enter().append('rect')
-          .attr('class', 'bar')
-          .attr('x',(d)-> x d.x  )
-          .attr('width', rectWidth)
-          .attr('y', (d)-> y d.y )
-          .attr('height', (d)-> Math.abs(height - y d.y) )
-          .attr('fill', 'steelblue')
+            # create bar elements
+            _graph.selectAll('rect')
+            .data(data)
+            .enter().append('rect')
+            .attr('class', 'bar')
+            .attr('x',(d)-> x d.x  )
+            .attr('width', rectWidth)
+            .attr('y', (d)-> y d.y )
+            .attr('height', (d)-> Math.abs(height - y d.y) )
+            .attr('fill', 'steelblue')
 
 
 
     drawBar: _drawBar
 ]
 
+.factory 'streamGraph', [
+  () ->
+
+    _randomSample  = (data, n) ->
+      #take an array of objects, and the desired number of random ones. return array of objects
+      for d in data
+        d.x = +d.x
+        d.y = +d.y
+
+      random = []
+      for i in [0...n-1] by 1
+        random.push(data[Math.floor(Math.random() * data.length)])
+      return random
+
+    _streamGraph = (data,ranges,width,height,_graph) ->
+      n = 20
+      m = 100
+      stack = d3.layout.stack().offset('wiggle')
+      layers = stack(d3.range(n).map () -> _randomSample(data,m))
+      console.log layers
+      x = d3.scale.linear()
+        .domain([0, m - 1])
+        .range([0, width]);
+
+      y = d3.scale.linear()
+          .domain([0, d3.max(layers, (layer)-> d3.max(layer, (d) -> return d.y0 + d.y))])
+          .range([height, 0])
+
+      color = d3.scale.linear()
+        .range(["#aad", "#556"])
+
+      area = d3.svg.area()
+              .x((d) -> x d.x)
+              .y0((d) -> y d.y0)
+              .y1((d) -> y(d.y0 + d.y))
+
+      _graph.selectAll("path")
+          .data(layers)
+          .enter().append("path")
+          .attr("d", area)
+          .style("fill", () -> color(Math.random()))
+
+    streamGraph: _streamGraph
+]
+
 .directive 'd3Charts', [
-  'scatterplot',
+  'scatterPlot',
   'histogram',
   'pie',
   'bubble',
-  'bar'
-  (scatterplot,histogram,pie,bubble,bar) ->
+  'bar',
+  'streamGraph'
+  (scatterPlot,histogram,pie,bubble,bar,streamGraph) ->
     restrict: 'E'
     template: "<div class='graph-container' style='height: 600px'></div>"
     link: (scope, elem, attr) ->
@@ -820,5 +870,7 @@ charts = angular.module('app_analysis_charts', [])
               _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
               pie.drawPie(data,width,height,_graph)
             when 'Scatter Plot'
-              scatterplot.drawScatterplot(data,ranges,width,height,_graph,container,gdata)
+              scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,gdata)
+            when 'Stream Graph'
+              streamGraph.streamGraph(data,ranges,width,height,_graph)
 ]
