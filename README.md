@@ -24,6 +24,7 @@ Clone the repository.
     $> git clone https://github.com/SOCR/SOCRAT.git 
 
 Now, lets install all the dependencies. Go into the root folder,
+
     $> cd SOCRAT
     $> npm install
     $> bower install
@@ -72,7 +73,7 @@ Copyright and License
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013-2015 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2016 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License

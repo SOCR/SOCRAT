@@ -106,10 +106,11 @@ getData = angular.module('app_analysis_getData', [
           console.log 'handsontable data updated to db'
 
     _setData = (data) ->
-      console.log '%c inputCache set called for the project'+$stateParams.projectId+':'+$stateParams.forkId, 'color:steelblue'
+      console.log '%c inputCache set called for the project' + $stateParams.projectId + ':' + $stateParams.forkId,
+        'color:steelblue'
 
       # TODO: fix checking existance of parameters to default table name #SOCR-140
-      if data? or  $stateParams.projectId? or $stateParams.forkId?
+      if data? or $stateParams.projectId? or $stateParams.forkId?
         _data = data unless data is 'edit'
 
         # clear any previous db update broadcast messages
@@ -239,7 +240,7 @@ getData = angular.module('app_analysis_getData', [
     # get the sandbox made for this module
     # sb = getDataSb.getSb()
     # console.log 'sandbox created'
-    $scope.jsonUrl = 'url..'
+    $scope.jsonUrl = ''
     flag = true
     $scope.selected = null
 
@@ -265,12 +266,17 @@ getData = angular.module('app_analysis_getData', [
           $scope.selected = 'getDataWorldBank'
           $scope.$emit 'change in showStates', 'worldBank'
 
-        when  'generate'
+        when 'generate'
           $scope.selected = 'getDataGenerate'
           $scope.$emit 'change in showStates', 'generate'
 
+        when 'jsonParse'
+          $scope.selected = 'getDataJson'
+          $scope.$emit 'change in showStates', 'jsonParse'
+
     # getJson
     $scope.getJson = ->
+      console.log 123
       console.log $scope.jsonUrl
 
       if $scope.jsonUrl is ''
@@ -359,6 +365,7 @@ getData = angular.module('app_analysis_getData', [
       d3.text url,
         (dataResults) ->
           if dataResults?.length > 0
+            # parse to unnamed array
             dataResults = d3.csv.parseRows dataResults
             _data =
               columnHeader: dataResults.shift()
@@ -376,12 +383,32 @@ getData = angular.module('app_analysis_getData', [
           else
             console.log 'rejected:' + msg
 
+    $scope.getJsonByUrl = ->
+      d3.json $scope.jsonUrl,
+        (dataResults) ->
+          if dataResults?.length > 0
+            _data =
+              columnHeader: dataResults.shift()
+              data: [null, dataResults]
+              # purpose is helps in pin pointing which
+              # handsontable directive to update.
+              purpose: 'json'
+            console.log 'resolved'
+            # pass a message to update the handsontable div
+            # data is the formatted data which plugs into the
+            #  handontable.
+            $scope.$emit 'update handsontable', _data
+            # switch the accordion from getJson to grid
+            # $scope.$emit("change in showStates","grid")
+          else
+            console.log 'rejected:' + msg
+
     try
-      _showState = new showState(['grid', 'socrData', 'worldBank', 'generate'], $scope)
+      _showState = new showState(['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], $scope)
     catch e
       console.log e.message
 
-    # Adding Listeners
+    # adding listeners
     $scope.$on 'update showStates', (obj, data) ->
       _showState.set data
 
@@ -389,7 +416,7 @@ getData = angular.module('app_analysis_getData', [
       console.log 'get data main div loaded'
 ])
 
-# Helps sidebar accordion to keep in sync with the main div.
+# Helps sidebar accordion to keep in sync with the main div
 .factory('showState', ->
   (obj, scope) ->
     if arguments.length is 0
@@ -410,8 +437,6 @@ getData = angular.module('app_analysis_getData', [
             scope.showState[index] = false
           else
             scope.showState[i] = true
-        #console.log "final state"
-        #console.log scope.showState
 )
 
 # ###

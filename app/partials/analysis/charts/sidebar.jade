@@ -4,6 +4,9 @@ div(ng-controller="sideChartsCtrl")
   h4 Variables
   div
     p {{graphSelect.message}}
+    //div(ng-show=categorical).form-inline
+      input(ng-model="selectorCat" type="checkbox" id="categorical")
+      p X is a categorical variable
   div.form-inline
     div.form-horizontal(ng-show="graphSelect.x")
       label(for = "x") Add X
@@ -11,6 +14,10 @@ div(ng-controller="sideChartsCtrl")
     div.form-horizontal(ng-show="graphSelect.y")
       label(for = "y") Add Y
       select#y.form-control(ng-change="changeVar(selector2,headers,'y');" ng-model="selector2" ng-options="v as v.value for v in headers")
+      div(ng-show = "labelVar")
+        input(ng-model="labelCheck" type="checkbox" id = "label")
+        p Check if Y variable is the labels column
+
     div.form-horizontal(ng-show="graphSelect.z")
       label(for = "z") Add Radius
       select#z.form-control(ng-change="changeVar(selector3,headers,'z');" ng-model="selector3" ng-options="v as v.value for v in headers")
