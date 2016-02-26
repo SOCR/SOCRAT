@@ -312,6 +312,9 @@ getData = angular.module('app_analysis_getData', [
   (getDataEventMngr, $scope, showState, jsonParser, state) ->
     console.log 'getDataMainCtrl executed'
 
+    # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+    typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
+
     # available SOCR Datasets
     $scope.socrDatasets = [
       id: 'IRIS'
@@ -383,16 +386,22 @@ getData = angular.module('app_analysis_getData', [
           else
             console.log 'rejected:' + msg
 
-    $scope.getJsonByUrl = ->
+    $scope.getJsonByUrl = (type) ->
       d3.json $scope.jsonUrl,
         (dataResults) ->
           if dataResults?.length > 0
+            # check if JSON contains "flat data" - 2d array
+            if typeIsArray dataResults and typeIsArray dataResults[0] and not typeIsArray dataResults[0][0]
+              type = 'flat'
+            else
+              type = 'nested'
             _data =
               columnHeader: dataResults.shift()
               data: [null, dataResults]
               # purpose is helps in pin pointing which
               # handsontable directive to update.
               purpose: 'json'
+              type: type
             console.log 'resolved'
             # pass a message to update the handsontable div
             # data is the formatted data which plugs into the
@@ -527,6 +536,7 @@ getData = angular.module('app_analysis_getData', [
         #check if data is in the right format
 #        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
         if arg? and typeof arg.data is 'object'
+          # TODO: not to pass nested data to ht, but save in db
           obj =
             data: arg.data[1]
 #            startRows: Object.keys(arg.data[1]).length
