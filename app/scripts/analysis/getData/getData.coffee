@@ -312,9 +312,6 @@ getData = angular.module('app_analysis_getData', [
   (getDataEventMngr, $scope, showState, jsonParser, state) ->
     console.log 'getDataMainCtrl executed'
 
-    # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
-    typeIsArray = Array.isArray || ( value ) -> return {}.toString.call( value ) is '[object Array]'
-
     # available SOCR Datasets
     $scope.socrDatasets = [
       id: 'IRIS'
@@ -456,6 +453,16 @@ getData = angular.module('app_analysis_getData', [
 .factory('app_analysis_getData_dataAdaptor', [
   () ->
 
+    # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+    typeIsArray = Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'
+
+    haveSameKeys = (obj1, obj2) ->
+      if Object.keys(obj1).length is Object.keys(obj2).length
+        res = (k of obj2 for k of obj1)
+        res.every (e) -> e is true
+      else
+        false
+
     # accepts handsontable table as input and returns dataFrame
     _toDataFrame = (tableData, nSpareCols, nSpareRows) ->
 
@@ -479,6 +486,64 @@ getData = angular.module('app_analysis_getData', [
 
     _toHandsontable = () ->
       # TODO: implement for poping up data when coming back from analysis tabs
+
+    # tries to convert JSON to 2d flat data table,
+    #  returns coverted data or false if not possible
+    _jsonToFlatTable = (data) ->
+      # check if JSON contains "flat data" - 2d array
+      if data? and typeof data is 'object'
+        if typeIsArray data
+          if data[0]?
+            # non-empty array
+            if (data.every (el) -> typeof el is 'object')
+              # array or object
+              if (data.every (el) -> typeIsArray el)
+                # array of arrays
+                if (data[0][0]? and data.every (col) -> col.every (el) -> typeof el in ['number', 'string'])
+                  # array of arrays of (numbers or strings)
+                  data
+                else
+                  # empty 2d array or non-string values
+                  false
+              else
+                # array of arbitrary objects
+                # http://stackoverflow.com/a/21266395/1237809
+                if (not not data.reduce((prev, next) -> if haveSameKeys prev, next then next else {})) and
+#                  (not not data.reduce((prev, next) -> if haveSameKeys prev, next then next else {}))
+                  # array of objects with the same keys - make them columns
+                  cols = Object.keys data[0]
+                  # reorder values according to keys order
+                  data = (cols.map((col) -> row[col]) for row in data)
+                  # insert keys as a header
+                  data.splice 0, 0, cols
+            else
+              # 1d array of strings or numbers
+              if (data.every (el) -> typeof el in ['number', 'string'])
+                data
+          else
+            # empty array
+            false
+        else
+          # arbitrary object
+          if Object.keys(data)? and Object.keys(data).length > 0
+            ks = Object.keys(data)
+            vals = ks.map (k) -> data[k]
+            if vals.every (el) -> typeof el in ['number', 'string']
+              # 1d object
+              data = [ks, vals]
+            else if values.every (el) -> typeof el is 'object'
+                # object of arrays or objects
+                if (vals.every (el) -> typeIsArray el) and
+                  (not not vals.reduce((prev, next) -> if prev.length is next.length then next else []))
+                  # object of arrays of the same length
+                  vals = (t[i] for t in vals for i of vals)  # transpose
+                  vals.splice 0, 0, ks  # add header
+                else
+                  # object of arbitrary objects
+                  if not not vals.reduce((prev, next) -> if haveSameKeys prev, next then next else {})
+                    # object of objects with the same keys - make them columns
+          else
+            false
 
     toDataFrame: _toDataFrame
     toHandsontable: _toHandsontable
