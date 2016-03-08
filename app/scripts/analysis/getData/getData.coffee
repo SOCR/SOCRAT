@@ -308,8 +308,9 @@ getData = angular.module('app_analysis_getData', [
   '$scope'
   'showState'
   'app_analysis_getData_jsonParser'
+  'app_analysis_getData_dataAdaptor'
   '$state'
-  (getDataEventMngr, $scope, showState, jsonParser, state) ->
+  (getDataEventMngr, $scope, showState, jsonParser, dataAdaptor, state) ->
     console.log 'getDataMainCtrl executed'
 
     # available SOCR Datasets
@@ -386,15 +387,16 @@ getData = angular.module('app_analysis_getData', [
     $scope.getJsonByUrl = (type) ->
       d3.json $scope.jsonUrl,
         (dataResults) ->
-          if dataResults?.length > 0
+          if dataResults?
+            res = dataAdaptor.jsonToFlatTable dataResults
             # check if JSON contains "flat data" - 2d array
-            if typeIsArray dataResults and typeIsArray dataResults[0] and not typeIsArray dataResults[0][0]
+            if res
               type = 'flat'
             else
               type = 'nested'
             _data =
-              columnHeader: dataResults.shift()
-              data: [null, dataResults]
+              columnHeader: if res.length > 1 then res.shift() else []
+              data: [null, res]
               # purpose is helps in pin pointing which
               # handsontable directive to update.
               purpose: 'json'
@@ -463,6 +465,10 @@ getData = angular.module('app_analysis_getData', [
       else
         false
 
+    isNumStringArray = (arr) ->
+      console.log arr
+      arr.every (el) -> typeof el in ['number', 'string']
+
     # accepts handsontable table as input and returns dataFrame
     _toDataFrame = (tableData, nSpareCols, nSpareRows) ->
 
@@ -488,7 +494,7 @@ getData = angular.module('app_analysis_getData', [
       # TODO: implement for poping up data when coming back from analysis tabs
 
     # tries to convert JSON to 2d flat data table,
-    #  returns coverted data or false if not possible
+    #  returns coverted data or false if not possible / object is empty
     _jsonToFlatTable = (data) ->
       # check if JSON contains "flat data" - 2d array
       if data? and typeof data is 'object'
@@ -508,14 +514,38 @@ getData = angular.module('app_analysis_getData', [
               else
                 # array of arbitrary objects
                 # http://stackoverflow.com/a/21266395/1237809
-                if (not not data.reduce((prev, next) -> if haveSameKeys prev, next then next else {})) and
-#                  (not not data.reduce((prev, next) -> if haveSameKeys prev, next then next else {}))
+                if (not not data.reduce((prev, next) ->
+                  # check if objects have same keys
+                  if haveSameKeys prev, next
+                    prevValues = Object.keys(prev).map (k) -> prev[k]
+                    console.log prevValues
+                    nextValues = Object.keys(prev).map (k) -> next[k]
+                    console.log nextValues
+                    # check that values are
+                    if ((prevValues.length is nextValues.length) and
+                      (isNumStringArray prevValues) and
+                      (isNumStringArray nextValues)
+                    )
+#                    if ((prevValues.length is nextValues.length) and
+#                      (((isNumStringArray prevValues) and
+#                      (isNumStringArray nextValues)) or
+#                      ((prevValues.map(isNumStringArray).every (e) -> e is true) and
+#                      (nextValues.map(isNumStringArray).every (e) -> e is true))
+#                      )
+#                    )
+                      next
+                    else NaN
+                  else NaN
+                ))
                   # array of objects with the same keys - make them columns
                   cols = Object.keys data[0]
                   # reorder values according to keys order
                   data = (cols.map((col) -> row[col]) for row in data)
                   # insert keys as a header
                   data.splice 0, 0, cols
+                  data
+                else
+                  false
             else
               # 1d array of strings or numbers
               if (data.every (el) -> typeof el in ['number', 'string'])
@@ -528,25 +558,44 @@ getData = angular.module('app_analysis_getData', [
           if Object.keys(data)? and Object.keys(data).length > 0
             ks = Object.keys(data)
             vals = ks.map (k) -> data[k]
-            if vals.every (el) -> typeof el in ['number', 'string']
+            if (vals.every (el) -> typeof el in ['number', 'string'])
               # 1d object
               data = [ks, vals]
-            else if values.every (el) -> typeof el is 'object'
+            else if (vals.every (el) -> typeof el is 'object')
                 # object of arrays or objects
-                if (vals.every (el) -> typeIsArray el) and
-                  (not not vals.reduce((prev, next) -> if prev.length is next.length then next else []))
+                if ((vals.every (el) -> typeIsArray el) and
+                  (not not vals.reduce((prev, next) ->
+                    if (prev.length is next.length) then next else [])))
                   # object of arrays of the same length
                   vals = (t[i] for t in vals for i of vals)  # transpose
                   vals.splice 0, 0, ks  # add header
                 else
                   # object of arbitrary objects
-                  if not not vals.reduce((prev, next) -> if haveSameKeys prev, next then next else {})
-                    # object of objects with the same keys - make them columns
+                if (not not vals.reduce((prev, next) ->
+                  # check if objects have same keys
+                  if haveSameKeys prev, next
+                    prevValues = Object.keys(prev).map (k) -> prev[k]
+                    nextValues = Object.keys(prev).map (k) -> next[k]
+                    # check that values are
+                    if ((prevValues.length is nextValues.length) and
+                      (isNumStringArray prevValues) and
+                      (isNumStringArray nextValues)
+                    )
+                      next
+                    else NaN
+                  else NaN
+                ))
+                  subKs = Object.keys vals[0]
+                  data = ([sk].concat(vals.map((val)-> val[sk])) for sk in subKs)
+                  # insert keys as a header
+                  data.splice 0, 0, [""].concat ks
+                  data
           else
             false
 
     toDataFrame: _toDataFrame
     toHandsontable: _toHandsontable
+    jsonToFlatTable: _jsonToFlatTable
 ])
 
 
@@ -600,7 +649,7 @@ getData = angular.module('app_analysis_getData', [
 
         #check if data is in the right format
 #        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
-        if arg? and typeof arg.data is 'object'
+        if arg? and typeof arg.data is 'object' and arg.type is 'flat'
           # TODO: not to pass nested data to ht, but save in db
           obj =
             data: arg.data[1]
