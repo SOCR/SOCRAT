@@ -387,7 +387,8 @@ getData = angular.module('app_analysis_getData', [
     $scope.getJsonByUrl = (type) ->
       d3.json $scope.jsonUrl,
         (dataResults) ->
-          if dataResults?
+          # check that data object is not empty
+          if dataResults? and Object.keys(dataResults)?.length > 0
             res = dataAdaptor.jsonToFlatTable dataResults
             # check if JSON contains "flat data" - 2d array
             if res
@@ -401,7 +402,6 @@ getData = angular.module('app_analysis_getData', [
               # handsontable directive to update.
               purpose: 'json'
               type: type
-            console.log 'resolved'
             # pass a message to update the handsontable div
             # data is the formatted data which plugs into the
             #  handontable.
@@ -409,7 +409,7 @@ getData = angular.module('app_analysis_getData', [
             # switch the accordion from getJson to grid
             # $scope.$emit("change in showStates","grid")
           else
-            console.log 'rejected:' + msg
+            console.log 'GETDATA: request failed'
 
     try
       _showState = new showState(['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], $scope)
@@ -494,104 +494,90 @@ getData = angular.module('app_analysis_getData', [
       # TODO: implement for poping up data when coming back from analysis tabs
 
     # tries to convert JSON to 2d flat data table,
-    #  returns coverted data or false if not possible / object is empty
+    #  assumes JSON object is not empty - has values,
+    #  returns coverted data or false if not possible
     _jsonToFlatTable = (data) ->
       # check if JSON contains "flat data" - 2d array
       if data? and typeof data is 'object'
         if typeIsArray data
-          if data[0]?
-            # non-empty array
-            if (data.every (el) -> typeof el is 'object')
-              # array or object
-              if (data.every (el) -> typeIsArray el)
-                # array of arrays
-                if (data[0][0]? and data.every (col) -> col.every (el) -> typeof el in ['number', 'string'])
-                  # array of arrays of (numbers or strings)
-                  data
-                else
-                  # empty 2d array or non-string values
-                  false
-              else
-                # array of arbitrary objects
-                # http://stackoverflow.com/a/21266395/1237809
-                if (not not data.reduce((prev, next) ->
-                  # check if objects have same keys
-                  if haveSameKeys prev, next
-                    prevValues = Object.keys(prev).map (k) -> prev[k]
-                    console.log prevValues
-                    nextValues = Object.keys(prev).map (k) -> next[k]
-                    console.log nextValues
-                    # check that values are
-                    if ((prevValues.length is nextValues.length) and
-                      (isNumStringArray prevValues) and
-                      (isNumStringArray nextValues)
-                    )
-#                    if ((prevValues.length is nextValues.length) and
-#                      (((isNumStringArray prevValues) and
-#                      (isNumStringArray nextValues)) or
-#                      ((prevValues.map(isNumStringArray).every (e) -> e is true) and
-#                      (nextValues.map(isNumStringArray).every (e) -> e is true))
-#                      )
-#                    )
-                      next
-                    else NaN
-                  else NaN
-                ))
-                  # array of objects with the same keys - make them columns
-                  cols = Object.keys data[0]
-                  # reorder values according to keys order
-                  data = (cols.map((col) -> row[col]) for row in data)
-                  # insert keys as a header
-                  data.splice 0, 0, cols
-                  data
-                else
-                  false
-            else
-              # 1d array of strings or numbers
-              if (data.every (el) -> typeof el in ['number', 'string'])
-                data
+          # non-empty array
+          if not (data.every (el) -> typeof el is 'object')
+            # 1d array of strings or numbers
+            if (data.every (el) -> typeof el in ['number', 'string'])
+              data
           else
-            # empty array
-            false
+            # array of arrays or objects
+            if (data.every (el) -> typeIsArray el)
+              # array of arrays
+              if (data.every (col) -> col.every (el) -> typeof el in ['number', 'string'])
+                # array of arrays of (numbers or strings)
+                data
+              else
+                # non-string values
+                false
+            else
+              # array of arbitrary objects
+              # http://stackoverflow.com/a/21266395/1237809
+              if (not not data.reduce((prev, next) ->
+                # check if objects have same keys
+                if haveSameKeys prev, next
+                  prevValues = Object.keys(prev).map (k) -> prev[k]
+                  nextValues = Object.keys(prev).map (k) -> next[k]
+                  # check that values are numeric/string
+                  if ((prevValues.length is nextValues.length) and
+                    (isNumStringArray prevValues) and
+                    (isNumStringArray nextValues)
+                  )
+                    next
+                  else NaN
+                else NaN
+              ))
+                # array of objects with the same keys - make them columns
+                cols = Object.keys data[0]
+                # reorder values according to keys order
+                data = (cols.map((col) -> row[col]) for row in data)
+                # insert keys as a header
+                data.splice 0, 0, cols
+                data
+              else
+                false
         else
           # arbitrary object
-          if Object.keys(data)? and Object.keys(data).length > 0
-            ks = Object.keys(data)
-            vals = ks.map (k) -> data[k]
-            if (vals.every (el) -> typeof el in ['number', 'string'])
-              # 1d object
-              data = [ks, vals]
-            else if (vals.every (el) -> typeof el is 'object')
-                # object of arrays or objects
-                if ((vals.every (el) -> typeIsArray el) and
-                  (not not vals.reduce((prev, next) ->
-                    if (prev.length is next.length) then next else [])))
-                  # object of arrays of the same length
-                  vals = (t[i] for t in vals for i of vals)  # transpose
-                  vals.splice 0, 0, ks  # add header
-                else
-                  # object of arbitrary objects
-                if (not not vals.reduce((prev, next) ->
-                  # check if objects have same keys
-                  if haveSameKeys prev, next
-                    prevValues = Object.keys(prev).map (k) -> prev[k]
-                    nextValues = Object.keys(prev).map (k) -> next[k]
-                    # check that values are
-                    if ((prevValues.length is nextValues.length) and
-                      (isNumStringArray prevValues) and
-                      (isNumStringArray nextValues)
-                    )
-                      next
-                    else NaN
-                  else NaN
-                ))
-                  subKs = Object.keys vals[0]
-                  data = ([sk].concat(vals.map((val)-> val[sk])) for sk in subKs)
-                  # insert keys as a header
-                  data.splice 0, 0, [""].concat ks
-                  data
-          else
-            false
+          ks = Object.keys(data)
+          vals = ks.map (k) -> data[k]
+          if (vals.every (el) -> typeof el in ['number', 'string'])
+            # 1d object
+            data = [ks, vals]
+          else if (vals.every (el) -> typeof el is 'object')
+            # object of arrays or objects
+            if (vals.every (row) -> typeIsArray row) and
+            (vals.every (row) -> row.every (el) -> typeof el in ['number', 'string'])
+              # object of arrays
+              vals = (t[i] for t in vals for i of vals)  # transpose
+              vals.splice 0, 0, ks  # add header
+              vals
+            else
+              # object of arbitrary objects
+            if (not not vals.reduce((prev, next) ->
+              # check if objects have same keys
+              if haveSameKeys prev, next
+                prevValues = Object.keys(prev).map (k) -> prev[k]
+                nextValues = Object.keys(prev).map (k) -> next[k]
+                # check that values are
+                if ((prevValues.length is nextValues.length) and
+                  (isNumStringArray prevValues) and
+                  (isNumStringArray nextValues)
+                )
+                  next
+                else NaN
+              else NaN
+            ))
+              subKs = Object.keys vals[0]
+              data = ([sk].concat(vals.map((val)-> val[sk])) for sk in subKs)
+              # insert keys as a header
+              data.splice 0, 0, [""].concat ks
+              data
+          else false
 
     toDataFrame: _toDataFrame
     toHandsontable: _toHandsontable
