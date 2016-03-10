@@ -106,6 +106,20 @@ db.factory 'app_database_dataAdaptor', [
     toDataFrame: _toDataFrame
 ]
 
+db.factory 'app_database_nested', [
+  () ->
+    _nestedObj = null
+
+    _save = (obj) ->
+      _nestedObj = obj
+
+    _get = () ->
+      _nestedObj
+
+    save: _save
+    get: _get
+]
+
 db.service 'app_database_dv', ->
 
   # contains references to all the tables created.
@@ -262,20 +276,60 @@ db.service 'app_database_dv', ->
 db.factory 'app_database_handler', [
   '$q'
   'app_database_dv'
+  'app_database_nested'
   'app_database_dataAdaptor'
-  ($q, _db, dataAdaptor) ->
+  ($q, _db, nestedDb, dataAdaptor) ->
 
-    # set all the callbacks here.
+    # set all the callbacks here
     _setSb = ((_db) ->
       window.db = _db
-      (sb) ->
 
-        #registering database callbacks for all possible incoming messages.
+      _lastDataType = ''
+
+      _saveData = (data) ->
+        # convert from the universal dataFrame object to datavore table or keep as is
+        if data.type?
+          _lastDataType = data.type
+          switch data.type
+            when 'flat'
+              dvData = dataAdaptor.toDvTable data.dataFrame
+              res = _db.create dvData, data.tableName
+              res
+            when 'nested'
+              nestedDb.save data.data
+              true
+            else console.log '%cDATABASE: data type is unknown' , 'color:green'
+        else console.log '%cDATABASE: data type is unknown' , 'color:green'
+
+      _getData = (data) ->
+#        if data.type
+        switch _lastDataType
+          when 'flat'
+            _data = _db.get data.tableName
+            # convert data to DataFrame if returning it
+            _data = dataAdaptor.toDataFrame _data
+            _data
+          when 'nested'
+            _data = nestedDb.get()
+            _data
+          else console.log '%cDATABASE: data type is unknown' , 'color:green'
+#        else console.log '%cDATABASE: data type is unknown' , 'color:green'
+
+      (sb) ->
+        # registering database callbacks for all possible incoming messages
         # TODO: add wrapper layer on top of _db methods?
         _methods = [
-          {incoming: 'save table', outgoing: 'table saved', event: _db.create}
-          {incoming: 'get table', outgoing: 'take table', event: _db.get}
-          {incoming: 'add listener', outgoing: 'listener added', event: _db.addListener}
+          incoming: 'save table'
+          outgoing: 'table saved'
+          event: _saveData
+         ,
+          incoming: 'get table'
+          outgoing: 'take table'
+          event: _getData
+        ,
+          incoming: 'add listener'
+          outgoing: 'listener added'
+          event: _db.addListener
         ]
 
         _status = _methods.map (method) ->
@@ -283,23 +337,9 @@ db.factory 'app_database_handler', [
             msg: method['incoming']
             msgScope: ['database']
             listener: (msg, data) ->
-              console.log "%cDATABASE: listener called for"+msg , "color:green"
-
-              # convert from the universal dataFrame object to datavore table
-              dvTableData = if msg is 'save table' then dataAdaptor.toDvTable data.dataFrame else data
-
-              # arrange arguments for a callback
-              # @todo need to find a better way for this.
-              _data = switch
-                when msg is 'save table' then [ dvTableData, data.tableName ]
-                when msg is 'get table' then [ data.tableName ]
-                else data
-
+              console.log "%cDATABASE: listener called for" + msg , "color:green"
               # invoke callback
-              _data = method.event.apply null, _data
-
-              # convert data to DataFrame if returning it
-              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+              _data = method.event.apply null, [data]
 
               # all publish calls should pass a promise in the data object
               # if promise is not defined, create one and pass it along

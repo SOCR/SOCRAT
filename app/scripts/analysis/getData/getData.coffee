@@ -97,10 +97,11 @@ getData = angular.module('app_analysis_getData', [
 
       sb.publish
         msg: 'save data'
-        data:
+        dat6
           dataFrame: data
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
           promise: deferred
+          type: if data.type is 'nested' then data.type else 'flat'
         msgScope: ['getData']
         callback: ->
           console.log 'handsontable data updated to db'
@@ -237,12 +238,21 @@ getData = angular.module('app_analysis_getData', [
   '$stateParams'
   'app_analysis_getData_inputCache'
   ($q, $scope, getDataEventMngr, jsonParser, $stateParams, inputCache) ->
-    # get the sandbox made for this module
-    # sb = getDataSb.getSb()
-    # console.log 'sandbox created'
     $scope.jsonUrl = ''
     flag = true
     $scope.selected = null
+
+    passReceivedData = (data) ->
+      if data.type is 'nested'
+        inputCache.set data
+      else
+        # default data type is 2d 'flat' table
+        data.type = 'flat'
+        # pass a message to update the handsontable div
+        # data is the formatted data which plugs into the
+        #  handontable.
+        # TODO: getData module shouldn't know about controllers listening for handsontable update
+        $scope.$emit 'update handsontable', data
 
     # showGrid
     $scope.show = (val) ->
@@ -255,7 +265,7 @@ getData = angular.module('app_analysis_getData', [
             data =
               default: true
               purpose: 'json'
-            $scope.$emit 'update handsontable', data
+            passReceivedData data
           $scope.$emit 'change in showStates', 'grid'
 
         when 'socrData'
@@ -276,7 +286,6 @@ getData = angular.module('app_analysis_getData', [
 
     # getJson
     $scope.getJson = ->
-      console.log 123
       console.log $scope.jsonUrl
 
       if $scope.jsonUrl is ''
@@ -290,7 +299,7 @@ getData = angular.module('app_analysis_getData', [
           # Pass a message to update the handsontable div.
           # data is the formatted data which plugs into the
           # handontable.
-          $scope.$emit 'update handsontable', data
+          passReceivedData data
           $scope.$emit 'get Data from handsontable', inputCache
         ,
         (msg) ->
@@ -309,9 +318,23 @@ getData = angular.module('app_analysis_getData', [
   'showState'
   'app_analysis_getData_jsonParser'
   'app_analysis_getData_dataAdaptor'
+  'app_analysis_getData_inputCache'
   '$state'
-  (getDataEventMngr, $scope, showState, jsonParser, dataAdaptor, state) ->
+  (getDataEventMngr, $scope, showState, jsonParser, dataAdaptor, inputCache, state) ->
     console.log 'getDataMainCtrl executed'
+
+    passReceivedData = (data) ->
+      if data.type is 'nested'
+        inputCache.set data
+      else
+        # default data type is 2d 'flat' table
+        data.type = 'flat'
+        # pass a message to update the handsontable div
+        # data is the formatted data which plugs into the
+        #  handontable.
+        # TODO: getData module shouldn't know about controllers listening for handsontable update
+        $scope.$emit 'update handsontable', data
+
 
     # available SOCR Datasets
     $scope.socrDatasets = [
@@ -342,14 +365,7 @@ getData = angular.module('app_analysis_getData', [
       .then(
         (data) ->
           console.log 'resolved'
-          # Pass a message to update the handsontable div.
-          # data is the formatted data which plugs into the
-          # handontable.
-
-          # TODO: getData module shouldn't know about controllers listening for handsontable update
-          $scope.$emit 'update handsontable', data
-          # Switch the accordion from getJson to grid.
-          #$scope.$emit("change in showStates","grid")
+          passReceivedData data
         ,
         (msg) ->
           console.log 'rejected:' + msg
@@ -375,12 +391,7 @@ getData = angular.module('app_analysis_getData', [
               # handsontable directive to update.
               purpose: 'json'
             console.log 'resolved'
-            # pass a message to update the handsontable div
-            # data is the formatted data which plugs into the
-            #  handontable.
-            $scope.$emit 'update handsontable', _data
-            # switch the accordion from getJson to grid
-            # $scope.$emit("change in showStates","grid")
+            passReceivedData _data
           else
             console.log 'rejected:' + msg
 
@@ -392,22 +403,18 @@ getData = angular.module('app_analysis_getData', [
             res = dataAdaptor.jsonToFlatTable dataResults
             # check if JSON contains "flat data" - 2d array
             if res
-              type = 'flat'
+              _data =
+                columnHeader: if res.length > 1 then res.shift() else []
+                data: [null, res]
+                # purpose is helps in pin pointing which
+                # handsontable directive to update.
+                purpose: 'json'
+                type: 'flat'
             else
-              type = 'nested'
-            _data =
-              columnHeader: if res.length > 1 then res.shift() else []
-              data: [null, res]
-              # purpose is helps in pin pointing which
-              # handsontable directive to update.
-              purpose: 'json'
-              type: type
-            # pass a message to update the handsontable div
-            # data is the formatted data which plugs into the
-            #  handontable.
-            $scope.$emit 'update handsontable', _data
-            # switch the accordion from getJson to grid
-            # $scope.$emit("change in showStates","grid")
+              _data =
+                data: dataResults
+                type: 'nested'
+            passReceivedData _data
           else
             console.log 'GETDATA: request failed'
 
@@ -616,7 +623,6 @@ getData = angular.module('app_analysis_getData', [
 
       # retrieves data from handsontable object
       _format = (obj) ->
-
         data = obj.getData()
         header = obj.getColHeader()
         nCols = obj.countCols()
