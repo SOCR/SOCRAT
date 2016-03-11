@@ -97,7 +97,7 @@ getData = angular.module('app_analysis_getData', [
 
       sb.publish
         msg: 'save data'
-        dat6
+        data:
           dataFrame: data
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
           promise: deferred
