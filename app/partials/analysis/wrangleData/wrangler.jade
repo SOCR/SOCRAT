@@ -1,10 +1,14 @@
-#dt_example(style='height: 400px')
-    .ui-layout-north#wranglerNorthPanel
-        #wranglerDashboard
-    .ui-layout-west#profilerWestPanel
-        #transformEditor.transformEditor
-    .ui-layout-center#profilerCenterPanel
-        #table
-        #preview
-        .spacer
-    .ui-layout-south
+div
+  #dt_example(style='height: 400px', ng-hide="dataType != 'flat'")
+      .ui-layout-north#wranglerNorthPanel
+          #wranglerDashboard
+      .ui-layout-west#profilerWestPanel
+          #transformEditor.transformEditor
+      .ui-layout-center#profilerCenterPanel
+          #table
+          #preview
+          .spacer
+      .ui-layout-south
+  div.lead.bg-danger(ng-hide="dataType == 'flat'")
+    | Data Wrangler doesn't support current dataset.
+    | Only "flat" data tables are supported.
