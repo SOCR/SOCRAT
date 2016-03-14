@@ -308,10 +308,13 @@ db.factory 'app_database_handler', [
             _data = _db.get data.tableName
             # convert data to DataFrame if returning it
             _data = dataAdaptor.toDataFrame _data
+            _data.dataType = 'flat'
             _data
           when 'nested'
             _data = nestedDb.get()
-            _data
+            _data =
+              data: _data
+              dataType: 'nested'
           else console.log '%cDATABASE: data type is unknown' , 'color:green'
 #        else console.log '%cDATABASE: data type is unknown' , 'color:green'
 
