@@ -61,6 +61,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
     $scope.showresults = off
     $scope.avgAccuracy = ''
     $scope.accs = {}
+    $scope.dataType = ''
 
     prettifyArrayOutput = (arr) ->
       if arr?
@@ -89,6 +90,9 @@ kMeans = angular.module('app_analysis_kMeans', [])
 
     $scope.$on 'kmeans:updateDataPoints', (event, dataPoints) ->
       _update dataPoints
+
+    $scope.$on 'kmeans:updateDataType', (event, dataType) ->
+      $scope.dataType = dataType
 
     _finish = (results=null) ->
       msgManager.broadcast 'kmeans:done', results
@@ -224,20 +228,26 @@ kMeans = angular.module('app_analysis_kMeans', [])
           $scope.running = 'hidden'
       kmeans.run data, $scope.k, $scope.dist, $scope.initMethod
 
+    parseData = (data) ->
+      updateSidebarControls(data)
+      updateDataPoints(data)
+      $scope.detectKValue = ->
+        detectedK = detectKValue data
+        setDetectedKValue detectedK
+      $scope.run = ->
+        _data = parseDataForKMeans data
+        callKMeans _data
+
     # subscribe for incoming message with data
     subscribeForData = ->
       token = sb.subscribe
         msg: 'take data'
         msgScope: ['kMeans']
         listener: (msg, data) ->
-          updateSidebarControls(data)
-          updateDataPoints(data)
-          $scope.detectKValue = ->
-            detectedK = detectKValue data
-            setDetectedKValue detectedK
-          $scope.run = ->
-            _data = parseDataForKMeans data
-            callKMeans _data
+          if data.dataType? and data.dataType is 'flat'
+            $timeout ->
+              msgManager.broadcast 'kmeans:updateDataType', data.dataType
+            parseData data
 
     # ask core for data
     sendDataRequest = (deferred, token) ->
