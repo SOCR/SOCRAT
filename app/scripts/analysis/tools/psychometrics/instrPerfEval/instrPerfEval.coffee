@@ -3,59 +3,69 @@
 instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
 
 .factory('app_analysis_instrPerfEval_constructor', [
-    'app_analysis_instrPerfEval_manager'
-    (manager) ->
-      (sb) ->
+  'app_analysis_instrPerfEval_manager'
+  (manager) ->
+    (sb) ->
 
-        manager.setSb sb unless !sb?
-        _msgList = manager.getMsgList()
+      manager.setSb sb unless !sb?
+      _msgList = manager.getMsgList()
 
-        init: (opt) ->
-          console.log 'instrPerfEval init invoked'
+      init: (opt) ->
+        console.log 'instrPerfEval init invoked'
 
-        destroy: () ->
+      destroy: () ->
 
-        msgList: _msgList
+      msgList: _msgList
   ])
 
 .factory('app_analysis_instrPerfEval_manager', [
-    () ->
-      _sb = null
+  '$rootScope'
+  ($rootScope) ->
+    _sb = null
 
-      _msgList =
-        outgoing: ['get table']
-        incoming: ['take table']
-        scope: ['instrPerfEval']
+    _msgList =
+      outgoing: ['get table']
+      incoming: ['take table']
+      scope: ['instrPerfEval']
 
-      _setSb = (sb) ->
-        _sb = sb
+    _setSb = (sb) ->
+      _sb = sb
 
-      _getSb = () ->
-        _sb
+    _getSb = () ->
+      _sb
 
-      _getMsgList = () ->
-        _msgList
+    _getMsgList = () ->
+      _msgList
 
-      getSb: _getSb
-      setSb: _setSb
-      getMsgList: _getMsgList
+    # wrapper function for controller communications
+    _broadcast = (msg, data) ->
+      $rootScope.$broadcast msg, data
+
+    getSb: _getSb
+    setSb: _setSb
+    getMsgList: _getMsgList
+    broadcast: _broadcast
   ])
 
 .controller('instrPerfEvalMainCtrl', [
-    'app_analysis_instrPerfEval_manager'
-    'app_analysis_instrPerfEval_alphaCalculator'
-    '$scope'
-    (ctrlMngr, alphaCalculator, $scope) ->
-      console.log 'instrPerfEvalViewMainCtrl executed'
+  'app_analysis_instrPerfEval_manager'
+  'app_analysis_instrPerfEval_alphaCalculator'
+  '$scope'
+  (ctrlMngr, alphaCalculator, $scope) ->
+    console.log 'instrPerfEvalViewMainCtrl executed'
 
-      prettifyArrayOutput = (arr) ->
-        if arr?
-          arr = arr.map (x) -> x.toFixed 3
-          '[' + arr.toString().split(',').join('; ') + ']'
+    $scope.dataType = ''
+
+    prettifyArrayOutput = (arr) ->
+      if arr?
+        arr = arr.map (x) -> x.toFixed 3
+        '[' + arr.toString().split(',').join('; ') + ']'
+
+    calculateMetrics = () ->
 
       data = alphaCalculator.getAlpha()
-
       cAlpha = Number data.cronAlpha
+
       if not isNaN(cAlpha)
         $scope.cronAlpha = cAlpha.toFixed(3)
         $scope.cronAlphaIdInterval = prettifyArrayOutput(data.idInterval)
@@ -68,44 +78,55 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       $scope.kr20 = if data.kr20 is 'Not a binary data' then data.kr20 else Number(data.kr20).toFixed(3)
 
       $scope.splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
+
+    $scope.$on 'instrPerfEval:updateDataType', (event, dataType) ->
+      $scope.dataType = dataType
+#      if $scope.dataType is 'flat'
+
+    calculateMetrics()
   ])
 
 .controller('instrPerfEvalSidebarCtrl', [
-    'app_analysis_instrPerfEval_manager'
-    'app_analysis_instrPerfEval_alphaCalculator'
-    '$scope'
-    '$stateParams'
-    '$q'
-    (ctrlMngr, alphaCalculator, $scope, $stateParams, $q) ->
-      console.log 'instrPerfEvalViewSidebarCtrl executed'
+  'app_analysis_instrPerfEval_manager'
+  'app_analysis_instrPerfEval_alphaCalculator'
+  '$scope'
+  '$stateParams'
+  '$q'
+  '$timeout'
+  (msgMngr, alphaCalculator, $scope, $stateParams, $q, $timeout) ->
+    console.log 'instrPerfEvalViewSidebarCtrl executed'
 
-      sb = ctrlMngr.getSb()
+    sb = msgMngr.getSb()
+    deferred = $q.defer()
 
-      $scope.nCols = '5'
-      $scope.nRows = '5'
+    $scope.nCols = '5'
+    $scope.nRows = '5'
+    $scope.confLevel = 0.95
+    $scope.perfeval = off
 
-      deferred = $q.defer()
+    parseData = (obj) ->
+      $scope.nRows = obj.data?.length
+      $scope.nCols = obj.data[0]?.length
+      $scope.perfeval = on
+      alphaCalculator.calculate obj, $scope.confLevel
 
-      $scope.confLevel = 0.95
+    # subscribe for incoming message with data
+    token = sb.subscribe
+      msg: 'take table'
+      msgScope: ['instrPerfEval']
+      listener: (msg, data) ->
+        if data.dataType? and data.dataType is 'flat'
+          $timeout ->
+            msgMngr.broadcast 'instrPerfEval:updateDataType', data.dataType
+          parseData data
 
-      # subscribe for incoming message with data
-      token = sb.subscribe
-        msg: 'take table'
-        msgScope: ['instrPerfEval']
-        listener: (msg, data) ->
-          _data = data
-          $scope.nRows = _data.data?.length
-          $scope.nCols = _data.data[0]?.length
-          console.log data
-          alphaCalculator.calculate data, $scope.confLevel
-
-      sb.publish
-        msg: 'get table'
-        msgScope: ['instrPerfEval']
-        callback: -> sb.unsubscribe token
-        data:
-          tableName: $stateParams.projectId + ':' + $stateParams.forkId
-          promise: deferred
+    sb.publish
+      msg: 'get table'
+      msgScope: ['instrPerfEval']
+      callback: -> sb.unsubscribe token
+      data:
+        tableName: $stateParams.projectId + ':' + $stateParams.forkId
+        promise: deferred
   ])
 
 .factory('app_analysis_instrPerfEval_alphaCalculator', [

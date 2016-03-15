@@ -1,6 +1,6 @@
 div(ng-controller="instrPerfEvalSidebarCtrl")
   form
-    fieldset
+    fieldset(ng-disabled="!perfeval")
       legend Data parameters
       label Number of columns&nbsp;
           input(ng-model="nCols").input-small
