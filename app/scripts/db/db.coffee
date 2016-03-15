@@ -101,6 +101,7 @@ db.factory 'app_database_dataAdaptor', [
         types: _types
         nRows: _nRows
         nCols: _nCols
+        dataType: 'flat'
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
@@ -286,23 +287,25 @@ db.factory 'app_database_handler', [
 
       _lastDataType = ''
 
-      _saveData = (data) ->
-        # convert from the universal dataFrame object to datavore table or keep as is
-        if data.type?
-          _lastDataType = data.type
-          switch data.type
-            when 'flat'
-              dvData = dataAdaptor.toDvTable data.dataFrame
-              res = _db.create dvData, data.tableName
-              res
-            when 'nested'
-              nestedDb.save data.data
-              true
-            else console.log '%cDATABASE: data type is unknown' , 'color:green'
-        else console.log '%cDATABASE: data type is unknown' , 'color:green'
+      _saveData = (obj) ->
+        if obj.dataFrame?
+          dataFrame = obj.dataFrame
+          # convert from the universal dataFrame object to datavore table or keep as is
+          if dataFrame.dataType?
+            _lastDataType = dataFrame.dataType
+            switch dataFrame.dataType
+              when 'flat'
+                dvData = dataAdaptor.toDvTable dataFrame
+                res = _db.create dvData, obj.tableName
+                res
+              when 'nested'
+                nestedDb.save obj.data
+                true
+              else console.log '%cDATABASE: data type is unknown' , 'color:green'
+          else console.log '%cDATABASE: data type is unknown' , 'color:green'
+        else console.log '%cDATABASE: nothing to save' , 'color:green'
 
       _getData = (data) ->
-#        if data.type
         switch _lastDataType
           when 'flat'
             _data = _db.get data.tableName
@@ -339,14 +342,14 @@ db.factory 'app_database_handler', [
           sb.subscribe
             msg: method['incoming']
             msgScope: ['database']
-            listener: (msg, data) ->
+            listener: (msg, obj) ->
               console.log "%cDATABASE: listener called for" + msg , "color:green"
               # invoke callback
-              _data = method.event.apply null, [data]
+              _data = method.event.apply null, [obj]
 
               # all publish calls should pass a promise in the data object
               # if promise is not defined, create one and pass it along
-              deferred = data.promise
+              deferred = obj.promise
               if typeof deferred isnt 'undefined'
                 if _data isnt false then deferred.resolve() else deferred.reject()
               else

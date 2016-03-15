@@ -101,7 +101,6 @@ getData = angular.module('app_analysis_getData', [
           dataFrame: data
           tableName: $stateParams.projectId + ':' + $stateParams.forkId
           promise: deferred
-          type: if data.type is 'nested' then data.type else 'flat'
         msgScope: ['getData']
         callback: ->
           console.log 'handsontable data updated to db'
@@ -243,11 +242,11 @@ getData = angular.module('app_analysis_getData', [
     $scope.selected = null
 
     passReceivedData = (data) ->
-      if data.type is 'nested'
+      if data.dataType is 'nested'
         inputCache.set data
       else
         # default data type is 2d 'flat' table
-        data.type = 'flat'
+        data.dataType = 'flat'
         # pass a message to update the handsontable div
         # data is the formatted data which plugs into the
         #  handontable.
@@ -324,11 +323,11 @@ getData = angular.module('app_analysis_getData', [
     console.log 'getDataMainCtrl executed'
 
     passReceivedData = (data) ->
-      if data.type is 'nested'
+      if data.dataType is 'nested'
         inputCache.set data
       else
         # default data type is 2d 'flat' table
-        data.type = 'flat'
+        data.dataType = 'flat'
         # pass a message to update the handsontable div
         # data is the formatted data which plugs into the
         #  handontable.
@@ -409,11 +408,11 @@ getData = angular.module('app_analysis_getData', [
                 # purpose is helps in pin pointing which
                 # handsontable directive to update.
                 purpose: 'json'
-                type: 'flat'
+                dataType: 'flat'
             else
               _data =
                 data: dataResults
-                type: 'nested'
+                dataType: 'nested'
             passReceivedData _data
           else
             console.log 'GETDATA: request failed'
@@ -496,6 +495,7 @@ getData = angular.module('app_analysis_getData', [
         header: tableData.header
         nRows: tableData.nRows - nSpareRows
         nCols: tableData.nCols - nSpareCols
+        dataType: 'flat'
 
     _toHandsontable = () ->
       # TODO: implement for poping up data when coming back from analysis tabs
@@ -641,7 +641,7 @@ getData = angular.module('app_analysis_getData', [
 
         #check if data is in the right format
 #        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
-        if arg? and typeof arg.data is 'object' and arg.type is 'flat'
+        if arg? and typeof arg.data is 'object' and arg.dataType is 'flat'
           # TODO: not to pass nested data to ht, but save in db
           obj =
             data: arg.data[1]
