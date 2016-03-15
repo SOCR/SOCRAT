@@ -133,6 +133,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
         types: _types
         nRows: _nRows
         nCols: _nCols
+        dataType: 'flat'
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
@@ -160,6 +161,9 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
           true
         else
           false
+
+      _start = (viewContainers) ->
+        _table = _wrangle(viewContainers)
 
       _wrangle = (viewContainers) ->
         # TODO: abstract from using dv directly #SOCRFW-143
@@ -213,7 +217,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
         true
 
       init: _init
-      start: _wrangle
+      start: _start
       saveData: _saveDataToDb
   ])
 
@@ -249,8 +253,9 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     # listen to state change and save data when exiting Wrangle Data
     stateListener = $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
       if fromState.name? and fromState.name is 'wrangleData'
-        # save data to db on exit from wrangler
-        wrangler.saveData()
+        if $scope.dataType is 'flat'
+          # save data to db on exit from wrangler
+          wrangler.saveData()
         # signal to show sidebar
         msgManager.broadcast 'wrangler:done'
         # unsubscribe
