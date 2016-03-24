@@ -54,9 +54,16 @@ getData = angular.module('app_analysis_getData', [
     _getMsgList = () ->
       _msgList
 
+    _getDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
+    getDataTypes: _getDataTypes
 ])
 
 # ###
@@ -236,17 +243,19 @@ getData = angular.module('app_analysis_getData', [
   'app_analysis_getData_jsonParser'
   '$stateParams'
   'app_analysis_getData_inputCache'
-  ($q, $scope, getDataEventMngr, jsonParser, $stateParams, inputCache) ->
+  ($q, $scope, eventManager, jsonParser, $stateParams, inputCache) ->
     $scope.jsonUrl = ''
     flag = true
     $scope.selected = null
 
+    DATA_TYPES = eventManager.getDataTypes()
+
     passReceivedData = (data) ->
-      if data.dataType is 'nested'
+      if data.dataType is DATA_TYPES.NESTED
         inputCache.set data
       else
         # default data type is 2d 'flat' table
-        data.dataType = 'flat'
+        data.dataType = DATA_TYPES.FLAT
         # pass a message to update the handsontable div
         # data is the formatted data which plugs into the
         #  handontable.
@@ -319,15 +328,17 @@ getData = angular.module('app_analysis_getData', [
   'app_analysis_getData_dataAdaptor'
   'app_analysis_getData_inputCache'
   '$state'
-  (getDataEventMngr, $scope, showState, jsonParser, dataAdaptor, inputCache, state) ->
+  (eventManager, $scope, showState, jsonParser, dataAdaptor, inputCache, state) ->
     console.log 'getDataMainCtrl executed'
 
+    DATA_TYPES = eventManager.getDataTypes()
+
     passReceivedData = (data) ->
-      if data.dataType is 'nested'
+      if data.dataType is DATA_TYPES.NESTED
         inputCache.set data
       else
         # default data type is 2d 'flat' table
-        data.dataType = 'flat'
+        data.dataType = DATA_TYPES.FLAT
         # pass a message to update the handsontable div
         # data is the formatted data which plugs into the
         #  handontable.
@@ -408,11 +419,11 @@ getData = angular.module('app_analysis_getData', [
                 # purpose is helps in pin pointing which
                 # handsontable directive to update.
                 purpose: 'json'
-                dataType: 'flat'
+                dataType: DATA_TYPES.FLAT
             else
               _data =
                 data: dataResults
-                dataType: 'nested'
+                dataType: DATA_TYPES.NESTED
             passReceivedData _data
           else
             console.log 'GETDATA: request failed'
@@ -459,7 +470,10 @@ getData = angular.module('app_analysis_getData', [
 # @description: Reformats data from input table format to the universal dataFrame object.
 # ###
 .factory('app_analysis_getData_dataAdaptor', [
-  () ->
+  'app_analysis_getData_manager'
+  (eventManager) ->
+
+    DATA_TYPES = eventManager.getDataTypes()
 
     # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
     typeIsArray = Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'
@@ -495,7 +509,7 @@ getData = angular.module('app_analysis_getData', [
         header: tableData.header
         nRows: tableData.nRows - nSpareRows
         nCols: tableData.nCols - nSpareCols
-        dataType: 'flat'
+        dataType: DATA_TYPES.FLAT
 
     _toHandsontable = () ->
       # TODO: implement for poping up data when coming back from analysis tabs
@@ -593,10 +607,11 @@ getData = angular.module('app_analysis_getData', [
 
 
 .directive 'handsontable', [
+  'app_analysis_getData_manager'
   'app_analysis_getData_inputCache'
   'app_analysis_getData_dataAdaptor'
   '$exceptionHandler'
-  (inputCache, dataAdaptor, $exceptionHandler) ->
+  (eventManager, inputCache, dataAdaptor, $exceptionHandler) ->
     restrict: 'E'
     transclude: true
 
@@ -637,11 +652,13 @@ getData = angular.module('app_analysis_getData', [
       scope.update = (evt, arg) ->
         console.log 'handsontable: update called'
 
+        DATA_TYPES = eventManager.getDataTypes()
+
         currHeight = elem.height()
 
         #check if data is in the right format
 #        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
-        if arg? and typeof arg.data is 'object' and arg.dataType is 'flat'
+        if arg? and typeof arg.data is 'object' and arg.dataType is DATA_TYPES.FLAT
           # TODO: not to pass nested data to ht, but save in db
           obj =
             data: arg.data[1]

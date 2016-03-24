@@ -33,8 +33,7 @@ db.factory 'app_database_constructor', [
 ]
 
 db.factory 'app_database_manager', [
-  'app_database_handler'
-  (database) ->
+  () ->
     _sb = null
     #_msgList =
     #  incoming:['create table','get table','delete table'],
@@ -48,7 +47,7 @@ db.factory 'app_database_manager', [
 
     _setSb = (sb) ->
       _sb = sb
-      database.setSb sb
+#      database.setSb sb
 
     _getSb = ->
       _sb
@@ -56,9 +55,16 @@ db.factory 'app_database_manager', [
     _getMsgList = ->
       _msgList
 
+    _getDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
+    getDataTypes: _getDataTypes
 ]
 
 # ###
@@ -67,7 +73,10 @@ db.factory 'app_database_manager', [
 # @description: Reformats data from the universal dataFrame object to datavore format
 # ###
 db.factory 'app_database_dataAdaptor', [
-  () ->
+  'app_database_manager'
+  (eventManager) ->
+
+    DATA_TYPES = eventManager.getDataTypes()
 
     _toDvTable = (dataFrame) ->
 
@@ -101,7 +110,7 @@ db.factory 'app_database_dataAdaptor', [
         types: _types
         nRows: _nRows
         nCols: _nCols
-        dataType: 'flat'
+        dataType: DATA_TYPES.FLAT
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
@@ -279,89 +288,98 @@ db.factory 'app_database_handler', [
   'app_database_dv'
   'app_database_nested'
   'app_database_dataAdaptor'
-  ($q, _db, nestedDb, dataAdaptor) ->
+  'app_database_manager'
+  ($q, _db, nestedDb, dataAdaptor, eventManager) ->
 
+    sb = null
+    _lastDataType = ''
+
+    sb = eventManager.getSb()
     # set all the callbacks here
-    _setSb = ((_db) ->
-      window.db = _db
+#    _setSb = ((_db) ->
+    window.db = _db
 
-      _lastDataType = ''
+    DATA_TYPES = sb.getDataTypes()
 
-      _saveData = (obj) ->
-        if obj.dataFrame?
-          dataFrame = obj.dataFrame
-          # convert from the universal dataFrame object to datavore table or keep as is
-          if dataFrame.dataType?
-            _lastDataType = dataFrame.dataType
-            switch dataFrame.dataType
-              when 'flat'
-                dvData = dataAdaptor.toDvTable dataFrame
-                res = _db.create dvData, obj.tableName
-                res
-              when 'nested'
-                nestedDb.save obj.data
-                true
-              else console.log '%cDATABASE: data type is unknown' , 'color:green'
-          else console.log '%cDATABASE: data type is unknown' , 'color:green'
-        else console.log '%cDATABASE: nothing to save' , 'color:green'
+    _getLastDataType = () ->
+      _lastDataType
 
-      _getData = (data) ->
-        switch _lastDataType
-          when 'flat'
-            _data = _db.get data.tableName
-            # convert data to DataFrame if returning it
-            _data = dataAdaptor.toDataFrame _data
-            _data.dataType = 'flat'
-            _data
-          when 'nested'
-            _data = nestedDb.get()
-            _data =
-              data: _data
-              dataType: 'nested'
-          else console.log '%cDATABASE: data type is unknown' , 'color:green'
+    _saveData = (obj) ->
+      if obj.dataFrame?
+        dataFrame = obj.dataFrame
+        # convert from the universal dataFrame object to datavore table or keep as is
+        if dataFrame.dataType?
+          _lastDataType = dataFrame.dataType
+          switch dataFrame.dataType
+            when DATA_TYPES.FLAT
+              dvData = dataAdaptor.toDvTable dataFrame
+              res = _db.create dvData, obj.tableName
+              res
+            when DATA_TYPES.NESTED
+              nestedDb.save obj.data
+              true
+            else console.log '%cDATABASE: data type is unknown' , 'color:green'
+        else console.log '%cDATABASE: data type is unknown' , 'color:green'
+      else console.log '%cDATABASE: nothing to save' , 'color:green'
+
+    _getData = (data) ->
+      switch _lastDataType
+        when DATA_TYPES.FLAT
+          _data = _db.get data.tableName
+          # convert data to DataFrame if returning it
+          _data = dataAdaptor.toDataFrame _data
+          _data.dataType = DATA_TYPES.FLAT
+          _data
+        when DATA_TYPES.NESTED
+          _data = nestedDb.get()
+          _data =
+            data: _data
+            dataType: DATA_TYPES.NESTED
+        else console.log '%cDATABASE: data type is unknown' , 'color:green'
 #        else console.log '%cDATABASE: data type is unknown' , 'color:green'
 
-      (sb) ->
-        # registering database callbacks for all possible incoming messages
-        # TODO: add wrapper layer on top of _db methods?
-        _methods = [
-          incoming: 'save table'
-          outgoing: 'table saved'
-          event: _saveData
-         ,
-          incoming: 'get table'
-          outgoing: 'take table'
-          event: _getData
-        ,
-          incoming: 'add listener'
-          outgoing: 'listener added'
-          event: _db.addListener
-        ]
+    (sb) ->
+      # registering database callbacks for all possible incoming messages
+      # TODO: add wrapper layer on top of _db methods?
+      _methods = [
+        incoming: 'save table'
+        outgoing: 'table saved'
+        event: _saveData
+       ,
+        incoming: 'get table'
+        outgoing: 'take table'
+        event: _getData
+      ,
+        incoming: 'add listener'
+        outgoing: 'listener added'
+        event: _db.addListener
+      ]
 
-        _status = _methods.map (method) ->
-          sb.subscribe
-            msg: method['incoming']
-            msgScope: ['database']
-            listener: (msg, obj) ->
-              console.log "%cDATABASE: listener called for" + msg , "color:green"
-              # invoke callback
-              _data = method.event.apply null, [obj]
+      _status = _methods.map (method) ->
+        sb.subscribe
+          msg: method['incoming']
+          msgScope: ['database']
+          listener: (msg, obj) ->
+            console.log "%cDATABASE: listener called for" + msg , "color:green"
+            # invoke callback
+            _data = method.event.apply null, [obj]
 
-              # all publish calls should pass a promise in the data object
-              # if promise is not defined, create one and pass it along
-              deferred = obj.promise
-              if typeof deferred isnt 'undefined'
-                if _data isnt false then deferred.resolve() else deferred.reject()
-              else
-                _data.promise = $q.defer()
+            # all publish calls should pass a promise in the data object
+            # if promise is not defined, create one and pass it along
+            deferred = obj.promise
+            if typeof deferred isnt 'undefined'
+              if _data isnt false then deferred.resolve() else deferred.reject()
+            else
+              _data.promise = $q.defer()
 
-              console.log '%cDATABASE: listener response: ' + _data, 'color:green'
+            console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
-              sb.publish
-                msg: method.outgoing
-                data: _data
-                msgScope: ['database']
-    )(_db)
+            sb.publish
+              msg: method.outgoing
+              data: _data
+              msgScope: ['database']
+#    )(_db)
 
-    setSb: _setSb
+#    setSb: _setSb
+    getLastDataType: _getLastDataType
   ]
