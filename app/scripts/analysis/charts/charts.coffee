@@ -254,45 +254,45 @@ charts = angular.module('app_analysis_charts', [])
         d.y = +d.y
 
       x = d3.time.scale()
-        .range([0, width])
+      .range([0, width])
 
       y = d3.scale.linear()
-        .range([height, 0])
+      .range([height, 0])
 
       xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom")
+      .scale(x)
+      .orient("bottom")
 
       yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left")
+      .scale(y)
+      .orient("left")
 
       line = d3.svg.line()
-        .x((d) -> x(d.x))
-        .y((d) -> y(d.y))
+      .x((d) -> x(d.x))
+      .y((d) -> y(d.y))
 
       x.domain(d3.extent(data,  (d) -> d.x))
       y.domain(d3.extent(data,  (d) -> d.y))
 
       _graph.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
 
       _graph.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text gdata.yLab.value
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text gdata.yLab.value
 
       _graph.append("path")
-        .datum(data)
-        .attr("class", "line")
-        .attr("d", line)
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line)
 
     lineChart: _lineChart
 ]
@@ -332,24 +332,24 @@ charts = angular.module('app_analysis_charts', [])
 
       ]
 
-#      layers = stack(dataset)
-#      console.log data
-#      console.log test
-#      #layers = stack(test)
-#      layers = stack(d3.range(n).map () -> _randomSample(data,m))
-#      console.log layers
-#      #console.log stack
+      #      layers = stack(dataset)
+      #      console.log data
+      #      console.log test
+      #      #layers = stack(test)
+      #      layers = stack(d3.range(n).map () -> _randomSample(data,m))
+      #      console.log layers
+      #      #console.log stack
       x = d3.scale.linear()
       .domain([0, m - 1])
       .range([0, width]);
-#
+      #
       y = d3.scale.linear()
       .domain([0, d3.max(test, (t)-> d3.max(t, (d) -> return d.y0+d.y))])
       .range([height, 0])
-#
+      #
       color = d3.scale.linear()
       .range(["#aad", "#556"])
-#
+      #
       area = d3.svg.area()
       .x((d) -> x d.x)
       .y0((d) -> y d.y0)
@@ -369,27 +369,27 @@ charts = angular.module('app_analysis_charts', [])
 
 
       stack = d3.layout.stack()
-                .offset("silhouette")
-                .values((d) -> d.values)
-                .x((d) -> d.x)
-                .y((d) -> d.y)
+      .offset("silhouette")
+      .values((d) -> d.values)
+      .x((d) -> d.x)
+      .y((d) -> d.y)
 
       x = d3.time.scale()
-            .range([0, width]);
+      .range([0, width]);
 
       y = d3.scale.linear()
-            .range([height-10, 0]);
+      .range([height-10, 0]);
 
       z = d3.scale.ordinal()
-            .range(["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"])
+      .range(["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"])
 
       console.log data
 
       area = d3.svg.area()
-              .interpolate("cardinal")
-              .x((d)-> x(d.x))
-              .y0((d)-> y(d.y0))
-              .y1((d)->y(d.y0 + d.y))
+      .interpolate("cardinal")
+      .x((d)-> x(d.x))
+      .y0((d)-> y(d.y0))
+      .y1((d)->y(d.y0 + d.y))
 
       nest = d3.nest().key (d) -> d.z
 
@@ -754,7 +754,7 @@ charts = angular.module('app_analysis_charts', [])
 
       #without y
       if !data[0].y
-        #Works
+#Works
         if isNaN data[0].x
           counts = {}
           for i in [0..data.length-1] by 1
@@ -800,7 +800,7 @@ charts = angular.module('app_analysis_charts', [])
 
 
         else #data is numerical and only x. height is rect width, width is x of d.x,
-          #y becomes the categorical
+#y becomes the categorical
           y = d3.scale.ordinal().rangeRoundBands([height, 0], .1)
           yAxis = d3.svg.axis().scale(y).orient('left')
 
@@ -979,24 +979,24 @@ charts = angular.module('app_analysis_charts', [])
         d.x
       )
       y.domain [ 0, d3.max(data, (d) ->
-          d.y
-        ) ]
+        d.y
+      ) ]
       _graph.append("path")
-          .datum(data)
-          .attr("class", "area")
-          .attr "d", area
+      .datum(data)
+      .attr("class", "area")
+      .attr "d", area
       _graph.append("g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call xAxis
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call xAxis
 
       _graph.append("g")
-          .attr("class", "y axis")
-          .call(yAxis).append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6).attr("dy", ".71em")
-          .style("text-anchor", "end")
-          .text gdata.yLab.value
+      .attr("class", "y axis")
+      .call(yAxis).append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6).attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text gdata.yLab.value
 
 
     drawArea: _drawArea
@@ -1006,494 +1006,385 @@ charts = angular.module('app_analysis_charts', [])
 .factory 'treemap',[
   () ->
     _drawTreemap = (svg, width, height, margin) ->
-      data =  {"name": "SOCR", "url": "http://www.socr.ucla.edu/", "size": 35000,"children":
-
-        [ {"name": "Get Started", "url": "http://wiki.stat.ucla.edu/socr/index.php/Main_Page", "size": 23333.333333333332,"children":
-          [{"name": "Tutorial Videos", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Videos", "size": 15555.555555555555},
-            {"name": "Help Pages", "url": "http://wiki.socr.umich.edu/index.php/SOCR_Help_Pages", "size": 15555.555555555555},
-            {"name": "Downloads", "url": "http://socr.umich.edu/html/SOCR_Download.html", "size": 15555.555555555555}
-          ]
-        },
-
-          {"name": "Java Applets", "url": "http://socr.umich.edu/index.html", "size": 23333.333333333332,"children":
-            [ {"name": "Web-Start Applications", "url": "http://socr.ucla.edu/webstart/index.html", "size": 15555.555555555555},
-              {"name": "Distributions", "url": "../../SOCR_Distributions.html", "size": 15555.555555555555,"children":
-                [{"name": "Anderson-Darling Distribution", "url": "http://socr.ucla.edu/htmls/dist/AndersonDarling_Distribution.html", "size": 10370.37037037037},
-                  {"name": "ArcSine Distribution", "url": "http://socr.ucla.edu/htmls/dist/ArcSine_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Benford Distribution", "url": "http://socr.ucla.edu/htmls/dist/Benford_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Bernoulli Distribution", "url": "http://socr.ucla.edu/htmls/dist/Bernoulli_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Beta Distribution", "url": "http://socr.ucla.edu/htmls/dist/Beta_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Beta (Generalized) Distribution", "url": "http://socr.ucla.edu/htmls/dist/BetaGeneral_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Beta-Binomial Distribution", "url": "http://socr.ucla.edu/htmls/dist/BetaBinomial_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Binomial Distribution", "url": "http://socr.ucla.edu/htmls/dist/Binomial_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Birthday Distribution", "url": "http://socr.ucla.edu/htmls/dist/Birthday_Distribution.html", "size": 10370.37037037037},
-                  {"name": "(3D) Bivariate Normal Distribution", "url": "http://socr.ucla.edu/htmls/HTML5/BivariateNormal/", "size": 10370.37037037037},
-                  {"name": "Cauchy Distribution", "url": "http://socr.ucla.edu/htmls/dist/Cauchy_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Chi Distribution", "url": "http://socr.ucla.edu/htmls/dist/Chi_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Chi-Square Distribution", "url": "http://socr.ucla.edu/htmls/dist/ChiSquare_Distribution.html", "size": 10370.37037037037},
-                  {"name": "(Non-Central) Chi-Square Distribution", "url": "http://socr.ucla.edu/htmls/dist/NonCentralChiSquare_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Circle Distribution", "url": "http://socr.ucla.edu/htmls/dist/Circle_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Continuous Uniform Distribution", "url": "http://socr.ucla.edu/htmls/dist/ContinuousUniform_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Coupon Distribution", "url": "http://socr.ucla.edu/htmls/dist/Coupon_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Die Distribution", "url": "http://socr.ucla.edu/htmls/dist/Die_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Discrete ArcSine Distribution", "url": "http://socr.ucla.edu/htmls/dist/DiscreteArcSine_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Discrete Uniform Distribution", "url": "http://socr.ucla.edu/htmls/dist/DiscreteUniform_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Erlang Distribution", "url": "http://socr.ucla.edu/htmls/dist/Erlang_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Error Distribution", "url": "http://socr.ucla.edu/htmls/dist/Error_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Exponential Distribution", "url": "http://socr.ucla.edu/htmls/dist/Exponential_Distribution.html", "size": 10370.37037037037},
-                  {"name": "FiniteDistribution", "url": "http://socr.ucla.edu/htmls/dist/Finite_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Fisher's F Distribution", "url": "http://socr.ucla.edu/htmls/dist/Fisher_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Fisher-Tippett Distribution", "url": "http://socr.ucla.edu/htmls/dist/FisherTippett_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Gamma Distribution", "url": "http://socr.ucla.edu/htmls/dist/Gamma_Distribution.html", "size": 10370.37037037037},
-                  {"name": "General Cauchy Distribution", "url": "http://socr.ucla.edu/htmls/dist/GeneralCauchy_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Generalized Extreme Value (GEV) Distribution", "url": "http://socr.ucla.edu/htmls/dist/GeneralizedExtremeValue_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Geometric Distribution", "url": "http://socr.ucla.edu/htmls/dist/Geometric_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Gilbrats Distribution", "url": "http://socr.ucla.edu/htmls/dist/Gilbrats_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Gompertz Distribution", "url": "http://socr.ucla.edu/htmls/dist/Gompertz_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Gumbel Distribution", "url": "http://socr.ucla.edu/htmls/dist/Gumbel_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Half-Normal Distribution", "url": "http://socr.ucla.edu/htmls/dist/HalfNormal_Distribution.html", "size": 10370.37037037037},
-                  {"name": "HyperGeometric Distribution", "url": "http://socr.ucla.edu/htmls/dist/HyperGeometric_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Hyperbolic-Secant Distribution", "url": "http://socr.ucla.edu/htmls/dist/HyperbolicSecant_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Inverse-Gamma Distribution", "url": "http://socr.ucla.edu/htmls/dist/InverseGamma_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Inverse Gaussian (Wald) Distribution", "url": "http://socr.ucla.edu/htmls/dist/InverseGaussian_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Johnson SB (Bounded) Distribution", "url": "http://socr.ucla.edu/htmls/dist/JohnsonSBDistribution.html", "size": 10370.37037037037},
-                  {"name": "Johnson SU (Unbounded) Distribution", "url": "http://socr.ucla.edu/htmls/dist/JohnsonSUDistribution.html", "size": 10370.37037037037},
-                  {"name": "Kolmogorov Distribution", "url": "http://socr.ucla.edu/htmls/dist/Kolmogorov_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Laplace Distribution", "url": "http://socr.ucla.edu/htmls/dist/Laplace_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Logarithmic-Series Distribution", "url": "http://socr.ucla.edu/htmls/dist/LogarithmicSeries_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Logistic Distribution", "url": "http://socr.ucla.edu/htmls/dist/Logistic_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Logistic-Exponential Distribution", "url": "http://socr.ucla.edu/htmls/dist/LogisticExponential_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Log-Normal Distribution", "url": "http://socr.ucla.edu/htmls/dist/LogNormal_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Lomax Distribution", "url": "http://socr.ucla.edu/htmls/dist/Lomax_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Matching Distribution", "url": "http://socr.ucla.edu/htmls/dist/Matching_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Maxwell Distribution", "url": "http://socr.ucla.edu/htmls/dist/Maxwell_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Minimax Distribution", "url": "http://socr.ucla.edu/htmls/dist/Minimax_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Mixture Distribution", "url": "http://socr.ucla.edu/htmls/dist/Mixture_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Multinomial Distribution", "url": "http://socr.ucla.edu/htmls/dist/Multinomial_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Muth Distribution", "url": "http://socr.ucla.edu/htmls/dist/Muth_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Negative-Binomial Distribution", "url": "http://socr.ucla.edu/htmls/dist/NegativeBinomial_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Negative-HyperGeometric Distribution", "url": "http://socr.ucla.edu/htmls/dist/NegativeHypergeometric_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Negative-Multinomial Distribution", "url": "http://socr.ucla.edu/htmls/dist/NegativeMultinomial_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Normal Distribution", "url": "http://socr.ucla.edu/htmls/dist/Normal_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Pareto Distribution", "url": "http://socr.ucla.edu/htmls/dist/Pareto_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Point-Mass Distribution", "url": "http://socr.ucla.edu/htmls/dist/PointMass_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Poisson Distribution", "url": "http://socr.ucla.edu/htmls/dist/Poisson_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Poker-Dice Distribution", "url": "http://socr.ucla.edu/htmls/dist/PokerDice_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Power-Function Distribution", "url": "http://socr.ucla.edu/htmls/dist/PowerFunction_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Rayleigh Distribution", "url": "http://socr.ucla.edu/htmls/dist/Rayleigh_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Rice (Rician) Distribution", "url": "http://socr.ucla.edu/htmls/dist/Rice_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Student's T Distribution", "url": "http://socr.ucla.edu/htmls/dist/StudentT_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Student's T Non-Central Distribution", "url": "http://socr.ucla.edu/htmls/dist/StudentT_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Triangle Distribution", "url": "http://socr.ucla.edu/htmls/dist/Triangle_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Two-Sided Power Distribution", "url": "http://socr.ucla.edu/htmls/dist/TwoSidedPower_Distribution.html", "size": 10370.37037037037},
-                  {"name": "U-Quadratic Distribution", "url": "http://socr.ucla.edu/htmls/dist/UQuadratic_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Von Mises Distribution", "url": "http://socr.ucla.edu/htmls/dist/VonMises_Distribution.html", "size": 10370.37037037037},
-                  {"name": "WalkMaxDistribution", "url": "http://socr.ucla.edu/htmls/dist/WalkMax_Distribution.html", "size": 10370.37037037037},
-                  {"name": "WalkPositionDistribution", "url": "http://socr.ucla.edu/htmls/dist/WalkPosition_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Weibull Distribution", "url": "http://socr.ucla.edu/htmls/dist/Weibull_Distribution.html", "size": 10370.37037037037},
-                  {"name": "Zipf-Mandelbrot Distribution", "url": "http://socr.ucla.edu/htmls/dist/ZipfMandelbrot_Distribution.html", "size": 10370.37037037037}]},
-              {"name": "Experiments", "url": "../../exp", "size": 15555.555555555555,"children":
-                [{"name": "Ballot Experiment", "url": "http://socr.ucla.edu/htmls/exp/Ballot_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Ball and Urn Experiment", "url": "http://socr.ucla.edu/htmls/exp/Ball_and_Urn_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Bertrand Experiment", "url": "http://socr.ucla.edu/htmls/exp/Bertrand_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Beta Coin Experiment", "url": "http://socr.ucla.edu/htmls/exp/Beta_Coin_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Beta Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Beta_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Binomial Coin Experiment", "url": "http://socr.ucla.edu/htmls/exp/Binomial_Coin_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Binomial Timeline Experiment", "url": "http://socr.ucla.edu/htmls/exp/Binomial_Timeline_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Birthday Experiment", "url": "http://socr.ucla.edu/htmls/exp/Birthday_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Bivariate Normal Experiment", "url": "http://socr.ucla.edu/htmls/exp/Bivariate_Normal_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Bivariate Uniform Experiment", "url": "http://socr.ucla.edu/htmls/exp/Bivariate_Uniform_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Buffon's Coin Experiment", "url": "http://socr.ucla.edu/htmls/exp/Buffon_Coin_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Buffon's Needle Experiment", "url": "http://socr.ucla.edu/htmls/exp/Buffon_Needle_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Card Experiment", "url": "http://socr.ucla.edu/htmls/exp/Card_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Chi Square Dice Experiment", "url": "http://socr.ucla.edu/htmls/exp/Chi_Square_Dice_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Chuck A Luck Experiment", "url": "http://socr.ucla.edu/htmls/exp/Chuck_A_Luck_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Coin Die Experiment", "url": "http://socr.ucla.edu/htmls/exp/Coin_Die_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Coin Sample Experiment", "url": "http://socr.ucla.edu/htmls/exp/Coin_Sample_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Coin-Toss LLN Experiment", "url": "http://socr.ucla.edu/htmls/exp/Coin_Toss_LLN_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Confidence Interval Experiment", "url": "http://socr.ucla.edu/htmls/exp/Confidence_Interval_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Coupon Collector Experiment", "url": "http://wiki.socr.umich.edu/index.php/SOCR_EduMaterials_ExperimentsActivities", "size": 10370.37037037037},
-                  {"name": "Craps Experiment", "url": "http://socr.ucla.edu/htmls/exp/Craps_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Dice Experiment", "url": "http://socr.ucla.edu/htmls/exp/Dice_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Dice Sample Experiment", "url": "http://socr.ucla.edu/htmls/exp/Dice_Sample_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Die Coin Experiment", "url": "http://socr.ucla.edu/htmls/exp/Die_Coin_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Exponential Car-Times Experiment", "url": "http://socr.ucla.edu/htmls/exp/Exponential-Times_Car_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Finite Order Statistic Experiment", "url": "http://socr.ucla.edu/htmls/exp/Finite_Order_Statistic_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Fire Experiment", "url": "http://socr.ucla.edu/htmls/exp/Fire_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Galton Board Experiment", "url": "http://socr.ucla.edu/htmls/exp/Galton_Board_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Gamma Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Gamma_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Gamma Experiment", "url": "http://socr.ucla.edu/htmls/exp/Gamma_Experiment.html", "size": 10370.37037037037},
-                  {"name": "General CI Experiment", "url": "http://socr.ucla.edu/htmls/exp/Confidence_Interval_Experiment_General.html", "size": 10370.37037037037},
-                  {"name": "LLN Simple Experiment", "url": "http://socr.ucla.edu/htmls/exp/LLN_Simple_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Markov Chain Experiment", "url": "http://socr.ucla.edu/htmls/exp/Markov_Chain_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Match Experiment", "url": "http://socr.ucla.edu/htmls/exp/Match_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Mean Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Mean_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Mean Test Experiment", "url": "http://socr.ucla.edu/htmls/exp/Mean_Test_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Mixture Model EM Experiment", "url": "http://socr.ucla.edu/htmls/exp/Mixture_Model_EM_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Monty Hall Experiment", "url": "http://socr.ucla.edu/htmls/exp/Monty_Hall_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Negative Binomial Experiment", "url": "http://socr.ucla.edu/htmls/exp/Negative_Binomial_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Normal Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Normal_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Order Statistics Experiment", "url": "http://socr.ucla.edu/htmls/exp/Order_Statistics_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Pareto Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Pareto_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Two-Dimensional Poisson Experiment", "url": "http://socr.ucla.edu/htmls/exp/Two-Dimensional_Poisson_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Poisson Experiment", "url": "http://socr.ucla.edu/htmls/exp/Poisson_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Two-Type Poisson Experiment", "url": "http://socr.ucla.edu/htmls/exp/Two-Type_Poisson_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Poker Dice Experiment", "url": "http://socr.ucla.edu/htmls/exp/Poker_Dice_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Poker Experiment", "url": "http://socr.ucla.edu/htmls/exp/Poker_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Probability Plot Experiment", "url": "http://socr.ucla.edu/htmls/exp/Probability_Plot_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Proportion Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Proportion_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Proportion Test Experiment", "url": "http://socr.ucla.edu/htmls/exp/Proportion_Test_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Random Experiment", "url": "http://socr.ucla.edu/htmls/exp/Random_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Random Variable Experiment", "url": "http://socr.ucla.edu/htmls/exp/Random_Variable_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Randowm Walk Experiment", "url": "http://socr.ucla.edu/htmls/exp/Random_Walk_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Red and Black Experiment", "url": "http://socr.ucla.edu/htmls/exp/Red_and_Black_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Roulette Experiment", "url": "http://socr.ucla.edu/htmls/exp/Roulette_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Sample Mean Experiment", "url": "http://socr.ucla.edu/htmls/exp/Sample_Mean_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Sample Distribution CLT Experiment", "url": "http://socr.ucla.edu/htmls/exp/Sampling_Distribution_CLT_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Sign Test Experiment", "url": "http://socr.ucla.edu/htmls/exp/Sign_Test_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Spinner Experiment", "url": "http://socr.ucla.edu/htmls/exp/Spinner_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Triangle Experiment", "url": "http://socr.ucla.edu/htmls/exp/Triangle_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Uniform Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Uniform_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Uniform E-Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Uniform_E-Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Variance Estimate Experiment", "url": "http://socr.ucla.edu/htmls/exp/Variance_Estimate_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Variance Test Experiment", "url": "http://socr.ucla.edu/htmls/exp/Variance_Test_Experiment.html", "size": 10370.37037037037},
-                  {"name": "Voter Experiment", "url": "http://socr.ucla.edu/htmls/exp/Voter_Experiment.html", "size": 10370.37037037037}]},
-              {"name": "Analyses", "url": "../../ana/SOCR_Analyses.html", "size": 15555.555555555555,"children":
-                [{"name": "ANOVA 1-Way", "url": "http://socr.ucla.edu/htmls/ana/ANOVA1Way_Analysis.html", "size": 10370.37037037037},
-                  {"name": "ANOVA 2-Way", "url": "http://socr.ucla.edu/htmls/ana/ANOVA2Way_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Chi-Square Contingency Tables", "url": "http://socr.ucla.edu/htmls/ana/ChiSquareCT_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Chi-Square Goodness of Fit", "url": "http://socr.ucla.edu/htmls/ana/ChiSquareGF_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Confidence Interval Analysis", "url": "http://www.socr.ucla.edu/htmls/ana/ConfidenceInterval_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Fisher's Exact Test", "url": "http://socr.ucla.edu/htmls/ana/FishersExactTest_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Fligner-Killeen Test", "url": "http://www.socr.ucla.edu/htmls/ana/FlignerKilleen_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Friedman's Test", "url": "http://socr.ucla.edu/htmls/ana/FriedmansTest_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Kolmogorov-Smirnoff Test", "url": "http://www.socr.ucla.edu/htmls/ana/KolmogorovSmirnoff_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Kruskal-Wallis Test", "url": "http://www.socr.ucla.edu/htmls/ana/KruskalWallis_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Hierarchical Clustrering", "url": "http://www.socr.ucla.edu/htmls/ana/HierarchicalClustering_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Losgistic Regression Test", "url": "http://www.socr.ucla.edu/htmls/ana/LogisticRegression_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Multiple Linear Regression", "url": "http://www.socr.ucla.edu/htmls/ana/MultipleRegression_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Normal Distribution Power Analysis", "url": "http://socr.ucla.edu/htmls/ana/NormalPower_Analysis.html", "size": 10370.37037037037},
-                  {"name": "One-Sample T-Test", "url": "http://socr.ucla.edu/htmls/ana/OneSampleTTest_Analysis.html", "size": 10370.37037037037},
-                  {"name": "One-Sample Z-Test", "url": "http://www.socr.ucla.edu/htmls/ana/OneSampleZTest_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Proportion Test (Dichotomous)", "url": "http://socr.ucla.edu/htmls/ana/ProportionTest_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Principal Component Analysia (PCA)", "url": "http://www.socr.ucla.edu/htmls/ana/PrincipalComponent_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Simple Linear Regression", "url": "http://socr.ucla.edu/htmls/ana/SimpleRegression_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Survival Analysis", "url": "http://socr.ucla.edu/htmls/ana/Survival_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Two Independent Sample T-Test (Pooled)", "url": "http://socr.ucla.edu/htmls/ana/TwoIndependentTTest_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Two Independent Sample T-Test (Unpooled)", "url": "http://socr.ucla.edu/htmls/ana/TwoIndependentTTestUnpooled_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Two Independent Sample Wilcoxon Rank Sum Test", "url": "http://socr.ucla.edu/htmls/ana/TwoIndependentSampleWilcoxonRankSum_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Two Independent Sample Kruskal-Wallis Test", "url": "http://socr.ucla.edu/htmls/ana/TwoIndependentKruskalWallis_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Two Paired Sample Sign-Test", "url": "http://www.socr.ucla.edu/htmls/ana/TwoPairedSampleSign-Test_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Two Paired Sample (Wilcoxon) Signed-Rank Test", "url": "http://socr.ucla.edu/htmls/ana/TwoPairedSampleSignedRankTest_Analysis.html", "size": 10370.37037037037},
-                  {"name": "Two Paired Sample T-Test", "url": "http://socr.ucla.edu/htmls/ana/TwoPairedSampleTTest_Analysis.html", "size": 10370.37037037037}]},
-              {"name": "Games", "url": "../../gam", "size": 15555.555555555555,"children":
-                [{"name": "Game Activities", "url": "http://socr.umich.edu/html/gam/", "size": 10370.37037037037, "children":
-                  [{"name": "Interactive Scatterplot", "url": "../../gam", "size": 10370.37037037037},
-                    {"name": "Interactive Histogram with Error Graph", "url": "../../gam", "size": 10370.37037037037},
-                    {"name": "Galton Board Game", "url": "../../gam", "size": 10370.37037037037},
-                    {"name": "Interactive Histogram", "url": "../../gam", "size": 10370.37037037037},
-                    {"name": "Monty Hall Game", "url": "../../gam", "size": 10370.37037037037},
-                    {"name": "Red and Black Game", "url": "../../gam", "size": 10370.37037037037},
-                    {"name": "Fourier Game", "url": "../../gam", "size": 10370.37037037037},
-                    {"name": "Wavelet Game", "url": "../../gam", "size": 10370.37037037037}]},
-                  {"name": "Game Applets", "url": "http://socr.umich.edu/html/gam/", "size": 10370.37037037037, "children":
-                    [{"name": "(Interactive Scatterplot) Bivariate Game", "url": "http://www.socr.ucla.edu/htmls/game/Bivariate_Game.html", "size": 10370.37037037037},
-                      {"name": "Error Game", "url": "http://www.socr.ucla.edu/htmls/game/Error_Game.html", "size": 10370.37037037037},
-                      {"name": "Galton-Board Game", "url": "http://www.socr.ucla.edu/htmls/game/GaltonBoard_Game.html", "size": 10370.37037037037},
-                      {"name": "Histogram Game", "url": "http://www.socr.ucla.edu/htmls/game/Histogram_Game.html", "size": 10370.37037037037},
-                      {"name": "Monty Hall Game", "url": "http://www.socr.ucla.edu/htmls/game/MontyHall_Game.html", "size": 10370.37037037037},
-                      {"name": "Red-Black Game", "url": "http://www.socr.ucla.edu/htmls/game/RedBlack_Game.html", "size": 10370.37037037037},
-                      {"name": "Fourier Game", "url": "http://www.socr.ucla.edu/htmls/game/Fourier_Game.html", "size": 10370.37037037037},
-                      {"name": "Wavelet Game", "url": "http://www.socr.ucla.edu/htmls/game/Wavelet_Game.html", "size": 10370.37037037037}] } ]},
-              {"name": "Charts", "url": "../../cha", "size": 15555.555555555555,"children":
-                [{"name": "Motion Charts", "url": "../../HTML5/MotionChart/", "size": 10370.37037037037},
-                  {"name": "AreaChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "AreaChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChart3DDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChart3DDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChart3DDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo4", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo5", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo7", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo8", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BarChartDemo9", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BoxAndWhiskerChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BoxAndWhiskerChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "BubbleChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "CategoryStepChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "CompassDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "CrosshairDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "CrosshairDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "CrosshairDemo4", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "DifferenceChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "DotChart", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "EventFrequencyDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "HistogramChartDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "HistogramChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "HistogramChartDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "HistogramChartDemo4", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "HistogramChartDemo5", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "IndexChart", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "LayeredBarChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "LayeredBarChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "LineChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "LineChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "LineChartDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "LineChartDemo5", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "LineChartDemo6", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "NormalDistributionDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PieChart3DDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PieChart3DDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PieChart3DDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PieChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PieChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PieChartDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PieChartDemo4", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PolarChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PowerTransformChart", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PowerTransformHistogramChartDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PowerTransformQQNormalChartDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "PowerTransformScatterChartDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "QQChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "QQChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "QQChartDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "QQData2DataDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "QQNormalPlotDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "RingChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "ScatterChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "SpiderWebChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StackedAreaChartDemo", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StackedBarChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StackedBarChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StackedBarChartDemo3", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StackedBarChartDemo4", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StackedXYAreaChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StackedXYAreaChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StatisticalBarChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StatisticalBarChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StatisticalLineChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "StatisticalLineChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "SymbolAxisDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "WaterfallChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "XYAreaChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "XYAreaChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "XYBarChartDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "XYBarChartDemo2", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "XYStepRendererDemo1", "url": "../../cha", "size": 10370.37037037037},
-                  {"name": "YIntervalChartDemo1", "url": "../../cha", "size": 10370.37037037037}]},
-              {"name": "Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 15555.555555555555,"children":
-                [{"name": "Beta Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Exponential Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Fourier Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Gamma Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Mixed Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Normal Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Poisson Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Rice (Rician) Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037},
-                  {"name": "Wavelet Fit Modeler", "url": "http://socr.umich.edu/html/mod/", "size": 10370.37037037037}]}]},
-
-          {"name": "Additional Software Resources", "url": "http://www.socr.ucla.edu/Applets.dir/OnlineResources.html", "size": 23333.333333333332,"children":
-            [{"name": "High-Precision Distribution Calculators", "url": "http://www.socr.ucla.edu/Applets.dir/OnlineResources.html", "size": 15555.555555555555},
-              {"name": "Conceptual Demo Applets", "url": "http://www.socr.ucla.edu/Applets.dir/OnlineResources.html", "size": 15555.555555555555},
-              {"name": "Tables", "url": "http://socr.umich.edu/Applets/index.html#Tables", "size": 15555.555555555555},
-              {"name": "Statistics packages for Statistical Data Analysis", "url": "http://www.socr.ucla.edu/Applets.dir/OnlineResources.html", "size": 15555.555555555555},
-              {"name": "Function and Image-Processing Tools", "url": "http://www.socr.ucla.edu/Applets.dir/OnlineResources.html", "size": 15555.555555555555},
-              {"name": "Other Online Computational Resources", "url": "http://www.socr.ucla.edu/Applets.dir/OnlineResources.html", "size": 15555.555555555555}]},
-
-          {"name": "Educational Materials", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials", "size": 23333.333333333332,"children":
-            [ {"name": "Courses", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Courses", "size": 15555.555555555555,"children":
-              [ {"name": "Courses, Training Videos, and Webcasts", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Course_and_Training_Videos", "size": 10370.37037037037},
-                {"name": "2007-2008 Courses", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Courses_2007_2008", "size": 10370.37037037037},
-                {"name": "2006-2007 Courses", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Courses_2006_2007", "size": 10370.37037037037},
-                {"name": "2005-2006 Courses", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Courses_2005_2006", "size": 10370.37037037037},
-                {"name": "2001-2005 Courses", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Courses_2001_2004", "size": 10370.37037037037}]},
-              {"name": "SOCR AP Statistics EBook", "url": "http://wiki.stat.ucla.edu/socr/index.php/EBook", "size":  15555.555555555555,"children":
-                [{"name": "1 Preface", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Preface", "size": 4609.053497942387,"children":
-                  [{"name": "1.1 Format", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Format", "size": 3072.7023319615914},
-                    {"name": "1.2 Learning and Instructional Usage", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Usage", "size": 3072.7023319615914}]},
-                  {"name": "2 Chapter I: Introduction to Statistics", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_I:_Introduction_to_Statistics", "size": 4609.053497942387,"children":
-                    [{"name": "2.1 The Nature of Data and Variation", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_IntroVar", "size": 3072.7023319615914},
-                      {"name": "2.2 Uses and Abuses of Statistics", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_IntroUses", "size": 3072.7023319615914},
-                      {"name": "2.3 Design of Experiments", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_IntroDesign", "size": 3072.7023319615914},
-                      {"name": "2.4 Statistics with Tools (Calculators and Computers)", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_IntroTools", "size": 3072.7023319615914}]},
-                  {"name": "3 Chapter II: Describing, Exploring, and Comparing Data", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_II:_Describing.2C_Exploring.2C_and_Comparing_Data", "size": 4609.053497942387,"children":
-                    [{"name": "3.1 Types of Data", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_DataTypes", "size": 3072.7023319615914},
-                      {"name": "3.2 Summarizing data with Frequency Tables", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_Freq", "size": 3072.7023319615914},
-                      {"name": "3.3 Pictures of Data", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_Pics", "size": 3072.7023319615914},
-                      {"name": "3.4 Measures of Central Tendency", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_Center", "size": 3072.7023319615914},
-                      {"name": "3.5 Measures of Variation", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_Var", "size": 3072.7023319615914},
-                      {"name": "3.6 Measures of Shape", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_Shape", "size": 3072.7023319615914},
-                      {"name": "3.7 Statistics", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_Statistics", "size": 3072.7023319615914},
-                      {"name": "3.8 Graphs and Exploratory Data Analysis", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_EDA_Plots", "size": 3072.7023319615914}]  },
-                  {"name": "4 Chapter III: Probability", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_III:_Probability", "size": 4609.053497942387,"children":
-                    [{"name": "4.1 Fundamentals", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Prob_Basics", "size": 3072.7023319615914},
-                      {"name": "4.2 Rules for Computing Probabilities", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Prob_Rules", "size": 3072.7023319615914},
-                      {"name": "4.3 Probabilities Through Simulations", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Prob_Simul", "size": 3072.7023319615914},
-                      {"name": "4.4 Counting", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Prob_Count", "size": 3072.7023319615914}]  },
-                  {"name": "5 Chapter IV: Probability Distributions", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_IV:_Probability_Distributions", "size": 4609.053497942387,"children":
-                    [{"name": "5.1 Random Variables", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Distrib_RV", "size": 3072.7023319615914},
-                      {"name": "5.2 Expectation (Mean) and Variance", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Distrib_MeanVar", "size": 3072.7023319615914},
-                      {"name": "5.3 Bernoulli and Binomial Experiments", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Distrib_Binomial", "size": 3072.7023319615914},
-                      {"name": "5.4 Geometric, Hypergeometric and Negative Binomial", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Distrib_Dists", "size": 3072.7023319615914},
-                      {"name": "5.5 Poisson Distribution", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Distrib_Poisson", "size": 3072.7023319615914}]   },
-                  {"name": "6 Chapter V: Normal Probability Distribution", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_V:_Normal_Probability_Distribution.html", "size": 4609.053497942387,"children":
-                    [{"name": "6.1 The Standard Normal Distribution", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Normal_Std", "size": 3072.7023319615914},
-                      {"name": "6.2 Nonstandard Normal Distribution: Finding Probabilities", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Normal_Prob", "size": 3072.7023319615914},
-                      {"name": "6.3 Nonstandard Normal Distribution: Finding Scores (critical values)", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Normal_Critical", "size": 3072.7023319615914}]},
-                  {"name": "7 Chapter VI: Relations Between Distributions", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_VI:_Relations_Between_Distributions", "size": 4609.053497942387,"children":
-                    [{"name": "7.1 The Central Limit Theorem", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Limits_CLT", "size": 3072.7023319615914},
-                      {"name": "7.2 Law of Large Numbers", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Limits_LLN", "size": 3072.7023319615914},
-                      {"name": "7.3 Normal Distribution as Approximation to Binomial Distribution", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Limits_Norm2Bin", "size": 3072.7023319615914},
-                      {"name": "7.4 Poisson Approximation to Binomial Distribution", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Limits_Poisson2Bin", "size": 3072.7023319615914},
-                      {"name": "7.5 Binomial Approximation to HyperGeometric", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Limits_Bin2HyperG", "size": 3072.7023319615914},
-                      {"name": "7.6 Normal Approximation to Poisson", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Limits_Norm2Poisson", "size": 3072.7023319615914}]},
-                  {"name": "8 Chapter VII: Point and Interval Estimates", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_VII:_Point_and_Interval_Estimates", "size": 4609.053497942387,"children":
-                    [{"name": "8.1 Estimating a Population Mean: Large Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Estim_L_Mean", "size": 3072.7023319615914},
-                      {"name": "8.2 Estimating a Population Mean: Small Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Estim_S_Mean", "size": 3072.7023319615914},
-                      {"name": "8.3 Student's T distribution", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_StudentsT", "size": 3072.7023319615914},
-                      {"name": "8.4 Estimating a Population Proportion", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Estim_Proportion", "size": 3072.7023319615914},
-                      {"name": "8.5 Estimating a Population Variance", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Estim_Var", "size": 3072.7023319615914}]},
-                  {"name": "9 Chapter VIII: Hypothesis Testing", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_VIII:_Hypothesis_Testing", "size": 4609.053497942387,"children":
-                    [{"name": "9.1 Fundamentals of Hypothesis Testing", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Hypothesis_Basics", "size": 3072.7023319615914},
-                      {"name": "9.2 Testing a Claim about a Mean: Large Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Hypothesis_L_Mean", "size": 3072.7023319615914},
-                      {"name": "9.3 Testing a Claim about a Mean: Small Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Hypothesis_S_Mean", "size": 3072.7023319615914},
-                      {"name": "9.4 Testing a Claim about a Proportion", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Hypothesis_Proportion", "size": 3072.7023319615914},
-                      {"name": "9.5 Testing a Claim about a Standard Deviation or Variance", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Hypothesis_Var", "size": 3072.7023319615914}]},
-                  {"name": "10 Chapter IX: Inferences from Two Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_IX:_Inferences_from_Two_Samples", "size": 4609.053497942387,"children":
-                    [{"name": "10.1 Inferences about Two Means: Dependent Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Infer_2Means_Dep", "size": 3072.7023319615914},
-                      {"name": "10.2 Inferences about Two Means: Independent and Large Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Infer_2Means_Indep", "size": 3072.7023319615914},
-                      {"name": "10.3 Comparing Two Variances", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Infer_BiVar", "size": 3072.7023319615914},
-                      {"name": "10.4 Inferences about Two Means: Independent and Small Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Infer_2Means_S_Indep", "size": 3072.7023319615914},
-                      {"name": "10.5 Inferences about Two Proportions", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Infer_2Proportions", "size": 3072.7023319615914}]},
-                  {"name": "11 Chapter X: Correlation and Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_X:_Correlation_and_Regression", "size": 4609.053497942387,"children":
-                    [{"name": "11.1 Correlation", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_GLM_Corr", "size": 3072.7023319615914},
-                      {"name": "11.2 Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_GLM_Regress", "size": 3072.7023319615914},
-                      {"name": "11.3 Variation and Prediction Intervals", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_GLM_Predict", "size": 3072.7023319615914},
-                      {"name": "11.4 Multiple Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_GLM_MultLin", "size": 3072.7023319615914}]},
-                  {"name": "12 Chapter XI: Analysis of Variance (ANOVA)", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_XI:_Analysis_of_Variance_.28ANOVA.29", "size": 4609.053497942387,"children":
-                    [{"name": "12.1 One-Way ANOVA", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_ANOVA_1Way", "size": 3072.7023319615914},
-                      {"name": "12.2 Two-Way ANOVA", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_ANOVA_2Way", "size": 3072.7023319615914}]},
-                  {"name": "13 Chapter XII: Non-Parametric Inference", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_XII:_Non-Parametric_Inference", "size": 4609.053497942387,"children":
-                    [{"name": "13.1 Differences of Means of Two Paired Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_NonParam_2MeansPair", "size": 3072.7023319615914},
-                      {"name": "13.2 Differences of Means of Two Independent Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_NonParam_2MeansIndep", "size": 3072.7023319615914},
-                      {"name": "13.3 Differences of Medians of Two Paired Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_NonParam_2MedianPair", "size": 3072.7023319615914},
-                      {"name": "13.4 Differences of Medians of Two Independent Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_NonParam_2MedianIndep", "size": 3072.7023319615914},
-                      {"name": "13.5 Differences of Proportions of Two Independent Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_NonParam_2PropIndep", "size": 3072.7023319615914},
-                      {"name": "13.6 Differences of Means of Several Independent Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_NonParam_ANOVA", "size": 3072.7023319615914},
-                      {"name": "13.7 Differences of Variances of Two Independent Samples", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_NonParam_VarIndep", "size": 3072.7023319615914}]},
-                  {"name": "14 Chapter XIII: Multinomial Experiments and Contingency Tables", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_XIII:_Multinomial_Experiments_and_Contingency_Tables", "size": 4609.053497942387,"children":
-                    [{"name": "14.1 Multinomial Experiments: Goodness-of-Fit", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Contingency_Fit", "size": 3072.7023319615914},
-                      {"name": "14.2 Contingency Tables: Independence and Homogeneity", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Contingency_Indep", "size": 3072.7023319615914}]},
-                  {"name": "15 Chapter XIV: Statistical Process Control", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_XIV:_Statistical_Process_Control", "size": 4609.053497942387,"children":
-                    [{"name": "15.1 Control Charts for Variation and Mean", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Control_MeanVar", "size": 3072.7023319615914},
-                      {"name": "15.2 Control Charts for Attributes", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_Control_Attrib", "size": 3072.7023319615914}]},
-                  {"name": "16 Chapter XV: Survival/Failure Analysis", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_XV:_Survival.2FFailure_Analysis", "size": 4609.053497942387},
-                  {"name": "17 Chapter XVI: Multivariate Statistical Analyses", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_XVI:_Multivariate_Statistical_Analyses", "size": 4609.053497942387,"children":
-                    [{"name": "17.1 Multivariate Analysis of Variance", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_MultiVar_ANOVA", "size": 3072.7023319615914},
-                      {"name": "17.2 Multiple Linear Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_MultiVar_LinRegression", "size": 3072.7023319615914},
-                      {"name": "17.3 Logistic Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_MultiVar_Logistic", "size": 3072.7023319615914},
-                      {"name": "17.4 Log-Linear Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_MultiVar_LogLinear", "size": 3072.7023319615914},
-                      {"name": "17.5 Multivariate Analysis of Covariance", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007_MultiVar_ANCOVA", "size": 3072.7023319615914}]},
-                  {"name": "18 Chapter XVII: Time Series Analysis", "url": "http://wiki.stat.ucla.edu/socr/index.php/AP_Statistics_Curriculum_2007#Chapter_XVII:_Time_Series_Analysis", "size": 4609.053497942387} ]},
-              {"name": "Surveys", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Surveys", "size": 15555.555555555555,"children": [{"name": "Survey Fall 2005 Stat 100A Christou", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Surveys_Fall2005Christou", "size": 10370.37037037037},{"name": "Survey Fall 2005 Stat 100A Sanchez", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Surveys_Fall2005Sanchez", "size": 10370.37037037037},{"name": "Moodle Surveys", "url": "http://moodle.stat.ucla.edu/course/", "size": 10370.37037037037}]},
-              {"name": "Datasets", "url": "http://wiki.socr.umich.edu/index.php/SOCR_Data", "size": 15555.555555555555},
-              {"name": "Activities", "url": "http://wiki.socr.umich.edu/index.php/SOCR_EduMaterials", "size": 15555.555555555555, "children":
-                [{"name": "Distribution Activities", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_DistributionsActivities", "size": 15555.555555555555,"children": [{"name": "CLT", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_GeneralCentralLimitTheorem", "size": 10370.37037037037},{"name": "Poisson", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Poisson_Distribution.html", "size": 10370.37037037037},{"name": "Exponential", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Exponential_Distribution.html", "size": 10370.37037037037},{"name": "Normal", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Normal_Distribution.html", "size": 10370.37037037037},{"name": "Binomial, Geometric, Hypergeometric Distributions", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Binomial_Distributions", "size": 10370.37037037037},{"name": "Continuous Distributions", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Continuous_Distributions", "size": 10370.37037037037},{"name": "Negative Binomial", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_NegativeBinomial_Distributions", "size": 10370.37037037037},{"name": "Relationships and Approximations Among Distributions", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Explore_Distributions", "size": 10370.37037037037}]},
-                  {"name": "Experiments Activities", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_ExperimentsActivities", "size": 15555.555555555555,"children": [{"name": "Ballot Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BallotExperiment", "size": 10370.37037037037},{"name": "Ball And Urn Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BallAndRunExperiment", "size": 10370.37037037037},{"name": "Bertrand Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BertrandExperiment", "size": 10370.37037037037},{"name": "Beta Coin Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BetaCoinExperiment", "size": 10370.37037037037},{"name": "Beta Estimate Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BetaEstimateExperiment", "size": 10370.37037037037},{"name": "Binomial Coin Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BinomialCoinExperiment", "size": 10370.37037037037},{"name": "Binomial Timeline Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BinomialTimelineExperiment", "size": 10370.37037037037},{"name": "Birthday Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BirthdayExperiment", "size": 10370.37037037037},{"name": "Bivariate Normal Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BivariateNormalExperiment", "size": 10370.37037037037},{"name": "Bivariate Uniform Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BivariteUniformExperiment", "size": 10370.37037037037},{"name": "Buffon Coin Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BuffonCoinExperiment", "size": 10370.37037037037},{"name": "Buffon Needle Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_BuffonNeedleExperiment", "size": 10370.37037037037},{"name": "Card Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CardExperiment", "size": 10370.37037037037},{"name": "Chi Square Dice Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_ChiSquareDiceExperiment", "size": 10370.37037037037},{"name": "Chuck A Luck Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_ChuckALuckExperiment", "size": 10370.37037037037},{"name": "Coin Die Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CoinDieExperiment", "size": 10370.37037037037},{"name": "Coin Sample Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CoinSampleExperiment", "size": 10370.37037037037},{"name": "Confidence Interval Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CoinfidenceIntervalExperiment", "size": 10370.37037037037},{"name": "Coupon Collector Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CouponCollectorExperiment", "size": 10370.37037037037},{"name": "Craps Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CrapsExperiment", "size": 10370.37037037037},{"name": "Dice Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_DiceExperiment", "size": 10370.37037037037},{"name": "Dice Sample Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_DiceSampleExperiment", "size": 10370.37037037037},{"name": "Die Coin Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_DieCoinExperiment", "size": 10370.37037037037},{"name": "Exponential Car-Time Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_ExpCarTimeExperiment", "size": 10370.37037037037},{"name": "Finite Order Statistic Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_FiniteOrderStatisticExperiment", "size": 10370.37037037037},{"name": "Galton Board Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_GaltonBoardExperiment", "size": 10370.37037037037},{"name": "Gamma Estimate Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_GammaEstimateExperiment", "size": 10370.37037037037},{"name": "Gamma Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_GammaExperiment", "size": 10370.37037037037},{"name": "Law Of Large Numbers Experiment", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_LawOfLargeNumbersExperiment", "size": 10370.37037037037},{"name": "SOCR Cards and Coins Sampling Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CardsCoinsSampling", "size": 10370.37037037037},{"name": "Central Limit Theorem", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CentralLimitTheorem", "size": 10370.37037037037},{"name": "Die Coin Experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_DieCoin", "size": 10370.37037037037},{"name": "Confidence Intervals", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_ConfIntervals", "size": 10370.37037037037},{"name": "Dice Experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_DiceExperiment", "size": 10370.37037037037},{"name": "General Central Limit Theorem", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_GeneralCentralLimitTheorem", "size": 10370.37037037037},{"name": "Joint Distributons", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_JointDistributions", "size": 10370.37037037037},{"name": "Law of Large Numbers", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_LawOfLargeNumbers", "size": 10370.37037037037},{"name": "Matching experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Matching_Juana_oct10-06_version1", "size": 10370.37037037037},{"name": "Monty Hall Experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_MontyHall", "size": 10370.37037037037},{"name": "Craps Experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Craps", "size": 10370.37037037037}]},
-                  {"name": "Analysis Activities", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysesActivities", "size": 15555.555555555555,"children": [{"name": "One-Way Analysis of Variance (ANOVA)", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_ANOVA_1", "size": 10370.37037037037},{"name": "Two-Way Analysis of Variance (ANOVA)", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_ANOVA_2", "size": 10370.37037037037},{"name": "Simple Linear Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_SLR", "size": 10370.37037037037},{"name": "Multiple Linear Regression", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_MLR", "size": 10370.37037037037},{"name": "One-Smaple T-Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_OneT", "size": 10370.37037037037},{"name": "Two Independent Sample (Pooled) T-Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_TwoIndepT", "size": 10370.37037037037},{"name": "Two Independent Sample (Unpooled) T-Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_TwoIndepTU", "size": 10370.37037037037},{"name": "Two Independent Sample Wilcoxon Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_Wilcoxon", "size": 10370.37037037037},{"name": "Kruskal-Wallis Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_KruskalWallis", "size": 10370.37037037037},{"name": "Friedman's Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_Friedman", "size": 10370.37037037037},{"name": "Fisher's Exact Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_Fisher_Exact", "size": 10370.37037037037},{"name": "Two Paired Sample T-Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_TwoPairedT", "size": 10370.37037037037},{"name": "Two Paired Smaple Sign-Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_TwoPairedSign", "size": 10370.37037037037},{"name": "Two Paired Smaple Signed-Rank Test", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_TwoPairedRank", "size": 10370.37037037037},{"name": "Chi-Square Test for Contingency Tables", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_Chi_Contingency", "size": 10370.37037037037},{"name": "Chi-Square Test for Goodness of Fit", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_Chi_Goodness", "size": 10370.37037037037},{"name": "Proportion Test for Dichotomous Data", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_Proportion_Test", "size": 10370.37037037037},{"name": "Survival Analysis", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_Survival", "size": 10370.37037037037},{"name": "Power Analysis for Normal Distribution", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_AnalysisActivities_NormalPower", "size": 10370.37037037037}]},
-                  {"name": "Games Activities", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_GamesActivities", "size": 15555.555555555555,"children": [{"name": "Wavelet Game", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_GamesActivitiesWavelets", "size": 10370.37037037037},{"name": "Fourier Game", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_GamesActivitiesFourier", "size": 10370.37037037037}]},
-                  {"name": "Modeler Activities", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_ModelerActivities", "size": 15555.555555555555,"children": [{"name": "Mixture Model Fitting using EM estimation", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_ModelerActivities_MixtureModel_1", "size": 10370.37037037037},{"name": "Random Number Generator (RNG)", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_RNG", "size": 10370.37037037037}]},
-                  {"name": "Charts Activities", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_ChartsActivities", "size": 15555.555555555555,"children": [{"name": "Cards and Coins Sampling Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CardsCoinsSampling", "size": 10370.37037037037},{"name": "Power-Transform Family Graphs", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_PowerTransformFamily_Graphs", "size": 10370.37037037037},{"name": " 2D Point Segmentation using SOCR Graphs, EM and Mixture Modeling", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_2D_PointSegmentation_EM_Mixture", "size": 10370.37037037037}]},
-                  {"name": "General Activities", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities", "size": 15555.555555555555,"children": [{"name": "SOCR Birthday Experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Birthday", "size": 10370.37037037037},{"name": "SOCR Bivariate Experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Bivariate", "size": 10370.37037037037},{"name": "SOCR Cards and Coins Sampling Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CardsCoinsSampling", "size": 10370.37037037037},{"name": "SOCR SOCR Central Limit Theorem Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_CLT", "size": 10370.37037037037},{"name": "SOCR Confidence Intervals Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_ConfidenceIntervals", "size": 10370.37037037037},{"name": "SOCR Distributions Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Distributions", "size": 10370.37037037037},{"name": "SOCR General Central Limit Theorem", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_GeneralCentralLimitTheorem", "size": 10370.37037037037},{"name": "SOCR General Central Limit Theorem (2)", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_GeneralCentralLimitTheorem2", "size": 10370.37037037037},{"name": "SOCR Matching Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_matching", "size": 10370.37037037037},{"name": "SOCR Random Number Generation", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_RNG", "size": 10370.37037037037},{"name": "SOCR Triangles Experiment Activity", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Activities_Triangles", "size": 10370.37037037037}]}]},
-              {"name": "Educational Plans", "url": "http://wiki.socr.umich.edu/index.php/SOCR_EduMaterials", "size": 15555.555555555555, "children":
-                [ {"name": "Surveys", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Surveys", "size": 10370.37037037037,"children": [{"name": "Survey Fall 2005 Stat 100A Christou", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Surveys_Fall2005Christou", "size": 10370.37037037037},{"name": "Survey Fall 2005 Stat 100A Sanchez", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_EduMaterials_Surveys_Fall2005Sanchez", "size": 10370.37037037037},{"name": "Moodle Surveys", "url": "http://moodle.stat.ucla.edu/course/", "size": 10370.37037037037}]},
-                  {"name": "Instructor Plans", "url": "http://www.socr.ucla.edu/docs/SOCR_InstructorPlan.html", "size": 10370.37037037037},
-                  {"name": "Evaluations", "url": "http://wiki.socr.umich.edu/index.php/SOCR_EduMaterials_Evaluations", "size": 10370.37037037037},
-                  {"name": "K-12 Educational Materials", "url": "http://wiki.socr.umich.edu/index.php/K12_Education", "size": 10370.37037037037},
-                  {"name": "AP Stats", "url": "http://socr.ucla.edu/APStats/", "size": 10370.37037037037}
+      data =  {
+        "name": "flare",
+        "children": [
+          {
+            "name": "analytics",
+            "children": [
+              {
+                "name": "cluster",
+                "children": [
+                  {"name": "AgglomerativeCluster", "size": 3938},
+                  {"name": "CommunityStructure", "size": 3812},
+                  {"name": "HierarchicalCluster", "size": 6714},
+                  {"name": "MergeEdge", "size": 743}
                 ]
-              }]},
-
-          {"name": "SOCR Wiki", "url": "http://wiki.stat.ucla.edu/socr/index.php/Main_Page", "size": 23333.333333333332,"children":
-            [{"name": "SOCR Docs", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Docs", "size": 15555.555555555555,"children":
-              [{"name": "Developer Documentation", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Developer_Documentation", "size": 10370.37037037037},
-                {"name": "Usage Documentation", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Usage_Documentaiton", "size": 10370.37037037037},
-                {"name": "Function Documentation", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Function_Documentaiton", "size": 10370.37037037037},
-                {"name": "Java API Documentation", "url": "http://socr.ucla.edu/docs/SOCR_Documentation.html", "size": 10370.37037037037},
-                {"name": "SOCR 3D Logo", "url": "http://wiki.stat.ucla.edu/socr/uploads/2/20/SOCR_Logos_3D_PDF.pdf", "size": 10370.37037037037}]},
-
-              {"name": "SOCR Blog", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_UserFeedback", "size": 15555.555555555555},
-
-              {"name": "Community Portal", "url": "http://wiki.stat.ucla.edu/socr/index.php/Socr:Community_Portal", "size": 15555.555555555555,"children":
-                [{"name": "Event-Related Community Portal", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_CommunityPortal_Events", "size": 10370.37037037037,"children":
-                  [{"name": "August 2007 SOCR/CAUSE Workshop", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Events_Aug2007", "size": 6913.580246913581},
-                    {"name": "August 2009 SOCR Continuing Education Workshop", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Events_Aug2009", "size": 6913.580246913581}]  },
-                  {"name": "General Community Portal", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_CommunityPortal_General", "size": 10370.37037037037}   ]}]
-          },
-
-
-          {"name": "About SOCR", "url": "../../SOCR_About.html", "size": 23333.333333333332,"children":
-            [{"name": "News & Notice", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News", "size": 15555.555555555555, "children":
-              [{"name": "2014 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2014", "size": 6913.580246913581},{"name": "2013 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2013", "size": 6913.580246913581},{"name": "2012 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2012", "size": 6913.580246913581},{"name": "2011 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2011", "size": 6913.580246913581},{"name": "2010 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2010", "size": 6913.580246913581},{"name": "2009 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2009", "size": 6913.580246913581},{"name": "2008 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2008", "size": 6913.580246913581},{"name": "2007 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2007", "size": 6913.580246913581},{"name": "2006 News", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_News#2006", "size": 6913.580246913581}]},
-              {"name": "Events", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Events", "size": 10370.37037037037,"children":
-                [{"name": "SOCR 2009 Training Workshop", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Events_Aug2009", "size": 6913.580246913581},{"name": "SOCR/CAUSE 2007 Workshop", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Events_Aug2007", "size": 6913.580246913581},{"name": "USCOTS 2007 Workshop", "url": "http://wiki.stat.ucla.edu/socr/index.php/USCOTS_2007_Program", "size": 6913.580246913581},{"name": "Past, Current and Future SOCR Presentations", "url": "http://www.socr.ucla.edu/htmls/SOCR_Presentations.html", "size": 6913.580246913581},{"name": "SOCR Sponsored Events", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Events_SponsoredEvents", "size": 6913.580246913581}]},
-              {"name": "Announcements", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Announcements", "size": 10370.37037037037},
-              {"name": "SOCR in the Media", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Media", "size": 10370.37037037037},
-              {"name": "SOCR Projects", "url": "http://wiki.stat.ucla.edu/socr/index.php/Available_SOCR_Development_Projects", "size": 10370.37037037037,"children":
-                [{"name": "Available SOCR Collaborative Development Projects", "url": "http://wiki.stat.ucla.edu/socr/index.php/Available_SOCR_Development_Projects", "size": 6913.580246913581},
-                  {"name": "SOCR Group Projects", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Group_Projects", "size": 6913.580246913581},
-                  {"name": "SOCR Project Proposal Submission Guidelines", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_ProposalSubmissionGuidelines", "size": 6913.580246913581}]},
-              {"name": "Team", "url": "../../SOCR_Team.html", "size": 15555.555555555555},
-              {"name": "Contact", "url": "../../SOCR_Contact.html", "size": 15555.555555555555},
-              {"name": "Geo-Map", "url": "../../SOCR_UserGoogleMap.html", "size": 15555.555555555555},
-              {"name": "Presentations", "url": "../../SOCR_Presentations.html", "size": 15555.555555555555},
-              {"name": "Publicationss", "url": "../../SOCR_Presentations.html", "size": 15555.555555555555},
-              {"name": "SOCR Brochure", "url": "http://http://socr.ucla.edu/docs/SOCR_Brochure_Integrated2Page_2008.pdf", "size": 15555.555555555555},
-
-              {"name": "Collaborators and Partners", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Partners", "size": 15555.555555555555},
-              {"name": "Funding", "url": "../../SOCR_Funding.html", "size": 15555.555555555555},
-              {"name": "Donations", "url": "../../SOCR_Funding.html", "size": 15555.555555555555},
-              {"name": "References", "url": "../../SOCR_References.html", "size": 15555.555555555555},
-              {"name": "Recognitions", "url": "../../SOCR_Recognitions.html", "size": 15555.555555555555},
-              {"name": "Acknowledgments", "url": "../../SOCR_Acknowledgements.html", "size": 15555.555555555555},
-              {"name": "Citing & Licences", "url": "http://http://socr.ucla.edu/docs/SOCR_Brochure_Integrated2Page_2008.pdf", "size": 15555.555555555555},
-              {"name": "Feedback & Survey", "url": "http://http://socr.ucla.edu/docs/SOCR_Brochure_Integrated2Page_2008.pdf", "size": 15555.555555555555},
-
-              {"name": "Forum", "url": "http://forums.stat.ucla.edu/socr", "size": 15555.555555555555},
-              {"name": "SOCR Servers", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Servers", "size": 15555.555555555555,"children":
-                [{"name": "SOCR Main Servers", "url": "../../SOCR.html", "size": 10370.37037037037, "children":[
-                  {"name": "Primary Server", "url": "../../SOCR.html", "size": 6913.580246913581},
-                  {"name": "Wiki Server", "url": "http://wiki.stat.ucla.edu/socr", "size": 6913.580246913581},
-                  {"name": "Forum Server", "url": "http://forums.stat.ucla.edu/socr", "size": 6913.580246913581},
-                  {"name": "Source Code (GoogleCode)", "url": "http://socr.googlecode.com/", "size": 6913.580246913581},
-                  {"name": "Source Code (GitHub)", "url": "https://github.com/SOCRedu/", "size": 6913.580246913581},
-                  {"name": "Source Code (new GitHub)", "url": "https://github.com/SOCR", "size": 6913.580246913581},
-                  {"name": "University of California eScholarship", "url": "http://escholarship.org/uc/socr", "size": 6913.580246913581},
-                  {"name": "SOCR eScholar Pubs", "url": "http://escholarship.org/uc/stats/unit/socr.html", "size": 6913.580246913581}
-                ]},
-
-                  {"name": "SOCR User Counting Servers", "url": "../../SOCR.html", "size": 10370.37037037037, "children":[
-                    {"name": "Counter's SOCR Server Users", "url": "http://counter.digits.net/?counter=SOCR", "size": 6913.580246913581},
-                    {"name": "MediaWiki SOCR Michigan Server Users", "url": "http://wiki.stat.ucla.edu/socr", "size": 6913.580246913581},
-                    {"name": "MediaWiki SOCR UCLA Server Users", "url": "http://forums.stat.ucla.edu/socr", "size": 6913.580246913581},
-                    {"name": "Source Code (GoogleCode)", "url": "http://socr.googlecode.com/", "size": 6913.580246913581},
-                    {"name": "University of California eScholarship", "url": "http://escholarship.org/uc/stats/unit/socr_rw.html", "size": 6913.580246913581},
-                    {"name": "SOCR eScholar Pubs", "url": "http://escholarship.org/uc/stats/author/edu/ucla/stat/dinov/dinov_ivo_d.html", "size": 6913.580246913581},
-                    {"name": "StatCounter's SOCR Users", "url": "http://statcounter.com/p5714596/visitor_map/?&account_id=2993174&login_id=3&code=c09a63d61e8e069f31392a36ffcaeec4&guest_login=1&project_id=5714596&perpage=300", "size": 6913.580246913581}
-                  ]},
-
-                  {"name": "SOCR Mirrors (known public mirrors only)", "url": "http://wiki.stat.ucla.edu/socr/index.php/SOCR_Servers", "size": 10370.37037037037,"children":
-                    [{"name": "PsyResearch", "url": "http://psyresearch.org/statistics/socr/", "size": 6913.580246913581},
-                      {"name": "ASA Amstat", "url": "http://www.amstat.org/publications/jse/socr/", "size": 6913.580246913581}]}]},
-              {"name": "Documentation", "url": "http://http://socr.ucla.edu/docs/SOCR_Brochure_Integrated2Page_2008.pdf", "size": 15555.555555555555},
-              {"name": "Translation", "url": "http://http://socr.ucla.edu/docs/SOCR_Brochure_Integrated2Page_2008.pdf", "size": 15555.555555555555},
-              {"name": "SOCR Resource Navigator", "url": "http://http://socr.ucla.edu/docs/SOCR_Brochure_Integrated2Page_2008.pdf", "size": 15555.555555555555},
-              {"name": "Carousel Viewer", "url": "http://http://socr.ucla.edu/docs/SOCR_Brochure_Integrated2Page_2008.pdf", "size": 15555.555555555555}
+              },
+              {
+                "name": "graph",
+                "children": [
+                  {"name": "BetweennessCentrality", "size": 3534},
+                  {"name": "LinkDistance", "size": 5731},
+                  {"name": "MaxFlowMinCut", "size": 7840},
+                  {"name": "ShortestPaths", "size": 5914},
+                  {"name": "SpanningTree", "size": 3416}
+                ]
+              },
+              {
+                "name": "optimization",
+                "children": [
+                  {"name": "AspectRatioBanker", "size": 7074}
+                ]
+              }
             ]
-          }]
+          },
+          {
+            "name": "animate",
+            "children": [
+              {"name": "Easing", "size": 17010},
+              {"name": "FunctionSequence", "size": 5842},
+              {
+                "name": "interpolate",
+                "children": [
+                  {"name": "ArrayInterpolator", "size": 1983},
+                  {"name": "ColorInterpolator", "size": 2047},
+                  {"name": "DateInterpolator", "size": 1375},
+                  {"name": "Interpolator", "size": 8746},
+                  {"name": "MatrixInterpolator", "size": 2202},
+                  {"name": "NumberInterpolator", "size": 1382},
+                  {"name": "ObjectInterpolator", "size": 1629},
+                  {"name": "PointInterpolator", "size": 1675},
+                  {"name": "RectangleInterpolator", "size": 2042}
+                ]
+              },
+              {"name": "ISchedulable", "size": 1041},
+              {"name": "Parallel", "size": 5176},
+              {"name": "Pause", "size": 449},
+              {"name": "Scheduler", "size": 5593},
+              {"name": "Sequence", "size": 5534},
+              {"name": "Transition", "size": 9201},
+              {"name": "Transitioner", "size": 19975},
+              {"name": "TransitionEvent", "size": 1116},
+              {"name": "Tween", "size": 6006}
+            ]
+          },
+          {
+            "name": "data",
+            "children": [
+              {
+                "name": "converters",
+                "children": [
+                  {"name": "Converters", "size": 721},
+                  {"name": "DelimitedTextConverter", "size": 4294},
+                  {"name": "GraphMLConverter", "size": 9800},
+                  {"name": "IDataConverter", "size": 1314},
+                  {"name": "JSONConverter", "size": 2220}
+                ]
+              },
+              {"name": "DataField", "size": 1759},
+              {"name": "DataSchema", "size": 2165},
+              {"name": "DataSet", "size": 586},
+              {"name": "DataSource", "size": 3331},
+              {"name": "DataTable", "size": 772},
+              {"name": "DataUtil", "size": 3322}
+            ]
+          },
+          {
+            "name": "display",
+            "children": [
+              {"name": "DirtySprite", "size": 8833},
+              {"name": "LineSprite", "size": 1732},
+              {"name": "RectSprite", "size": 3623},
+              {"name": "TextSprite", "size": 10066}
+            ]
+          },
+          {
+            "name": "flex",
+            "children": [
+              {"name": "FlareVis", "size": 4116}
+            ]
+          },
+          {
+            "name": "physics",
+            "children": [
+              {"name": "DragForce", "size": 1082},
+              {"name": "GravityForce", "size": 1336},
+              {"name": "IForce", "size": 319},
+              {"name": "NBodyForce", "size": 10498},
+              {"name": "Particle", "size": 2822},
+              {"name": "Simulation", "size": 9983},
+              {"name": "Spring", "size": 2213},
+              {"name": "SpringForce", "size": 1681}
+            ]
+          },
+          {
+            "name": "query",
+            "children": [
+              {"name": "AggregateExpression", "size": 1616},
+              {"name": "And", "size": 1027},
+              {"name": "Arithmetic", "size": 3891},
+              {"name": "Average", "size": 891},
+              {"name": "BinaryExpression", "size": 2893},
+              {"name": "Comparison", "size": 5103},
+              {"name": "CompositeExpression", "size": 3677},
+              {"name": "Count", "size": 781},
+              {"name": "DateUtil", "size": 4141},
+              {"name": "Distinct", "size": 933},
+              {"name": "Expression", "size": 5130},
+              {"name": "ExpressionIterator", "size": 3617},
+              {"name": "Fn", "size": 3240},
+              {"name": "If", "size": 2732},
+              {"name": "IsA", "size": 2039},
+              {"name": "Literal", "size": 1214},
+              {"name": "Match", "size": 3748},
+              {"name": "Maximum", "size": 843},
+              {
+                "name": "methods",
+                "children": [
+                  {"name": "add", "size": 593},
+                  {"name": "and", "size": 330},
+                  {"name": "average", "size": 287},
+                  {"name": "count", "size": 277},
+                  {"name": "distinct", "size": 292},
+                  {"name": "div", "size": 595},
+                  {"name": "eq", "size": 594},
+                  {"name": "fn", "size": 460},
+                  {"name": "gt", "size": 603},
+                  {"name": "gte", "size": 625},
+                  {"name": "iff", "size": 748},
+                  {"name": "isa", "size": 461},
+                  {"name": "lt", "size": 597},
+                  {"name": "lte", "size": 619},
+                  {"name": "max", "size": 283},
+                  {"name": "min", "size": 283},
+                  {"name": "mod", "size": 591},
+                  {"name": "mul", "size": 603},
+                  {"name": "neq", "size": 599},
+                  {"name": "not", "size": 386},
+                  {"name": "or", "size": 323},
+                  {"name": "orderby", "size": 307},
+                  {"name": "range", "size": 772},
+                  {"name": "select", "size": 296},
+                  {"name": "stddev", "size": 363},
+                  {"name": "sub", "size": 600},
+                  {"name": "sum", "size": 280},
+                  {"name": "update", "size": 307},
+                  {"name": "variance", "size": 335},
+                  {"name": "where", "size": 299},
+                  {"name": "xor", "size": 354},
+                  {"name": "_", "size": 264}
+                ]
+              },
+              {"name": "Minimum", "size": 843},
+              {"name": "Not", "size": 1554},
+              {"name": "Or", "size": 970},
+              {"name": "Query", "size": 13896},
+              {"name": "Range", "size": 1594},
+              {"name": "StringUtil", "size": 4130},
+              {"name": "Sum", "size": 791},
+              {"name": "Variable", "size": 1124},
+              {"name": "Variance", "size": 1876},
+              {"name": "Xor", "size": 1101}
+            ]
+          },
+          {
+            "name": "scale",
+            "children": [
+              {"name": "IScaleMap", "size": 2105},
+              {"name": "LinearScale", "size": 1316},
+              {"name": "LogScale", "size": 3151},
+              {"name": "OrdinalScale", "size": 3770},
+              {"name": "QuantileScale", "size": 2435},
+              {"name": "QuantitativeScale", "size": 4839},
+              {"name": "RootScale", "size": 1756},
+              {"name": "Scale", "size": 4268},
+              {"name": "ScaleType", "size": 1821},
+              {"name": "TimeScale", "size": 5833}
+            ]
+          },
+          {
+            "name": "util",
+            "children": [
+              {"name": "Arrays", "size": 8258},
+              {"name": "Colors", "size": 10001},
+              {"name": "Dates", "size": 8217},
+              {"name": "Displays", "size": 12555},
+              {"name": "Filter", "size": 2324},
+              {"name": "Geometry", "size": 10993},
+              {
+                "name": "heap",
+                "children": [
+                  {"name": "FibonacciHeap", "size": 9354},
+                  {"name": "HeapNode", "size": 1233}
+                ]
+              },
+              {"name": "IEvaluable", "size": 335},
+              {"name": "IPredicate", "size": 383},
+              {"name": "IValueProxy", "size": 874},
+              {
+                "name": "math",
+                "children": [
+                  {"name": "DenseMatrix", "size": 3165},
+                  {"name": "IMatrix", "size": 2815},
+                  {"name": "SparseMatrix", "size": 3366}
+                ]
+              },
+              {"name": "Maths", "size": 17705},
+              {"name": "Orientation", "size": 1486},
+              {
+                "name": "palette",
+                "children": [
+                  {"name": "ColorPalette", "size": 6367},
+                  {"name": "Palette", "size": 1229},
+                  {"name": "ShapePalette", "size": 2059},
+                  {"name": "SizePalette", "size": 2291}
+                ]
+              },
+              {"name": "Property", "size": 5559},
+              {"name": "Shapes", "size": 19118},
+              {"name": "Sort", "size": 6887},
+              {"name": "Stats", "size": 6557},
+              {"name": "Strings", "size": 22026}
+            ]
+          },
+          {
+            "name": "vis",
+            "children": [
+              {
+                "name": "axis",
+                "children": [
+                  {"name": "Axes", "size": 1302},
+                  {"name": "Axis", "size": 24593},
+                  {"name": "AxisGridLine", "size": 652},
+                  {"name": "AxisLabel", "size": 636},
+                  {"name": "CartesianAxes", "size": 6703}
+                ]
+              },
+              {
+                "name": "controls",
+                "children": [
+                  {"name": "AnchorControl", "size": 2138},
+                  {"name": "ClickControl", "size": 3824},
+                  {"name": "Control", "size": 1353},
+                  {"name": "ControlList", "size": 4665},
+                  {"name": "DragControl", "size": 2649},
+                  {"name": "ExpandControl", "size": 2832},
+                  {"name": "HoverControl", "size": 4896},
+                  {"name": "IControl", "size": 763},
+                  {"name": "PanZoomControl", "size": 5222},
+                  {"name": "SelectionControl", "size": 7862},
+                  {"name": "TooltipControl", "size": 8435}
+                ]
+              },
+              {
+                "name": "data",
+                "children": [
+                  {"name": "Data", "size": 20544},
+                  {"name": "DataList", "size": 19788},
+                  {"name": "DataSprite", "size": 10349},
+                  {"name": "EdgeSprite", "size": 3301},
+                  {"name": "NodeSprite", "size": 19382},
+                  {
+                    "name": "render",
+                    "children": [
+                      {"name": "ArrowType", "size": 698},
+                      {"name": "EdgeRenderer", "size": 5569},
+                      {"name": "IRenderer", "size": 353},
+                      {"name": "ShapeRenderer", "size": 2247}
+                    ]
+                  },
+                  {"name": "ScaleBinding", "size": 11275},
+                  {"name": "Tree", "size": 7147},
+                  {"name": "TreeBuilder", "size": 9930}
+                ]
+              },
+              {
+                "name": "events",
+                "children": [
+                  {"name": "DataEvent", "size": 2313},
+                  {"name": "SelectionEvent", "size": 1880},
+                  {"name": "TooltipEvent", "size": 1701},
+                  {"name": "VisualizationEvent", "size": 1117}
+                ]
+              },
+              {
+                "name": "legend",
+                "children": [
+                  {"name": "Legend", "size": 20859},
+                  {"name": "LegendItem", "size": 4614},
+                  {"name": "LegendRange", "size": 10530}
+                ]
+              },
+              {
+                "name": "operator",
+                "children": [
+                  {
+                    "name": "distortion",
+                    "children": [
+                      {"name": "BifocalDistortion", "size": 4461},
+                      {"name": "Distortion", "size": 6314},
+                      {"name": "FisheyeDistortion", "size": 3444}
+                    ]
+                  },
+                  {
+                    "name": "encoder",
+                    "children": [
+                      {"name": "ColorEncoder", "size": 3179},
+                      {"name": "Encoder", "size": 4060},
+                      {"name": "PropertyEncoder", "size": 4138},
+                      {"name": "ShapeEncoder", "size": 1690},
+                      {"name": "SizeEncoder", "size": 1830}
+                    ]
+                  },
+                  {
+                    "name": "filter",
+                    "children": [
+                      {"name": "FisheyeTreeFilter", "size": 5219},
+                      {"name": "GraphDistanceFilter", "size": 3165},
+                      {"name": "VisibilityFilter", "size": 3509}
+                    ]
+                  },
+                  {"name": "IOperator", "size": 1286},
+                  {
+                    "name": "label",
+                    "children": [
+                      {"name": "Labeler", "size": 9956},
+                      {"name": "RadialLabeler", "size": 3899},
+                      {"name": "StackedAreaLabeler", "size": 3202}
+                    ]
+                  },
+                  {
+                    "name": "layout",
+                    "children": [
+                      {"name": "AxisLayout", "size": 6725},
+                      {"name": "BundledEdgeRouter", "size": 3727},
+                      {"name": "CircleLayout", "size": 9317},
+                      {"name": "CirclePackingLayout", "size": 12003},
+                      {"name": "DendrogramLayout", "size": 4853},
+                      {"name": "ForceDirectedLayout", "size": 8411},
+                      {"name": "IcicleTreeLayout", "size": 4864},
+                      {"name": "IndentedTreeLayout", "size": 3174},
+                      {"name": "Layout", "size": 7881},
+                      {"name": "NodeLinkTreeLayout", "size": 12870},
+                      {"name": "PieLayout", "size": 2728},
+                      {"name": "RadialTreeLayout", "size": 12348},
+                      {"name": "RandomLayout", "size": 870},
+                      {"name": "StackedAreaLayout", "size": 9121},
+                      {"name": "TreeMapLayout", "size": 9191}
+                    ]
+                  },
+                  {"name": "Operator", "size": 2490},
+                  {"name": "OperatorList", "size": 5248},
+                  {"name": "OperatorSequence", "size": 4190},
+                  {"name": "OperatorSwitch", "size": 2581},
+                  {"name": "SortOperator", "size": 2023}
+                ]
+              },
+              {"name": "Visualization", "size": 16540}
+            ]
+          }
+        ]
       }
       #console.log data
       xScale = d3.scale.linear().range([0, width])
@@ -1545,7 +1436,7 @@ charts = angular.module('app_analysis_charts', [])
         yScale.domain([d.y, d.y + d.dy])
 
         if node != level
-          chart.selectAll('.cell.child .label').style('display', 'none')
+          chart.selectAll('.cell.child.label').style('display', 'none')
 
         zoomTransition = chart.selectAll('g.cell').transition().duration(transitionDuration)
         .attr('transform', (d) -> 'translate(' + xScale(d.x) + ',' + yScale(d.y) + ')')
@@ -1592,6 +1483,7 @@ charts = angular.module('app_analysis_charts', [])
       children = nodes.filter((d) -> !d.children)
       parents = nodes.filter((d) -> d.children)
 
+      ###
       # Create parent cells
       parentCells = chart.selectAll('g.cell.parent').data(parents, (d) -> 'p-' + d.name)
 
@@ -1602,18 +1494,18 @@ charts = angular.module('app_analysis_charts', [])
       .on('click', (d) -> zoom(d))
       .append('svg')
       .attr('class', 'clip')
-      .attr('width', (d) -> Math.max(0.01, d.dx))
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
       .attr('height', headerHeight)
 
       parentEnterTransition.append('rect')
-      .attr('width', (d) -> Math.max(0.01, d.dx))
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
       .attr('height', headerHeight)
       .style('fill', headerColor)
 
       parentEnterTransition.append('text')
       .attr('class', 'label')
-      .attr("transform", (d) -> 'translate(3,13)')
-      .attr("width", (d) -> Math.max(0.01, d.dx))
+      .attr("transform", () -> 'translate(3,13)')
+      .attr("width", (d) -> Math.max(0.01, d.dx - 1))
       .attr("height", headerHeight)
       .text((d) -> d.name)
 
@@ -1625,19 +1517,19 @@ charts = angular.module('app_analysis_charts', [])
       .attr('transform', (d) -> 'translate(' + d.dx + ',' + d.y + ')')
 
       parentUpdateTransition.select('rect')
-      .attr('width', (d) -> Math.max(0.01, d.dx))
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
       .attr('height', headerHeight)
       .style('fill', headerColor)
 
       parentUpdateTransition.select('.label')
       .attr('transform', 'translate(3, 13)')
-      .attr('width', (d) -> Math.max(0.01, d.dx))
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
       .attr('height', headerHeight)
       .text((d) -> d.name)
 
       # Remove transition
       parentCells.exit().remove()
-
+      ###
       # Create children cells
       childrenCells = chart.selectAll('g.cell.child').data(children, (d) -> 'c-' + d.name)
 
@@ -1649,6 +1541,16 @@ charts = angular.module('app_analysis_charts', [])
       .on('click', (d) -> zoom( if node == d.parent then root else d.parent))
       .append('svg')
       .attr('class', 'clip')
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
+      .attr('height', (d) -> Math.max(0.01, d.dy - 1))
+      .on('mouseover', () ->
+        d3.select(@)
+        .attr('stroke', 'black')
+        .attr('stroke-width', 5))
+      .on('mouseout', () ->
+        d3.select(@)
+        .attr('stroke', 'white')
+        .attr('stroke-width', 1))
 
       childEnterTransition.append('rect')
       .classed('background', true)
@@ -1730,7 +1632,7 @@ charts = angular.module('app_analysis_charts', [])
           data = newChartData.data
           #          _label = null
 
-#          console.log data
+          #          console.log data
 
           #id = '#'+ newInfo.name
           container = d3.select(elem.find('div')[0])
