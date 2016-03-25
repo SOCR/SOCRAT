@@ -1496,48 +1496,223 @@ charts = angular.module('app_analysis_charts', [])
                   }]
               }
 
+      xScale = d3.scale.linear().range([0, width])
+      yScale = d3.scale.linear().range([0, height])
       color = d3.scale.category10()
-      div = svg.append('g')
-      treemap = d3.layout.treemap().size([
-        width
-        height
-      ]).sticky(true).value((d) ->
+      headerHeight = 20
+      headerColor = '#555555'
+      transitionDuration = 500
+
+      treemap = d3.layout.treemap().size([width,height]).sticky(true).value((d) -> d.size)
+
+      chart = svg.append('g')
+
+      # Helper functions
+      size = (d) ->
         d.size
-      )
-      position = ->
-        @attr('transform', (d) -> 'translate(' + d.x + ','+ d.y + ')')
-        .style('width', (d) ->
-          Math.max(0, d.dx - 1) + 'px')
-        .style 'height', (d) ->
-          Math.max(0, d.dy - 1) + 'px'
+
+      count = (d) ->
+        1
+
+      getRGBComponents = (color) ->
+        r = color.substring(1, 3)
+        g = color.substring(3, 5)
+        b = color.substring(5, 7)
+        {
+          R: parseInt(r, 16)
+          G: parseInt(g, 16)
+          B: parseInt(b, 16)
+        }
         return
 
-      node = div.datum(data)
-      .selectAll('g.node')
-      .data(treemap.nodes)
-      .enter().append('g')
-      .attr('class', 'node')
-      .append('rect')
-      .call(position)
-      .style('fill', (d) ->
-        if !d.children then color(d.parent.name) else null
-      ).on('mouseover', (d) ->
-        d3.select(@).select('rect')
-        .attr('stroke', 'black')
-        .attr('stroke-width', 5)
+      idealTextColor = (bgColor) ->
+        nThreshold = 105
+        components = getRGBComponents(bgColor)
+        bgDelta = components.R * 0.299 + components.G * 0.587 + components.B * 0.114
+        if 255 - bgDelta < nThreshold then '#000000' else '#ffffff'
+        return
+
+
+      zoom = (d) ->
+        @treemap.padding([headerHeight / (height / d.dy), 0, 0, 0])
+        .nodes(d)
+
+        # moving the next two lines above treemap layout messes up padding of zoom result
+        kx = width / d.dx
+        ky = height / d.dy
+        level = d
+        xScale.domain([d.x, d.x + d.dx])
+        yScale.domain([d.y, d.y + d.dy])
+
+        if node != level
+          chart.selectAll('.cell.child.label').style('display', 'none')
+
+        zoomTransition = chart.selectAll('g.cell').transition().duration(transitionDuration)
+        .attr('transform', (d) -> 'translate(' + xScale(d.x) + ',' + yScale(d.y) + ')')
+        .each('start', () ->
+          d3.select(@).select('label').style('display', 'none')
+        ).each('end', (d, i) ->
+          if !i and level != self.root
+            chart.selectAll('.cell.child').filter((d) ->
+              d.parent == self.node # only get the children for selected group
+            ).select('.label')
+            .style('dispaly', '')
+            .style('fill', (d) -> idealTextColor(color(d.parent.name)))
+        )
+
+        # Update the width/height of the rects
+        zoomTransition.select('.clip')
+        .attr('width', (d) -> Math.max(0.01, (kx * d.dx)))
+        .attr('height', (d) -> if d.children then headerHeight else Math.max(0.01, (kx * d.dy)))
+
+        zoomTransition.select('.label')
+        .attr('width', (d) -> Math.max(0.01, kx * d.dx))
+        .attr('height', (d) -> if d.children then headerHeight else Math.max(0.01, ky * d.dy))
+        .text((d) -> d.name)
+
+        zoomTransition.select('.child .label')
+        .attr('x', (d) -> kx * d.dx / 2)
+        .attr('y', (d) -> ky * d.dy / 2)
+
+        zoomTransition.select('rect')
+        .attr('width', (d) -> Math.max(0.01, (kx * d.dx)))
+        .attr('height', (d) -> if d.children then headerHeight else Math.max(0.01, (ky * d.dy)))
+        .style('fill', (d) -> if d.children then headerColor else color(d.parent.name))
+
+        node = d
+
+        if d3.event
+          d3.event.stopPropagation()
+        return
+
+
+      root = data
+      node = root
+      nodes = treemap.nodes(root)
+      children = nodes.filter((d) -> !d.children)
+      parents = nodes.filter((d) -> d.children)
+
+      ###
+      # Create parent cells
+      parentCells = chart.selectAll('g.cell.parent').data(parents, (d) -> 'p-' + d.name)
+      parentEnterTransition = parentCells.enter()
+      .append('g')
+      .attr('class', 'cell parent')
+      .attr('transform', (d) -> 'translate(' + d.x + ',' + d.y + ')')
+      .on('click', (d) -> zoom(d))
+      .append('svg')
+      .attr('class', 'clip')
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
+      .attr('height', headerHeight)
+      parentEnterTransition.append('rect')
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
+      .attr('height', headerHeight)
+      .style('fill', headerColor)
+      parentEnterTransition.append('text')
+      .attr('class', 'label')
+      .attr("transform", () -> 'translate(3,13)')
+      .attr("width", (d) -> Math.max(0.01, d.dx - 1))
+      .attr("height", headerHeight)
+      .text((d) -> d.name)
+      # Update transition
+      parentUpdateTransition = parentCells.transition().duration(transitionDuration)
+      parentUpdateTransition.select('.cell')
+      .attr('transform', (d) -> 'translate(' + d.dx + ',' + d.y + ')')
+      parentUpdateTransition.select('rect')
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
+      .attr('height', headerHeight)
+      .style('fill', headerColor)
+      parentUpdateTransition.select('.label')
+      .attr('transform', 'translate(3, 13)')
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
+      .attr('height', headerHeight)
+      .text((d) -> d.name)
+      # Remove transition
+      parentCells.exit().remove()
+      ###
+      # Create children cells
+      childrenCells = chart.selectAll('g.cell.child').data(children, (d) -> 'c-' + d.name)
+
+      # Enter transition
+      childEnterTransition = childrenCells.enter()
+      .append('g')
+      .attr('class', 'cell child')
+      .attr('transform', (d) -> 'translate(' + d.x + ',' + d.y + ')')
+      #.on('click', (d) -> zoom( if node == d.parent then root else d.parent))
+      .append('svg')
+      .attr('class', 'clip')
+      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
+      .attr('height', (d) -> Math.max(0.01, d.dy - 1))
+      #.append('a').attr('xlink:href', (d) -> console.log d.url)
+      .on('click', (d) ->
+        console.log d.url
+        window.open(d.url)
+      )
+      .on('mouseover', () ->
         d3.select(@).append('title')
         .text((d) ->
           'Parent: ' + d.parent.name + '\n' +
             'Name: ' + d.name + '\n' +
             'Depth: ' + d.depth
         )
+        d3.select(@).select('rect')
+        .attr('stroke', 'black')
+        .attr('stroke-width', 5)
+
       )
-      .on('mouseout', (d) ->
+      .on('mouseout', () ->
         d3.select(@).select('rect')
         .attr('stroke', 'white')
         .attr('stroke-width', 0)
         d3.select(@).select('title').remove()
       )
+
+
+      childEnterTransition.append('rect')
+      .classed('background', true)
+      .style('fill', (d) -> color(d.parent.name))
+
+      childEnterTransition.append('text')
+      .attr('class', 'label')
+      .attr('x', (d) -> d.dx / 2)
+      .attr('y', (d) -> d.dy / 2)
+      .attr('dy', '0.35em')
+      .text((d) -> d.name)
+
+      # Do not show children's label
+      #childEnterTransition.selectAll('.foreignObject .labelbody .label').style('display', 'none')
+
+      # Update transition
+      childUpdateTransition = childrenCells.transition().duration(transitionDuration)
+
+      childUpdateTransition.select('.cell')
+      .attr('transform', (d) -> 'translate(' + d.x + ',' + d.y + ')')
+
+      childUpdateTransition.select('rect')
+      .attr('width', (d) -> Math.max(0.01, d.dx))
+      .attr('height', (d) -> d.dy)
+      .style('fill', (d) -> color(d.parent.name))
+
+      childUpdateTransition.select('.label')
+      .attr('x', (d) -> d.dx / 2)
+      .attr('y', (d) -> d.dy / 2)
+      .attr('dy', '0.35em')
+      .style('display', 'none')
+      .text((d) -> d.name)
+
+
+      # Exit transition
+      childrenCells.exit().remove()
+
+      ###
+      d3.select('select').on('change', () ->
+        console.log('select zoom(node)')
+        treemap.value(if @value == 'size'then size else count )
+        .nodes(root)
+        zoom(node)
+      )
+      ###
+      #zoom(node)
 
 
     drawTreemap: _drawTreemap
