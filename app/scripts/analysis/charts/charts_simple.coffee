@@ -1496,85 +1496,19 @@ charts = angular.module('app_analysis_charts', [])
                   }]
               }
 
-      ###
-      xScale = d3.scale.linear().range([0, width])
-      yScale = d3.scale.linear().range([0, height])
       color = d3.scale.category10()
-      transitionDuration = 500
-
-      treemap = d3.layout.treemap()
-      .size([width,height])
-      .padding(2)
-      .sticky(true)
-      .value((d) -> d.size)
-
-      chart = svg.append('g')
-
-      root = data
-      nodes = treemap.nodes(root)
-      children = nodes.filter((d) -> !d.children)
-
-      # Create children cells
-      childrenCells = chart.selectAll('g.cell.child').data(children, (d) -> 'c-' + d.name)
-
-      # Enter transition
-      childEnterTransition = childrenCells.enter()
-      .append('g')
-      .attr('class', 'cell child')
-      .attr('transform', (d) -> 'translate(' + d.x + ',' + d.y + ')')
-      .append('svg')
-      .attr('class', 'clip')
-      .attr('width', (d) -> Math.max(0.01, d.dx - 1))
-      .attr('height', (d) -> Math.max(0.01, d.dy - 1))
-      .on('click', (d) -> if d.url then window.open(d.url))
-      .on('mouseover', () ->
-        d3.select(@).append('title')
-        .text((d) ->
-          'Parent: ' + d.parent.name + '\n' +
-            'Name: ' + d.name + '\n' +
-            'Depth: ' + d.depth
-        )
-        d3.select(@).select('rect')
-        .attr('stroke', 'black')
-        .attr('stroke-width', 5)
-
-      )
-      .on('mouseout', () ->
-        d3.select(@).select('rect')
-        .attr('stroke', 'white')
-        .attr('stroke-width', 0)
-        d3.select(@).select('title').remove()
-      )
-
-      childEnterTransition.append('rect')
-      .classed('background', true)
-      .style('fill', (d) -> color(d.parent.name))
-
-      # Update transition
-      childUpdateTransition = childrenCells.transition().duration(transitionDuration)
-
-      childUpdateTransition.select('.cell')
-      .attr('transform', (d) -> 'translate(' + d.x + ',' + d.y + ')')
-
-      childUpdateTransition.select('rect')
-      .attr('width', (d) -> Math.max(0.01, d.dx))
-      .attr('height', (d) -> d.dy)
-      .style('fill', (d) -> color(d.parent.name))
-
-
-      # Exit transition
-      childrenCells.exit().remove()
-      ###
-      color = d3.scale.category10()
+      depthRestriction = 5
       treemap = d3.layout.treemap()
       .size([width, height])
       .padding(4)
       .sticky(true)
       .value((d) ->d.size)
 
+      filteredData = treemap.nodes(data).filter((d) -> d.depth < depthRestriction)
+
       node = svg.append('g')
       .selectAll('g.node')
-      .data(treemap.nodes(data))
+      .data(filteredData)
       .enter().append('g')
       .attr('class', 'node')
       .attr('transform', (d) -> 'translate(' + d.x + ',' + d.y + ')')
@@ -1608,7 +1542,6 @@ charts = angular.module('app_analysis_charts', [])
         .style('stroke-width', '1px')
         d3.select(@).select('title').remove()
       )
-
 
 
 
