@@ -1543,14 +1543,23 @@ charts = angular.module('app_analysis_charts', [])
       .attr('class', 'clip')
       .attr('width', (d) -> Math.max(0.01, d.dx - 1))
       .attr('height', (d) -> Math.max(0.01, d.dy - 1))
-      .on('mouseover', () ->
-        d3.select(@)
+      .on('mouseover', (d) ->
+        d3.select(@).select('rect')
         .attr('stroke', 'black')
-        .attr('stroke-width', 5))
-      .on('mouseout', () ->
-        d3.select(@)
+        .attr('stroke-width', 5)
+        d3.select(@).append('title')
+        .text((d) ->
+          'Parent: ' + d.parent.name + '\n' +
+          'Name: ' + d.name + '\n' +
+          'Depth: ' + d.depth
+        )
+      )
+      .on('mouseout', (d) ->
+        d3.select(@).select('rect')
         .attr('stroke', 'white')
-        .attr('stroke-width', 1))
+        .attr('stroke-width', 0)
+        d3.select(@).select('title').remove()
+      )
 
       childEnterTransition.append('rect')
       .classed('background', true)
