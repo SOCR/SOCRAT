@@ -332,7 +332,7 @@ db.factory 'app_database_handler', [
             dataType: DATA_TYPES.NESTED
         else console.log '%cDATABASE: data type is unknown' , 'color:green'
 
-    setDbListeners = () ->
+    _setDbListeners = () ->
       # registering database callbacks for all possible incoming messages
       # TODO: add wrapper layer on top of _db methods?
       _methods = [
@@ -377,8 +377,8 @@ db.factory 'app_database_handler', [
       $timeout ->
         window.db = _db
         sb = eventManager.getSb()
-        DATA_TYPES = sb.getDataTypes()
-        setDbListeners()
+        DATA_TYPES = eventManager.getDataTypes()
+        _setDbListeners()
 
     initDb: _initDb
 ]
@@ -386,6 +386,5 @@ db.factory 'app_database_handler', [
 db.run [
   'app_database_handler'
   (handler) ->
-    console.log 'DB HANDLEEEEEEEEEEEEEER'
     handler.initDb()
 ]
