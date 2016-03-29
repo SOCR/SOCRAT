@@ -64,7 +64,7 @@ db.factory 'app_database_manager', [
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
-    getDataTypes: _getDataTypes
+    getSupportedDataTypes: _getDataTypes
 ]
 
 # ###
@@ -76,7 +76,7 @@ db.factory 'app_database_dataAdaptor', [
   'app_database_manager'
   (eventManager) ->
 
-    DATA_TYPES = eventManager.getDataTypes()
+    DATA_TYPES = eventManager.getSupportedDataTypes()
 
     _toDvTable = (dataFrame) ->
 
@@ -377,7 +377,7 @@ db.factory 'app_database_handler', [
       $timeout ->
         window.db = _db
         sb = eventManager.getSb()
-        DATA_TYPES = eventManager.getDataTypes()
+        DATA_TYPES = eventManager.getSupportedDataTypes()
         _setDbListeners()
 
     initDb: _initDb
