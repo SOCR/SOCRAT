@@ -285,21 +285,16 @@ db.service 'app_database_dv', ->
 
 db.factory 'app_database_handler', [
   '$q'
+  '$timeout'
   'app_database_dv'
   'app_database_nested'
   'app_database_dataAdaptor'
   'app_database_manager'
-  ($q, _db, nestedDb, dataAdaptor, eventManager) ->
+  ($q, $timeout, _db, nestedDb, dataAdaptor, eventManager) ->
 
     sb = null
+    DATA_TYPES = null
     _lastDataType = ''
-
-    sb = eventManager.getSb()
-    # set all the callbacks here
-#    _setSb = ((_db) ->
-    window.db = _db
-
-    DATA_TYPES = sb.getDataTypes()
 
     _getLastDataType = () ->
       _lastDataType
@@ -336,9 +331,8 @@ db.factory 'app_database_handler', [
             data: _data
             dataType: DATA_TYPES.NESTED
         else console.log '%cDATABASE: data type is unknown' , 'color:green'
-#        else console.log '%cDATABASE: data type is unknown' , 'color:green'
 
-    (sb) ->
+    setDbListeners = () ->
       # registering database callbacks for all possible incoming messages
       # TODO: add wrapper layer on top of _db methods?
       _methods = [
@@ -375,11 +369,23 @@ db.factory 'app_database_handler', [
             console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
             sb.publish
-              msg: method.outgoing
+              msg: method['outgoing']
               data: _data
               msgScope: ['database']
-#    )(_db)
 
-#    setSb: _setSb
-    getLastDataType: _getLastDataType
-  ]
+    _initDb = () ->
+      $timeout ->
+        window.db = _db
+        sb = eventManager.getSb()
+        DATA_TYPES = sb.getDataTypes()
+        setDbListeners()
+
+    initDb: _initDb
+]
+
+db.run [
+  'app_database_handler'
+  (handler) ->
+    console.log 'DB HANDLEEEEEEEEEEEEEER'
+    handler.initDb()
+]
