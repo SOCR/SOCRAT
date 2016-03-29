@@ -1,5 +1,5 @@
 div
-  #dt_example(style='height: 400px', ng-hide="dataType != 'flat'")
+  #dt_example(style='height: 400px', ng-hide="dataType != DATA_TYPES.FLAT")
       .ui-layout-north#wranglerNorthPanel
           #wranglerDashboard
       .ui-layout-west#profilerWestPanel
@@ -9,6 +9,6 @@ div
           #preview
           .spacer
       .ui-layout-south
-  div.lead.bg-danger(ng-hide="dataType == 'flat'")
+  div.lead.bg-danger(ng-hide="dataType == DATA_TYPES.FLAT")
     | Data Wrangler doesn't support current dataset.
     | Only "flat" data tables are supported.

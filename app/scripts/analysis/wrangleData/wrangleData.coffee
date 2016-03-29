@@ -42,6 +42,12 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     _getMsgList = () ->
       _msgList
 
+    _getSupportedDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     # wrapper function for controller communications
     _broadcast = (msg, data) ->
       $rootScope.$broadcast msg, data
@@ -50,6 +56,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     setSb: _setSb
     getMsgList: _getMsgList
     broadcast: _broadcast
+    getSupportedDataTypes: _getSupportedDataTypes
 ])
 
 .factory('app_analysis_wrangleData_dataRetriever', [
@@ -87,7 +94,10 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   ])
 
 .factory('app_analysis_wrangleData_dataAdaptor', [
-  () ->
+  'app_analysis_wrangleData_manager'
+  (eventManager) ->
+
+    DATA_TYPES = eventManager.getSupportedDataTypes()
 
     _toCsvString = (dataFrame) ->
 
@@ -133,7 +143,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
         types: _types
         nRows: _nRows
         nCols: _nCols
-        dataType: 'flat'
+        dataType: DATA_TYPES.FLAT
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
@@ -154,9 +164,11 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
       _table = []
       _csvData = []
 
+      DATA_TYPES = manager.getSupportedDataTypes()
+
       _init = () ->
         data = dataRetriever.getData()
-        if data.dataType is 'flat'
+        if data.dataType is DATA_TYPES.FLAT
           _csvData = dataAdaptor.toCsvString data
           true
         else
@@ -241,11 +253,13 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   'app_analysis_wrangleData_manager'
   ($scope, $rootScope, wrangler, msgManager) ->
 
+    DATA_TYPES = msgManager.getSupportedDataTypes()
+    $scope.DATA_TYPES = DATA_TYPES
     $scope.dataType = ''
 
     data = wrangler.init()
     if data
-      $scope.dataType = 'flat'
+      $scope.dataType = DATA_TYPES.FLAT
 
       # TODO: isolate dw from global scope
       w = dw.wrangle()
@@ -253,7 +267,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     # listen to state change and save data when exiting Wrangle Data
     stateListener = $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
       if fromState.name? and fromState.name is 'wrangleData'
-        if $scope.dataType is 'flat'
+        if $scope.dataType is DATA_TYPES.FLAT
           # save data to db on exit from wrangler
           wrangler.saveData()
         # signal to show sidebar
@@ -267,7 +281,8 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 .directive 'datawrangler', [
   '$exceptionHandler'
   'app_analysis_wrangleData_wrangler'
-  ($exceptionHandler, wrangler) ->
+  'app_analysis_wrangleData_manager'
+  ($exceptionHandler, wrangler, msgManager) ->
 
     restrict: 'E'
     transclude: true
@@ -283,8 +298,10 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
       # useful to identify which handsontable instance to update
       scope.purpose = attr.purpose
 
+      DATA_TYPES = msgManager.getSupportedDataTypes()
+
       # check if received dataset is flat
-      if scope.dataType? and scope.dataType is 'flat'
+      if scope.dataType? and scope.dataType is DATA_TYPES.FLAT
         myLayout = $('#dt_example').layout
           north:
             spacing_open: 0
