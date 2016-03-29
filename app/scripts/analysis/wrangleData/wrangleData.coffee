@@ -213,12 +213,14 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
         _timer =  $timeout ( ->
 
+          msgEnding = if dataFrame.dataType is DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
+
           $rootScope.$broadcast 'app:push notification',
             initial:
               msg: 'Data is being saved in the database...'
               type: 'alert-info'
             success:
-              msg: 'Successfully loaded data into database'
+              msg: 'Successfully loaded data into database' + msgEnding
               type: 'alert-success'
             failure:
               msg: 'Error in Database'
