@@ -1,5 +1,8 @@
 div(ng-controller="instrPerfEvalMainCtrl")
   h2 Instrument Performance Evaluation
+  div.lead.bg-danger(ng-hide="dataType == DATA_TYPES.FLAT")
+    | Instrument Performance Evaluation doesn't support current dataset.
+    | Only "flat" data tables are supported.
   div(ng-hide="dataType != DATA_TYPES.FLAT")
     p.
       Cronbach’s Alpha (α) is a measure of internal consistency or reliability of a psychometric instrument and measures
@@ -72,8 +75,3 @@ div(ng-controller="instrPerfEvalMainCtrl")
           3. Maydeu-Olivares, Alberto, Donna L. Coffman, and Wolfgang M. Hartmann.
           "Asymptotically distribution-free (ADF) interval estimation of coefficient alpha."
           Psychological methods 12.2 (2007): 157.
-
-
-  div.lead.bg-danger(ng-hide="dataType == DATA_TYPES.FLAT")
-    | Instrument Performance Evaluation doesn't support current dataset.
-    | Only "flat" data tables are supported.
