@@ -44,4 +44,7 @@ div(ng-controller='getDataMainCtrl')
     button.btn.btn-primary(ng-click="getJsonByUrl()") Parse
 
   br
-  handsontable(purpose="json")
+  div.lead.bg-danger(ng-hide="dataType != DATA_TYPES.NESTED")
+    | Visual representation of hierarchical data currently is not available.
+  div(ng-class="{'vis-hidden': dataType != DATA_TYPES.FLAT}")
+    handsontable(purpose="json")

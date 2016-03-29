@@ -54,7 +54,7 @@ getData = angular.module('app_analysis_getData', [
     _getMsgList = () ->
       _msgList
 
-    _getDataTypes = () ->
+    _getSupportedDataTypes = () ->
       if _sb
         _sb.getSupportedDataTypes()
       else
@@ -63,7 +63,7 @@ getData = angular.module('app_analysis_getData', [
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
-    getDataTypes: _getDataTypes
+    getSupportedDataTypes: _getSupportedDataTypes
 ])
 
 # ###
@@ -81,6 +81,7 @@ getData = angular.module('app_analysis_getData', [
   '$timeout'
   (manager, $q, $stateParams, $rootScope, $timeout) ->
 
+    DATA_TYPES = manager.getSupportedDataTypes()
     sb = manager.getSb()
     _data = {}
     _timer = null
@@ -90,12 +91,15 @@ getData = angular.module('app_analysis_getData', [
       _data
 
     _saveDataToDb = (data, deferred) ->
+
+      msgEnding = if data.dataType is DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
+
       $rootScope.$broadcast 'app:push notification',
         initial:
           msg: 'Data is being saved in the database...'
           type: 'alert-info'
         success:
-          msg: 'Successfully loaded data into database'
+          msg: 'Successfully loaded data into database' + msgEnding
           type: 'alert-success'
         failure:
           msg: 'Error in Database'
@@ -248,7 +252,7 @@ getData = angular.module('app_analysis_getData', [
     flag = true
     $scope.selected = null
 
-    DATA_TYPES = eventManager.getDataTypes()
+    DATA_TYPES = eventManager.getSupportedDataTypes()
 
     passReceivedData = (data) ->
       if data.dataType is DATA_TYPES.NESTED
@@ -331,14 +335,18 @@ getData = angular.module('app_analysis_getData', [
   (eventManager, $scope, showState, jsonParser, dataAdaptor, inputCache, state) ->
     console.log 'getDataMainCtrl executed'
 
-    DATA_TYPES = eventManager.getDataTypes()
+    DATA_TYPES = eventManager.getSupportedDataTypes()
+    $scope.DATA_TYPES = DATA_TYPES
+    $scope.dataType = ''
 
     passReceivedData = (data) ->
       if data.dataType is DATA_TYPES.NESTED
+        $scope.dataType = DATA_TYPES.NESTED
         inputCache.set data
       else
         # default data type is 2d 'flat' table
         data.dataType = DATA_TYPES.FLAT
+        $scope.dataType = DATA_TYPES.FLAT
         # pass a message to update the handsontable div
         # data is the formatted data which plugs into the
         #  handontable.
@@ -473,7 +481,7 @@ getData = angular.module('app_analysis_getData', [
   'app_analysis_getData_manager'
   (eventManager) ->
 
-    DATA_TYPES = eventManager.getDataTypes()
+    DATA_TYPES = eventManager.getSupportedDataTypes()
 
     # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
     typeIsArray = Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'
@@ -611,13 +619,15 @@ getData = angular.module('app_analysis_getData', [
   'app_analysis_getData_inputCache'
   'app_analysis_getData_dataAdaptor'
   '$exceptionHandler'
-  (eventManager, inputCache, dataAdaptor, $exceptionHandler) ->
+  '$timeout'
+  (eventManager, inputCache, dataAdaptor, $exceptionHandler, $timeout) ->
+
     restrict: 'E'
     transclude: true
 
     # to the name attribute on the directive element.
     # the template for the directive.
-    template: "<div class='hot-scroll-container' style='height: 300px'></div>"
+    template: "<div class='hot-scroll-container' style='height: 300px; width: 100%'></div>"
 
     #the controller for the directive
     controller: ($scope) ->
@@ -629,86 +639,93 @@ getData = angular.module('app_analysis_getData', [
     #  It is run before the controller
     link: (scope, elem, attr) ->
 
-      N_SPARE_COLS = 1
-      N_SPARE_ROWS = 1
-      DEFAULT_ROW_HEIGHT = 24
+      $timeout ->
+        N_SPARE_COLS = 1
+        N_SPARE_ROWS = 1
+        # from handsontable defaults
+        # https://docs.handsontable.com/0.24.1/demo-stretching.html
+        DEFAULT_ROW_HEIGHT = 23
+        DEFAULT_COL_WIDTH = 47
 
-      # useful to identify which handsontable instance to update
-      scope.purpose = attr.purpose
+        # useful to identify which handsontable instance to update
+        scope.purpose = attr.purpose
 
-      # retrieves data from handsontable object
-      _format = (obj) ->
-        data = obj.getData()
-        header = obj.getColHeader()
-        nCols = obj.countCols()
-        nRows = obj.countRows()
+        # retrieves data from handsontable object
+        _format = (obj) ->
+          data = obj.getData()
+          header = obj.getColHeader()
+          nCols = obj.countCols()
+          nRows = obj.countRows()
 
-        table =
-          data: data
-          header: header
-          nCols: nCols
-          nRows: nRows
+          table =
+            data: data
+            header: header
+            nCols: nCols
+            nRows: nRows
 
-      scope.update = (evt, arg) ->
-        console.log 'handsontable: update called'
+        scope.update = (evt, arg) ->
+          console.log 'handsontable: update called'
 
-        DATA_TYPES = eventManager.getDataTypes()
+          DATA_TYPES = eventManager.getSupportedDataTypes()
 
-        currHeight = elem.height()
+          currHeight = elem.height()
+          currWidth = elem.width()
 
-        #check if data is in the right format
-#        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
-        if arg? and typeof arg.data is 'object' and arg.dataType is DATA_TYPES.FLAT
-          # TODO: not to pass nested data to ht, but save in db
-          obj =
-            data: arg.data[1]
-#            startRows: Object.keys(arg.data[1]).length
-#            startCols: arg.columns.length
-            colHeaders: arg.columnHeader
-#            columns: arg.columns
-            minSpareRows: N_SPARE_ROWS
-            minSpareCols: N_SPARE_COLS
-            allowInsertRow: true
-            allowInsertColumn: true
-        else if arg.default is true
-          obj =
-            data: [
-              ['Copy', 'paste', 'your', 'data', 'here']
-            ]
-            colHeaders: true
-            minSpareRows: N_SPARE_ROWS
-            minSpareCols: N_SPARE_COLS
-            allowInsertRow: true
-            allowInsertColumn: true
-            rowHeaders: false
-        else
-          $exceptionHandler
-            message: 'handsontable configuration is missing'
-
-        obj['change'] = true
-        obj['afterChange'] = (change, source) ->
-          # saving data to be globally accessible.
-          #  only place from where data is saved before DB: inputCache.
-          #  onSave, data is picked up from inputCache.
-          if source is 'loadData' or 'paste'
-            ht = $(this)[0]
-            tableData = _format ht
-            dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
-            inputCache.set dataFrame
-            ht.updateSettings
-              height: Math.max currHeight, ht.countRows() * DEFAULT_ROW_HEIGHT
+          #check if data is in the right format
+  #        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
+          if arg? and typeof arg.data is 'object' and arg.dataType is DATA_TYPES.FLAT
+            # TODO: not to pass nested data to ht, but save in db
+            obj =
+              data: arg.data[1]
+  #            startRows: Object.keys(arg.data[1]).length
+  #            startCols: arg.columns.length
+              colHeaders: arg.columnHeader
+  #            columns: arg.columns
+              minSpareRows: N_SPARE_ROWS
+              minSpareCols: N_SPARE_COLS
+              allowInsertRow: true
+              allowInsertColumn: true
+              stretchH: "all"
+          else if arg.default is true
+            obj =
+              data: [
+                ['Copy', 'paste', 'your', 'data', 'here']
+              ]
+              colHeaders: true
+              minSpareRows: N_SPARE_ROWS
+              minSpareCols: N_SPARE_COLS
+              allowInsertRow: true
+              allowInsertColumn: true
+              rowHeaders: false
           else
-            inputCache.set source
+            $exceptionHandler
+              message: 'handsontable configuration is missing'
 
-        try
-          # hook for pushing data changes to handsontable
-          # TODO: get rid of tight coupling :-/
-          ht = elem.handsontable obj
-          window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
-        catch e
-          $exceptionHandler e
+          obj['change'] = true
+          obj['afterChange'] = (change, source) ->
+            # saving data to be globally accessible.
+            #  only place from where data is saved before DB: inputCache.
+            #  onSave, data is picked up from inputCache.
+            if source is 'loadData' or 'paste'
+              ht = $(this)[0]
+              tableData = _format ht
+              dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
+              inputCache.set dataFrame
+              ht.updateSettings
+                height: Math.max currHeight, ht.countRows() * DEFAULT_ROW_HEIGHT
+                width: Math.max currWidth, ht.countCols() * DEFAULT_COL_WIDTH
+            else
+              inputCache.set source
 
-      # subscribing to handsontable update.
-      scope.$on attr.purpose + ':load data to handsontable', scope.update
-      console.log 'handsontable directive linked'
+          try
+            # hook for pushing data changes to handsontable
+            # TODO: get rid of tight coupling :-/
+            ht = elem.handsontable obj
+            window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
+          catch e
+            $exceptionHandler e
+
+        # subscribing to handsontable update
+        scope.$on attr.purpose + ':load data to handsontable', scope.update
+        console.log 'handsontable directive linked'
 ]
