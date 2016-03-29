@@ -1,6 +1,6 @@
 div(ng-controller="kMeansMainCtrl")
   h2 2D k-means Clustering
-  div(ng-hide="dataType != 'flat'")
+  div(ng-hide="dataType != DATA_TYPES.FLAT")
     p.
       k-means clustering aims to partition n observations into k clusters in which each observation belongs
       to the cluster with the nearest mean, serving as a prototype of the cluster.
@@ -15,6 +15,6 @@ div(ng-controller="kMeansMainCtrl")
            td {{label}}
            td {{acc.toFixed(2)}}
     app-kmeans
-  div.lead.bg-danger(ng-hide="dataType == 'flat'")
+  div.lead.bg-danger(ng-hide="dataType == DATA_TYPES.FLAT")
     | 2D k-means Clustering doesn't support current dataset.
     | Only "flat" data tables are supported.

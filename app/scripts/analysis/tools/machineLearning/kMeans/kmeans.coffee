@@ -37,6 +37,12 @@ kMeans = angular.module('app_analysis_kMeans', [])
     _getMsgList = () ->
       _msgList
 
+    _getSupportedDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     # wrapper function for controller communications
     _broadcast = (msg, data) ->
       $rootScope.$broadcast msg, data
@@ -45,6 +51,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
     setSb: _setSb
     getMsgList: _getMsgList
     broadcast: _broadcast
+    getSupportedDataTypes: _getSupportedDataTypes
 ])
 
 .controller('kMeansMainCtrl', [
@@ -62,6 +69,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
     $scope.avgAccuracy = ''
     $scope.accs = {}
     $scope.dataType = ''
+    $scope.DATA_TYPES = msgManager.getSupportedDataTypes()
 
     prettifyArrayOutput = (arr) ->
       if arr?
@@ -115,6 +123,8 @@ kMeans = angular.module('app_analysis_kMeans', [])
   '$timeout'
   (msgManager, kmeans, $scope, $stateParams, $q, $timeout) ->
     console.log 'kMeansSidebarCtrl executed'
+
+    DATA_TYPES = msgManager.getSupportedDataTypes()
 
     DEFAULT_CONTROL_VALUES =
       k: 2
@@ -244,7 +254,7 @@ kMeans = angular.module('app_analysis_kMeans', [])
         msg: 'take data'
         msgScope: ['kMeans']
         listener: (msg, data) ->
-          if data.dataType? and data.dataType is 'flat'
+          if data.dataType? and data.dataType is DATA_TYPES.FLAT
             $timeout ->
               msgManager.broadcast 'kmeans:updateDataType', data.dataType
             parseData data
