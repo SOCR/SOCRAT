@@ -37,6 +37,12 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
     _getMsgList = () ->
       _msgList
 
+    _getSupportedDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     # wrapper function for controller communications
     _broadcast = (msg, data) ->
       $rootScope.$broadcast msg, data
@@ -45,7 +51,8 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
     setSb: _setSb
     getMsgList: _getMsgList
     broadcast: _broadcast
-  ])
+    getSupportedDataTypes: _getSupportedDataTypes
+])
 
 .controller('instrPerfEvalMainCtrl', [
   'app_analysis_instrPerfEval_manager'
@@ -54,6 +61,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
   (ctrlMngr, alphaCalculator, $scope) ->
     console.log 'instrPerfEvalViewMainCtrl executed'
 
+    $scope.DATA_TYPES = ctrlMngr.getSupportedDataTypes()
     $scope.dataType = ''
 
     prettifyArrayOutput = (arr) ->
@@ -96,6 +104,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
   (msgMngr, alphaCalculator, $scope, $stateParams, $q, $timeout) ->
     console.log 'instrPerfEvalViewSidebarCtrl executed'
 
+    DATA_TYPES = msgMngr.getSupportedDataTypes()
     sb = msgMngr.getSb()
     deferred = $q.defer()
 
@@ -115,7 +124,7 @@ instrPerfEval = angular.module('app_analysis_instrPerfEval', [])
       msg: 'take table'
       msgScope: ['instrPerfEval']
       listener: (msg, data) ->
-        if data.dataType? and data.dataType is 'flat'
+        if data.dataType? and data.dataType is DATA_TYPES.FLAT
           $timeout ->
             msgMngr.broadcast 'instrPerfEval:updateDataType', data.dataType
           parseData data
