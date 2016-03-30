@@ -5,8 +5,8 @@ A scalable and highly flexible HTML5/JS platform to build and run in-browser app
 * Web site: http://socr.umich.edu
 * Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
 
-[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=master)](https://travis-ci.org/SOCRedu/SOCR-framework)
-[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=master)](https://gemnasium.com/SOCRedu/SOCR-framework)
+[![Build Status](https://travis-ci.org/SOCR/SOCRAT.svg?branch=master)](https://travis-ci.org/SOCR/SOCRAT)
+[![Dependency Status](https://gemnasium.com/SOCR/SOCRAT.png?branch=master)](https://gemnasium.com/SOCR/SOCRAT)
 
 Installation
 ------------
