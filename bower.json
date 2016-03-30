@@ -1,7 +1,7 @@
 {
   "author": "Alexandr Kalinin<alxndrkalinin@gmail.com>, Selvam Palanimalai<selvam1991@gmail.com>",
   "name": "SOCRAT",
-  "version": "v0.1.5-alpha.5",
+  "version": "v0.1.5-alpha.6",
   "description": "Flexible HTML5/JS toolkit for interactive data analysis and visuzalization",
   "homepage": "https://github.com/SOCR/SOCRAT",
   "dependencies": {
@@ -19,11 +19,11 @@
     "angular-sanitize": "^1.5.0",
     "angular-touch": "^1.5.0",
     "angular-ui": "^0.4.0",
-    "angular-ui-router": "~0.2.15",
-    "ngHandsontable": "angular-ui-handsontable#~0.8.0",
+    "angular-ui-router": "~0.2.18",
+    "ngHandsontable": "angular-ui-handsontable#~0.9.0",
     "wrangler": "https://github.com/alxndrkalinin/wrangler.git",
     "bootstrap": "^3.3.6",
-    "angular-bootstrap": "~1.1.2",
+    "angular-bootstrap": "^1.1.0",
     "jstat": "~1.5.2",
     "jsfeat": "~0.0.8"
   },

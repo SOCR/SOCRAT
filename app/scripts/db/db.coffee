@@ -33,8 +33,7 @@ db.factory 'app_database_constructor', [
 ]
 
 db.factory 'app_database_manager', [
-  'app_database_handler'
-  (database) ->
+  () ->
     _sb = null
     #_msgList =
     #  incoming:['create table','get table','delete table'],
@@ -48,7 +47,7 @@ db.factory 'app_database_manager', [
 
     _setSb = (sb) ->
       _sb = sb
-      database.setSb sb
+#      database.setSb sb
 
     _getSb = ->
       _sb
@@ -56,9 +55,16 @@ db.factory 'app_database_manager', [
     _getMsgList = ->
       _msgList
 
+    _getDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
+    getSupportedDataTypes: _getDataTypes
 ]
 
 # ###
@@ -67,7 +73,10 @@ db.factory 'app_database_manager', [
 # @description: Reformats data from the universal dataFrame object to datavore format
 # ###
 db.factory 'app_database_dataAdaptor', [
-  () ->
+  'app_database_manager'
+  (eventManager) ->
+
+    DATA_TYPES = eventManager.getSupportedDataTypes()
 
     _toDvTable = (dataFrame) ->
 
@@ -101,9 +110,24 @@ db.factory 'app_database_dataAdaptor', [
         types: _types
         nRows: _nRows
         nCols: _nCols
+        dataType: DATA_TYPES.FLAT
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
+]
+
+db.factory 'app_database_nested', [
+  () ->
+    _nestedObj = null
+
+    _save = (obj) ->
+      _nestedObj = obj
+
+    _get = () ->
+      _nestedObj
+
+    save: _save
+    get: _get
 ]
 
 db.service 'app_database_dv', ->
@@ -261,61 +285,106 @@ db.service 'app_database_dv', ->
 
 db.factory 'app_database_handler', [
   '$q'
+  '$timeout'
   'app_database_dv'
+  'app_database_nested'
   'app_database_dataAdaptor'
-  ($q, _db, dataAdaptor) ->
+  'app_database_manager'
+  ($q, $timeout, _db, nestedDb, dataAdaptor, eventManager) ->
 
-    # set all the callbacks here.
-    _setSb = ((_db) ->
-      window.db = _db
-      (sb) ->
+    sb = null
+    DATA_TYPES = null
+    _lastDataType = ''
 
-        #registering database callbacks for all possible incoming messages.
-        # TODO: add wrapper layer on top of _db methods?
-        _methods = [
-          {incoming: 'save table', outgoing: 'table saved', event: _db.create}
-          {incoming: 'get table', outgoing: 'take table', event: _db.get}
-          {incoming: 'add listener', outgoing: 'listener added', event: _db.addListener}
-        ]
+    _getLastDataType = () ->
+      _lastDataType
 
-        _status = _methods.map (method) ->
-          sb.subscribe
-            msg: method['incoming']
-            msgScope: ['database']
-            listener: (msg, data) ->
-              console.log "%cDATABASE: listener called for"+msg , "color:green"
+    _saveData = (obj) ->
+      if obj.dataFrame?
+        dataFrame = obj.dataFrame
+        # convert from the universal dataFrame object to datavore table or keep as is
+        if dataFrame.dataType?
+          _lastDataType = dataFrame.dataType
+          switch dataFrame.dataType
+            when DATA_TYPES.FLAT
+              dvData = dataAdaptor.toDvTable dataFrame
+              res = _db.create dvData, obj.tableName
+              res
+            when DATA_TYPES.NESTED
+              nestedDb.save obj.data
+              true
+            else console.log '%cDATABASE: data type is unknown' , 'color:green'
+        else console.log '%cDATABASE: data type is unknown' , 'color:green'
+      else console.log '%cDATABASE: nothing to save' , 'color:green'
 
-              # convert from the universal dataFrame object to datavore table
-              dvTableData = if msg is 'save table' then dataAdaptor.toDvTable data.dataFrame else data
+    _getData = (data) ->
+      switch _lastDataType
+        when DATA_TYPES.FLAT
+          _data = _db.get data.tableName
+          # convert data to DataFrame if returning it
+          _data = dataAdaptor.toDataFrame _data
+          _data.dataType = DATA_TYPES.FLAT
+          _data
+        when DATA_TYPES.NESTED
+          _data = nestedDb.get()
+          _data =
+            data: _data
+            dataType: DATA_TYPES.NESTED
+        else console.log '%cDATABASE: data type is unknown' , 'color:green'
 
-              # arrange arguments for a callback
-              # @todo need to find a better way for this.
-              _data = switch
-                when msg is 'save table' then [ dvTableData, data.tableName ]
-                when msg is 'get table' then [ data.tableName ]
-                else data
+    _setDbListeners = () ->
+      # registering database callbacks for all possible incoming messages
+      # TODO: add wrapper layer on top of _db methods?
+      _methods = [
+        incoming: 'save table'
+        outgoing: 'table saved'
+        event: _saveData
+       ,
+        incoming: 'get table'
+        outgoing: 'take table'
+        event: _getData
+      ,
+        incoming: 'add listener'
+        outgoing: 'listener added'
+        event: _db.addListener
+      ]
 
-              # invoke callback
-              _data = method.event.apply null, _data
+      _status = _methods.map (method) ->
+        sb.subscribe
+          msg: method['incoming']
+          msgScope: ['database']
+          listener: (msg, obj) ->
+            console.log "%cDATABASE: listener called for" + msg , "color:green"
+            # invoke callback
+            _data = method.event.apply null, [obj]
 
-              # convert data to DataFrame if returning it
-              _data = dataAdaptor.toDataFrame _data if msg is 'get table'
+            # all publish calls should pass a promise in the data object
+            # if promise is not defined, create one and pass it along
+            deferred = obj.promise
+            if typeof deferred isnt 'undefined'
+              if _data isnt false then deferred.resolve() else deferred.reject()
+            else
+              _data.promise = $q.defer()
 
-              # all publish calls should pass a promise in the data object
-              # if promise is not defined, create one and pass it along
-              deferred = data.promise
-              if typeof deferred isnt 'undefined'
-                if _data isnt false then deferred.resolve() else deferred.reject()
-              else
-                _data.promise = $q.defer()
+            console.log '%cDATABASE: listener response: ' + _data, 'color:green'
 
-              console.log '%cDATABASE: listener response: ' + _data, 'color:green'
+            sb.publish
+              msg: method['outgoing']
+              data: _data
+              msgScope: ['database']
 
-              sb.publish
-                msg: method.outgoing
-                data: _data
-                msgScope: ['database']
-    )(_db)
+    _initDb = () ->
+      $timeout ->
+        window.db = _db
+        sb = eventManager.getSb()
+        DATA_TYPES = eventManager.getSupportedDataTypes()
+        _setDbListeners()
 
-    setSb: _setSb
-  ]
+    initDb: _initDb
+]
+
+db.run [
+  'app_database_handler'
+  (handler) ->
+    handler.initDb()
+]

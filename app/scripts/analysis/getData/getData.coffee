@@ -54,9 +54,16 @@ getData = angular.module('app_analysis_getData', [
     _getMsgList = () ->
       _msgList
 
+    _getSupportedDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     getSb: _getSb
     setSb: _setSb
     getMsgList: _getMsgList
+    getSupportedDataTypes: _getSupportedDataTypes
 ])
 
 # ###
@@ -74,6 +81,7 @@ getData = angular.module('app_analysis_getData', [
   '$timeout'
   (manager, $q, $stateParams, $rootScope, $timeout) ->
 
+    DATA_TYPES = manager.getSupportedDataTypes()
     sb = manager.getSb()
     _data = {}
     _timer = null
@@ -83,12 +91,15 @@ getData = angular.module('app_analysis_getData', [
       _data
 
     _saveDataToDb = (data, deferred) ->
+
+      msgEnding = if data.dataType is DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
+
       $rootScope.$broadcast 'app:push notification',
         initial:
           msg: 'Data is being saved in the database...'
           type: 'alert-info'
         success:
-          msg: 'Successfully loaded data into database'
+          msg: 'Successfully loaded data into database' + msgEnding
           type: 'alert-success'
         failure:
           msg: 'Error in Database'
@@ -236,13 +247,24 @@ getData = angular.module('app_analysis_getData', [
   'app_analysis_getData_jsonParser'
   '$stateParams'
   'app_analysis_getData_inputCache'
-  ($q, $scope, getDataEventMngr, jsonParser, $stateParams, inputCache) ->
-    # get the sandbox made for this module
-    # sb = getDataSb.getSb()
-    # console.log 'sandbox created'
+  ($q, $scope, eventManager, jsonParser, $stateParams, inputCache) ->
     $scope.jsonUrl = ''
     flag = true
     $scope.selected = null
+
+    DATA_TYPES = eventManager.getSupportedDataTypes()
+
+    passReceivedData = (data) ->
+      if data.dataType is DATA_TYPES.NESTED
+        inputCache.set data
+      else
+        # default data type is 2d 'flat' table
+        data.dataType = DATA_TYPES.FLAT
+        # pass a message to update the handsontable div
+        # data is the formatted data which plugs into the
+        #  handontable.
+        # TODO: getData module shouldn't know about controllers listening for handsontable update
+        $scope.$emit 'update handsontable', data
 
     # showGrid
     $scope.show = (val) ->
@@ -255,7 +277,7 @@ getData = angular.module('app_analysis_getData', [
             data =
               default: true
               purpose: 'json'
-            $scope.$emit 'update handsontable', data
+            passReceivedData data
           $scope.$emit 'change in showStates', 'grid'
 
         when 'socrData'
@@ -276,7 +298,6 @@ getData = angular.module('app_analysis_getData', [
 
     # getJson
     $scope.getJson = ->
-      console.log 123
       console.log $scope.jsonUrl
 
       if $scope.jsonUrl is ''
@@ -290,7 +311,7 @@ getData = angular.module('app_analysis_getData', [
           # Pass a message to update the handsontable div.
           # data is the formatted data which plugs into the
           # handontable.
-          $scope.$emit 'update handsontable', data
+          passReceivedData data
           $scope.$emit 'get Data from handsontable', inputCache
         ,
         (msg) ->
@@ -308,9 +329,30 @@ getData = angular.module('app_analysis_getData', [
   '$scope'
   'showState'
   'app_analysis_getData_jsonParser'
+  'app_analysis_getData_dataAdaptor'
+  'app_analysis_getData_inputCache'
   '$state'
-  (getDataEventMngr, $scope, showState, jsonParser, state) ->
+  (eventManager, $scope, showState, jsonParser, dataAdaptor, inputCache, state) ->
     console.log 'getDataMainCtrl executed'
+
+    DATA_TYPES = eventManager.getSupportedDataTypes()
+    $scope.DATA_TYPES = DATA_TYPES
+    $scope.dataType = ''
+
+    passReceivedData = (data) ->
+      if data.dataType is DATA_TYPES.NESTED
+        $scope.dataType = DATA_TYPES.NESTED
+        inputCache.set data
+      else
+        # default data type is 2d 'flat' table
+        data.dataType = DATA_TYPES.FLAT
+        $scope.dataType = DATA_TYPES.FLAT
+        # pass a message to update the handsontable div
+        # data is the formatted data which plugs into the
+        #  handontable.
+        # TODO: getData module shouldn't know about controllers listening for handsontable update
+        $scope.$emit 'update handsontable', data
+
 
     # available SOCR Datasets
     $scope.socrDatasets = [
@@ -341,14 +383,7 @@ getData = angular.module('app_analysis_getData', [
       .then(
         (data) ->
           console.log 'resolved'
-          # Pass a message to update the handsontable div.
-          # data is the formatted data which plugs into the
-          # handontable.
-
-          # TODO: getData module shouldn't know about controllers listening for handsontable update
-          $scope.$emit 'update handsontable', data
-          # Switch the accordion from getJson to grid.
-          #$scope.$emit("change in showStates","grid")
+          passReceivedData data
         ,
         (msg) ->
           console.log 'rejected:' + msg
@@ -374,34 +409,32 @@ getData = angular.module('app_analysis_getData', [
               # handsontable directive to update.
               purpose: 'json'
             console.log 'resolved'
-            # pass a message to update the handsontable div
-            # data is the formatted data which plugs into the
-            #  handontable.
-            $scope.$emit 'update handsontable', _data
-            # switch the accordion from getJson to grid
-            # $scope.$emit("change in showStates","grid")
+            passReceivedData _data
           else
             console.log 'rejected:' + msg
 
-    $scope.getJsonByUrl = ->
+    $scope.getJsonByUrl = (type) ->
       d3.json $scope.jsonUrl,
         (dataResults) ->
-          if dataResults?.length > 0
-            _data =
-              columnHeader: dataResults.shift()
-              data: [null, dataResults]
-              # purpose is helps in pin pointing which
-              # handsontable directive to update.
-              purpose: 'json'
-            console.log 'resolved'
-            # pass a message to update the handsontable div
-            # data is the formatted data which plugs into the
-            #  handontable.
-            $scope.$emit 'update handsontable', _data
-            # switch the accordion from getJson to grid
-            # $scope.$emit("change in showStates","grid")
+          # check that data object is not empty
+          if dataResults? and Object.keys(dataResults)?.length > 0
+            res = dataAdaptor.jsonToFlatTable dataResults
+            # check if JSON contains "flat data" - 2d array
+            if res
+              _data =
+                columnHeader: if res.length > 1 then res.shift() else []
+                data: [null, res]
+                # purpose is helps in pin pointing which
+                # handsontable directive to update.
+                purpose: 'json'
+                dataType: DATA_TYPES.FLAT
+            else
+              _data =
+                data: dataResults
+                dataType: DATA_TYPES.NESTED
+            passReceivedData _data
           else
-            console.log 'rejected:' + msg
+            console.log 'GETDATA: request failed'
 
     try
       _showState = new showState(['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], $scope)
@@ -445,7 +478,24 @@ getData = angular.module('app_analysis_getData', [
 # @description: Reformats data from input table format to the universal dataFrame object.
 # ###
 .factory('app_analysis_getData_dataAdaptor', [
-  () ->
+  'app_analysis_getData_manager'
+  (eventManager) ->
+
+    DATA_TYPES = eventManager.getSupportedDataTypes()
+
+    # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+    typeIsArray = Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'
+
+    haveSameKeys = (obj1, obj2) ->
+      if Object.keys(obj1).length is Object.keys(obj2).length
+        res = (k of obj2 for k of obj1)
+        res.every (e) -> e is true
+      else
+        false
+
+    isNumStringArray = (arr) ->
+      console.log arr
+      arr.every (el) -> typeof el in ['number', 'string']
 
     # accepts handsontable table as input and returns dataFrame
     _toDataFrame = (tableData, nSpareCols, nSpareRows) ->
@@ -467,26 +517,117 @@ getData = angular.module('app_analysis_getData', [
         header: tableData.header
         nRows: tableData.nRows - nSpareRows
         nCols: tableData.nCols - nSpareCols
+        dataType: DATA_TYPES.FLAT
 
     _toHandsontable = () ->
       # TODO: implement for poping up data when coming back from analysis tabs
 
+    # tries to convert JSON to 2d flat data table,
+    #  assumes JSON object is not empty - has values,
+    #  returns coverted data or false if not possible
+    _jsonToFlatTable = (data) ->
+      # check if JSON contains "flat data" - 2d array
+      if data? and typeof data is 'object'
+        if typeIsArray data
+          # non-empty array
+          if not (data.every (el) -> typeof el is 'object')
+            # 1d array of strings or numbers
+            if (data.every (el) -> typeof el in ['number', 'string'])
+              data
+          else
+            # array of arrays or objects
+            if (data.every (el) -> typeIsArray el)
+              # array of arrays
+              if (data.every (col) -> col.every (el) -> typeof el in ['number', 'string'])
+                # array of arrays of (numbers or strings)
+                data
+              else
+                # non-string values
+                false
+            else
+              # array of arbitrary objects
+              # http://stackoverflow.com/a/21266395/1237809
+              if (not not data.reduce((prev, next) ->
+                # check if objects have same keys
+                if haveSameKeys prev, next
+                  prevValues = Object.keys(prev).map (k) -> prev[k]
+                  nextValues = Object.keys(prev).map (k) -> next[k]
+                  # check that values are numeric/string
+                  if ((prevValues.length is nextValues.length) and
+                    (isNumStringArray prevValues) and
+                    (isNumStringArray nextValues)
+                  )
+                    next
+                  else NaN
+                else NaN
+              ))
+                # array of objects with the same keys - make them columns
+                cols = Object.keys data[0]
+                # reorder values according to keys order
+                data = (cols.map((col) -> row[col]) for row in data)
+                # insert keys as a header
+                data.splice 0, 0, cols
+                data
+              else
+                false
+        else
+          # arbitrary object
+          ks = Object.keys(data)
+          vals = ks.map (k) -> data[k]
+          if (vals.every (el) -> typeof el in ['number', 'string'])
+            # 1d object
+            data = [ks, vals]
+          else if (vals.every (el) -> typeof el is 'object')
+            # object of arrays or objects
+            if (vals.every (row) -> typeIsArray row) and
+            (vals.every (row) -> row.every (el) -> typeof el in ['number', 'string'])
+              # object of arrays
+              vals = (t[i] for t in vals for i of vals)  # transpose
+              vals.splice 0, 0, ks  # add header
+              vals
+            else
+              # object of arbitrary objects
+            if (not not vals.reduce((prev, next) ->
+              # check if objects have same keys
+              if haveSameKeys prev, next
+                prevValues = Object.keys(prev).map (k) -> prev[k]
+                nextValues = Object.keys(prev).map (k) -> next[k]
+                # check that values are
+                if ((prevValues.length is nextValues.length) and
+                  (isNumStringArray prevValues) and
+                  (isNumStringArray nextValues)
+                )
+                  next
+                else NaN
+              else NaN
+            ))
+              subKs = Object.keys vals[0]
+              data = ([sk].concat(vals.map((val)-> val[sk])) for sk in subKs)
+              # insert keys as a header
+              data.splice 0, 0, [""].concat ks
+              data
+          else false
+
     toDataFrame: _toDataFrame
     toHandsontable: _toHandsontable
+    jsonToFlatTable: _jsonToFlatTable
 ])
 
 
 .directive 'handsontable', [
+  'app_analysis_getData_manager'
   'app_analysis_getData_inputCache'
   'app_analysis_getData_dataAdaptor'
   '$exceptionHandler'
-  (inputCache, dataAdaptor, $exceptionHandler) ->
+  '$timeout'
+  (eventManager, inputCache, dataAdaptor, $exceptionHandler, $timeout) ->
+
     restrict: 'E'
     transclude: true
 
     # to the name attribute on the directive element.
     # the template for the directive.
-    template: "<div class='hot-scroll-container' style='height: 300px'></div>"
+    template: "<div class='hot-scroll-container' style='height: 300px; width: 100%'></div>"
 
     #the controller for the directive
     controller: ($scope) ->
@@ -498,84 +639,93 @@ getData = angular.module('app_analysis_getData', [
     #  It is run before the controller
     link: (scope, elem, attr) ->
 
-      N_SPARE_COLS = 1
-      N_SPARE_ROWS = 1
-      DEFAULT_ROW_HEIGHT = 24
+      $timeout ->
+        N_SPARE_COLS = 1
+        N_SPARE_ROWS = 1
+        # from handsontable defaults
+        # https://docs.handsontable.com/0.24.1/demo-stretching.html
+        DEFAULT_ROW_HEIGHT = 23
+        DEFAULT_COL_WIDTH = 47
 
-      # useful to identify which handsontable instance to update
-      scope.purpose = attr.purpose
+        # useful to identify which handsontable instance to update
+        scope.purpose = attr.purpose
 
-      # retrieves data from handsontable object
-      _format = (obj) ->
+        # retrieves data from handsontable object
+        _format = (obj) ->
+          data = obj.getData()
+          header = obj.getColHeader()
+          nCols = obj.countCols()
+          nRows = obj.countRows()
 
-        data = obj.getData()
-        header = obj.getColHeader()
-        nCols = obj.countCols()
-        nRows = obj.countRows()
+          table =
+            data: data
+            header: header
+            nCols: nCols
+            nRows: nRows
 
-        table =
-          data: data
-          header: header
-          nCols: nCols
-          nRows: nRows
+        scope.update = (evt, arg) ->
+          console.log 'handsontable: update called'
 
-      scope.update = (evt, arg) ->
-        console.log 'handsontable: update called'
+          DATA_TYPES = eventManager.getSupportedDataTypes()
 
-        currHeight = elem.height()
+          currHeight = elem.height()
+          currWidth = elem.width()
 
-        #check if data is in the right format
-#        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
-        if arg? and typeof arg.data is 'object'
-          obj =
-            data: arg.data[1]
-#            startRows: Object.keys(arg.data[1]).length
-#            startCols: arg.columns.length
-            colHeaders: arg.columnHeader
-#            columns: arg.columns
-            minSpareRows: N_SPARE_ROWS
-            minSpareCols: N_SPARE_COLS
-            allowInsertRow: true
-            allowInsertColumn: true
-        else if arg.default is true
-          obj =
-            data: [
-              ['Copy', 'paste', 'your', 'data', 'here']
-            ]
-            colHeaders: true
-            minSpareRows: N_SPARE_ROWS
-            minSpareCols: N_SPARE_COLS
-            allowInsertRow: true
-            allowInsertColumn: true
-            rowHeaders: false
-        else
-          $exceptionHandler
-            message: 'handsontable configuration is missing'
-
-        obj['change'] = true
-        obj['afterChange'] = (change, source) ->
-          # saving data to be globally accessible.
-          #  only place from where data is saved before DB: inputCache.
-          #  onSave, data is picked up from inputCache.
-          if source is 'loadData' or 'paste'
-            ht = $(this)[0]
-            tableData = _format ht
-            dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
-            inputCache.set dataFrame
-            ht.updateSettings
-              height: Math.max currHeight, ht.countRows() * DEFAULT_ROW_HEIGHT
+          #check if data is in the right format
+  #        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
+          if arg? and typeof arg.data is 'object' and arg.dataType is DATA_TYPES.FLAT
+            # TODO: not to pass nested data to ht, but save in db
+            obj =
+              data: arg.data[1]
+  #            startRows: Object.keys(arg.data[1]).length
+  #            startCols: arg.columns.length
+              colHeaders: arg.columnHeader
+  #            columns: arg.columns
+              minSpareRows: N_SPARE_ROWS
+              minSpareCols: N_SPARE_COLS
+              allowInsertRow: true
+              allowInsertColumn: true
+              stretchH: "all"
+          else if arg.default is true
+            obj =
+              data: [
+                ['Copy', 'paste', 'your', 'data', 'here']
+              ]
+              colHeaders: true
+              minSpareRows: N_SPARE_ROWS
+              minSpareCols: N_SPARE_COLS
+              allowInsertRow: true
+              allowInsertColumn: true
+              rowHeaders: false
           else
-            inputCache.set source
+            $exceptionHandler
+              message: 'handsontable configuration is missing'
 
-        try
-          # hook for pushing data changes to handsontable
-          # TODO: get rid of tight coupling :-/
-          ht = elem.handsontable obj
-          window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
-        catch e
-          $exceptionHandler e
+          obj['change'] = true
+          obj['afterChange'] = (change, source) ->
+            # saving data to be globally accessible.
+            #  only place from where data is saved before DB: inputCache.
+            #  onSave, data is picked up from inputCache.
+            if source is 'loadData' or 'paste'
+              ht = $(this)[0]
+              tableData = _format ht
+              dataFrame = dataAdaptor.toDataFrame tableData, N_SPARE_COLS, N_SPARE_ROWS
+              inputCache.set dataFrame
+              ht.updateSettings
+                height: Math.max currHeight, ht.countRows() * DEFAULT_ROW_HEIGHT
+                width: Math.max currWidth, ht.countCols() * DEFAULT_COL_WIDTH
+            else
+              inputCache.set source
 
-      # subscribing to handsontable update.
-      scope.$on attr.purpose + ':load data to handsontable', scope.update
-      console.log 'handsontable directive linked'
+          try
+            # hook for pushing data changes to handsontable
+            # TODO: get rid of tight coupling :-/
+            ht = elem.handsontable obj
+            window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
+          catch e
+            $exceptionHandler e
+
+        # subscribing to handsontable update
+        scope.$on attr.purpose + ':load data to handsontable', scope.update
+        console.log 'handsontable directive linked'
 ]

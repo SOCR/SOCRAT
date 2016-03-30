@@ -42,6 +42,12 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     _getMsgList = () ->
       _msgList
 
+    _getSupportedDataTypes = () ->
+      if _sb
+        _sb.getSupportedDataTypes()
+      else
+        false
+
     # wrapper function for controller communications
     _broadcast = (msg, data) ->
       $rootScope.$broadcast msg, data
@@ -50,6 +56,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
     setSb: _setSb
     getMsgList: _getMsgList
     broadcast: _broadcast
+    getSupportedDataTypes: _getSupportedDataTypes
 ])
 
 .factory('app_analysis_wrangleData_dataRetriever', [
@@ -87,7 +94,10 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   ])
 
 .factory('app_analysis_wrangleData_dataAdaptor', [
-  () ->
+  'app_analysis_wrangleData_manager'
+  (eventManager) ->
+
+    DATA_TYPES = eventManager.getSupportedDataTypes()
 
     _toCsvString = (dataFrame) ->
 
@@ -133,6 +143,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
         types: _types
         nRows: _nRows
         nCols: _nCols
+        dataType: DATA_TYPES.FLAT
 
     toDvTable: _toDvTable
     toDataFrame: _toDataFrame
@@ -151,17 +162,26 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
       _initial_transforms = []
       _table = []
+      _csvData = []
+
+      DATA_TYPES = manager.getSupportedDataTypes()
+
+      _init = () ->
+        data = dataRetriever.getData()
+        if data.dataType is DATA_TYPES.FLAT
+          _csvData = dataAdaptor.toCsvString data
+          true
+        else
+          false
 
       _start = (viewContainers) ->
-        data = dataRetriever.getData()
-        csvData = dataAdaptor.toCsvString data
-        _table = _wrangle csvData, viewContainers
+        _table = _wrangle(viewContainers)
 
-      _wrangle = (csvData, viewContainers) ->
+      _wrangle = (viewContainers) ->
         # TODO: abstract from using dv directly #SOCRFW-143
-        table = dv.table csvData
+        table = dv.table _csvData
 
-        _initial_transforms = dw.raw_inference(csvData).transforms
+        _initial_transforms = dw.raw_inference(_csvData).transforms
 
         dw.wrangler
           table: table
@@ -193,12 +213,14 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
 
         _timer =  $timeout ( ->
 
+          msgEnding = if dataFrame.dataType is DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
+
           $rootScope.$broadcast 'app:push notification',
             initial:
               msg: 'Data is being saved in the database...'
               type: 'alert-info'
             success:
-              msg: 'Successfully loaded data into database'
+              msg: 'Successfully loaded data into database' + msgEnding
               type: 'alert-success'
             failure:
               msg: 'Error in Database'
@@ -208,6 +230,7 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
         ), 1000
         true
 
+      init: _init
       start: _start
       saveData: _saveDataToDb
   ])
@@ -232,71 +255,83 @@ wrangleData = angular.module('app_analysis_wrangleData', [])
   'app_analysis_wrangleData_manager'
   ($scope, $rootScope, wrangler, msgManager) ->
 
-    # TODO: isolate dw from global scope
-    w = dw.wrangle()
+    DATA_TYPES = msgManager.getSupportedDataTypes()
+    $scope.DATA_TYPES = DATA_TYPES
+    $scope.dataType = ''
+
+    data = wrangler.init()
+    if data
+      $scope.dataType = DATA_TYPES.FLAT
+
+      # TODO: isolate dw from global scope
+      w = dw.wrangle()
 
     # listen to state change and save data when exiting Wrangle Data
     stateListener = $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) ->
       if fromState.name? and fromState.name is 'wrangleData'
-        # save data to db on exit from wrangler
-        wrangler.saveData()
+        if $scope.dataType is DATA_TYPES.FLAT
+          # save data to db on exit from wrangler
+          wrangler.saveData()
         # signal to show sidebar
         msgManager.broadcast 'wrangler:done'
         # unsubscribe
         stateListener()
-        console.log 'wrangleDataMainCtrl executed'
+
+    console.log 'wrangleDataMainCtrl executed'
 ])
 
 .directive 'datawrangler', [
   '$exceptionHandler'
   'app_analysis_wrangleData_wrangler'
-  ($exceptionHandler, wrangler) ->
+  'app_analysis_wrangleData_manager'
+  ($exceptionHandler, wrangler, msgManager) ->
 
     restrict: 'E'
     transclude: true
     templateUrl: '../partials/analysis/wrangleData/wrangler.html'
+    replace: true # replace the directive element with the output of the template
 
     # the controller for the directive
     controller: ($scope) ->
 
-      myLayout = $('#dt_example').layout
-        north:
-          spacing_open: 0
-          resizable: false
-          slidable: false
-          fxName: 'none'
-        south:
-          spacing_open: 0
-          resizable: false
-          slidable: false
-          fxName: 'none'
-        west:
-          minSize: 310
-
-      container = $('#table')
-      previewContainer = $('#preview')
-      transformContainer = $('#transformEditor')
-      dashboardContainer = $("#wranglerDashboard")
-
-      wrangler.start
-        tableContainer: container
-        transformContainer: transformContainer
-        previewContainer: previewContainer
-        dashboardContainer: dashboardContainer
-
-      # TODO: find correct programmatic way to invoke header propagation
-      # assuming there always is a header in data, propagate it in Wrangler
-      $('#table .odd .rowHeader').first().mouseup().mousedown()
-      d3.select('div.menu_option.Promote')[0][0].__onmousedown()
-      $('div.suggestion.selected').click()
-
-    replace: true # replace the directive element with the output of the template
-
     # The link method does the work of setting the directive
     #  up, things like bindings, jquery calls, etc are done in here
-    #  It is run before the controller
     link: (scope, elem, attr) ->
-
       # useful to identify which handsontable instance to update
       scope.purpose = attr.purpose
+
+      DATA_TYPES = msgManager.getSupportedDataTypes()
+
+      # check if received dataset is flat
+      if scope.dataType? and scope.dataType is DATA_TYPES.FLAT
+        myLayout = $('#dt_example').layout
+          north:
+            spacing_open: 0
+            resizable: false
+            slidable: false
+            fxName: 'none'
+          south:
+            spacing_open: 0
+            resizable: false
+            slidable: false
+            fxName: 'none'
+          west:
+            minSize: 310
+
+        container = $('#table')
+        previewContainer = $('#preview')
+        transformContainer = $('#transformEditor')
+        dashboardContainer = $("#wranglerDashboard")
+
+        wrangler.start
+          tableContainer: container
+          transformContainer: transformContainer
+          previewContainer: previewContainer
+          dashboardContainer: dashboardContainer
+
+        # TODO: find correct programmatic way to invoke header propagation
+        # assuming there always is a header in data, propagate it in Wrangler
+        $('#table .odd .rowHeader').first().mouseup().mousedown()
+        d3.select('div.menu_option.Promote')[0][0].__onmousedown()
+        $('div.suggestion.selected').click()
 ]
