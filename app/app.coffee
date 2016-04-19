@@ -30,6 +30,7 @@ App = angular.module('app', [
 #  'app_analysis_qualRobEst'
   'app_analysis_instrPerfEval'
   'app_analysis_kMeans'
+  'app_analysis_spectrClustr'
 ])
 
 App.config([
@@ -117,6 +118,14 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
       )
+    .state('spectrClustr'
+      url: '/tools/spectrClustr'
+      views:
+        'main':
+          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/main.html'
+        'sidebar':
+          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/sidebar.html'
+    )
       .state('charts'
         url: '/charts'
         views:
@@ -140,10 +149,11 @@ App.run([
 #  'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
   'app_analysis_kMeans_constructor'
+  'app_analysis_spectrClustr_constructor'
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-  ($rootScope, core, db, getData, wrangleData, instrPerfEval, kMeans, charts) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval, kMeans, spectrClustr, charts) ->
 
 
     map = [
@@ -194,6 +204,16 @@ App.run([
       scopeTo: ['kMeans']
     ,
       msgFrom: 'get data'
+      scopeFrom: ['spectrClustr']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take data'
+      scopeTo: ['spectrClustr']
+    ,
+      msgFrom: 'get data'
       scopeFrom: ['wrangleData']
       msgTo: 'get table'
       scopeTo: ['database']
@@ -238,6 +258,9 @@ App.run([
     core.register 'kMeans', kMeans
     core.start 'kMeans'
 
+    core.register 'spectrClustr', spectrClustr
+    core.start 'spectrClustr'
+
     core.register 'charts', charts
     core.start 'charts'
 
@@ -251,8 +274,12 @@ App.run([
       url: '/tools/instrperfeval'
     ,
       id: 'kMeans'
-      name: '2D k-Means Clustering'
+      name: 'k-Means Clustering'
       url: '/tools/kmeans'
+    ,
+      id: 'spectrClustr'
+      name: 'Spectral Clustering'
+      url: '/tools/spectrClustr'
     ]
 
     # subscribe for request from MainCtrl for list of tool modules
