@@ -6,7 +6,6 @@
   "homepage": "https://github.com/SOCR/SOCRAT",
   "dependencies": {
     "angular": "^1.5.0",
-    "jquery-layout": "~1.4.3",
     "jquery-highlight": "~3.3.0",
     "jquery-hoverintent": "https://github.com/briancherne/jquery-hoverIntent.git#~1.8.1",
     "datatables": "DataTables#~1.10.11",
@@ -20,10 +19,11 @@
     "angular-touch": "^1.5.0",
     "angular-ui": "^0.4.0",
     "angular-ui-router": "~0.2.18",
-    "ngHandsontable": "angular-ui-handsontable#~0.9.0",
+    "ngHandsontable": "angular-ui-handsontable#~0.10.0",
     "wrangler": "https://github.com/alxndrkalinin/wrangler.git",
     "bootstrap": "^3.3.6",
     "angular-bootstrap": "^1.1.0",
+    "jquery-layout": "~1.4.3",
     "jstat": "~1.5.2",
     "jsfeat": "~0.0.8"
   },
