@@ -311,7 +311,7 @@ db.factory 'app_database_handler', [
               res = _db.create dvData, obj.tableName
               res
             when DATA_TYPES.NESTED
-              nestedDb.save obj.data
+              nestedDb.save obj.dataFrame.data
               true
             else console.log '%cDATABASE: data type is unknown' , 'color:green'
         else console.log '%cDATABASE: data type is unknown' , 'color:green'
