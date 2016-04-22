@@ -353,7 +353,6 @@ getData = angular.module('app_analysis_getData', [
         # TODO: getData module shouldn't know about controllers listening for handsontable update
         $scope.$emit 'update handsontable', data
 
-
     # available SOCR Datasets
     $scope.socrDatasets = [
       id: 'IRIS'
@@ -444,6 +443,8 @@ getData = angular.module('app_analysis_getData', [
     # adding listeners
     $scope.$on 'update showStates', (obj, data) ->
       _showState.set data
+      # TODO: fix this workaround for displaying copy-paste table
+      $scope.dataType = DATA_TYPES.FLAT if data is 'grid'
 
     $scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
@@ -668,8 +669,8 @@ getData = angular.module('app_analysis_getData', [
 
           DATA_TYPES = eventManager.getSupportedDataTypes()
 
-          currHeight = elem.height()
-          currWidth = elem.width()
+          currHeight = elem[0].offsetHeight
+          currWidth = elem[0].offsetWidth
 
           #check if data is in the right format
   #        if arg? and typeof arg.data is 'object' and typeof arg.columns is 'object'
@@ -720,7 +721,7 @@ getData = angular.module('app_analysis_getData', [
           try
             # hook for pushing data changes to handsontable
             # TODO: get rid of tight coupling :-/
-            ht = elem.handsontable obj
+            ht = $(elem).handsontable obj
             window['inputCache'] = inputCache.ht = $(ht[0]).data('handsontable')
           catch e
             $exceptionHandler e
