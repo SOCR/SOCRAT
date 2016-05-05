@@ -1,7 +1,7 @@
 {
   "author": "Alexandr Kalinin<alxndrkalinin@gmail.com>, Selvam Palanimalai<selvam1991@gmail.com>",
   "name": "SOCRAT",
-  "version": "v0.1.5-alpha.6",
+  "version": "v0.1.5-alpha.7",
   "description": "Flexible HTML5/JS toolkit for interactive data analysis and visuzalization",
   "homepage": "https://github.com/SOCR/SOCRAT",
   "repository": {
@@ -35,7 +35,7 @@
     "grunt-ng-annotate": "^2.0.1",
     "grunt-svgmin": "^3.0.0",
     "grunt-usemin": "^3.0.0",
-    "grunt-wiredep": "^2.0.0",
+    "grunt-wiredep": "^3.0.0",
     "serve-static": "^1.10.2",
     "jade": "^1.11.0",
     "jasmine-core": "^2.4.1",
@@ -44,9 +44,9 @@
     "karma": "^0.13.0",
     "karma-coffee-preprocessor": "*",
     "karma-jasmine": "*",
-    "karma-phantomjs2-launcher": "~0.4.0",
+    "karma-phantomjs2-launcher": "~0.5.0",
     "less": "^2.5.3",
-    "phantomjs2": "~2.0.2",
+    "phantomjs2": "~2.2.0",
     "time-grunt": "^1.0.0"
   },
   "engines": {
