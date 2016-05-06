@@ -1,3 +1,23 @@
 div(ng-controller="spectrClustrMainCtrl")
   h2 Spectral Clustering
-  app-spectr-clustr
+  div.lead.bg-danger(ng-hide="dataType == DATA_TYPES.FLAT")
+    | 2D k-means Clustering doesn't support current dataset.
+    | Only "flat" data tables are supported.
+  div(ng-hide="dataType != DATA_TYPES.FLAT")
+    app-spectr-clustr
+    //div(ng-hide="affinityMatrix")
+    //  p.lead.bg-danger Data is not similarity matrix (nonsymmetric)
+    //  p You can transform data into affinity matrix by applying one of the transformations below:
+    //  form
+    //    div.form-group
+    //      label Transformation &nbsp;
+    //      //- show possible data transformations
+    //      select(ng-model="transformation", ng-options="t for t in transformations").form-control
+    //    button.btn.btn-primary(
+    //    type="submit"
+    //    aria-label="Apply"
+    //    ng-click="transform()"
+    //    ng-disabled="transforming")
+    //      | Apply&nbsp;
+    //      span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+    //div(ng-hide="!affinityMatrix")
