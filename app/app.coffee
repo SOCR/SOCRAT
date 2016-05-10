@@ -29,8 +29,9 @@ App = angular.module('app', [
 #  'app_analysis_qualRobEstView'
 #  'app_analysis_qualRobEst'
   'app_analysis_instrPerfEval'
-  'app_analysis_kMeans'
-  'app_analysis_spectrClustr'
+#  'app_analysis_kMeans'
+#  'app_analysis_spectrClustr'
+  'app_analysis_clustering'
 ])
 
 App.config([
@@ -110,21 +111,29 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/sidebar.html'
       )
-      .state('kmeans'
-        url: '/tools/kmeans'
-        views:
-          'main':
-            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/main.html'
-          'sidebar':
-            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
-      )
-    .state('spectrClustr'
-      url: '/tools/spectrClustr'
+#      .state('kmeans'
+#        url: '/tools/kmeans'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
+#      )
+#    .state('spectrClustr'
+#      url: '/tools/spectrClustr'
+#      views:
+#        'main':
+#          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/main.html'
+#        'sidebar':
+#          templateUrl: 'partials/analysis/tools/machineLearning/clustspectralClusteringering/sidebar.html'
+#    )
+    .state('clustering'
+      url: '/tools/clustering'
       views:
         'main':
-          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/main.html'
+          templateUrl: 'partials/analysis/tools/machineLearning/clustering/main.jade'
         'sidebar':
-          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/sidebar.html'
+          templateUrl: 'partials/analysis/tools/machineLearning/clustering/sidebar.jade'
     )
       .state('charts'
         url: '/charts'
@@ -148,12 +157,13 @@ App.run([
 #  'app_analysis_qualRobEst_constructor'
 #  'app_analysis_qualRobEstView_constructor'
   'app_analysis_instrPerfEval_constructor'
-  'app_analysis_kMeans_constructor'
-  'app_analysis_spectrClustr_constructor'
+#  'app_analysis_kMeans_constructor'
+#  'app_analysis_spectrClustr_constructor'
+  'app_analysis_clustering_constructor'
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-  ($rootScope, core, db, getData, wrangleData, instrPerfEval, kMeans, spectrClustr, charts) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval, clustering, charts) ->
 
 
     map = [
@@ -192,26 +202,36 @@ App.run([
       scopeFrom: ['database']
       msgTo: 'take table'
       scopeTo: ['instrPerfEval']
+#    ,
+#      msgFrom: 'get data'
+#      scopeFrom: ['kMeans']
+#      msgTo: 'get table'
+#      scopeTo: ['database']
+#    ,
+#      msgFrom: 'take table'
+#      scopeFrom: ['database']
+#      msgTo: 'take data'
+#      scopeTo: ['kMeans']
     ,
-      msgFrom: 'get data'
-      scopeFrom: ['kMeans']
+      msgFrom: 'clustering:getData'
+      scopeFrom: ['clustering']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
-      msgTo: 'take data'
-      scopeTo: ['kMeans']
-    ,
-      msgFrom: 'get data'
-      scopeFrom: ['spectrClustr']
-      msgTo: 'get table'
-      scopeTo: ['database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['database']
-      msgTo: 'take data'
-      scopeTo: ['spectrClustr']
+      msgTo: 'clustering:takeData'
+      scopeTo: ['clustering']
+#    ,
+#      msgFrom: 'get data'
+#      scopeFrom: ['spectrClustr']
+#      msgTo: 'get table'
+#      scopeTo: ['database']
+#    ,
+#      msgFrom: 'take table'
+#      scopeFrom: ['database']
+#      msgTo: 'take data'
+#      scopeTo: ['spectrClustr']
     ,
       msgFrom: 'get data'
       scopeFrom: ['wrangleData']
@@ -255,11 +275,14 @@ App.run([
     core.register 'instrPerfEval', instrPerfEval
     core.start 'instrPerfEval'
 
-    core.register 'kMeans', kMeans
-    core.start 'kMeans'
+#    core.register 'kMeans', kMeans
+#    core.start 'kMeans'
+#
+#    core.register 'spectrClustr', spectrClustr
+#    core.start 'spectrClustr'
 
-    core.register 'spectrClustr', spectrClustr
-    core.start 'spectrClustr'
+    core.register 'clustering', clustering
+    core.start 'clustering'
 
     core.register 'charts', charts
     core.start 'charts'
@@ -273,13 +296,17 @@ App.run([
       name: 'Instrument Performance Evaluation'
       url: '/tools/instrperfeval'
     ,
-      id: 'kMeans'
-      name: 'k-Means Clustering'
-      url: '/tools/kmeans'
-    ,
-      id: 'spectrClustr'
-      name: 'Spectral Clustering'
-      url: '/tools/spectrClustr'
+      id: 'clustering'
+      name: 'Clustering'
+      url: '/tools/clustering'
+#    ,
+#      id: 'kMeans'
+#      name: 'k-Means Clustering'
+#      url: '/tools/kmeans'
+#    ,
+#      id: 'spectrClustr'
+#      name: 'Spectral Clustering'
+#      url: '/tools/spectrClustr'
     ]
 
     # subscribe for request from MainCtrl for list of tool modules
