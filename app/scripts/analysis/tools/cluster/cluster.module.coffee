@@ -18,6 +18,6 @@
       msgList: msgList
 
   constructor.$inject = ['app_analysis_clustering_msgService']
-  clustering = angular.module('app_analysis_clustering', [])
-  clustering.factory('app_analysis_clustering_constructor', constructor)
+  clustering = angular.module('app_analysis_cluster', [])
+  clustering.factory('app_analysis_cluster_constructor', constructor)
 )()

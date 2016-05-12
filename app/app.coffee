@@ -31,7 +31,7 @@ App = angular.module('app', [
   'app_analysis_instrPerfEval'
 #  'app_analysis_kMeans'
 #  'app_analysis_spectrClustr'
-  'app_analysis_clustering'
+  'app_analysis_cluster'
 ])
 
 App.config([
@@ -127,13 +127,13 @@ App.config([
 #        'sidebar':
 #          templateUrl: 'partials/analysis/tools/machineLearning/clustspectralClusteringering/sidebar.html'
 #    )
-    .state('clustering'
-      url: '/tools/clustering'
+    .state('cluster'
+      url: '/tools/cluster'
       views:
         'main':
-          templateUrl: 'partials/analysis/tools/machineLearning/clustering/main.jade'
+          templateUrl: 'partials/analysis/tools/cluster/main.jade'
         'sidebar':
-          templateUrl: 'partials/analysis/tools/machineLearning/clustering/sidebar.jade'
+          templateUrl: 'partials/analysis/tools/cluster/sidebar.jade'
     )
       .state('charts'
         url: '/charts'
@@ -163,7 +163,7 @@ App.run([
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-  ($rootScope, core, db, getData, wrangleData, instrPerfEval, clustering, charts) ->
+  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
 
 
     map = [
@@ -213,14 +213,14 @@ App.run([
 #      msgTo: 'take data'
 #      scopeTo: ['kMeans']
     ,
-      msgFrom: 'clustering:getData'
+      msgFrom: 'cluster:getData'
       scopeFrom: ['clustering']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
-      msgTo: 'clustering:takeData'
+      msgTo: 'cluster:takeData'
       scopeTo: ['clustering']
 #    ,
 #      msgFrom: 'get data'
@@ -281,8 +281,8 @@ App.run([
 #    core.register 'spectrClustr', spectrClustr
 #    core.start 'spectrClustr'
 
-    core.register 'clustering', clustering
-    core.start 'clustering'
+    core.register 'cluster', cluster
+    core.start 'cluster'
 
     core.register 'charts', charts
     core.start 'charts'
@@ -296,9 +296,9 @@ App.run([
       name: 'Instrument Performance Evaluation'
       url: '/tools/instrperfeval'
     ,
-      id: 'clustering'
+      id: 'cluster'
       name: 'Clustering'
-      url: '/tools/clustering'
+      url: '/tools/cluster'
 #    ,
 #      id: 'kMeans'
 #      name: 'k-Means Clustering'

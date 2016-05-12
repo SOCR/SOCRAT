@@ -5,8 +5,8 @@
 
     sb = null
     msgList =
-      outgoing: ['clustering:getData']
-      incoming: ['clustering:takeData']
+      outgoing: ['cluster:getData']
+      incoming: ['cluster:takeData']
       scope: ['clustering']
 
     ############

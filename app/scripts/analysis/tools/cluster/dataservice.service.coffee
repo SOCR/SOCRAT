@@ -3,10 +3,6 @@
 ( ->
   dataService = (msgManager, $q) ->
 
-    dataService =
-      getData: getData
-      getDataTypes: getDataTypes
-
     ############
 
     getData: ->
