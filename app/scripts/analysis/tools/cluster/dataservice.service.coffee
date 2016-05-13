@@ -1,21 +1,10 @@
 'use strict'
 
-( ->
-  dataService = (msgManager, $q) ->
+#class DataService extends socrat.DataService
 
-    ############
+dataService = -> new socrat.DataService()
 
-    getData: ->
-      deferred = $q.defer()
-      token = msgManager.subscribe 'take data', (msg, data) -> deferred.resolve data
-      msgManager.publish 'get data', -> msgManager.unsubscribe token
-      deferred.promise
-
-    getDataTypes: ->
-      msgManager.getSupportedDataTypes()
-
-  dataService.$inject = ['app_analysis_clustering_msgService', '$q']
-  angular
-    .module('app_analysis_clustering')
-    .factory('app_analysis_clustering_dataService', dataService)
-)()
+dataService.$inject = ['app_analysis_cluster_msgService', '$q']
+angular
+  .module('app_analysis_cluster')
+  .factory('app_analysis_cluster_dataService', dataService)

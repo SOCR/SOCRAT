@@ -3,13 +3,13 @@
 #
 # Base class for module prototyping
 #
-root = exports ? this
-class root.Module
-  constructor: () ->
+
+window.socrat or= {}
+
+class socrat.Module
 
   init: (sb) ->
 
-    msgList = {}
     msgService.setSb sb unless !sb?
     msgList = msgService.getMsgList()
 
