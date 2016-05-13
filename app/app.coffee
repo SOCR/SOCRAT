@@ -7,7 +7,7 @@
   Then the run block is executed in the same order.
   Run block of "app" is executed in the last.
 ###
-App = angular.module('app', [
+angular.module('app', [
   'ui.router'
   'ui.router.compat'
   'ngCookies'
@@ -34,7 +34,7 @@ App = angular.module('app', [
   'app_analysis_cluster'
 ])
 
-App.config([
+.config([
   '$locationProvider'
   #urlRouterProvider is not required
   '$urlRouterProvider'
@@ -148,7 +148,7 @@ App.config([
     $locationProvider.html5Mode(false)
 ])
 
-App.run([
+.run([
   '$rootScope'
   'core'
   'app_database_constructor'
@@ -159,7 +159,7 @@ App.run([
   'app_analysis_instrPerfEval_constructor'
 #  'app_analysis_kMeans_constructor'
 #  'app_analysis_spectrClustr_constructor'
-  'app_analysis_clustering_constructor'
+  'app_analysis_cluster_constructor'
   'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
@@ -214,14 +214,14 @@ App.run([
 #      scopeTo: ['kMeans']
     ,
       msgFrom: 'cluster:getData'
-      scopeFrom: ['clustering']
+      scopeFrom: ['cluster']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
       msgTo: 'cluster:takeData'
-      scopeTo: ['clustering']
+      scopeTo: ['cluster']
 #    ,
 #      msgFrom: 'get data'
 #      scopeFrom: ['spectrClustr']
