@@ -1,11 +1,10 @@
 'use strict'
 
-# app.sandbox module for wrapping modules
-
-sandbox = angular.module('app_sandbox', [])
-
-.factory 'Sandbox', ->
-  (_core, _instanceId, _options = {}) ->
+#
+# app_sandbox module for wrapping modules
+#
+class Sandbox
+  constructor: (_core, _instanceId, _options = {}) ->
 
     @core = _core
     @instanceId = _instanceId
@@ -16,3 +15,7 @@ sandbox = angular.module('app_sandbox', [])
     throw new TypeError "no id was specified" unless @instanceId?
     if typeof @instanceId isnt "string"
       throw new TypeError "id is not a string"
+
+angular.module('app_sandbox', [])
+  .service 'Sandbox', -> Sandbox
+
