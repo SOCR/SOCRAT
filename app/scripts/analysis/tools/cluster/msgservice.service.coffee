@@ -1,15 +1,13 @@
 'use strict'
 
-#class MsgService extends socrat.MessageService
-
-msgService = ->
-  new socrat.MessageService
+class ClusterMsgService extends socrat.MessageService
+  msgList:
     outgoing: ['get table']
     incoming: ['take table']
     scope: ['cluster']
 
-msgService.$inject = ['$q', '$rootScope', '$stateParams']
+ClusterMsgService.$inject = ['$q', '$rootScope', '$stateParams']
 
 angular
-  .module('app_analysis_cluster')
-  .factory('app_analysis_cluster_msgService', msgService)
+  .module 'app_analysis_cluster'
+  .service 'app_analysis_cluster_msgService', ClusterMsgService

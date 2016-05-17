@@ -7,17 +7,18 @@
 window.socrat or= {}
 
 class socrat.Module
+  constructor: (@msgService) ->
+    @sb = null
+    @msgList =
+      outgoing: []
+      incoming: []
+      scope: []
 
-  init: (sb) ->
+  init: (opt) ->
+    console.log 'clustering init invoked'
+    @msgService.setSb @sb unless !@sb?
+    @msgList = @msgService.getMsgList()
 
-    msgService.setSb sb unless !sb?
-    msgList = msgService.getMsgList()
+  destroy: () ->
 
-    ############
-
-    init: (opt) ->
-      console.log 'clustering init invoked'
-
-    destroy: () ->
-
-    msgList: msgList
+  msgList: @msgList
