@@ -20,15 +20,15 @@ angular.module('app', [
   'app_filters'
   'app_services'
   'app_mediator'
-  'app_database'
+#  'app_database'
   #charts module
-  'app_analysis_charts'
+#  'app_analysis_charts'
   # Analysis modules
   'app_analysis_getData'
-  'app_analysis_wrangleData'
+#  'app_analysis_wrangleData'
 #  'app_analysis_qualRobEstView'
 #  'app_analysis_qualRobEst'
-  'app_analysis_instrPerfEval'
+#  'app_analysis_instrPerfEval'
 #  'app_analysis_kMeans'
 #  'app_analysis_spectrClustr'
   'app_analysis_cluster'
@@ -95,22 +95,22 @@ angular.module('app', [
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
       )
-      .state('wrangleData'
-        url: '/wrangleData'
-        views:
-          'main':
-            templateUrl: 'partials/analysis/wrangleData/main.html'
-          'sidebar':
-            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
-      )
-      .state('instrperfeval'
-        url: '/tools/instrperfeval'
-        views:
-          'main':
-            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/main.html'
-          'sidebar':
-            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/sidebar.html'
-      )
+#      .state('wrangleData'
+#        url: '/wrangleData'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/wrangleData/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
+#      )
+#      .state('instrperfeval'
+#        url: '/tools/instrperfeval'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/sidebar.html'
+#      )
 #      .state('kmeans'
 #        url: '/tools/kmeans'
 #        views:
@@ -135,14 +135,14 @@ angular.module('app', [
         'sidebar':
           templateUrl: 'partials/analysis/tools/cluster/sidebar.jade'
     )
-      .state('charts'
-        url: '/charts'
-        views:
-          'main':
-            templateUrl: 'partials/analysis/charts/main.html'
-          'sidebar':
-            templateUrl: 'partials/analysis/charts/sidebar.html'
-      )
+#      .state('charts'
+#        url: '/charts'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/charts/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/charts/sidebar.html'
+#      )
 
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
@@ -151,19 +151,20 @@ angular.module('app', [
 .run([
   '$rootScope'
   'core'
-  'app_database_constructor'
-  'app_analysis_getData_constructor'
-  'app_analysis_wrangleData_constructor'
+#  'app_database_constructor'
+#  'app_analysis_getData_constructor'
+#  'app_analysis_wrangleData_constructor'
 #  'app_analysis_qualRobEst_constructor'
 #  'app_analysis_qualRobEstView_constructor'
-  'app_analysis_instrPerfEval_constructor'
+#  'app_analysis_instrPerfEval_constructor'
 #  'app_analysis_kMeans_constructor'
 #  'app_analysis_spectrClustr_constructor'
-  'app_analysis_cluster_constructor'
-  'app_analysis_charts_constructor'
+  'app_analysis_cluster_starter'
+#  'app_analysis_charts_constructor'
   #'app.utils.importer'
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
+#  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
+  ($rootScope, core, cluster) ->
 
 
     map = [
@@ -263,17 +264,17 @@ angular.module('app', [
 #    core.register 'qualRobEst', qualRobEst
 #    core.start 'qualRobEst'
 
-    core.register 'getData', getData
-    core.start 'getData'
+#    core.register 'getData', getData
+#    core.start 'getData'
 
-    core.register 'database', db
-    core.start 'database'
-
-    core.register 'wrangleData', wrangleData
-    core.start 'wrangleData'
-
-    core.register 'instrPerfEval', instrPerfEval
-    core.start 'instrPerfEval'
+#    core.register 'database', db
+#    core.start 'database'
+#
+#    core.register 'wrangleData', wrangleData
+#    core.start 'wrangleData'
+#
+#    core.register 'instrPerfEval', instrPerfEval
+#    core.start 'instrPerfEval'
 
 #    core.register 'kMeans', kMeans
 #    core.start 'kMeans'
@@ -284,8 +285,8 @@ angular.module('app', [
     core.register 'cluster', cluster
     core.start 'cluster'
 
-    core.register 'charts', charts
-    core.start 'charts'
+#    core.register 'charts', charts
+#    core.start 'charts'
 
     #core.register 'importer', importer
     #core.start 'importer'

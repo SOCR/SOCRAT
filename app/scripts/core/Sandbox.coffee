@@ -16,6 +16,6 @@ class Sandbox
     if typeof @instanceId isnt "string"
       throw new TypeError "id is not a string"
 
-angular.module('app_sandbox', [])
+angular.module 'app_sandbox', []
   .service 'Sandbox', -> Sandbox
 

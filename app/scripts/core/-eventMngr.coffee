@@ -1,6 +1,5 @@
 'use strict'
 
-console.log 12312312321322
 eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
 
 .service('eventMngr', [
