@@ -7,9 +7,9 @@
   Then the run block is executed in the same order.
   Run block of "app" is executed in the last.
 ###
-App = angular.module('app', [
-  'ui'
-  'ui.compat'
+angular.module('app', [
+  'ui.router'
+  'ui.router.compat'
   'ngCookies'
   'ngResource'
   'ngSanitize'
@@ -20,16 +20,21 @@ App = angular.module('app', [
   'app_filters'
   'app_services'
   'app_mediator'
-  'app_database'
-   # Analysis modules
+#  'app_database'
+  #charts module
+#  'app_analysis_charts'
+  # Analysis modules
   'app_analysis_getData'
-  'app_analysis_qualRobEstView'
-  'app_analysis_qualRobEst'
-  'app_analysis_instrPerfEvalView'
-  'app_analysis_instrPerfEval'
+#  'app_analysis_wrangleData'
+#  'app_analysis_qualRobEstView'
+#  'app_analysis_qualRobEst'
+#  'app_analysis_instrPerfEval'
+#  'app_analysis_kMeans'
+#  'app_analysis_spectrClustr'
+  'app_analysis_cluster'
 ])
 
-App.config([
+.config([
   '$locationProvider'
   #urlRouterProvider is not required
   '$urlRouterProvider'
@@ -90,120 +95,230 @@ App.config([
           'sidebar':
             templateUrl: 'partials/analysis/getData/sidebar.html'
       )
-      .state('cleanData'
-        url: '/cleanData'
-        views:
-          'main':
-            templateUrl: 'partials/analysis/cleanData/main.html'
-          'sidebar':
-            templateUrl: 'partials/analysis/cleanData/sidebar.html'
-      )
-      .state('tools'
-        url: '/tools'
-        views:
-          'main':
-            templateUrl: 'partials/analysis/tools/instrPerfEvalView/main.html'
-          'sidebar':
-            templateUrl: 'partials/analysis/tools/instrPerfEvalView/sidebar.html'
-      )
+#      .state('wrangleData'
+#        url: '/wrangleData'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/wrangleData/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
+#      )
+#      .state('instrperfeval'
+#        url: '/tools/instrperfeval'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/sidebar.html'
+#      )
+#      .state('kmeans'
+#        url: '/tools/kmeans'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
+#      )
+#    .state('spectrClustr'
+#      url: '/tools/spectrClustr'
+#      views:
+#        'main':
+#          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/main.html'
+#        'sidebar':
+#          templateUrl: 'partials/analysis/tools/machineLearning/clustspectralClusteringering/sidebar.html'
+#    )
+    .state('cluster'
+      url: '/tools/cluster'
+      views:
+        'main':
+          templateUrl: 'partials/analysis/tools/cluster/main.jade'
+        'sidebar':
+          templateUrl: 'partials/analysis/tools/cluster/sidebar.jade'
+    )
+#      .state('charts'
+#        url: '/charts'
+#        views:
+#          'main':
+#            templateUrl: 'partials/analysis/charts/main.html'
+#          'sidebar':
+#            templateUrl: 'partials/analysis/charts/sidebar.html'
+#      )
+
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
-
 ])
 
-App.run([
+.run([
   '$rootScope'
-  'core'
-  'app_database_constructor'
-  'app_analysis_getData_constructor'
-  'app_analysis_qualRobEst_constructor'
-  'app_analysis_qualRobEstView_constructor'
-  'app_analysis_instrPerfEval_constructor'
-  'app_analysis_instrPerfEvalView_constructor'
+  'app_core_service'
+#  'app_database_constructor'
+#  'app_analysis_getData_constructor'
+#  'app_analysis_wrangleData_constructor'
+#  'app_analysis_qualRobEst_constructor'
+#  'app_analysis_qualRobEstView_constructor'
+#  'app_analysis_instrPerfEval_constructor'
+#  'app_analysis_kMeans_constructor'
+#  'app_analysis_spectrClustr_constructor'
+  'app_analysis_cluster_starter'
+#  'app_analysis_charts_constructor'
   #'app.utils.importer'
-  ($rootScope, core, db, getData, qualRobEst, qualRobEstView, instrPerfEval, instrPerfEvalView) ->
+#  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
+#  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
+  ($rootScope, core, cluster) ->
+
+    console.log 'APP RUN'
 
     map = [
-      msgFrom: 'add numbers'
-      scopeFrom: ['qualRobEstView']
-      msgTo: 'add numbers'
-      scopeTo: ['qualRobEst']
-    ,
-      msgFrom: 'numbers added'
-      scopeFrom: ['qualRobEst']
-      msgTo: 'numbers added'
-      scopeTo: ['qualRobEstView']
-    ,
-      msgFrom: 'calculate'
-      scopeFrom: ['instrPerfEvalView']
-      msgTo: 'calculate'
-      scopeTo: ['instrPerfEval']
-    ,
-      msgFrom: 'calculated'
-      scopeFrom: ['instrPerfEval']
-      msgTo: 'calculated'
-      scopeTo: ['instrPerfEvalView']
-    ,
-      msgFrom: 'save table'
-      scopeFrom: ['getData', 'app.utils.importer']
+#      msgFrom: 'add numbers'
+#      scopeFrom: ['qualRobEstView']
+#      msgTo: 'add numbers'
+#      scopeTo: ['qualRobEst']
+#    ,
+#      msgFrom: 'numbers added'
+#      scopeFrom: ['qualRobEst']
+#      msgTo: 'numbers added'
+#      scopeTo: ['qualRobEstView']
+#    ,
+      msgFrom: 'save data'
+      scopeFrom: ['getData', 'wrangleData']
       msgTo: 'save table'
       scopeTo: ['database']
+#    ,
+#      msgFrom:'table saved'
+#      scopeFrom: ['database']
+#      msgTo: '234'
+#      scopeTo: ['qualRobEst']
+#    ,
+#      msgFrom: 'upload csv'
+#      scopeFrom: ['getData']
+#      msgTo: 'upload csv'
+#      scopeTo: ['app.utils.importer']
     ,
-      msgFrom:'table saved'
-      scopeFrom: ['database']
-      msgTo: '234'
-      scopeTo: ['qualRobEst']
-    ,
-      msgFrom: 'upload csv'
-      scopeFrom: ['getData']
-      msgTo: 'upload csv'
-      scopeTo: ['app.utils.importer']
-    ,
+      # TODO: make message mapping dynamic #SOCRFW-151
       msgFrom: 'get table'
-      scopeFrom: ['instrPerfEvalView']
+      scopeFrom: ['instrPerfEval']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
       msgTo: 'take table'
-      scopeTo: ['instrPerfEvalView']
+      scopeTo: ['instrPerfEval']
+#    ,
+#      msgFrom: 'get data'
+#      scopeFrom: ['kMeans']
+#      msgTo: 'get table'
+#      scopeTo: ['database']
+#    ,
+#      msgFrom: 'take table'
+#      scopeFrom: ['database']
+#      msgTo: 'take data'
+#      scopeTo: ['kMeans']
     ,
-    # When /getData handonstable is updated, DB needs to be updated with the lastest values.
-      msgFrom: 'handsontable updated'
-      scopeFrom: ['getData']
-      msgTo: 'save table'
+      msgFrom: 'cluster:getData'
+      scopeFrom: ['cluster']
+      msgTo: 'get table'
       scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'cluster:takeData'
+      scopeTo: ['cluster']
+#    ,
+#      msgFrom: 'get data'
+#      scopeFrom: ['spectrClustr']
+#      msgTo: 'get table'
+#      scopeTo: ['database']
+#    ,
+#      msgFrom: 'take table'
+#      scopeFrom: ['database']
+#      msgTo: 'take data'
+#      scopeTo: ['spectrClustr']
+    ,
+      msgFrom: 'get data'
+      scopeFrom: ['wrangleData']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'wrangle data'
+      scopeTo: ['wrangleData']
+    ,
+      msgFrom: 'get table'
+      scopeFrom: ['charts']
+      msgTo: 'get table'
+      scopeTo: ['database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['database']
+      msgTo: 'take table'
+      scopeTo: ['charts']
+
     ]
 
-    core.setEventsMapping map
+#    core.setEventsMapping map
 
-    core.register 'qualRobEstView', qualRobEstView
-    core.start 'qualRobEstView'
+#    core.register 'qualRobEstView', qualRobEstView
+#    core.start 'qualRobEstView'
+#
+#    core.register 'qualRobEst', qualRobEst
+#    core.start 'qualRobEst'
 
-    core.register 'qualRobEst', qualRobEst
-    core.start 'qualRobEst'
+#    core.register 'getData', getData
+#    core.start 'getData'
 
-    core.register 'instrPerfEvalView', instrPerfEvalView
-    core.start 'instrPerfEvalView'
+#    core.register 'database', db
+#    core.start 'database'
+#
+#    core.register 'wrangleData', wrangleData
+#    core.start 'wrangleData'
+#
+#    core.register 'instrPerfEval', instrPerfEval
+#    core.start 'instrPerfEval'
 
-    core.register 'instrPerfEval', instrPerfEval
-    core.start 'instrPerfEval'
+#    core.register 'kMeans', kMeans
+#    core.start 'kMeans'
+#
+#    core.register 'spectrClustr', spectrClustr
+#    core.start 'spectrClustr'
 
-    core.register 'getData', getData
-    core.start 'getData'
+#    core.register 'cluster', cluster
+#    core.start 'cluster'
 
-    core.register 'database', db
-    core.start 'database'
+#    core.register 'charts', charts
+#    core.start 'charts'
 
     #core.register 'importer', importer
     #core.start 'importer'
+
+    # add module to the list of Tools to appear in Tools tab dropdown
+    tools = [
+      id: 'instrPerfEval'
+      name: 'Instrument Performance Evaluation'
+      url: '/tools/instrperfeval'
+    ,
+      id: 'cluster'
+      name: 'Clustering'
+      url: '/tools/cluster'
+#    ,
+#      id: 'kMeans'
+#      name: 'k-Means Clustering'
+#      url: '/tools/kmeans'
+#    ,
+#      id: 'spectrClustr'
+#      name: 'Spectral Clustering'
+#      url: '/tools/spectrClustr'
+    ]
+
+    # subscribe for request from MainCtrl for list of tool modules
+    $rootScope.$on 'app:get_tools', (event, args) ->
+      $rootScope.$broadcast 'app:set_tools', tools
 
     $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
       console.log 'APP: state change: '
       console.log arguments
 
     console.log 'run block of app module'
-
 ])
 

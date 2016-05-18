@@ -1,0 +1,66 @@
+{
+  "author": "Alexandr Kalinin<alxndrkalinin@gmail.com>, Selvam Palanimalai<selvam1991@gmail.com>",
+  "name": "SOCRAT",
+  "version": "v0.1.5-alpha.7",
+  "description": "Flexible HTML5/JS toolkit for interactive data analysis and visuzalization",
+  "homepage": "https://github.com/SOCR/SOCRAT",
+  "dependencies": {
+    "angular": "^1.5.0",
+    "jquery-highlight": "~3.3.0",
+    "jquery-hoverintent": "https://github.com/briancherne/jquery-hoverIntent.git#~1.8.1",
+    "datatables": "DataTables#~1.10.11",
+    "d3": "~3.5.15",
+    "angular-animate": "^1.5.0",
+    "angular-cookies": "^1.5.0",
+    "angular-messages": "^1.5.0",
+    "angular-resource": "^1.5.0",
+    "angular-route": "^1.5.0",
+    "angular-sanitize": "^1.5.0",
+    "angular-touch": "^1.5.0",
+    "angular-ui": "^0.4.0",
+    "angular-ui-router": "~0.2.18",
+    "ngHandsontable": "angular-ui-handsontable#~0.10.0",
+    "wrangler": "https://github.com/alxndrkalinin/wrangler.git",
+    "bootstrap": "^3.3.6",
+    "angular-bootstrap": "^1.1.0",
+    "jquery-layout": "~1.4.3",
+    "jstat": "~1.5.2",
+    "jsfeat": "~0.0.8"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.5.0"
+  },
+  "appPath": "app",
+  "moduleName": "expApp",
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "less/bootstrap.less",
+        "dist/css/bootstrap.css",
+        "dist/js/bootstrap.js"
+      ]
+    },
+    "wrangler": {
+      "main": [
+        "lib/datavore/datavore-d0.1.js",
+        "dw.js",
+        "style/**/*.css"
+      ]
+    },
+    "jquery-layout": {
+      "main": [
+        "source/stable/jquery.layout.js"
+      ]
+    },
+    "jstat": {
+      "main": [
+        "dist/jstat.js"
+      ]
+    },
+    "jsfeat": {
+      "main": [
+        "build/jsfeat.js"
+      ]
+    }
+  }
+}

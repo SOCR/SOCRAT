@@ -82,7 +82,7 @@ mediator = angular.module('app_mediator', [])
 #        type:'error'
 
     cb()
-    console.log '%cMEDIATOR: successfully published ' + obj.msg, 'color: blue'
+    console.log '%cMEDIATOR: successfully published:'+obj.msg+' MsgScope:'+obj.msgScope, 'color:blue'
     return @
 
   # _subscribe() - registers a listener function for a msg
