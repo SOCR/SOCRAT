@@ -265,7 +265,7 @@
 ##          true
 ##
 ##        catch e
-###          console.error e
+##          console.error e
 ##          false
 #
 #      _setEventsMapping = (map) ->

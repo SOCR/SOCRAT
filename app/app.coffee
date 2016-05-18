@@ -150,7 +150,7 @@ angular.module('app', [
 
 .run([
   '$rootScope'
-  'core'
+  'app_core_service'
 #  'app_database_constructor'
 #  'app_analysis_getData_constructor'
 #  'app_analysis_wrangleData_constructor'
@@ -166,6 +166,7 @@ angular.module('app', [
 #  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
   ($rootScope, core, cluster) ->
 
+    console.log 'APP RUN'
 
     map = [
 #      msgFrom: 'add numbers'
@@ -256,7 +257,7 @@ angular.module('app', [
 
     ]
 
-    core.setEventsMapping map
+#    core.setEventsMapping map
 
 #    core.register 'qualRobEstView', qualRobEstView
 #    core.start 'qualRobEstView'
@@ -282,8 +283,8 @@ angular.module('app', [
 #    core.register 'spectrClustr', spectrClustr
 #    core.start 'spectrClustr'
 
-    core.register 'cluster', cluster
-    core.start 'cluster'
+#    core.register 'cluster', cluster
+#    core.start 'cluster'
 
 #    core.register 'charts', charts
 #    core.start 'charts'

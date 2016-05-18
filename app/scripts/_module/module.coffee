@@ -1,11 +1,10 @@
 'use strict'
 
-#
-# Base class for module prototyping
-#
-
+###
+# @name socrat.Module
+# @desc Base class for module prototyping
+###
 window.socrat or= {}
-
 class socrat.Module
   constructor: (@msgService) ->
     @sb = null
