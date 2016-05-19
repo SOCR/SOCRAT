@@ -8,6 +8,27 @@
     "type": "git",
     "url": "https://github.com/SOCR/SOCRAT.git"
   },
+  "dependencies":{
+    "angular": "^1.5.0",
+    "jquery-highlight": "~3.3.0",
+    "hoverintent": "^1.0.2",
+    "datatables.net": "^1.10.11",
+    "d3": "~3.5.15",
+    "angular-animate": "^1.5.0",
+    "angular-cookies": "^1.5.0",
+    "angular-messages": "^1.5.0",
+    "angular-resource": "^1.5.0",
+    "angular-route": "^1.5.0",
+    "angular-sanitize": "^1.5.0",
+    "angular-touch": "^1.5.0",
+    "angular-ui-router": "~0.2.18",
+    "bootstrap": "^3.3.6",
+    "angular-ui-bootstrap": "^1.3.0",
+    "data-wrangler": "^1.0.0",
+    "jquery-layout": "git+https://github.com/benosman/layout.git",
+    "jstat": "~1.5.2",
+    "jsfeat": "~0.0.8"
+  },
   "devDependencies": {
     "webpack": "1.13.0",
     "bower-webpack-plugin": "^0.1.9",
@@ -29,11 +50,15 @@
     "less-loader": "*",
     "phantomjs2": "~2.2.0",
     "raw-loader": "*",
-    "style-loader": "*"
+    "style-loader": "*",
+    "angular-mocks": "^1.5.0"
   },
   "engines": {
     "node": ">=0.10.0"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "node_modules/webpack/bin/webpack.js",
+    "watch": "node_modules/webpack/bin/webpack.js --watch"
+  },
   "license": "LGPL-3.0"
 }
