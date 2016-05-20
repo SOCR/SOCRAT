@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/SOCR/SOCRAT.git"
   },
-  "dependencies":{
+  "dependencies": {
     "angular": "^1.5.0",
     "jquery-highlight": "~3.3.0",
     "hoverintent": "^1.0.2",
@@ -30,15 +30,13 @@
     "jsfeat": "~0.0.8"
   },
   "devDependencies": {
-    "webpack": "1.13.0",
+    "angular-mocks": "^1.5.0",
     "bower-webpack-plugin": "^0.1.9",
     "coffee-loader": "*",
     "coffee-script": "*",
     "css-loader": "*",
     "exports-loader": "*",
     "imports-loader": "*",
-    "pug": "^2.0.0-alpha7",
-    "pug-html-loader": "^1.0.5",
     "jasmine-core": "^2.4.1",
     "jshint-stylish": "^2.1.0",
     "karma": "^0.13.0",
@@ -49,16 +47,21 @@
     "less": "^2.5.3",
     "less-loader": "*",
     "phantomjs2": "~2.2.0",
+    "jade": "^1.11.0",
+    "jade-loader": "^0.8.0",
     "raw-loader": "*",
     "style-loader": "*",
-    "angular-mocks": "^1.5.0"
+    "webpack": "1.13.0",
+    "webpack-dev-server": "^1.14.1"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "scripts": {
     "build": "node_modules/webpack/bin/webpack.js",
-    "watch": "node_modules/webpack/bin/webpack.js --watch"
+    "watch": "node_modules/webpack/bin/webpack.js --watch",
+    "start": "node_modules/webpack/bin/webpack.js & node server.js",
+    "serve": "node_modules/webpack/bin/webpack.js & node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot -d --colors"
   },
   "license": "LGPL-3.0"
 }

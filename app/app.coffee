@@ -7,6 +7,16 @@
   Then the run block is executed in the same order.
   Run block of "app" is executed in the last.
 ###
+
+template = require("jade!./index.jade")
+require 'angular'
+require 'angular-ui-router'
+require 'angular-ui-bootstrap'
+require 'styles/app.less'
+require 'bootstrap/dist/css/bootstrap.css'
+
+$("body").html(template)
+
 angular.module('app', [
   'ui.router'
   'ui.router.compat'
@@ -322,3 +332,4 @@ angular.module('app', [
     console.log 'run block of app module'
 ])
 
+console.log 123123123213
