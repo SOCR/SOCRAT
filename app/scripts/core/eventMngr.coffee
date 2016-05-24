@@ -1,12 +1,12 @@
 'use strict'
 
-console.log 12312312321322
-eventMngr = angular.module('app_eventMngr', ['app_mediator', 'app_utils'])
+require 'scripts/core/mediator.coffee'
+
+eventMngr = angular.module('app_eventMngr', ['app_mediator'])
 
 .service('eventMngr', [
   'pubSub'
-  'utils'
-  (pubSub, utils) ->
+  (pubSub) ->
     incomeCallbacks = {}
 
     # supported data types

@@ -1,5 +1,7 @@
 'use strict'
 
+require 'scripts/_module/MessageService.coffee'
+
 class ClusterMsgService extends socrat.MessageService
   msgList:
     outgoing: ['get table']

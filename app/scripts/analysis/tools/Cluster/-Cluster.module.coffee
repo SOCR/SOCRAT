@@ -1,5 +1,8 @@
 'use strict'
 
+require 'scripts/_module/module.coffee'
+require 'scripts/analysis/tools/Cluster/ClusterMsgService.service.coffee'
+
 ###
 # @name Cluster
 # @desc Main class for cluster module inherited from base
