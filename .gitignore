@@ -9,6 +9,7 @@
 ===============
 /dist
 /.tmp
+/_build
 
 #OS generated files #
 =====================
