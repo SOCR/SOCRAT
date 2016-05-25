@@ -4,11 +4,10 @@
 # Base class for module messaging service
 #
 
-window.socrat or= {}
-
-class socrat.MessageService
+module.exports = class MessageService
   constructor: (@$q, @$rootScope, @$stateParams) ->
     @sb = null
+    @msgList = null
 
   setSb: (sb) ->
     @sb = sb

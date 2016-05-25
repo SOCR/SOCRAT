@@ -4,8 +4,7 @@
 # @name socrat.Module
 # @desc Base class for module prototyping
 ###
-window.socrat or= {}
-class socrat.Module
+module.exports = class ModuleInitService
   constructor: (@msgService) ->
     @sb = null
     @msgList =
