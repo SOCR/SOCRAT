@@ -1,107 +1,20 @@
 'use strict'
 
+AppMessageMap = require 'scripts/app.map.coffee'
+
 ###
 # @name AppRun
 # @desc Class for run block of application module
 ###
 
 module.exports = class AppRun
-  constructor: ($rootScope, core, cluster) ->
+  constructor: ($rootScope, core) ->
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
 #  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
 
     console.log 'APP RUN'
 
-    map = [
-#      msgFrom: 'add numbers'
-#      scopeFrom: ['qualRobEstView']
-#      msgTo: 'add numbers'
-#      scopeTo: ['qualRobEst']
-#    ,
-#      msgFrom: 'numbers added'
-#      scopeFrom: ['qualRobEst']
-#      msgTo: 'numbers added'
-#      scopeTo: ['qualRobEstView']
-#    ,
-      msgFrom: 'save data'
-      scopeFrom: ['getData', 'wrangleData']
-      msgTo: 'save table'
-      scopeTo: ['database']
-#    ,
-#      msgFrom:'table saved'
-#      scopeFrom: ['database']
-#      msgTo: '234'
-#      scopeTo: ['qualRobEst']
-#    ,
-#      msgFrom: 'upload csv'
-#      scopeFrom: ['getData']
-#      msgTo: 'upload csv'
-#      scopeTo: ['app.utils.importer']
-    ,
-# TODO: make message mapping dynamic #SOCRFW-151
-      msgFrom: 'get table'
-      scopeFrom: ['instrPerfEval']
-      msgTo: 'get table'
-      scopeTo: ['database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['database']
-      msgTo: 'take table'
-      scopeTo: ['instrPerfEval']
-#    ,
-#      msgFrom: 'get data'
-#      scopeFrom: ['kMeans']
-#      msgTo: 'get table'
-#      scopeTo: ['database']
-#    ,
-#      msgFrom: 'take table'
-#      scopeFrom: ['database']
-#      msgTo: 'take data'
-#      scopeTo: ['kMeans']
-    ,
-      msgFrom: 'cluster:getData'
-      scopeFrom: ['cluster']
-      msgTo: 'get table'
-      scopeTo: ['database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['database']
-      msgTo: 'cluster:takeData'
-      scopeTo: ['cluster']
-#    ,
-#      msgFrom: 'get data'
-#      scopeFrom: ['spectrClustr']
-#      msgTo: 'get table'
-#      scopeTo: ['database']
-#    ,
-#      msgFrom: 'take table'
-#      scopeFrom: ['database']
-#      msgTo: 'take data'
-#      scopeTo: ['spectrClustr']
-    ,
-      msgFrom: 'get data'
-      scopeFrom: ['wrangleData']
-      msgTo: 'get table'
-      scopeTo: ['database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['database']
-      msgTo: 'wrangle data'
-      scopeTo: ['wrangleData']
-    ,
-      msgFrom: 'get table'
-      scopeFrom: ['charts']
-      msgTo: 'get table'
-      scopeTo: ['database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['database']
-      msgTo: 'take table'
-      scopeTo: ['charts']
-
-    ]
-
-    #    core.setEventsMapping map
+    core.setEventsMapping new AppMessageMap()
 
     #    core.register 'qualRobEstView', qualRobEstView
     #    core.start 'qualRobEstView'
@@ -176,7 +89,7 @@ AppRun.$inject = [
 #  'app_analysis_instrPerfEval_constructor'
 #  'app_analysis_kMeans_constructor'
 #  'app_analysis_spectrClustr_constructor'
-  'app_analysis_cluster_starter'
+#  'app_analysis_cluster_starter'
 #  'app_analysis_charts_constructor'
 #'app.utils.importer'
 ]

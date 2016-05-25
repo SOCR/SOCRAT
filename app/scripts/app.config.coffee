@@ -10,7 +10,7 @@ module.exports = class AppConfig
 
     console.log "config block of app module"
 
-    $urlRouterProvider.when('/','/')
+    $urlRouterProvider.when('/', '/')
     .otherwise('/home')
 
     $stateProvider
