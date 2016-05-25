@@ -65,8 +65,7 @@
   "scripts": {
     "build": "node_modules/webpack/bin/webpack.js",
     "watch": "node_modules/webpack/bin/webpack.js --watch",
-    "start": "node_modules/webpack/bin/webpack.js & node server.js",
-    "serve": "node_modules/webpack/bin/webpack.js & node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot -d --colors"
+    "serve": "node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot -d --colors --content-base _build/"
   },
   "license": "LGPL-3.0"
 }
