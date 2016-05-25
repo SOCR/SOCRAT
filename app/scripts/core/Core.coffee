@@ -15,15 +15,15 @@ class Core
   @_instanceOpts = {}
   @_map = {}
 
-  constructor: (eventMngr, Sandbox, utils) ->
+  constructor: (eventMngr, Sandbox, errorMngr, utils) ->
 
-  @_checkType = (type, val, name) ->
+  @_checkType: (type, val, name) ->
     # TODO: change to $exceptionHandler or return false anf throw exception in caller
     if typeof val isnt type and utils.typeIsArray(val) isnt true
       console.log '%cCORE: checkType: ' + "#{name} is not a #{type}", 'color:red'
       throw new TypeError "#{name} has to be a #{type}"
 
-  @_getInstanceOptions = (instanceId, module, opt) ->
+  @_getInstanceOptions: (instanceId, module, opt) ->
     # Merge default options and instance options and start options,
     # without modifying the defaults.
     o = {}
@@ -41,7 +41,7 @@ class Core
     # return options
     o
 
-  @_createInstance = (moduleId, instanceId = moduleId, opt) ->
+  @_createInstance: (moduleId, instanceId = moduleId, opt) ->
     module = _modules[moduleId]
     return _instances[instanceId] if _instances[instanceId]?
     iOpts = _getInstanceOptions.apply @, [instanceId, module, opt]
@@ -59,7 +59,7 @@ class Core
 
     instance
 
-  @_addModule = (moduleId, creator, opt) ->
+  @_addModule: (moduleId, creator, opt) ->
     _checkType 'string', moduleId, 'module ID'
     _checkType 'function', creator, 'creator'
     _checkType 'object', opt, 'option parameter'
@@ -85,7 +85,7 @@ class Core
 
     true
 
-  @_register = (moduleId, creator, opt = {}) ->
+  @_register: (moduleId, creator, opt = {}) ->
     try
       _addModule.apply @, [moduleId, creator, opt]
     catch e
@@ -94,22 +94,22 @@ class Core
       false
 
   # unregisters module or plugin
-  @_unregister = (id, type) ->
+  @_unregister: (id, type) ->
     if type[id]?
       delete type[id]
       return true
     false
 
   # unregisters all modules or plugins
-  @_unregisterAll = (type) -> _unregister id, type for id of type
+  @_unregisterAll: (type) -> _unregister id, type for id of type
 
-  @_setInstanceOptions = (instanceId, opt) ->
+  @_setInstanceOptions: (instanceId, opt) ->
     _checkType 'string', instanceId, 'instance ID'
     _checkType 'object', opt, 'option parameter'
     _instanceOpts[instanceId] ?= {}
     _instanceOpts[instanceId][k] = v for k,v of opt
 
-  @_start = (moduleId, opt = {}) ->
+  @_start: (moduleId, opt = {}) ->
     try
       _checkType 'string', moduleId, 'module ID'
       _checkType 'object', opt, 'second parameter'
@@ -154,7 +154,7 @@ class Core
       opt.callback? new Error "could not start module: #{e.message}"
       false
 
-  @_startAll = (cb, opt) ->
+  @_startAll: (cb, opt) ->
 
     if cb instanceof Array
       mods = cb; cb = opt; opt = null
@@ -190,7 +190,7 @@ class Core
 
     not invalidErr?
 
-  @_stop = (id, cb) ->
+  @_stop: (id, cb) ->
     if instance = _instances[id]
 
       # if the module wants destroy in an asynchronous way
@@ -207,14 +207,20 @@ class Core
       true
     else false
 
-  @_stopAll = (cb) ->
+  @_stopAll: (cb) ->
     utils.doForAll(
       (id for id of _instances)
       (=> _stop.apply @, arguments)
       cb
     )
 
-  @_ls = (o) -> (id for id, m of o)
+  @_ls: (o) -> (id for id, m of o)
+
+  # TODO: move to eventMngr
+  setEventsMapping: (map) ->
+    @constructor._checkType 'object', map, 'event map'
+    @constructor._map = map
+    true
 
 
 # inject dependencies
