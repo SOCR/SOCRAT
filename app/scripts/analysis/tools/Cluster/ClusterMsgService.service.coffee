@@ -2,7 +2,7 @@
 
 MessageService = require 'scripts/Module/MessageService.coffee'
 
-class ClusterMsgService extends MessageService
+module.exports = class ClusterMsgService extends MessageService
   @msgList:
     outgoing: ['get table']
     incoming: ['take table']
