@@ -5,10 +5,13 @@
 # @desc Class for config block of application module
 ###
 
-module.exports = class AppConfig
+module.exports = class AppRoute
+
+  @modules: []
+
   constructor: ($locationProvider, $urlRouterProvider, $stateProvider) ->
 
-    console.log "config block of app module"
+    console.log 123
 
     $urlRouterProvider.when('/', '/')
     .otherwise('/home')
@@ -62,46 +65,46 @@ module.exports = class AppConfig
         'sidebar':
           templateUrl: require('partials/analysis/getData/sidebar.jade')()
     )
-#      .state('wrangleData'
-#        url: '/wrangleData'
-#        views:
-#          'main':
-#            templateUrl: 'partials/analysis/wrangleData/main.html'
-#          'sidebar':
-#            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
-#      )
-#      .state('instrperfeval'
-#        url: '/tools/instrperfeval'
-#        views:
-#          'main':
-#            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/main.html'
-#          'sidebar':
-#            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/sidebar.html'
-#      )
-#      .state('kmeans'
-#        url: '/tools/kmeans'
-#        views:
-#          'main':
-#            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/main.html'
-#          'sidebar':
-#            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
-#      )
-#    .state('spectrClustr'
-#      url: '/tools/spectrClustr'
-#      views:
-#        'main':
-#          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/main.html'
-#        'sidebar':
-#          templateUrl: 'partials/analysis/tools/machineLearning/clustspectralClusteringering/sidebar.html'
-#    )
-    .state('cluster'
-      url: '/tools/cluster'
-      views:
-        'main':
-          template: require('partials/analysis/tools/cluster/main.jade')()
-        'sidebar':
-          template: require('partials/analysis/tools/cluster/sidebar.jade')()
-    )
+    #      .state('wrangleData'
+    #        url: '/wrangleData'
+    #        views:
+    #          'main':
+    #            templateUrl: 'partials/analysis/wrangleData/main.html'
+    #          'sidebar':
+    #            templateUrl: 'partials/analysis/wrangleData/sidebar.html'
+    #      )
+    #      .state('instrperfeval'
+    #        url: '/tools/instrperfeval'
+    #        views:
+    #          'main':
+    #            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/main.html'
+    #          'sidebar':
+    #            templateUrl: 'partials/analysis/tools/psychometrics/instrPerfEval/sidebar.html'
+    #      )
+    #      .state('kmeans'
+    #        url: '/tools/kmeans'
+    #        views:
+    #          'main':
+    #            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/main.html'
+    #          'sidebar':
+    #            templateUrl: 'partials/analysis/tools/machineLearning/kMeans/sidebar.html'
+    #      )
+    #    .state('spectrClustr'
+    #      url: '/tools/spectrClustr'
+    #      views:
+    #        'main':
+    #          templateUrl: 'partials/analysis/tools/machineLearning/spectralClustering/main.html'
+    #        'sidebar':
+    #          templateUrl: 'partials/analysis/tools/machineLearning/clustspectralClusteringering/sidebar.html'
+    #    )
+    #    .state('cluster'
+    #      url: '/tools/cluster'
+    #      views:
+    #        'main':
+    #          template: require('partials/analysis/tools/cluster/main.jade')()
+    #        'sidebar':
+    #          template: require('partials/analysis/tools/cluster/sidebar.jade')()
+    #    )
     #      .state('charts'
     #        url: '/charts'
     #        views:
@@ -115,4 +118,4 @@ module.exports = class AppConfig
     $locationProvider.html5Mode(false)
 
 # inject dependencies
-AppConfig.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider']
+AppRoute.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider']

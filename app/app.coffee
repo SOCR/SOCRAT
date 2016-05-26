@@ -22,6 +22,11 @@ require 'scripts/core/Core.coffee'
 bodyTemplate = require 'index.jade'
 document.body.innerHTML = bodyTemplate()
 
+# load app configs
+ModuleList = require 'scripts/AppModuleList.coffee'
+AppConfig = require 'scripts/AppConfig.coffee'
+AppRun = require 'scripts/AppRun.coffee'
+
 ###
   NOTE: Order of the modules injected into "app" module decides
   which module gets initialized first.
@@ -31,10 +36,12 @@ document.body.innerHTML = bodyTemplate()
   Run block of "app" is executed in the last.
 ###
 
-ModuleList = require 'scripts/app.modules.coffee'
+moduleList = new ModuleList()
+AppConfig.setModuleList moduleList.getAnalysisTools()
 
-angular.module('app', new ModuleList().modules)
+# Create app module and pass all modules as dependencies
+angular.module 'app', moduleList.getAll()
 # Config block
-.config(require 'scripts/app.config.coffee')
+.config AppConfig
 # Run block
-.run(require 'scripts/app.run.coffee')
+.run AppRun

@@ -1,6 +1,6 @@
 'use strict'
 
-AppMessageMap = require 'scripts/app.map.coffee'
+AppMessageMap = require 'scripts/AppMessageMap.coffee'
 
 ###
 # @name AppRun
