@@ -6,6 +6,8 @@
 ###
 module.exports = class ModuleInitService
   constructor: (@msgService) ->
+    console.log 'MODULE INIT SERVICE'
+    console.log @
     @sb = null
     @msgList =
       outgoing: []

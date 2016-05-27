@@ -6,6 +6,8 @@
 
 module.exports = class MessageService
   constructor: (@$q, @$rootScope, @$stateParams) ->
+    console.log 'MESSAGE SERVICE CONSTRUCTOR'
+    console.log @
     @sb = null
     @msgList = null
 

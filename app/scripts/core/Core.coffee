@@ -16,6 +16,7 @@ class Core
   @_map = {}
 
   constructor: (eventMngr, Sandbox, errorMngr, utils) ->
+    log: console.log
 
   @_checkType: (type, val, name) ->
     # TODO: change to $exceptionHandler or return false anf throw exception in caller

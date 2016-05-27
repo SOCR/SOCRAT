@@ -8,13 +8,16 @@ AppMessageMap = require 'scripts/AppMessageMap.coffee'
 ###
 
 module.exports = class AppRun
-  constructor: ($rootScope, core) ->
+  constructor: ($rootScope, core, cluster, Sandbox) ->
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
 #  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
 
     console.log 'APP RUN'
 
     core.setEventsMapping new AppMessageMap()
+
+    new Sandbox core, 'app_analysis_cluster', 
+    cluster.setSb
 
     #    core.register 'qualRobEstView', qualRobEstView
     #    core.start 'qualRobEstView'
@@ -78,18 +81,24 @@ module.exports = class AppRun
 
     console.log 'run block of app module'
 
+#AppRun.$inject = [
+#
+##  'app_database_constructor'
+##  'app_analysis_getData_constructor'
+##  'app_analysis_wrangleData_constructor'
+##  'app_analysis_qualRobEst_constructor'
+##  'app_analysis_qualRobEstView_constructor'
+##  'app_analysis_instrPerfEval_constructor'
+##  'app_analysis_kMeans_constructor'
+##  'app_analysis_spectrClustr_constructor'
+##  'app_analysis_cluster_starter'
+##  'app_analysis_charts_constructor'
+##'app.utils.importer'
+#]
+
 AppRun.$inject = [
   '$rootScope'
   'app_core_service'
-#  'app_database_constructor'
-#  'app_analysis_getData_constructor'
-#  'app_analysis_wrangleData_constructor'
-#  'app_analysis_qualRobEst_constructor'
-#  'app_analysis_qualRobEstView_constructor'
-#  'app_analysis_instrPerfEval_constructor'
-#  'app_analysis_kMeans_constructor'
-#  'app_analysis_spectrClustr_constructor'
-#  'app_analysis_cluster_starter'
-#  'app_analysis_charts_constructor'
-#'app.utils.importer'
+  'app_analysis_cluster' + '_init'
+  'Sandbox'
 ]

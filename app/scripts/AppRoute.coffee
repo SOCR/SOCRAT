@@ -11,8 +11,6 @@ module.exports = class AppRoute
 
   constructor: ($locationProvider, $urlRouterProvider, $stateProvider) ->
 
-    console.log 123
-
     $urlRouterProvider.when('/', '/')
     .otherwise('/home')
 

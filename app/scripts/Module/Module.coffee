@@ -6,6 +6,9 @@
 ###
 module.exports = class Module
   constructor: (options) ->
+    console.log 'MODULE CONSTRUCTOR'
+    console.log @
+    alert @
     defaultComponents =
       services:
         initService: null
