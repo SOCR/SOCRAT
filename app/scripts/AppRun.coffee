@@ -16,7 +16,7 @@ module.exports = class AppRun
 
     core.setEventsMapping new AppMessageMap()
 
-    new Sandbox core, 'app_analysis_cluster', 
+    new Sandbox core, 'app_analysis_cluster',
     cluster.setSb
 
     #    core.register 'qualRobEstView', qualRobEstView
@@ -96,9 +96,10 @@ module.exports = class AppRun
 ##'app.utils.importer'
 #]
 
+# TODO: pass analysis modules dynamically
 AppRun.$inject = [
   '$rootScope'
   'app_core_service'
-  'app_analysis_cluster' + '_init'
+  'app_analysis_cluster' + '_initService'
   'Sandbox'
 ]

@@ -9,15 +9,10 @@ module.exports = class Cluster extends Module
 
   # module components
   components:
-    services: [
-      initService:
-        name: 'app_analysis_cluster_initService'
-        func: require 'scripts/analysis/tools/Cluster/ClusterInit.service.coffee'
-    ,
-      messageService:
-        name: 'app_analysis_cluster_messageService'
-        func: require 'scripts/analysis/tools/Cluster/ClusterMsgService.service.coffee'
-      ]
+    services:
+      'app_analysis_cluster_initService': require 'scripts/analysis/tools/Cluster/ClusterInit.service.coffee'
+      'app_analysis_cluster_msgService': require 'scripts/analysis/tools/Cluster/ClusterMsgService.service.coffee'
+
     factories: []
     controllers: []
     directives: []
@@ -30,4 +25,4 @@ module.exports = class Cluster extends Module
     sidebarTemplate: 'partials/analysis/tools/cluster/sidebar.jade'
 
 angular.module Cluster::id, []
-console.log 'Registered: ' + angular.module Cluster::id
+console.log 'Registered module: ' + Cluster::id
