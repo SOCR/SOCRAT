@@ -2,7 +2,7 @@
 
 Module = require 'scripts/Module/Module.coffee'
 
-module.exports = class Cluster extends Module
+module.exports = cluster = new Module
 
   # module id for registration
   id: 'app_analysis_cluster'
@@ -24,5 +24,5 @@ module.exports = class Cluster extends Module
     mainTemplate: 'partials/analysis/tools/cluster/main.jade'
     sidebarTemplate: 'partials/analysis/tools/cluster/sidebar.jade'
 
-angular.module Cluster::id, []
-console.log 'Registered module: ' + Cluster::id
+angular.module cluster.id, []
+console.log 'Registered module: ' + cluster.id

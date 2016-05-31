@@ -12,10 +12,10 @@ module.exports = class AppConfig extends AppRoute
     modules = moduleList
 
     # TODO: clean up experiment code!
-    ClusterModule = require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
-    clusterInitService = angular.module(ClusterModule::id)
+    clusterModule = require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
+    clusterInitService = angular.module(clusterModule.id)
 
-    clusterModuleComponents = ClusterModule::components
+    clusterModuleComponents = clusterModule.components
     for serviceName, service of clusterModuleComponents.services
       console.log 'core: starting service: ' + serviceName
       clusterInitService.service serviceName, service
