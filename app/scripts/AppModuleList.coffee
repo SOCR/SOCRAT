@@ -6,33 +6,39 @@
 ###
 module.exports = class AppModuleList
 
-  getAll: -> (moduleList for k, moduleList of @constructor.modules).reduce (t, s) -> t.concat s
-  getSystem: -> @constructor.modules.system
-  getAnalysis: -> @constructor.modules.analysis
-  getTools: -> @constructor.modules.tools
-  getAnalysisTools: -> @getAnalysis().concat @getTools()
+#  getAll: -> (moduleList for k, moduleList of @constructor.modules).reduce (t, s) -> t.concat s
+  getSystemList: -> @constructor.system
+  getAnalysisModules: -> @constructor.modules.analysis
+  getToolModules: -> @constructor.modules.tools
+  getAnalysisAndToolModules: -> @getAnalysisModules().concat @getToolModules()
+  # Returns complete list of all modules
+  getList: -> @getSystemList().concat @getAnalysisAndToolModules().map (m) -> m.id
+
+  @system: [
+    'ui.router'
+    'ui.router.compat'
+    'ngCookies'
+    'ngResource'
+    'ngSanitize'
+    'app_controllers'
+    'app_directives'
+    'app_filters'
+    'app_services'
+    'app_core'
+    'app_mediator'
+
+  ]
+
+  @db: []#      'app_database'
 
   @modules:
-    system: [
-      'ui.router'
-      'ui.router.compat'
-      'ngCookies'
-      'ngResource'
-      'ngSanitize'
-      'app_controllers'
-      'app_directives'
-      'app_filters'
-      'app_services'
-      'app_core'
-      'app_mediator'
-#      'app_database'
-    ]
+
     analysis: [
 #      'app_analysis_getData'
 #      'app_analysis_wrangleData'
 #      'app_analysis_instrPerfEval'
 #      'app_analysis_charts'
     ]
-    tools: [
-      'app_analysis_cluster'
-    ]
+    tools:
+      require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
+#      'app_analysis_cluster': require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'

@@ -7,9 +7,11 @@
 
 module.exports = class AppRoute
 
-  @modules: []
+  constructor: (@modules) ->
 
-  constructor: ($locationProvider, $urlRouterProvider, $stateProvider) ->
+  getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->
+
+    console.log 'MODULES' + @modules
 
     $urlRouterProvider.when('/', '/')
     .otherwise('/home')
@@ -114,6 +116,3 @@ module.exports = class AppRoute
 
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
-
-# inject dependencies
-AppRoute.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider']

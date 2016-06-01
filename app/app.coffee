@@ -17,7 +17,7 @@ require 'scripts/filters.coffee'
 require 'scripts/services.coffee'
 
 # core
-require 'scripts/core/Core.coffee'
+
 
 bodyTemplate = require 'index.jade'
 document.body.innerHTML = bodyTemplate()
@@ -37,11 +37,11 @@ AppRun = require 'scripts/AppRun.coffee'
 ###
 
 moduleList = new ModuleList()
-AppConfig.setModuleList moduleList.getAnalysisTools()
+appConfig = new AppConfig moduleList.getAnalysisAndToolModules()
 
 # Create app module and pass all modules as dependencies
-angular.module 'app', moduleList.getAll()
+angular.module 'app', moduleList.getList()
 # Config block
-.config AppConfig
+.config appConfig.getConfig()
 # Run block
 .run AppRun

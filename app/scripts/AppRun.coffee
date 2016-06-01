@@ -8,7 +8,7 @@ AppMessageMap = require 'scripts/AppMessageMap.coffee'
 ###
 
 module.exports = class AppRun
-  constructor: ($rootScope, core, cluster, Sandbox) ->
+  constructor: ($rootScope, clusterModule, Sandbox) ->
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
 #  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
 
@@ -16,8 +16,8 @@ module.exports = class AppRun
 
     core.setEventsMapping new AppMessageMap()
 
-    new Sandbox core, 'app_analysis_cluster',
-    cluster.setSb
+#    new Sandbox core, 'app_analysis_cluster',
+#    cluster.setSb
 
     #    core.register 'qualRobEstView', qualRobEstView
     #    core.start 'qualRobEstView'
@@ -99,7 +99,7 @@ module.exports = class AppRun
 # TODO: pass analysis modules dynamically
 AppRun.$inject = [
   '$rootScope'
-  'app_core_service'
+#  'app_core_service'
   'app_analysis_cluster' + '_initService'
   'Sandbox'
 ]

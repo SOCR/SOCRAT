@@ -9,7 +9,7 @@ require 'scripts/core/utils.coffee'
 # @name Core
 # @desc Class for registering and starting modules
 ###
-class Core
+module.exports = class Core
   @_modules = {}
   @_instances = {}
   @_instanceOpts = {}
