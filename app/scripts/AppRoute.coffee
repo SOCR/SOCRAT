@@ -9,12 +9,7 @@ module.exports = class AppRoute
 
   constructor: (@modules) ->
 
-  getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->
-
-    $urlRouterProvider.when('/', '/')
-    .otherwise('/home')
-
-    # add states for static components
+  linkStatic: ($stateProvider) ->
     $stateProvider
     .state 'welcome',
       url: '/welcome'
@@ -44,15 +39,34 @@ module.exports = class AppRoute
         'main':
           template: require('partials/nav/contact.jade')()
 
-    # dynamically add state for analysis/tool modules
-    for module in @modules when module.state?.id? and module.state.url?
-      $stateProvider.state module.state.id,
+  linkDynamic: ($stateProvider) ->
+    modules = @modules.analysis.concat @modules.tools
+    for module in modules when module.state?.url?
+      $stateProvider.state module.id,
         url: module.state.url
         views:
           'main':
             template: module.state.mainTemplate()
           'sidebar':
             template: module.state.sidebarTemplate()
+
+
+  getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->
+
+    $urlRouterProvider.when('/', '/')
+    .otherwise('/home')
+
+    # add states for static components
+    @linkStatic $stateProvider
+
+    # dynamically add state for analysis/tool modules
+    @linkDynamic $stateProvider
+
+    # Without server side support html5 must be disabled.
+    $locationProvider.html5Mode(false)
+
+    console.log 'app: routing is set up'
+
 
 #    .state('getData'
 #      url: '/getData'
@@ -122,8 +136,3 @@ module.exports = class AppRoute
     #          'sidebar':
     #            templateUrl: 'partials/analysis/charts/sidebar.html'
     #      )
-
-    # Without server side support html5 must be disabled.
-    $locationProvider.html5Mode(false)
-
-    console.log 'app: routing is set up'

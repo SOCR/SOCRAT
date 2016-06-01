@@ -1,6 +1,7 @@
 'use strict'
 
 AppRoute = require 'scripts/AppRoute.coffee'
+AppRun = require 'scripts/AppRun.coffee'
 
 ###
 # @name AppConfig
@@ -8,8 +9,10 @@ AppRoute = require 'scripts/AppRoute.coffee'
 ###
 module.exports = class AppConfig
 
-  constructor: (@modules) ->
-    for module in @modules
+  # TODO: pass module list as structured object for defining menus in appRun?
+
+  addModuleComponents: (modules) ->
+    for module in modules
       angModule = angular.module module.id
 
       moduleComponents = module.components
@@ -20,7 +23,11 @@ module.exports = class AppConfig
 
       console.log 'CORE: created module ' + module.id
 
-  getConfig: ->
+  constructor: (@modules) ->
+    @addModuleComponents @modules.analysis
+    @addModuleComponents @modules.tools
+
+  getConfigBlock: ->
     # create new router
     appRoute = new AppRoute @modules
     # workaround for dependency injection
@@ -29,3 +36,11 @@ module.exports = class AppConfig
     # dependencies for AppRoute
     config.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider']
     config
+
+  getRunBlock: ->
+    #create new run block
+    appRun = new AppRun @modules
+    runBlock = () =>
+      appRun.getRun()
+    runBlock.$inject = ['$rootScope']
+    runBlock

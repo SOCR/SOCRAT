@@ -8,11 +8,13 @@ module.exports = class AppModuleList
 
 #  getAll: -> (moduleList for k, moduleList of @constructor.modules).reduce (t, s) -> t.concat s
   getSystemList: -> @constructor.system
-  getAnalysisModules: -> @constructor.modules.analysis
-  getToolModules: -> @constructor.modules.tools
-  getAnalysisAndToolModules: -> @getAnalysisModules().concat @getToolModules()
+  getAnalysisModules: -> @constructor.analysis
+  getToolModules: -> @constructor.tools
+  getAnalysisAndToolModules: ->
+    analysis: @getAnalysisModules()
+    tools: @getToolModules()
   # Returns complete list of all modules
-  getList: -> @getSystemList().concat @getAnalysisAndToolModules().map (m) -> m.id
+  getList: -> @getSystemList().concat(@getAnalysisModules().map((m) -> m.id), @getToolModules().map((m) -> m.id))
 
   @system: [
     'ui.router'
@@ -31,14 +33,12 @@ module.exports = class AppModuleList
 
   @db: []#      'app_database'
 
-  @modules:
-
-    analysis: [
+  @analysis: []
 #      'app_analysis_getData'
 #      'app_analysis_wrangleData'
 #      'app_analysis_instrPerfEval'
 #      'app_analysis_charts'
-    ]
-    tools:
+
+  @tools:
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
 #      'app_analysis_cluster': require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'

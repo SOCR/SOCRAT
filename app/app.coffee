@@ -16,16 +16,12 @@ require 'scripts/directives.coffee'
 require 'scripts/filters.coffee'
 require 'scripts/services.coffee'
 
-# core
-
-
 bodyTemplate = require 'index.jade'
 document.body.innerHTML = bodyTemplate()
 
 # load app configs
 ModuleList = require 'scripts/AppModuleList.coffee'
 AppConfig = require 'scripts/AppConfig.coffee'
-AppRun = require 'scripts/AppRun.coffee'
 
 ###
   NOTE: Order of the modules injected into "app" module decides
@@ -42,6 +38,6 @@ appConfig = new AppConfig moduleList.getAnalysisAndToolModules()
 # Create app module and pass all modules as dependencies
 angular.module 'app', moduleList.getList()
 # Config block
-.config appConfig.getConfig()
+.config appConfig.getConfigBlock()
 # Run block
-.run AppRun
+.run appConfig.getRunBlock()

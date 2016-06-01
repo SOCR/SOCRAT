@@ -8,13 +8,25 @@ AppMessageMap = require 'scripts/AppMessageMap.coffee'
 ###
 
 module.exports = class AppRun
-  constructor: ($rootScope, clusterModule, Sandbox) ->
+
+  # include an instance of Core class
+  @core: require 'scripts/core/Core.coffee'
+
+  constructor: (@modules) ->
 #  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
 #  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
+
+  getRun: ($rootScope) ->
 
     console.log 'APP RUN'
 
     core.setEventsMapping new AppMessageMap()
+
+
+    # TODO: add dynamic start of modules and adding them to menus
+#    for module in @modules
+
+
 
 #    new Sandbox core, 'app_analysis_cluster',
 #    cluster.setSb
@@ -75,31 +87,8 @@ module.exports = class AppRun
     $rootScope.$on 'app:get_tools', (event, args) ->
       $rootScope.$broadcast 'app:set_tools', tools
 
-    $rootScope.$on "$stateChangeSuccess", (scope, next, change)->
+    $rootScope.$on "$stateChangeSuccess", (scope, next, change) ->
       console.log 'APP: state change: '
       console.log arguments
 
     console.log 'run block of app module'
-
-#AppRun.$inject = [
-#
-##  'app_database_constructor'
-##  'app_analysis_getData_constructor'
-##  'app_analysis_wrangleData_constructor'
-##  'app_analysis_qualRobEst_constructor'
-##  'app_analysis_qualRobEstView_constructor'
-##  'app_analysis_instrPerfEval_constructor'
-##  'app_analysis_kMeans_constructor'
-##  'app_analysis_spectrClustr_constructor'
-##  'app_analysis_cluster_starter'
-##  'app_analysis_charts_constructor'
-##'app.utils.importer'
-#]
-
-# TODO: pass analysis modules dynamically
-AppRun.$inject = [
-  '$rootScope'
-#  'app_core_service'
-  'app_analysis_cluster' + '_initService'
-  'Sandbox'
-]
