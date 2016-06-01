@@ -11,60 +11,69 @@ module.exports = class AppRoute
 
   getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->
 
-    console.log 'MODULES' + @modules
-
     $urlRouterProvider.when('/', '/')
     .otherwise('/home')
 
+    # add states for static components
     $stateProvider
-    .state('welcome'
+    .state 'welcome',
       url: '/welcome'
       views:
         'main':
           template: require('partials/welcome.jade')()
-    )
-    .state('home'
+
+    .state 'home',
       url:'/home'
       views:
         'main':
           template: require('partials/nav/home.jade')()
         'sidebar':
           template: require('partials/projects.jade')()
-    )
-    .state('guide'
+
+    .state 'guide',
       url: '/guide'
       views:
         'main':
           template: require('partials/nav/guide-me.jade')()
         'sidebar':
           template: require('partials/projects.jade')()
-    )
-    .state('contact'
+
+    .state 'contact',
       url: '/contact'
       views:
         'main':
           template: require('partials/nav/contact.jade')()
-    )
-    .state('getData'
-      url: '/getData'
-      views:
-        'main':
-          template: require('partials/analysis/getData/main.jade')()
-        'sidebar':
-          template: require('partials/analysis/getData/sidebar.jade')()
-    )
-    .state('getData.project'
-      url: '/:projectId/:forkId'
-      resolve:
-        checkDb: ($stateParams, app_database_dv) ->
-          res = app_database_dv.exists $stateParams.projectId + ':' + $stateParams.forkId
-          console.log "does DB exist for this project? "+res
-      views:
-        'main':
-          template: require('partials/analysis/getData/main.jade')()
-        'sidebar':
-          templateUrl: require('partials/analysis/getData/sidebar.jade')()
-    )
+
+    # dynamically add state for analysis/tool modules
+    for module in @modules when module.state?.id? and module.state.url?
+      $stateProvider.state module.state.id,
+        url: module.state.url
+        views:
+          'main':
+            template: module.state.mainTemplate()
+          'sidebar':
+            template: module.state.sidebarTemplate()
+
+#    .state('getData'
+#      url: '/getData'
+#      views:
+#        'main':
+#          template: require('partials/analysis/getData/main.jade')()
+#        'sidebar':
+#          template: require('partials/analysis/getData/sidebar.jade')()
+#    )
+#    .state('getData.project'
+#      url: '/:projectId/:forkId'
+#      resolve:
+#        checkDb: ($stateParams, app_database_dv) ->
+#          res = app_database_dv.exists $stateParams.projectId + ':' + $stateParams.forkId
+#          console.log "does DB exist for this project? "+res
+#      views:
+#        'main':
+#          template: require('partials/analysis/getData/main.jade')()
+#        'sidebar':
+#          templateUrl: require('partials/analysis/getData/sidebar.jade')()
+#    )
     #      .state('wrangleData'
     #        url: '/wrangleData'
     #        views:
@@ -116,3 +125,5 @@ module.exports = class AppRoute
 
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
+
+    console.log 'app: routing is set up'

@@ -21,8 +21,8 @@ module.exports = cluster = new Module
   state:
     id: 'cluster'
     url: '/tools/cluster'
-    mainTemplate: 'partials/analysis/tools/cluster/main.jade'
-    sidebarTemplate: 'partials/analysis/tools/cluster/sidebar.jade'
+    mainTemplate: require 'partials/analysis/tools/cluster/main.jade'
+    sidebarTemplate: require 'partials/analysis/tools/cluster/sidebar.jade'
 
 angular.module cluster.id, []
 console.log 'Registered module: ' + cluster.id

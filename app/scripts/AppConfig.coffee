@@ -1,7 +1,6 @@
 'use strict'
 
 AppRoute = require 'scripts/AppRoute.coffee'
-Core = require 'scripts/core/Core.coffee'
 
 ###
 # @name AppConfig
@@ -22,13 +21,11 @@ module.exports = class AppConfig
       console.log 'CORE: created module ' + module.id
 
   getConfig: ->
-
-    # TODO: pass module list to router
-
+    # create new router
     appRoute = new AppRoute @modules
-    router = appRoute.getRouter
-    # inject dependencies
-    router.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider']
-    router.modules = @modules
-    router
-
+    # workaround for dependency injection
+    config = ($locationProvider, $urlRouterProvider, $stateProvider) =>
+      appRoute.getRouter $locationProvider, $urlRouterProvider, $stateProvider
+    # dependencies for AppRoute
+    config.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider']
+    config
