@@ -33,10 +33,10 @@ AppConfig = require 'scripts/AppConfig.coffee'
 ###
 
 moduleList = new ModuleList()
-appConfig = new AppConfig moduleList.getAnalysisAndToolModules()
+appConfig = new AppConfig moduleList
 
 # Create app module and pass all modules as dependencies
-angular.module 'app', moduleList.getList()
+angular.module 'app', moduleList.listAll()
 # Config block
 .config appConfig.getConfigBlock()
 # Run block

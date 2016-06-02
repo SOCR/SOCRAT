@@ -1,5 +1,6 @@
 'use strict'
 
+Module = require 'scripts/Module/Module.coffee'
 AppRoute = require 'scripts/AppRoute.coffee'
 AppRun = require 'scripts/AppRun.coffee'
 
@@ -11,25 +12,31 @@ module.exports = class AppConfig
 
   # TODO: pass module list as structured object for defining menus in appRun?
 
-  addModuleComponents: (modules) ->
+  addModuleComponents: (modules = @moduleList.getAnalysisModules()) ->
     for module in modules
-      angModule = angular.module module.id
 
-      moduleComponents = module.components
-      # adding services
-      for serviceName, service of moduleComponents.services
-        console.log 'core: starting service: ' + serviceName
-        angModule.service serviceName, service
+      # create single modules
+      if module instanceof Module
 
-      console.log 'CORE: created module ' + module.id
+        angModule = angular.module module.id
 
-  constructor: (@modules) ->
-    @addModuleComponents @modules.analysis
-    @addModuleComponents @modules.tools
+        moduleComponents = module.components
+        # adding services
+        for serviceName, service of moduleComponents.services
+          console.log 'CORE: created service: ' + serviceName
+          angModule.service serviceName, service
+
+        console.log 'CORE: created module ' + module.id
+
+      # if collection of modules, recursively create
+      else @addModuleComponents (v for k, v of module)[0]
+
+  constructor: (@moduleList) ->
+    @addModuleComponents()
 
   getConfigBlock: ->
     # create new router
-    appRoute = new AppRoute @modules
+    appRoute = new AppRoute @moduleList.listAnalysisModules()
     # workaround for dependency injection
     config = ($locationProvider, $urlRouterProvider, $stateProvider) =>
       appRoute.getRouter $locationProvider, $urlRouterProvider, $stateProvider

@@ -1,22 +1,14 @@
 'use strict'
 
+Module = require 'scripts/Module/Module.coffee'
+
 ###
 # @name AppModuleList
 # @desc Class for listing of all modules that exist in the app by category
 ###
 module.exports = class AppModuleList
 
-#  getAll: -> (moduleList for k, moduleList of @constructor.modules).reduce (t, s) -> t.concat s
-  getSystemList: -> @constructor.system
-  getAnalysisModules: -> @constructor.analysis
-  getToolModules: -> @constructor.tools
-  getAnalysisAndToolModules: ->
-    analysis: @getAnalysisModules()
-    tools: @getToolModules()
-  # Returns complete list of all modules
-  getList: -> @getSystemList().concat(@getAnalysisModules().map((m) -> m.id), @getToolModules().map((m) -> m.id))
-
-  @system: [
+  system: [
     'ui.router'
     'ui.router.compat'
     'ngCookies'
@@ -28,17 +20,47 @@ module.exports = class AppModuleList
     'app_services'
     'app_core'
     'app_mediator'
-
   ]
 
-  @db: []#      'app_database'
+  db: []
+#  db: ['app_database']
 
-  @analysis: []
-#      'app_analysis_getData'
-#      'app_analysis_wrangleData'
-#      'app_analysis_instrPerfEval'
-#      'app_analysis_charts'
+  # this part includes custom modules
+  # single module are included as entries into main menu
+  # named lists are included as drop-downs into main menu
+  analysis: [
+#      require 'scripts/analysis/getData/getData.coffee'
+#    ,
+#      require 'scripts/analysis/wrangleData/wrangleData.coffee'
+#    ,
+      Tools: [
+        require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
+      ]
+#    ,
+#      require 'scripts/analysis/charts/charts.coffee'
+  ]
 
-  @tools:
-      require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
-#      'app_analysis_cluster': require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
+  ##### access methods #####
+
+  getAll: ->
+    system: @system
+    db: @ db
+    analysis: @analysis
+    tools: @tools
+
+  getAnalysisModules: ->
+    @analysis
+
+  listAnalysisModules: ->
+    modules = []
+    for m in @analysis
+      m = if m instanceof Module then [m.id] else (v.map((e) -> e.id) for k, v of m)[0]
+      modules = modules.concat m
+    modules
+
+  listDbModules: ->
+    @db
+
+  listAll: ->
+    console.log @system
+    @system.concat @listDbModules(), @listAnalysisModules()

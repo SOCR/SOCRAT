@@ -40,8 +40,7 @@ module.exports = class AppRoute
           template: require('partials/nav/contact.jade')()
 
   linkDynamic: ($stateProvider) ->
-    modules = @modules.analysis.concat @modules.tools
-    for module in modules when module.state?.url?
+    for module in @modules when module.state?.url?
       $stateProvider.state module.id,
         url: module.state.url
         views:
@@ -49,7 +48,6 @@ module.exports = class AppRoute
             template: module.state.mainTemplate()
           'sidebar':
             template: module.state.sidebarTemplate()
-
 
   getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->
 
