@@ -1,5 +1,6 @@
 'use strict'
 
+Module = require 'scripts/Module/Module.coffee'
 AppMessageMap = require 'scripts/AppMessageMap.coffee'
 
 ###
@@ -9,24 +10,12 @@ AppMessageMap = require 'scripts/AppMessageMap.coffee'
 
 module.exports = class AppRun
 
-  # include an instance of Core class
-  @core: require 'scripts/core/Core.coffee'
-
   constructor: (@modules) ->
-#  ($rootScope, core, db, getData, wrangleData, qualRobEst, qualRobEstView, instrPerfEval) ->
-#  ($rootScope, core, db, getData, wrangleData, instrPerfEval, cluster, charts) ->
 
-  getRun: ($rootScope) ->
+  registerModules: () ->
 
-    console.log 'APP RUN'
-
-    core.setEventsMapping new AppMessageMap()
-
-
-    # TODO: add dynamic start of modules and adding them to menus
+  startModules: () ->
 #    for module in @modules
-
-
 
 #    new Sandbox core, 'app_analysis_cluster',
 #    cluster.setSb
@@ -92,3 +81,12 @@ module.exports = class AppRun
       console.log arguments
 
     console.log 'run block of app module'
+
+  getRun: ($rootScope, core, modules) ->
+
+    console.log 'APP RUN'
+
+    core.setEventsMapping new AppMessageMap()
+
+    console.log modules
+

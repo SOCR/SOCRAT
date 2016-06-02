@@ -22,6 +22,8 @@ document.body.innerHTML = bodyTemplate()
 # load app configs
 ModuleList = require 'scripts/AppModuleList.coffee'
 AppConfig = require 'scripts/AppConfig.coffee'
+# create an instance of Core
+core = require 'scripts/core/Core.coffee'
 
 ###
   NOTE: Order of the modules injected into "app" module decides

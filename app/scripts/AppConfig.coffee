@@ -10,12 +10,20 @@ AppRun = require 'scripts/AppRun.coffee'
 ###
 module.exports = class AppConfig
 
-  # TODO: pass module list as structured object for defining menus in appRun?
+  # suffix to detect initialization service
+  INIT_SERVICE_SUFFIX: '_initService'
+  # list of custom modules that need to be initialized,
+  #  i.e. have initialization service
+  initModules: []
+
+  constructor: (@moduleList) ->
+    # create angular modules
+    @addModuleComponents()
 
   addModuleComponents: (modules = @moduleList.getAnalysisModules()) ->
     for module in modules
 
-      # create single modules
+      # create modules components
       if module instanceof Module
 
         angModule = angular.module module.id
@@ -23,16 +31,15 @@ module.exports = class AppConfig
         moduleComponents = module.components
         # adding services
         for serviceName, service of moduleComponents.services
-          console.log 'CORE: created service: ' + serviceName
           angModule.service serviceName, service
+          console.log 'AppConfig: created service ' + serviceName
+          if serviceName.endsWith @INIT_SERVICE_SUFFIX
+            @initModules.push serviceName
 
-        console.log 'CORE: created module ' + module.id
+        console.log 'AppConfig: created module ' + module.id
 
       # if collection of modules, recursively create
       else @addModuleComponents (v for k, v of module)[0]
-
-  constructor: (@moduleList) ->
-    @addModuleComponents()
 
   getConfigBlock: ->
     # create new router
@@ -45,9 +52,11 @@ module.exports = class AppConfig
     config
 
   getRunBlock: ->
-    #create new run block
-    appRun = new AppRun @modules
-    runBlock = () =>
-      appRun.getRun()
-    runBlock.$inject = ['$rootScope']
+    # create new run block
+    appRun = new AppRun @moduleList.getAnalysisModules()
+    # pass the context and module init services
+    runBlock = ($rootScope, core, modules...) =>
+      appRun.getRun $rootScope, core, modules
+    # dependencies for run block
+    runBlock.$inject = ['$rootScope', 'app_core_service'].concat @initModules
     runBlock
