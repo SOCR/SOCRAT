@@ -1,6 +1,6 @@
 'use strict'
 
-wrangleData = angular.module('app_analysis_wrangleData', [])
+module.exports = angular.module('app_analysis_wrangleData', [])
 
 .config([
     () ->

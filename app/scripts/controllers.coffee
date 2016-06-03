@@ -6,7 +6,7 @@
   and not specific to any particular analysis(clean data or charts etc).
 ###
 
-app = angular.module('app_controllers', ['app_mediator'])
+angular.module('app_controllers', ['app_mediator'])
 
 .config([
     ->
@@ -21,8 +21,13 @@ app = angular.module('app_controllers', ['app_mediator'])
   ($scope, $location, $resource, $rootScope) ->
     console.log 'controller block for AppCtrl'
 
+    $scope.getNavbar = () ->
+      navbar = require('partials/analysis-nav.jade')()
+      console.log navbar
+      navbar
+
     # create a list of modules for Tools tab dropdown
-    $scope.tools = []
+    $scope.menu = []
 
     # listening to all changes in the view
     $scope.$on 'change in view', ->
@@ -37,11 +42,11 @@ app = angular.module('app_controllers', ['app_mediator'])
       $scope.$broadcast data.purpose + ':load data to handsontable', data
 
     # listen on message from App.run block to register Tools in menu
-    $scope.$on 'app:set_tools', (event, data) ->
-      console.log 'registering tools'
-      $scope.tools = data
+    $scope.$on 'app:set_menu', (event, data) ->
+      console.log 'app: creating menu'
+      $scope.menu = data
     # request Tools list from App.run
-    $rootScope.$broadcast 'app:get_tools'
+    $rootScope.$broadcast 'app:get_menu'
 
     $scope.$location = $location
     $scope.username = 'Guest'
@@ -65,24 +70,24 @@ app = angular.module('app_controllers', ['app_mediator'])
       else
         ''
 
-    # callback
+#    #callback
 #    updateUsername = (event, data) ->
 #      $scope.username = data
-
+#
 #    pubSub.subscribe 'username changed', updateUsername
 
 ])
 
-.controller('navCtrl', [
-    '$scope'
-    ($scope) ->
-      console.log 'controller block for navCtrl'
-])
-
-.controller('subNavCtrl', [
-    '$scope'
-    ($scope) ->
-])
+#.controller('navCtrl', [
+#    '$scope'
+#    ($scope) ->
+#      console.log 'controller block for navCtrl'
+#])
+#
+#.controller('subNavCtrl', [
+#    '$scope'
+#    ($scope) ->
+#])
 
 .controller('sidebarCtrl', [
   '$scope'

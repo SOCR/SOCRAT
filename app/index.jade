@@ -1,4 +1,3 @@
-body(ng-controller='AppCtrl')
 .container-fluid
   nav.navbar.navbar-static-top.navbar-inverse
     .container-fluid
@@ -7,7 +6,7 @@ body(ng-controller='AppCtrl')
           span.icon-bar
           span.icon-bar
           span.icon-bar
-        a(href='/').navbar-brand SOCR
+        a(href='/').navbar-brand SOCRAT
       .navbar-collapse
         div!= require('partials/nav.jade')()
         p.navbar-text.pull-right Logged in as&nbsp;
@@ -24,7 +23,7 @@ body(ng-controller='AppCtrl')
           span.icon-bar
         a(href='/').navbar-brand Analysis
       .navbar-collapse.analysis-toolbar
-        div!= require('partials/analysis-nav.jade')()
+        div(ng-template="getNavbar()")
         notification
 
   // main content section

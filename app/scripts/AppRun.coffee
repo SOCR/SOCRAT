@@ -55,8 +55,12 @@ module.exports = class AppRun
     @buildMenu()
 
     # subscribe for request from MainCtrl for list of tool modules
-    $rootScope.$on 'app:get_menu', (event, args) ->
-      $rootScope.$broadcast 'app:set_menu', @menu
+    setMenu = ((menu) ->
+      return ->
+        $rootScope.$broadcast 'app:set_menu', menu
+    )(@menu)
+
+    $rootScope.$on 'app:get_menu', setMenu
 
     $rootScope.$on "$stateChangeSuccess", (scope, next, change) ->
       console.log 'APP: state change: '

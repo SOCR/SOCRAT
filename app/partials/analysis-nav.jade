@@ -16,7 +16,7 @@ ul.nav.navbar-nav
             div.btn-group
               input#nav-tool-search(ng-model='query', type='text', placeholder='Search for...').form-control
               span#nav-clear-tool-search(ng-click="query=''").glyphicon.glyphicon-remove-circle
-      li(ng-repeat="tool in tools | filter:query", ng-class="getClass(tool.url)")
+      li(ng-repeat="item in menu | filter:query", ng-class="getClass(item.url)")
         a(ng-href='#{{tool.url}}') {{tool.name}}
   li(ng-class="getClass('/charts')")
       a(ng-href='#/charts') Charts

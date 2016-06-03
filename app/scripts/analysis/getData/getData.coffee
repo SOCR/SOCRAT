@@ -1,6 +1,6 @@
 'use strict'
 
-getData = angular.module('app_analysis_getData', [
+module.exports = angular.module('app_analysis_getData', [
   #The frontend modules (app.getData,app.cleanData etc) should have
   # no dependency from the backend.
   #Try to keep it as loosely coupled as possible

@@ -17,6 +17,7 @@ require 'scripts/filters.coffee'
 require 'scripts/services.coffee'
 
 bodyTemplate = require 'index.jade'
+#document.body.setAttribute 'ng-controller', 'AppCtrl'
 document.body.innerHTML = bodyTemplate()
 
 # load app configs

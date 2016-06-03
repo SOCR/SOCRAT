@@ -21,7 +21,6 @@ module.exports = cluster = new Module
   state:
     # module name to show in UI
     name: 'Clustering'
-#    id: 'cluster'
     url: '/tools/cluster'
     mainTemplate: require 'partials/analysis/tools/cluster/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/cluster/sidebar.jade'
