@@ -12,18 +12,18 @@ module.exports = class AppConfig
 
   # suffix to detect initialization service
   INIT_SERVICE_SUFFIX: '_initService'
-  # list of custom modules that need to be initialized,
-  #  i.e. have initialization service
-  initModules: []
+  # list of custom modules and their services that need to be initialized
+  runModules: []
+  runServices: []
 
   constructor: (@moduleList) ->
     # create angular modules
     @addModuleComponents()
 
   addModuleComponents: (modules = @moduleList.getAnalysisModules()) ->
+    # create modules components
     for module in modules
-
-      # create modules components
+      # check if single module or group
       if module instanceof Module
 
         angModule = angular.module module.id
@@ -34,7 +34,8 @@ module.exports = class AppConfig
           angModule.service serviceName, service
           console.log 'AppConfig: created service ' + serviceName
           if serviceName.endsWith @INIT_SERVICE_SUFFIX
-            @initModules.push serviceName
+            @runModules.push module.id
+            @runServices.push serviceName
 
         console.log 'AppConfig: created module ' + module.id
 
@@ -53,10 +54,10 @@ module.exports = class AppConfig
 
   getRunBlock: ->
     # create new run block
-    appRun = new AppRun @moduleList.getAnalysisModules()
+    appRun = new AppRun @moduleList.getAnalysisModules(), @runModules
     # pass the context and module init services
     runBlock = ($rootScope, core, modules...) =>
       appRun.getRun $rootScope, core, modules
     # dependencies for run block
-    runBlock.$inject = ['$rootScope', 'app_core_service'].concat @initModules
+    runBlock.$inject = ['$rootScope', 'app_core_service'].concat @runServices
     runBlock

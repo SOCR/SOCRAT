@@ -10,83 +10,57 @@ AppMessageMap = require 'scripts/AppMessageMap.coffee'
 
 module.exports = class AppRun
 
-  constructor: (@modules) ->
+  menu: []
 
-  registerModules: () ->
+  constructor: (@modules, @runModuleNames) ->
 
-  startModules: () ->
-#    for module in @modules
+  runModules: (core, runServices) ->
+    for module, idx in @runModuleNames
+      core.register module, runServices[idx]
+      core.start module
 
-#    new Sandbox core, 'app_analysis_cluster',
-#    cluster.setSb
+  buildMenu: () ->
 
-    #    core.register 'qualRobEstView', qualRobEstView
-    #    core.start 'qualRobEstView'
-    #
-    #    core.register 'qualRobEst', qualRobEst
-    #    core.start 'qualRobEst'
+    createItem = (module) ->
+      item = null
+      # check if single module or group
+      if module instanceof Module and module.state?.name and module.state.url
+        # add module to menu
+        item =
+          id: module.id
+          name: module.state.name
+          url: module.state.url
+          type: 'text'
+      # if collection of modules, recursively create
+      else
+        [group, groupName] = ([v, k] for k, v of module)[0]
+        item =
+          name: groupName
+          type: 'group'
+          items: (createItem el for el in group)
+      return item
 
-    #    core.register 'getData', getData
-    #    core.start 'getData'
+    for module in @modules
+      @menu.push createItem(module)
 
-    #    core.register 'database', db
-    #    core.start 'database'
-    #
-    #    core.register 'wrangleData', wrangleData
-    #    core.start 'wrangleData'
-    #
-    #    core.register 'instrPerfEval', instrPerfEval
-    #    core.start 'instrPerfEval'
+  getRun: ($rootScope, core, runServices) ->
 
-    #    core.register 'kMeans', kMeans
-    #    core.start 'kMeans'
-    #
-    #    core.register 'spectrClustr', spectrClustr
-    #    core.start 'spectrClustr'
+    console.log 'APP RUN'
 
-    #    core.register 'cluster', cluster
-    #    core.start 'cluster'
+    core.setEventsMapping new AppMessageMap()
 
-    #    core.register 'charts', charts
-    #    core.start 'charts'
+    # TODO: recover core.register
+#    @runModules core, runServices
 
-    #core.register 'importer', importer
-    #core.start 'importer'
-
-    # add module to the list of Tools to appear in Tools tab dropdown
-    tools = [
-      id: 'instrPerfEval'
-      name: 'Instrument Performance Evaluation'
-      url: '/tools/instrperfeval'
-    ,
-      id: 'cluster'
-      name: 'Clustering'
-      url: '/tools/cluster'
-#    ,
-#      id: 'kMeans'
-#      name: 'k-Means Clustering'
-#      url: '/tools/kmeans'
-#    ,
-#      id: 'spectrClustr'
-#      name: 'Spectral Clustering'
-#      url: '/tools/spectrClustr'
-    ]
+    @buildMenu()
 
     # subscribe for request from MainCtrl for list of tool modules
-    $rootScope.$on 'app:get_tools', (event, args) ->
-      $rootScope.$broadcast 'app:set_tools', tools
+    $rootScope.$on 'app:get_menu', (event, args) ->
+      $rootScope.$broadcast 'app:set_menu', @menu
 
     $rootScope.$on "$stateChangeSuccess", (scope, next, change) ->
       console.log 'APP: state change: '
       console.log arguments
 
     console.log 'run block of app module'
-
-  getRun: ($rootScope, core, modules) ->
-
-    console.log 'APP RUN'
-
-    core.setEventsMapping new AppMessageMap()
-
-    console.log modules
 

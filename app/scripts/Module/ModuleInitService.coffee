@@ -14,8 +14,8 @@ module.exports = class ModuleInitService
       incoming: []
       scope: []
 
-  init: (opt) ->
-    console.log 'clustering init invoked'
+  init: (sb) ->
+    console.log 'module init invoked'
     @msgService.setSb @sb unless !@sb?
     @msgList = @msgService.getMsgList()
 
