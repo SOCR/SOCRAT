@@ -11,18 +11,20 @@ require 'angular-resource'
 require 'styles/app.less'
 
 # base app components
-require 'scripts/controllers.coffee'
-require 'scripts/directives.coffee'
-require 'scripts/filters.coffee'
-require 'scripts/services.coffee'
+require 'scripts/App/AppCtrl.coffee'
+require 'scripts/App/AppSidebarCtrl.coffee'
+require 'scripts/App/AppMainCtrl.coffee'
+require 'scripts/App/directives.coffee'
+require 'scripts/App/filters.coffee'
+require 'scripts/App/services.coffee'
 
 bodyTemplate = require 'index.jade'
 #document.body.setAttribute 'ng-controller', 'AppCtrl'
 document.body.innerHTML = bodyTemplate()
 
 # load app configs
-ModuleList = require 'scripts/AppModuleList.coffee'
-AppConfig = require 'scripts/AppConfig.coffee'
+ModuleList = require 'scripts/App/AppModuleList.coffee'
+AppConfig = require 'scripts/App/AppConfig.coffee'
 # create an instance of Core
 core = require 'scripts/core/Core.coffee'
 

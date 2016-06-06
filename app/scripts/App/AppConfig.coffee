@@ -1,8 +1,8 @@
 'use strict'
 
 Module = require 'scripts/Module/Module.coffee'
-AppRoute = require 'scripts/AppRoute.coffee'
-AppRun = require 'scripts/AppRun.coffee'
+AppRoute = require 'scripts/App/AppRoute.coffee'
+AppRun = require 'scripts/App/AppRun.coffee'
 
 ###
 # @name AppConfig

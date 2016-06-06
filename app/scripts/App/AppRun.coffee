@@ -1,7 +1,7 @@
 'use strict'
 
 Module = require 'scripts/Module/Module.coffee'
-AppMessageMap = require 'scripts/AppMessageMap.coffee'
+AppMessageMap = require 'scripts/App/AppMessageMap.coffee'
 
 ###
 # @name AppRun
@@ -55,12 +55,8 @@ module.exports = class AppRun
     @buildMenu()
 
     # subscribe for request from MainCtrl for list of tool modules
-    setMenu = ((menu) ->
-      return ->
-        $rootScope.$broadcast 'app:set_menu', menu
-    )(@menu)
-
-    $rootScope.$on 'app:get_menu', setMenu
+    $rootScope.$on 'app:get_menu', =>
+      $rootScope.$broadcast 'app:set_menu', @menu
 
     $rootScope.$on "$stateChangeSuccess", (scope, next, change) ->
       console.log 'APP: state change: '
