@@ -11,6 +11,7 @@ module.exports = class AppModuleList
   system: [
     'ui.router'
     'ui.router.compat'
+    'ui.bootstrap'
     'ngCookies'
     'ngResource'
     'ngSanitize'

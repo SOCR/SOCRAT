@@ -2,31 +2,24 @@
 ul.nav.navbar-nav
   li(
   ng-repeat="item in app.menu"
-  ng-class="{app.getClass(item.url): item.type == 'text'}, 'dropdown': item.type == 'group'"
+  ng-class="(item.type === 'text') ? app.getClass(item.url) : ''"
+  ng-attr-uib-dropdown="{{(item.type === 'group') ? True : False}}"
+  ng-attr-auto-close="{{(item.type === 'group') ? 'outsideClick' : False}}"
   )
     a(
-    ng-href="'#{{item.url}}': item.type == 'text'"
-    href=""
-    ) item.name
-  //li(ng-class="app.getClass('/getData')")
-  //  a(ng-href='#/getData') Raw Data
-  //li(ng-class="app.getClass('/wrangleData')")
-  //  a(ng-href='#/wrangleData') Wrangle Data
-  //li.dropdown
-  //  a(href="", data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false").dropdown-toggle
-  //    | Tools &nbsp;
-  //    span.caret
-  //  ul.dropdown-menu
-  //    li
-  //      form.form-inline
-  //        div.form-group
-  //          label(for="nav-tool-search").sr-only Search tools
-  //          div.btn-group
-  //            input#nav-tool-search(ng-model='query', type='text', placeholder='Search for...').form-control
-  //            span#nav-clear-tool-search(ng-click="query=''").glyphicon.glyphicon-remove-circle
-  //    li(ng-repeat="item in app.menu | filter:query", ng-class="app.getClass(item.url)")
-  //      a(ng-href='#/{{tool.url}}') {{tool.name}}
-  //li(ng-class="app.getClass('/charts')")
-  //    a(ng-href='#/charts') Charts
-  //li(ng-class="app.getClass('/results')")
-  //    a(ng-href='#/results') Results
+    ng-if="item.type === 'text'"
+    ng-href="#{{item.url}}"
+    ) {{item.name}}
+    a(ng-if="item.type === 'group'", uib-dropdown-toggle, href="")
+        | {{item.name}} &nbsp;
+        span.caret
+      ul.dropdown-menu(ng-if="item.type === 'group'", uib-dropdown-menu, role="menu")
+        li(role="menuitem")
+          form.form-inline
+            div.form-group
+              label(for="nav-tool-search").sr-only Search tools
+              div.btn-group
+                input#nav-tool-search(ng-model='query', type='text', placeholder='Search for...').form-control
+                span#nav-clear-tool-search(ng-click="query=''").glyphicon.glyphicon-remove-circle
+        li(ng-repeat="subitem in item.items | filter:query", ng-class="app.getClass(subitem.url)")
+          a(ng-href='#{{subitem.url}}') {{subitem.name}}
