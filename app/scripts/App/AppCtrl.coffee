@@ -9,7 +9,7 @@ module.extend = class AppCtrl
     @menu = []
 
     # listening to all changes in the view
-    @$scope.$on 'change in view', ->
+    @$scope.$on 'change in view', =>
       @$scope.$broadcast 'update view', null
 
     @$scope.$on 'change in showStates', (obj, data) =>
@@ -23,14 +23,28 @@ module.extend = class AppCtrl
     # listen on message from App.run block to register Tools in menu
     @$scope.$on 'app:set_menu', (event, data) =>
       console.log 'app: creating menu'
-      @$scope.menu = data
+#      @menu = data
+
+      @menu = [
+        id: 'rawdata'
+        name: 'Raw Data'
+        type: 'text',
+        url: '/getData'
+      ,
+        id: 'wrangler'
+        name: 'Wrangle Data'
+        type: 'text',
+        url: '/wrangleData'
+      ,
+        data[0]
+      ]
+
     # request Tools list from App.run
     @$rootScope.$broadcast 'app:get_menu'
 
-    @$scope.$location = @$location
-    @$scope.username = 'Guest'
+    @username = 'Guest'
     @$scope.$watch '$location.path()', (path) =>
-      @$scope.activeNavId = path || '/'
+      @activeNavId = path || '/'
 
     # getClass compares the current url with the id.
     # If the current url starts with the id it returns 'active'
@@ -41,18 +55,20 @@ module.extend = class AppCtrl
     #   getClass('/orders') # returns ''
     #
 
-    getNavbar: () ->
-      @navbar = require('partials/analysis-nav.jade')()
-      console.log @navbar
-      @navbar
+#  getNavbar: () ->
+#    console.log 'GET NAVBAR'
+#    @navbar = require('partials/analysis-nav.jade')()
+#    console.log @navbar
+#    @navbar
 
-    # uses the url to determine if the selected
-    #  menu item should have the class active
-    getClass: (id) ->
-      if @activeNavId.substring(0, id.length) == id
-        'active'
-      else
-        ''
+  # uses the url to determine if the selected
+  #  menu item should have the class active
+  getClass: (id) ->
+    console.log id
+    if @activeNavId.substring(0, id.length) == id
+      'active'
+    else
+      ''
 
 AppCtrl.$inject = ['$scope', '$location', '$resource', '$rootScope']
 

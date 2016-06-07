@@ -21,11 +21,11 @@ module.extend = class AppSidebarCtrl
   toggle: ->
     if @state is 'hidden'
       @state = 'show'
-      appSidebarState.sidebar = 'visible'
+      @appSidebarState.sidebar = 'visible'
       @arrowDirection = 'glyphicon glyphicon-chevron-left'
     else
       @state = 'hidden'
-      appSidebarState.sidebar = 'hidden'
+      @appSidebarState.sidebar = 'hidden'
       @arrowDirection = 'glyphicon glyphicon-chevron-right'
     @$scope.$emit 'change in view'
 

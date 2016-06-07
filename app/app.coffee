@@ -14,12 +14,11 @@ require 'styles/app.less'
 require 'scripts/App/AppCtrl.coffee'
 require 'scripts/App/AppSidebarCtrl.coffee'
 require 'scripts/App/AppMainCtrl.coffee'
-require 'scripts/App/directives.coffee'
+require 'scripts/App/MenubarDirective.coffee'
 require 'scripts/App/filters.coffee'
 require 'scripts/App/services.coffee'
 
 bodyTemplate = require 'index.jade'
-#document.body.setAttribute 'ng-controller', 'AppCtrl'
 document.body.innerHTML = bodyTemplate()
 
 # load app configs

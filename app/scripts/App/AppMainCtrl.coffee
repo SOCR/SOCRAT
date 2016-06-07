@@ -7,7 +7,7 @@ module.extend = class AppMainCtrl
     @width = 'col-md-9'
 
     #updating main view
-    @$scope.$on 'update view', ()->
+    @$scope.$on 'update view', =>
       if @appSidebarState.sidebar is 'visible' and @appSidebarState.history is 'hidden'
         @width = 'col-md-9'
       else
