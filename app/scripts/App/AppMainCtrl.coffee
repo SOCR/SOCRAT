@@ -1,8 +1,14 @@
 'use strict'
 
-module.extend = class AppMainCtrl
+BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-  constructor: (@$scope, @appSidebarState) ->
+appControllers = angular.module 'app_controllers'
+
+module.exports = class AppMainCtrl extends BaseCtrl
+  @register appControllers
+  @inject '$scope', 'appSidebarState'
+
+  initialize: ->
     #initial width is set .col-md-9
     @width = 'col-md-9'
 
@@ -12,8 +18,3 @@ module.extend = class AppMainCtrl
         @width = 'col-md-9'
       else
         @width = 'col-md-11'
-
-AppMainCtrl.$inject = ['$scope', 'appSidebarState']
-
-angular.module 'app_controllers'
-.controller 'AppMainCtrl', AppMainCtrl

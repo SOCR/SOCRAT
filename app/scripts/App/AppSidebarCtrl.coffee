@@ -1,8 +1,17 @@
 'use strict'
 
-module.extend = class AppSidebarCtrl
+BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-  constructor: (@$scope, @appSidebarState) ->
+appControllers = angular.module 'app_controllers'
+appControllers.value 'appSidebarState',
+  sidebar:'visible'
+  history:'hidden'
+
+module.exports = class AppSidebarCtrl extends BaseCtrl
+  @register appControllers
+  @inject '$scope', 'appSidebarState'
+
+  initialize: ->
     console.log 'controller block for sidebarCtrl'
     @state = 'show'
     @arrowDirection = 'glyphicon glyphicon-chevron-left'
@@ -34,13 +43,5 @@ module.extend = class AppSidebarCtrl
       'col-md-1'
     else
       'col-md-3'
-
-AppSidebarCtrl.$inject = ['$scope', 'appSidebarState']
-
-angular.module 'app_controllers'
-.value 'appSidebarState',
-  sidebar:'visible'
-  history:'hidden'
-.controller 'AppSidebarCtrl', AppSidebarCtrl
 
 

@@ -1,9 +1,14 @@
 'use strict'
 
-module.extend = class AppCtrl
+BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-  constructor: (@$scope, @$location, @$resource, @$rootScope) ->
-    console.log 'controller block for AppCtrl'
+appControllers = angular.module 'app_controllers', []
+
+module.extend = class AppCtrl extends BaseCtrl
+  @register appControllers
+  @inject '$scope', '$location', '$resource', '$rootScope'
+
+  initialize: ->
 
     # create a list of modules for Tools tab dropdown
     @menu = []
@@ -23,6 +28,8 @@ module.extend = class AppCtrl
     # listen on message from App.run block to register Tools in menu
     @$scope.$on 'app:set_menu', (event, data) =>
       console.log 'app: creating menu'
+
+      # TODO: use data object for menu creation #SOCRFW-277
 #      @menu = data
 
       @menu = [
@@ -55,11 +62,11 @@ module.extend = class AppCtrl
     #   getClass('/orders') # returns ''
     #
 
-#  getNavbar: () ->
-#    console.log 'GET NAVBAR'
-#    @navbar = require('partials/analysis-nav.jade')()
-#    console.log @navbar
-#    @navbar
+  getNavbar: () ->
+    console.log 'GET NAVBAR'
+    @navbar = require('partials/analysis-nav.jade')()
+    console.log @navbar
+    @navbar
 
   # uses the url to determine if the selected
   #  menu item should have the class active
@@ -69,10 +76,3 @@ module.extend = class AppCtrl
       'active'
     else
       ''
-
-AppCtrl.$inject = ['$scope', '$location', '$resource', '$rootScope']
-
-angular.module 'app_controllers', ['app_mediator']
-  .controller 'AppCtrl', AppCtrl
-
-
