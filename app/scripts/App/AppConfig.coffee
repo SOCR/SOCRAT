@@ -1,6 +1,6 @@
 'use strict'
 
-Module = require 'scripts/Module/Module.coffee'
+Module = require 'scripts/BaseClasses/Module.coffee'
 AppRoute = require 'scripts/App/AppRoute.coffee'
 AppRun = require 'scripts/App/AppRun.coffee'
 
@@ -30,8 +30,9 @@ module.exports = class AppConfig
 
         moduleComponents = module.components
         # adding services
-        for serviceName, service of moduleComponents.services
-          angModule.service serviceName, service
+        for serviceName, Service of moduleComponents.services
+          Service.register serviceName, angModule
+          service = new Service()
           console.log 'AppConfig: created service ' + serviceName
           if serviceName.endsWith @INIT_SERVICE_SUFFIX
             @runModules.push module.id
