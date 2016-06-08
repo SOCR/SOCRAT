@@ -1,5 +1,7 @@
 'use strict'
 
+Module = require 'scripts/BaseClasses/Module.coffee'
+
 ###
 # @name AppConfig
 # @desc Class for config block of application module
@@ -39,15 +41,19 @@ module.exports = class AppRoute
         'main':
           template: require('partials/nav/contact.jade')()
 
-  linkDynamic: ($stateProvider) ->
-    for module in @modules when module.state?.url?
-      $stateProvider.state module.id,
-        url: module.state.url
-        views:
-          'main':
-            template: module.state.mainTemplate()
-          'sidebar':
-            template: module.state.sidebarTemplate()
+
+  linkDynamic: ($stateProvider, modules=@modules) =>
+
+    for module in modules
+      if module instanceof Module and module.state?.url?
+        $stateProvider.state module.id,
+          url: module.state.url
+          views:
+            'main':
+              template: module.state.mainTemplate()
+            'sidebar':
+              template: module.state.sidebarTemplate()
+      else @linkDynamic $stateProvider, (v for k, v of module)[0]
 
   getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->
 

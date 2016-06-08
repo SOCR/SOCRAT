@@ -31,12 +31,18 @@ module.exports = class AppConfig
         moduleComponents = module.components
         # adding services
         for serviceName, Service of moduleComponents.services
-          Service.register serviceName, angModule
+          Service.register angModule, serviceName
           service = new Service()
           console.log 'AppConfig: created service ' + serviceName
           if serviceName.endsWith @INIT_SERVICE_SUFFIX
             @runModules.push module.id
             @runServices.push serviceName
+
+        # adding controllers
+        for ctrlName, Ctrl of moduleComponents.controllers
+          Ctrl.register angModule, ctrlName
+          ctrl = new Ctrl()
+          console.log 'AppConfig: created controller ' + ctrlName
 
         console.log 'AppConfig: created module ' + module.id
 
@@ -45,7 +51,7 @@ module.exports = class AppConfig
 
   getConfigBlock: ->
     # create new router
-    appRoute = new AppRoute @moduleList.listAnalysisModules()
+    appRoute = new AppRoute @moduleList.getAnalysisModules()
     # workaround for dependency injection
     config = ($locationProvider, $urlRouterProvider, $stateProvider) =>
       appRoute.getRouter $locationProvider, $urlRouterProvider, $stateProvider
