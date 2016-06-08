@@ -12,9 +12,14 @@ module.exports = cluster = new Module
     services:
       'app_analysis_cluster_initService': require 'scripts/analysis/tools/Cluster/ClusterInit.service.coffee'
       'app_analysis_cluster_msgService': require 'scripts/analysis/tools/Cluster/ClusterMsgService.service.coffee'
+      'app_analysis_cluster_dataService': require 'scripts/analysis/tools/Cluster/ClusterDataService.service.coffee'
+      'app_analysis_cluster_algorithms': require 'scripts/analysis/tools/Cluster/ClusterAlgorithms.service.coffee'
+
+    controllers:
+      'clusterMainCtrl': require 'scripts/analysis/tools/Cluster/ClusterMainCtrl.ctrl.coffee'
+      'clusterSidebarCtrl': require 'scripts/analysis/tools/Cluster/ClusterSidebarCtrl.ctrl.coffee'
 
     factories: []
-    controllers: []
     directives: []
 
   # module state config

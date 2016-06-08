@@ -16,7 +16,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @reportAccuracy = on
     @clustering = off
     @cols = []
-    @algorithmNames = getAlgorithms()
+#    @algorithmNames = getAlgorithms()
 
   getAlgorithms: ->
     @algorithms.getNames()
