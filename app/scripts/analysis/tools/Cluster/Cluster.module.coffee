@@ -1,6 +1,6 @@
 'use strict'
 
-Module = require 'scripts/Module/Module.coffee'
+Module = require 'scripts/BaseClasses/Module.coffee'
 
 module.exports = cluster = new Module
 
@@ -24,6 +24,3 @@ module.exports = cluster = new Module
     url: '/tools/cluster'
     mainTemplate: require 'partials/analysis/tools/cluster/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/cluster/sidebar.jade'
-
-angular.module cluster.id, []
-console.log 'Registered module: ' + cluster.id

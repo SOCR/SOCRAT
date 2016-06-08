@@ -1,11 +1,9 @@
 'use strict'
 
-MessageService = require 'scripts/Module/MessageService.coffee'
+ModuleMessageService = require 'scripts/BaseClasses/ModuleMessageService.coffee'
 
-module.exports = class ClusterMsgService extends MessageService
+module.exports = class ClusterMsgService extends ModuleMessageService
   @msgList:
     outgoing: ['get table']
     incoming: ['take table']
     scope: ['cluster']
-
-ClusterMsgService.$inject = ['$q', '$rootScope', '$stateParams']
