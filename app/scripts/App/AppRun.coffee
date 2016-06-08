@@ -1,6 +1,6 @@
 'use strict'
 
-Module = require 'scripts/Module/Module.coffee'
+Module = require 'scripts/BaseClasses/Module.coffee'
 AppMessageMap = require 'scripts/App/AppMessageMap.coffee'
 
 ###
