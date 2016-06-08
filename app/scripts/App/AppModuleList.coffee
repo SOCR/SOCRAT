@@ -30,8 +30,8 @@ module.exports = class AppModuleList
   # single module are included as entries into main menu
   # named lists are included as drop-downs into main menu
   analysis: [
-#      require 'scripts/analysis/getData/getData.coffee'
-#    ,
+      require 'scripts/analysis/getData/GetData.module.coffee'
+    ,
 #      require 'scripts/analysis/wrangleData/wrangleData.coffee'
 #    ,
       Tools: [
