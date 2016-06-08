@@ -1,15 +1,16 @@
 'use strict'
 
+BaseService = require 'scripts/BaseClasses/BaseService.coffee'
+
 #
 # Base class for module messaging service
 #
 
-module.exports = class MessageService
-  constructor: (@$q, @$rootScope, @$stateParams) ->
-    console.log 'MESSAGE SERVICE CONSTRUCTOR'
-    console.log @
+module.exports = class ModuleMessageService extends BaseService
+  @inject '$q', '$rootScope', '$stateParams'
+
+  initialize: () ->
     @sb = null
-    @msgList = null
 
   setSb: (sb) ->
     @sb = sb

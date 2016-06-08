@@ -1,13 +1,15 @@
 'use strict'
 
+BaseService = require 'scripts/BaseClasses/BaseService.coffee'
+
 ###
 # @name socrat.Module
 # @desc Base class for module prototyping
 ###
-module.exports = class ModuleInitService
-  constructor: (@msgService) ->
-    console.log 'MODULE INIT SERVICE'
-    console.log @
+
+module.exports = class ModuleInitService extends BaseService
+
+  initialize: ->
     @sb = null
     @msgList =
       outgoing: []
