@@ -7,7 +7,7 @@
 
 module.exports = class BaseService
 
-  @register: (name, module) ->
+  @register: (module, name) ->
     name ?= @name || @toString().match(/function\s*(.*?)\(/)?[1]
     module.service name, @
 
