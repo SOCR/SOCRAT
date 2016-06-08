@@ -2,9 +2,10 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-#
-# Base class for module messaging service
-#
+###
+  @name ModuleMessageService
+  @desc Base class for module messaging service
+###
 
 module.exports = class ModuleMessageService extends BaseService
   @inject '$q', '$rootScope', '$stateParams'

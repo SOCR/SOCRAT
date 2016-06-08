@@ -1,6 +1,6 @@
 'use strict'
 
-Module = require 'scripts/Module/Module.coffee'
+Module = require 'scripts/BaseClasses/Module.coffee'
 
 module.exports = getData = new Module
 
@@ -12,18 +12,18 @@ module.exports = getData = new Module
     services:
       'app_analysis_getData_initService': require 'scripts/analysis/getData/GetDataInit.service.coffee'
       'app_analysis_getData_msgService': require 'scripts/analysis/getData/GetDataMsgService.service.coffee'
+      'app_analysis_getData_inputCache': require 'scripts/analysis/getData/GetDataInputCache.service.coffee'
+      'app_analysis_getData_jsonParser': require 'scripts/analysis/getData/GetDataJsonParser.service.coffee'
+      'app_analysis_getData_showState': require 'scripts/analysis/getData/GetDataShowState.service.coffee'
 
-    factories: []
-    controllers: []
+    controllers:
+      'GetDataSidebarCtrl': require 'scripts/analysis/getData/GetDataSidebarCtrl.controller.coffee'
     directives: []
 
   # module state config
   state:
     # module name to show in UI
-    name: 'Data Input'
+    name: 'Raw Data'
     url: '/getData'
     mainTemplate: require 'partials/analysis/getData/main.jade'
     sidebarTemplate: require 'partials/analysis/getData/main.jade'
-
-angular.module cluster.id, []
-console.log 'Registered module: ' + cluster.id
