@@ -14,7 +14,7 @@ require 'styles/app.less'
 require 'scripts/App/AppCtrl.coffee'
 require 'scripts/App/AppSidebarCtrl.coffee'
 require 'scripts/App/AppMainCtrl.coffee'
-require 'scripts/App/MenubarDirective.coffee'
+require 'scripts/App/AppMenubarDirective.coffee'
 require 'scripts/App/filters.coffee'
 require 'scripts/App/services.coffee'
 
