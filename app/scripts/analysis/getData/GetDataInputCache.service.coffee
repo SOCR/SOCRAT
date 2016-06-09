@@ -14,9 +14,8 @@ module.exports = class GetDataInputCache extends BaseService
   @inject '$q', '$stateParams', '$rootScope', '$timeout', 'app_analysis_getData_msgService'
 
   initialize: () ->
-#    @msgManager = @app_analysis_getData_manager
-#    @DATA_TYPES = @msgManager.getSupportedDataTypes()
-#    @sb = @msgManager.getSb()
+    @msgManager = @app_analysis_getData_msgService
+    @DATA_TYPES = @msgManager.getSupportedDataTypes()
     @data = {}
     @timer = null
     @ht = null
@@ -40,7 +39,7 @@ module.exports = class GetDataInputCache extends BaseService
         type: 'alert-error'
       promise: deferred.promise
 
-    @sb.publish
+    @msgManager.publish
       msg: 'save data'
       data:
         dataFrame: data
@@ -60,8 +59,8 @@ module.exports = class GetDataInputCache extends BaseService
 
       # clear any previous db update broadcast messages
       clearTimeout @timer
-      @deferred = $q.defer()
-      @timer = $timeout ((data, deferred) -> _saveDataToDb(data, deferred))(@data, @deferred), 1000
+      @deferred = @$q.defer()
+      @timer = @$timeout ((data, deferred) -> _saveDataToDb(data, deferred))(@data, @deferred), 1000
       true
 
     else
