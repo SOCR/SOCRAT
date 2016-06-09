@@ -11,8 +11,8 @@ module.exports = class GetDataDataAdaptor extends BaseService
   @inject 'app_analysis_getData_msgService'
 
   initialize: ->
-    @eventManager = @app_analysis_getData_msgService
-    DATA_TYPES = @eventManager.getSupportedDataTypes()
+#    @eventManager = @app_analysis_getData_msgService
+#    DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
   typeIsArray: Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'

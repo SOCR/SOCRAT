@@ -11,13 +11,13 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     'app_analysis_getData_inputCache'
 
   initialize: ->
-    @eventManager = @app_analysis_getData_msgService
-    @inputCache = @app_analysis_getData_inputCache
-    @jsonParser = @app_analysis_getData_jsonParser
-    @$scope.jsonUrl = ''
-    flag = true
-    @$scope.selected = null
-    @DATA_TYPES = @eventManager.getSupportedDataTypes()
+#    @eventManager = @app_analysis_getData_msgService
+#    @inputCache = @app_analysis_getData_inputCache
+#    @jsonParser = @app_analysis_getData_jsonParser
+#    @$scope.jsonUrl = ''
+#    flag = true
+#    @$scope.selected = null
+#    @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   passReceivedData: (data) ->
     if data.dataType is DATA_TYPES.NESTED

@@ -12,12 +12,14 @@ module.exports = getData = new Module
     services:
       'app_analysis_getData_initService': require 'scripts/analysis/getData/GetDataInit.service.coffee'
       'app_analysis_getData_msgService': require 'scripts/analysis/getData/GetDataMsgService.service.coffee'
+      'app_analysis_getData_dataAdaptor': require 'scripts/analysis/getData/GetDataDataAdaptor.service.coffee'
       'app_analysis_getData_inputCache': require 'scripts/analysis/getData/GetDataInputCache.service.coffee'
       'app_analysis_getData_jsonParser': require 'scripts/analysis/getData/GetDataJsonParser.service.coffee'
       'app_analysis_getData_showState': require 'scripts/analysis/getData/GetDataShowState.service.coffee'
-
     controllers:
       'GetDataSidebarCtrl': require 'scripts/analysis/getData/GetDataSidebarCtrl.controller.coffee'
+      'GetDataMainCtrl': require 'scripts/analysis/getData/GetDataMainCtrl.controller.coffee'
+
     directives: []
 
   # module state config

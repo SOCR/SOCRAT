@@ -18,17 +18,17 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   passReceivedData: (data) ->
     if data.dataType is DATA_TYPES.NESTED
-      $scope.dataType = DATA_TYPES.NESTED
+      @dataType = DATA_TYPES.NESTED
       inputCache.set data
     else
       # default data type is 2d 'flat' table
       data.dataType = DATA_TYPES.FLAT
-      $scope.dataType = DATA_TYPES.FLAT
+      @dataType = DATA_TYPES.FLAT
       # pass a message to update the handsontable div
       # data is the formatted data which plugs into the
       #  handontable.
       # TODO: getData module shouldn't know about controllers listening for handsontable update
-      $scope.$emit 'update handsontable', data
+      @$scope.$emit 'update handsontable', data
 
   # available SOCR Datasets
   socrDatasets: [
@@ -39,18 +39,18 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     name: 'Simulated SOCR Knee Pain Centroid Location Data'
   ]
   # select first one by default
-  socrdataset: $scope.socrDatasets[0]
+#  socrdataset: @socrDatasets[0]
 
   getWB = ->
     # default value
-    if $scope.size is undefined
-      $scope.size = 100
+    if @size is undefined
+      @size = 100
     # default option
-    if $scope.option is undefined
-      $scope.option = '4.2_BASIC.EDU.SPENDING'
+    if @option is undefined
+      @option = '4.2_BASIC.EDU.SPENDING'
 
-    url = 'http://api.worldbank.org/countries/indicators/' + $scope.option +
-        '?per_page=' + $scope.size + '&date=2011:2011&format=jsonp' +
+    url = 'http://api.worldbank.org/countries/indicators/' + @option +
+        '?per_page=' + @size + '&date=2011:2011&format=jsonp' +
         '&prefix=JSON_CALLBACK'
 
     jsonParser
@@ -66,7 +66,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       )
 
   getSocrData: ->
-    switch $scope.socrdataset.id
+    switch @socrdataset.id
       # TODO: host on SOCR server
       when 'IRIS' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
       when 'KNEE_PAIN' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
@@ -90,7 +90,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           console.log 'rejected:' + msg
 
   getJsonByUrl: (type) ->
-    d3.json $scope.jsonUrl,
+    d3.json @jsonUrl,
       (dataResults) ->
         # check that data object is not empty
         if dataResults? and Object.keys(dataResults)?.length > 0
@@ -112,16 +112,16 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         else
           console.log 'GETDATA: request failed'
 
-  try
-    @showState = new showState(['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], $scope)
-  catch e
-    console.log e.message
-
-  # adding listeners
-  @$scope.$on 'update showStates', (obj, data) ->
-    @showState.set data
-    # TODO: fix this workaround for displaying copy-paste table
-    @dataType = DATA_TYPES.FLAT if data is 'grid'
-
-  @$scope.$on '$viewContentLoaded', ->
-    console.log 'get data main div loaded'
+#  try
+#    @showState = new showState(['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], @)
+#  catch e
+#    console.log e.message
+#
+#  # adding listeners
+#  @$scope.$on 'update showStates', (obj, data) ->
+#    @showState.set data
+#    # TODO: fix this workaround for displaying copy-paste table
+#    @dataType = DATA_TYPES.FLAT if data is 'grid'
+#
+#  @$scope.$on '$viewContentLoaded', ->
+#    console.log 'get data main div loaded'

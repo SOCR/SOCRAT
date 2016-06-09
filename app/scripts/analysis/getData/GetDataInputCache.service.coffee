@@ -11,7 +11,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class GetDataInputCache extends BaseService
-  @inject '$q', '$stateParams', '$rootScope', '$timeout', 'app_analysis_getData_manager'
+  @inject '$q', '$stateParams', '$rootScope', '$timeout', 'app_analysis_getData_msgService'
 
   initialize: () ->
 #    @msgManager = @app_analysis_getData_manager
