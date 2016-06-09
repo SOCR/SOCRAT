@@ -11,13 +11,13 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     'app_analysis_getData_inputCache'
 
   initialize: ->
-#    @eventManager = @app_analysis_getData_msgService
-#    @inputCache = @app_analysis_getData_inputCache
-#    @jsonParser = @app_analysis_getData_jsonParser
-#    @$scope.jsonUrl = ''
-#    flag = true
-#    @$scope.selected = null
-#    @DATA_TYPES = @eventManager.getSupportedDataTypes()
+    @eventManager = @app_analysis_getData_msgService
+    @inputCache = @app_analysis_getData_inputCache
+    @jsonParser = @app_analysis_getData_jsonParser
+    @jsonUrl = ''
+    @flag = true
+    @selected = null
+    @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   passReceivedData: (data) ->
     if data.dataType is DATA_TYPES.NESTED
@@ -36,14 +36,14 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     switch val
       when 'grid'
         @selected = 'getDataGrid'
-        if flag is true
-          flag = false
+        if @flag is true
+          @flag = false
           #initial the div for the first time
           data =
             default: true
             purpose: 'json'
-          passReceivedData data
-        $scope.$emit 'change in showStates', 'grid'
+          @passReceivedData data
+        @$scope.$emit 'change in showStates', 'grid'
 
       when 'socrData'
         @selected = 'getDataSocrData'
@@ -59,7 +59,7 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
 
       when 'jsonParse'
         @selected = 'getDataJson'
-        $scope.$emit 'change in showStates', 'jsonParse'
+        @$scope.$emit 'change in showStates', 'jsonParse'
 
   # getJson
   getJson: ->
@@ -68,7 +68,7 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     if @jsonUrl is ''
       return false
 
-    jsonParser
+    @jsonParser.parse
       url: @jsonUrl
       type: 'worldBank'
     .then(
@@ -76,8 +76,8 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
         # Pass a message to update the handsontable div.
         # data is the formatted data which plugs into the
         # handontable.
-        passReceivedData data
-        $scope.$emit 'get Data from handsontable', inputCache
+        @passReceivedData data
+        @$scope.$emit 'get Data from handsontable', inputCache
       ,
       (msg) ->
         console.log 'rejected'

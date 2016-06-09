@@ -12,14 +12,37 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_inputCache'
 
   initialize: ->
-#    DATA_TYPES = eventManager.getSupportedDataTypes()
-#    $scope.DATA_TYPES = DATA_TYPES
-#    $scope.dataType = ''
+    # rename deps
+    @eventManager = @app_analysis_getData_msgService
+    @showStateService = @app_analysis_getData_showState
+    @inputCache = @app_analysis_getData_inputCache
+    @jsonParser = @app_analysis_getData_jsonParser
+    @dataAdaptor = @app_analysis_getData_dataAdaptor
+
+    # get initial settings
+    @DATA_TYPES = @eventManager.getSupportedDataTypes()
+    @dataType = ''
+    @socrdataset = @socrDatasets[0]
+
+    try
+      @stateService = @showStateService.create ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], @
+    catch e
+      console.log e.message
+
+    # adding listeners
+    @$scope.$on 'update showStates', (obj, data) ->
+      @stateService.set data
+      # TODO: fix this workaround for displaying copy-paste table
+      @dataType = DATA_TYPES.FLAT if data is 'grid'
+
+    @$scope.$on '$viewContentLoaded', ->
+      console.log 'get data main div loaded'
+      console.log 'olololo'
 
   passReceivedData: (data) ->
     if data.dataType is DATA_TYPES.NESTED
       @dataType = DATA_TYPES.NESTED
-      inputCache.set data
+      @inputCache.set data
     else
       # default data type is 2d 'flat' table
       data.dataType = DATA_TYPES.FLAT
@@ -38,10 +61,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     id: 'KNEE_PAIN'
     name: 'Simulated SOCR Knee Pain Centroid Location Data'
   ]
-  # select first one by default
-#  socrdataset: @socrDatasets[0]
 
-  getWB = ->
+  getWB: ->
     # default value
     if @size is undefined
       @size = 100
@@ -53,13 +74,13 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         '?per_page=' + @size + '&date=2011:2011&format=jsonp' +
         '&prefix=JSON_CALLBACK'
 
-    jsonParser
+    @jsonParser.parse
       url: url
       type: 'worldBank'
     .then(
       (data) ->
         console.log 'resolved'
-        passReceivedData data
+        @passReceivedData data
       ,
       (msg) ->
         console.log 'rejected:' + msg
@@ -85,7 +106,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
             # handsontable directive to update.
             purpose: 'json'
           console.log 'resolved'
-          passReceivedData _data
+          @passReceivedData _data
         else
           console.log 'rejected:' + msg
 
@@ -111,17 +132,3 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           passReceivedData _data
         else
           console.log 'GETDATA: request failed'
-
-#  try
-#    @showState = new showState(['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], @)
-#  catch e
-#    console.log e.message
-#
-#  # adding listeners
-#  @$scope.$on 'update showStates', (obj, data) ->
-#    @showState.set data
-#    # TODO: fix this workaround for displaying copy-paste table
-#    @dataType = DATA_TYPES.FLAT if data is 'grid'
-#
-#  @$scope.$on '$viewContentLoaded', ->
-#    console.log 'get data main div loaded'
