@@ -11,6 +11,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class ModuleInitService extends BaseService
 
   initialize: ->
+    @msgService = null unless @msgService?
     @sb = null
     @msgList =
       outgoing: []
@@ -19,8 +20,11 @@ module.exports = class ModuleInitService extends BaseService
 
   init: (sb) ->
     console.log 'module init invoked'
-    @msgService.setSb @sb unless !@sb?
-    @msgList = @msgService.getMsgList()
+    if @msgService?
+      @msgService.setSb @sb unless !@sb?
+      @msgList = @msgService.getMsgList()
+    else
+      console.log 'module cannot init: message service is not injected'
 
   destroy: () ->
 
