@@ -23,20 +23,19 @@ module.exports = class AppModuleList
     'app_mediator'
   ]
 
-  db: []
-#  db: ['app_database']
-
   # this part includes custom modules
   # single module are included as entries into main menu
   # named lists are included as drop-downs into main menu
   analysis: [
-      require 'scripts/analysis/GetData/GetData.module.coffee'
-    ,
-#      require 'scripts/analysis/wrangleData/wrangleData.coffee'
-#    ,
-      Tools: [
-        require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
-      ]
+    require 'scripts/Database/Database.module.coffee'
+  ,
+    require 'scripts/analysis/GetData/GetData.module.coffee'
+  ,
+#    require 'scripts/analysis/wrangleData/wrangleData.coffee'
+#  ,
+    Tools: [
+      require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
+    ]
 #    ,
 #      require 'scripts/analysis/charts/charts.coffee'
   ]

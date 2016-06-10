@@ -28,23 +28,27 @@ module.exports = class AppConfig
 
         angModule = angular.module module.id
 
-        moduleComponents = module.components
-        # adding services
-        for serviceName, Service of moduleComponents.services
-          Service.register angModule, serviceName
-          service = new Service()
-          console.log 'AppConfig: created service ' + serviceName
-          if serviceName.endsWith @INIT_SERVICE_SUFFIX
-            @runModules.push module.id
-            @runServices.push serviceName
+        if module.components?
+          moduleComponents = module.components
 
-        # adding controllers
-        for ctrlName, Ctrl of moduleComponents.controllers
-          Ctrl.register angModule, ctrlName
-          ctrl = new Ctrl()
-          console.log 'AppConfig: created controller ' + ctrlName
+          if moduleComponents.services
+            # adding services
+            for serviceName, Service of moduleComponents.services
+              Service.register angModule, serviceName
+              service = new Service()
+              console.log 'AppConfig: created service ' + serviceName
+              if serviceName.endsWith @INIT_SERVICE_SUFFIX
+                @runModules.push module.id
+                @runServices.push serviceName
 
-        console.log 'AppConfig: created module ' + module.id
+          if moduleComponents.controllers
+            # adding controllers
+            for ctrlName, Ctrl of moduleComponents.controllers
+              Ctrl.register angModule, ctrlName
+              ctrl = new Ctrl()
+              console.log 'AppConfig: created controller ' + ctrlName
+
+          console.log 'AppConfig: created module ' + module.id
 
       # if collection of modules, recursively create
       else @addModuleComponents (v for k, v of module)[0]
