@@ -45,14 +45,16 @@ module.exports = class AppRoute
   linkDynamic: ($stateProvider, modules=@modules) =>
 
     for module in modules
-      if module instanceof Module and module.state?.url?
-        $stateProvider.state module.id,
-          url: module.state.url
-          views:
-            'main':
-              template: module.state.mainTemplate()
-            'sidebar':
-              template: module.state.sidebarTemplate()
+      if module instanceof Module
+        # check if module has state
+        if module.state?.url?
+          $stateProvider.state module.id,
+            url: module.state.url
+            views:
+              'main':
+                template: module.state.mainTemplate()
+              'sidebar':
+                template: module.state.sidebarTemplate()
       else @linkDynamic $stateProvider, (v for k, v of module)[0]
 
   getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->

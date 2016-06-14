@@ -30,21 +30,21 @@ module.extend = class AppCtrl extends BaseCtrl
       console.log 'app: creating menu'
 
       # TODO: use data object for menu creation #SOCRFW-277
-#      @menu = data
+      @menu = data
 
-      @menu = [
-        id: 'rawdata'
-        name: 'Raw Data'
-        type: 'text',
-        url: '/getData'
-      ,
-        id: 'wrangler'
-        name: 'Wrangle Data'
-        type: 'text',
-        url: '/wrangleData'
-      ,
-        data[0]
-      ]
+#      @menu = [
+#        id: 'rawdata'
+#        name: 'Raw Data'
+#        type: 'text',
+#        url: '/getData'
+#      ,
+#        id: 'wrangler'
+#        name: 'Wrangle Data'
+#        type: 'text',
+#        url: '/wrangleData'
+#      ,
+#        data[1]
+#      ]
 
     # request Tools list from App.run
     @$rootScope.$broadcast 'app:get_menu'

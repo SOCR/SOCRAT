@@ -22,26 +22,30 @@ module.exports = class AppRun
   buildMenu: () ->
 
     createItem = (module) ->
-      item = null
-      # check if single module or group
-      if module instanceof Module and module.state?.name and module.state.url
-        # add module to menu
-        item =
-          id: module.id
-          name: module.state.name
-          url: module.state.url
-          type: 'text'
-      # if collection of modules, recursively create
-      else
-        [group, groupName] = ([v, k] for k, v of module)[0]
-        item =
-          name: groupName
-          type: 'group'
-          items: (createItem el for el in group)
-      return item
+        item = null
+        # check if single module or group
+        if module instanceof Module
+          # check if module has state
+          if module.state?.name and module.state.url
+            # add module to menu
+            item =
+              id: module.id
+              name: module.state.name
+              url: module.state.url
+              type: 'text'
+        # if collection of modules, recursively create
+        else
+          [group, groupName] = ([v, k] for k, v of module)[0]
+          item =
+            name: groupName
+            type: 'group'
+            items: (createItem el for el in group)
+        return item
 
     for module in @modules
-      @menu.push createItem(module)
+      item = createItem module
+      if item
+        @menu.push item
 
   getRun: ($rootScope, core, runServices) ->
 

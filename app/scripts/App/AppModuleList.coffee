@@ -44,7 +44,6 @@ module.exports = class AppModuleList
 
   getAll: ->
     system: @system
-    db: @ db
     analysis: @analysis
     tools: @tools
 
@@ -58,9 +57,6 @@ module.exports = class AppModuleList
       modules = modules.concat m
     modules
 
-  listDbModules: ->
-    @db
-
   listAll: ->
     console.log @system
-    @system.concat @listDbModules(), @listAnalysisModules()
+    @system.concat @listAnalysisModules()
