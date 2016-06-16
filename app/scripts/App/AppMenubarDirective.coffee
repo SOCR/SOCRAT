@@ -1,10 +1,21 @@
 'use strict'
 
-module.extend = class AppMenubarDirective
+#module.extend = class AppMenubarDirective
+#
+#  constructor: () ->
+#  restrict: 'E'
+#  template: require('partials/analysis-nav.jade')()
+#
+#angular.module 'app_directives', []
+#.directive 'menubar', -> new AppMenubarDirective()
 
-  constructor: () ->
-  restrict: 'E'
-  template: require('partials/analysis-nav.jade')()
+BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
-angular.module 'app_directives', []
-.directive 'menubar', -> new AppMenubarDirective()
+module.extend = class AppMenubarDirective extends BaseDirective
+
+  initialize: () ->
+    restrict: 'E'
+    template: require('partials/analysis-nav.jade')()
+
+dirsMod = angular.module 'app_directives', []
+AppMenubarDirective.register dirsMod, 'menubar'
