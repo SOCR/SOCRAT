@@ -7,15 +7,16 @@
 
 module.exports = class BaseDirective
 
-  @directive = (dependencies...) =>
-    console.log 12845
-    console.log 12845
-    new @ dependencies
-
   @register: (module, name) ->
     name ?= @name || @toString().match(/function\s*(.*?)\(/)?[1]
-    @directive.base = @
-    module.directive name, @directive
+
+    module.directive name, ((_selfPtr) ->
+      directive = (dependencies...) ->
+        new _selfPtr dependencies
+      if _selfPtr.annotations?
+        directive.$inject = _selfPtr.annotations.map (annotation) -> annotation.name
+      directive
+    )(@)
 
   # inject the list of dependencies
   @inject: (annotations...) ->
@@ -26,11 +27,7 @@ module.exports = class BaseDirective
       match = annotation.match(ANNOTATION_REG)
       name: match[1], identifier: match[3] or match[1]
 
-    @directive.$inject = @annotations.map (annotation) -> annotation.name
-
   constructor: (dependencies) ->
-    console.log 12313
-    console.log 12313
     if dependencies.length
       for annotation, index in @constructor.annotations
         @[annotation.identifier] = dependencies[index]
