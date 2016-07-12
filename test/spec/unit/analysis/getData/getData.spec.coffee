@@ -45,24 +45,24 @@ describe "getData", ->
 ####
     it "should return false if input obj is not defined.", ->
       inject (showState)->
-        ss = new showState()
+        ss = new showStateService()
         expect(Object.keys(ss).length).toBe(0)
 
     it "should create showState object to supplied scope.", ->
       inject (showState,$rootScope)->
         scope = $rootScope.$new()
-        ss = new showState(["div1","div2"],scope)
-        expect(scope.showState).toBeDefined()
-        expect(typeof scope.showState).toEqual("object")
-        expect(Object.keys(scope.showState).length).toEqual(2)
+        ss = new showStateService(["div1","div2"],scope)
+        expect(scope.showStateService).toBeDefined()
+        expect(typeof scope.showStateService).toEqual("object")
+        expect(Object.keys(scope.showStateService).length).toEqual(2)
 
     it "sets supplied showState[index] to false, and everything else to true.", ->
       inject (showState,$rootScope) ->
         scope = $rootScope.$new()
-        ss = new showState ["div1","div2"],scope
+        ss = new showStateService ["div1","div2"],scope
         ss.set("div1")
-        expect(scope.showState["div1"]).toBeFalsy()
-        expect(scope.showState["div2"]).toBeTruthy()
+        expect(scope.showStateService["div1"]).toBeFalsy()
+        expect(scope.showStateService["div2"]).toBeTruthy()
 
 
   describe "app_analysis_getData_jsonParser", ->

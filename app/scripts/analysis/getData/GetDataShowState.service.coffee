@@ -26,10 +26,10 @@ module.exports = class GetDataShowState extends BaseService
       @scope.showState[i] = true
 
     # index is the array key
-    set: (index) ->
+    set: (index) =>
       if @scope.showState[index]?
         for i in @obj
-          if i is @index
+          if i is index
             @scope.showState[index] = false
           else
             @scope.showState[i] = true

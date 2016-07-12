@@ -28,23 +28,7 @@ module.extend = class AppCtrl extends BaseCtrl
     # listen on message from App.run block to register Tools in menu
     @$scope.$on 'app:set_menu', (event, data) =>
       console.log 'app: creating menu'
-
-      # TODO: use data object for menu creation #SOCRFW-277
       @menu = data
-
-#      @menu = [
-#        id: 'rawdata'
-#        name: 'Raw Data'
-#        type: 'text',
-#        url: '/getData'
-#      ,
-#        id: 'wrangler'
-#        name: 'Wrangle Data'
-#        type: 'text',
-#        url: '/wrangleData'
-#      ,
-#        data[1]
-#      ]
 
     # request Tools list from App.run
     @$rootScope.$broadcast 'app:get_menu'

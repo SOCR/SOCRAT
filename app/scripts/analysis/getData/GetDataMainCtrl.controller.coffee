@@ -30,23 +30,23 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       console.log e.message
 
     # adding listeners
-    @$scope.$on 'update showStates', (obj, data) ->
+    @$scope.$on 'update showStates', (obj, data) =>
       @stateService.set data
+      console.log @showState
       # TODO: fix this workaround for displaying copy-paste table
-      @dataType = DATA_TYPES.FLAT if data is 'grid'
+      @dataType = @DATA_TYPES.FLAT if data is 'grid'
 
     @$scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
-      console.log 'olololo'
 
   passReceivedData: (data) ->
-    if data.dataType is DATA_TYPES.NESTED
-      @dataType = DATA_TYPES.NESTED
+    if data.dataType is @DATA_TYPES.NESTED
+      @dataType = @DATA_TYPES.NESTED
       @inputCache.set data
     else
       # default data type is 2d 'flat' table
-      data.dataType = DATA_TYPES.FLAT
-      @dataType = DATA_TYPES.FLAT
+      data.dataType = @DATA_TYPES.FLAT
+      @dataType = @DATA_TYPES.FLAT
       # pass a message to update the handsontable div
       # data is the formatted data which plugs into the
       #  handontable.
@@ -124,11 +124,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
               # purpose is helps in pin pointing which
               # handsontable directive to update.
               purpose: 'json'
-              dataType: DATA_TYPES.FLAT
+              dataType: @DATA_TYPES.FLAT
           else
             _data =
               data: dataResults
-              dataType: DATA_TYPES.NESTED
+              dataType: @DATA_TYPES.NESTED
           passReceivedData _data
         else
           console.log 'GETDATA: request failed'
