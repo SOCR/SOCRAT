@@ -25,7 +25,7 @@ module.exports = class GetDataInputCache extends BaseService
 
   saveDataToDb: (data, deferred) ->
 
-    msgEnding = if data.dataType is DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
+    msgEnding = if data.dataType is @DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
 
     @$rootScope.$broadcast 'app:push notification',
       initial:
@@ -60,7 +60,7 @@ module.exports = class GetDataInputCache extends BaseService
       # clear any previous db update broadcast messages
       clearTimeout @timer
       @deferred = @$q.defer()
-      @timer = @$timeout ((data, deferred) -> _saveDataToDb(data, deferred))(@data, @deferred), 1000
+      @timer = @$timeout ((data, deferred) => @saveDataToDb(data, deferred))(@data, @deferred), 1000
       true
 
     else

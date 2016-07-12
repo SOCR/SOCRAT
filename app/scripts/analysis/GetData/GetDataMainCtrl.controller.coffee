@@ -12,6 +12,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_inputCache'
 
   initialize: ->
+    @d3 = require 'd3'
     # rename deps
     @eventManager = @app_analysis_getData_msgService
     @showStateService = @app_analysis_getData_showState
@@ -42,7 +43,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
-      @inputCache.set data
+      @inputCache.setData data
     else
       # default data type is 2d 'flat' table
       data.dataType = @DATA_TYPES.FLAT
@@ -94,11 +95,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       # default option
       else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 
-    d3.text url,
-      (dataResults) ->
+    @d3.text url,
+      (dataResults) =>
         if dataResults?.length > 0
           # parse to unnamed array
-          dataResults = d3.csv.parseRows dataResults
+          dataResults = @d3.csv.parseRows dataResults
           _data =
             columnHeader: dataResults.shift()
             data: [null, dataResults]
@@ -111,11 +112,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           console.log 'rejected:' + msg
 
   getJsonByUrl: (type) ->
-    d3.json @jsonUrl,
-      (dataResults) ->
+    @d3.json @jsonUrl,
+      (dataResults) =>
         # check that data object is not empty
         if dataResults? and Object.keys(dataResults)?.length > 0
-          res = dataAdaptor.jsonToFlatTable dataResults
+          res = @dataAdaptor.jsonToFlatTable dataResults
           # check if JSON contains "flat data" - 2d array
           if res
             _data =
@@ -129,6 +130,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
             _data =
               data: dataResults
               dataType: @DATA_TYPES.NESTED
-          passReceivedData _data
+          @passReceivedData _data
         else
           console.log 'GETDATA: request failed'

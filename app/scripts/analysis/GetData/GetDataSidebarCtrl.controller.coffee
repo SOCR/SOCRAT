@@ -2,6 +2,7 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
+
 module.exports = class GetDataSidebarCtrl extends BaseCtrl
   @inject '$scope',
     '$q',
@@ -21,7 +22,7 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
 
   passReceivedData: (data) ->
     if data.dataType is DATA_TYPES.NESTED
-      @inputCache.set data
+      @inputCache.setData data
     else
       # default data type is 2d 'flat' table
       data.dataType = DATA_TYPES.FLAT
