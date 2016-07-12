@@ -27,7 +27,8 @@
     "data-wrangler": "^1.0.0",
     "jquery-layout": "git+https://github.com/benosman/layout.git",
     "jstat": "~1.5.2",
-    "jsfeat": "~0.0.8"
+    "jsfeat": "~0.0.8",
+    "ngHandsontable": "git+https://github.com/handsontable/ngHandsontable.git"
   },
   "devDependencies": {
     "angular-mocks": "^1.5.0",
