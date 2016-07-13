@@ -10,9 +10,6 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class BaseModuleDataService extends BaseService
 
-  # injected:
-  # @msgManager
-
   initialize: () ->
 
   getData: (outMsg, inMsg) ->

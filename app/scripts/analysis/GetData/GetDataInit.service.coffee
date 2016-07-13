@@ -7,3 +7,4 @@ module.exports = class GetDataInitService extends BaseModuleInitService
 
   initialize: ->
     @msgService = @app_analysis_getData_msgService
+    @setMsgList()
