@@ -26,6 +26,7 @@ module.exports = class AppConfig
       # check if single module or group
       if module instanceof Module
 
+        # get module
         angModule = angular.module module.id
 
         if module.components?

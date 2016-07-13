@@ -16,8 +16,8 @@ module.exports = class AppRun
 
   runModules: (core, runServices) ->
     for module, idx in @runModuleNames
-      core.register module, runServices[idx]
-      core.start module
+      if core.register module, runServices[idx]
+        core.start module
 
   buildMenu: () ->
 
@@ -54,7 +54,7 @@ module.exports = class AppRun
     core.setEventsMapping new AppMessageMap()
 
     # TODO: recover core.register
-#    @runModules core, runServices
+    @runModules core, runServices
 
     @buildMenu()
 
