@@ -1,8 +1,8 @@
 'use strict'
 
-ModuleInitService = require 'scripts/BaseClasses/ModuleInitService.coffee'
+BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffee'
 
-module.exports = class GetDataInitService extends ModuleInitService
+module.exports = class GetDataInitService extends BaseModuleInitService
   @inject 'app_analysis_getData_msgService'
 
   initialize: ->

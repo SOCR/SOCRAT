@@ -3,12 +3,12 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
-  @name ModuleDataService
+  @name BaseModuleDataService
   @desc Base class for module data retrieval service
-  @deps Requires injection of ModuleMessageService
+  @deps Requires injection of BaseModuleMessageService
 ###
 
-module.exports = class ModuleDataService extends BaseService
+module.exports = class BaseModuleDataService extends BaseService
 
   # injected:
   # @msgManager

@@ -1,8 +1,8 @@
 'use strict'
 
-ModuleInitService = require 'scripts/BaseClasses/ModuleInitService.coffee'
+BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffee'
 
-module.exports = class ClusterInitService extends ModuleInitService
+module.exports = class ClusterInitService extends BaseModuleInitService
   @inject 'app_analysis_cluster_msgService'
 
   initialize: ->

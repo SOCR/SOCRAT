@@ -79,7 +79,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       url: url
       type: 'worldBank'
     .then(
-      (data) ->
+      (data) =>
         console.log 'resolved'
         @passReceivedData data
       ,

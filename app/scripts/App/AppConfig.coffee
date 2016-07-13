@@ -1,6 +1,6 @@
 'use strict'
 
-Module = require 'scripts/BaseClasses/Module.coffee'
+Module = require 'scripts/BaseClasses/BaseModule.coffee'
 AppRoute = require 'scripts/App/AppRoute.coffee'
 AppRun = require 'scripts/App/AppRun.coffee'
 

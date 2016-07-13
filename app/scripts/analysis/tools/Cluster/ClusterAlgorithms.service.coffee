@@ -1,8 +1,8 @@
 'use strict'
 
-ModuleDataService = require 'scripts/BaseClasses/ModuleDataService.coffee'
+BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class ClusterAlgorithms extends ModuleDataService
+module.exports = class ClusterAlgorithms extends BaseModuleDataService
   @inject 'app_analysis_cluster_msgService'
 
   # injected:

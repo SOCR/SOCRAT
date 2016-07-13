@@ -1,6 +1,6 @@
 'use strict'
 
-Module = require 'scripts/BaseClasses/Module.coffee'
+Module = require 'scripts/BaseClasses/BaseModule.coffee'
 
 ###
 # @name AppModuleList

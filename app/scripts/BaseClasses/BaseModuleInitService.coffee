@@ -5,10 +5,10 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
   @name socrat.Module
   @desc Base class for module prototyping
-  @deps Requires injection of ModuleMessageService
+  @deps Requires injection of BaseModuleMessageService
 ###
 
-module.exports = class ModuleInitService extends BaseService
+module.exports = class BaseModuleInitService extends BaseService
 
   initialize: ->
     @msgService = null unless @msgService?

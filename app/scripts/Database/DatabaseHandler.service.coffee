@@ -1,8 +1,8 @@
 'use strict'
 
-ModuleInitService = require 'scripts/BaseClasses/ModuleInitService.coffee'
+BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffee'
 
-module.exports = class DatabaseHandler extends ModuleInitService
+module.exports = class DatabaseHandler extends BaseModuleInitService
   @inject '$q',
     '$timeout',
     'app_database_dv',
