@@ -1,6 +1,6 @@
 'use strict'
 
-require 'scripts/core/eventMngr.coffee'
+require 'scripts/core/EventMngr.coffee'
 require 'scripts/core/errorMngr.coffee'
 require 'scripts/core/Sandbox.coffee'
 require 'scripts/core/utils.coffee'
@@ -16,8 +16,7 @@ module.exports = class Core
   @map = {}
   @BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffee'
 
-  constructor: (eventMngr, Sandbox, errorMngr, utils) ->
-    log: console.log
+  constructor: (@eventMngr, @Sandbox, @utils) ->
 
   @checkType: (type, val, name) ->
     # TODO: change to $exceptionHandler or return false anf throw exception in caller
@@ -43,22 +42,26 @@ module.exports = class Core
     # return options
     o
 
-  @createInstance: (moduleId, instanceId = moduleId, opt) =>
-    module = @modules[moduleId]
-    return @instances[instanceId] if @instances[instanceId]?
-    iOpts = @getInstanceOptions.apply @, [instanceId, module, opt]
+  # don't save 'this' to access injected components
+  @createInstance: (moduleId, instanceId = moduleId, opt) ->
+    module = @constructor.modules[moduleId]
+    return @constructor.instances[instanceId] if @constructor.instances[instanceId]?
+    iOpts = @constructor.getInstanceOptions.apply @, [instanceId, module, opt]
 
-    sb = new @Sandbox @, instanceId, iOpts
-    utils.installFromTo eventMngr, sb
+    sb = new @Sandbox instanceId, iOpts
+    @utils.installFromTo @eventMngr.getInterface(), sb
 
-    instance              = new module.creator sb
-    instance.options      = iOpts
-    instance.id           = instanceId
-    @instances[instanceId] = instance
+    if module.moduleObj.init sb
+      instance = module.moduleObj
+      instance.options      = iOpts
+      instance.id           = instanceId
+      @constructor.instances[instanceId] = instance
 
-    console.log '%cCORE: created instance of ' + instance.id, 'color:red'
+      console.log '%cCORE: created instance of ' + instance.id, 'color:red'
 
-    instance
+      instance
+    else
+      throw new TypeError "cannot init #{moduleId}: msgService is not defined"
 
   @addModule: (moduleId, moduleObj, opt) =>
     @checkType 'string', moduleId, 'module ID'
@@ -134,21 +137,21 @@ module.exports = class Core
       # TODO: consider checking scope list for containing nothing else but moduleId and "all"
       if instance.msgList? and instance.msgList.outgoing? and moduleId in instance.msgList.scope
         console.log '%cCORE: subscribing for messages from ' + moduleId, 'color:red'
-        @eventMngr.subscribeForEvents
+        @eventMngr.getInterface().subscribeForEvents
           msgList: instance.msgList.outgoing
           scope: [moduleId]
           # TODO: figure out context
           context: console
-          , @redirectMsg
+          , ((_map) => @eventMngr.getInterface().redirectMsg)(@constructor.map)
 
-      # if the module wants to init in an asynchronous way
-      if (@utils.getArgumentNames instance.init).length >= 2
-        # then define a callback
-        instance.init instance.options, (err) -> opt.callback? err
-      else
-        # else call the callback directly after initialisation
-        instance.init instance.options
-        opt.callback? null
+#      # if the module wants to init in an asynchronous way
+#      if (@utils.getArgumentNames instance.init).length >= 2
+#        # then define a callback
+#        instance.init instance.options, (err) -> opt.callback? err
+#      else
+#        # else call the callback directly after initialisation
+#        instance.init instance.options
+#        opt.callback? null
 
       instance.running = true
       console.log '%cCORE: started module ' + moduleId, 'color:red'
@@ -227,6 +230,21 @@ module.exports = class Core
     @constructor.map = map
     true
 
+#      _redirectMsg = (msg, data) ->
+#        matches = 0
+#        for o in _map when o.msgFrom is msg
+#          eventMngr.publish
+#            msg: o.msgTo
+#            data: data
+#            msgScope: o.scopeTo
+#          console.log '%cCORE: redirect mgs ' + o.msgTo + ' to ' + o.scopeTo, 'color:red'
+#          matches += 1
+#        if matches == 0
+#          console.log '%cCORE: no mapping in API for message: ' + o.msgTo, 'color:red'
+#          return false
+#        else
+#          return true
+
 
 # inject dependencies
 Core.$inject = [
@@ -237,5 +255,5 @@ Core.$inject = [
 
 # create module and singleton service
 angular
-  .module('app_core', ['app_eventMngr', 'app_sandbox', 'app_errorMngr', 'app_utils'])
-  .factory('app_core_service', -> new Core)
+  .module('app_core', ['app_eventMngr', 'app_sandbox', 'app_utils'])
+  .service('app_core_service', Core)
