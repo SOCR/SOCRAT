@@ -21,11 +21,11 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   passReceivedData: (data) ->
-    if data.dataType is DATA_TYPES.NESTED
+    if data.dataType is @DATA_TYPES.NESTED
       @inputCache.setData data
     else
       # default data type is 2d 'flat' table
-      data.dataType = DATA_TYPES.FLAT
+      data.dataType = @DATA_TYPES.FLAT
       # pass a message to update the handsontable div
       # data is the formatted data which plugs into the
       #  handontable.
