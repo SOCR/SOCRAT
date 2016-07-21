@@ -16,7 +16,7 @@ module.exports = class BaseModuleInitService extends BaseService
   init: (sb) ->
     console.log 'module init invoked'
     if @msgService?
-      @msgService.setSb @sb unless !@sb?
+      @msgService.setSb sb unless !sb?
       true
     else
       console.log 'module cannot init: message service is not injected'
