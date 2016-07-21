@@ -14,7 +14,7 @@ module.exports = class AppMessageMap
     #      scopeTo: ['qualRobEstView']
     #    ,
       msgFrom: 'save data'
-      scopeFrom: ['getData', 'wrangleData']
+      scopeFrom: ['app_analysis_getData', 'wrangleData']
       msgTo: 'save table'
       scopeTo: ['database']
     #    ,
@@ -49,15 +49,15 @@ module.exports = class AppMessageMap
     #      msgTo: 'take data'
     #      scopeTo: ['kMeans']
     ,
-      msgFrom: 'cluster:getData'
-      scopeFrom: ['cluster']
+      msgFrom: 'getData'
+      scopeFrom: ['app_analysis_cluster']
       msgTo: 'get table'
       scopeTo: ['database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['database']
-      msgTo: 'cluster:takeData'
-      scopeTo: ['cluster']
+      msgTo: 'takeData'
+      scopeTo: ['app_analysis_cluster']
     #    ,
     #      msgFrom: 'get data'
     #      scopeFrom: ['spectrClustr']
