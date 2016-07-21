@@ -1,20 +1,22 @@
 'use strict'
 
-# app.utils module
+###
+# @name Utils
+# @desc Class for utility functions
+###
+module.exports = class Utils
 
-utils = angular.module('app_utils', [])
+  constructor: ->
 
-utils.factory 'utils', ->
+  typeIsArray: Array.isArray || (value) -> return {}.toString.call(value) is '[object Array]'
 
-  _typeIsArray = Array.isArray || (value) -> return {}.toString.call(value) is '[object Array]'
-
-  _installFromTo = (srcObj, resObj) ->
+  installFromTo: (srcObj, resObj) ->
     if typeof resObj is 'object' and typeof srcObj is 'object'
       resObj[k] = v for k, v of srcObj
       true
     else false
 
-  _fnRgx =
+  fnRgx:
     ///
       function    # start with 'function'
       [^(]*       # any character but not '('
@@ -23,20 +25,20 @@ utils.factory 'utils', ->
       \)          # close bracket = ')' character
     ///
 
-  _argRgx = /([^\s,]+)/g
+  argRgx: /([^\s,]+)/g
 
-  _getArgumentNames = (fn) ->
-    (fn?.toString().match(_fnRgx)?[1] or '').match(_argRgx) or []
+  getArgumentNames: (fn) ->
+    (fn?.toString().match(@fnRgx)?[1] or '').match(@argRgx) or []
 
   ### based on RFC 4122, section 4.4 ###
-  _generateGuid = () ->
+  generateGuid: ->
     'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
       r = Math.random() * 16 | 0
       v = (if c is 'x' then r else (r & 0x3 | 0x8))
       v.toString 16
 
   # run asynchronous tasks in parallel
-  _runParallel = (tasks=[], cb=(->), force) ->
+  runParallel: (tasks=[], cb=(->), force) ->
     count   = tasks.length
     results = []
 
@@ -63,7 +65,7 @@ utils.factory 'utils', ->
         next e
 
   # run asynchronous tasks one after another
-  _runSeries = (tasks=[], cb=(->), force) ->
+  runSeries: (tasks=[], cb=(->), force) ->
     i = -1
     count   = tasks.length
     results = []
@@ -93,7 +95,7 @@ utils.factory 'utils', ->
 
   # run asynchronous tasks one after another
   # and pass the argument
-  _runWaterfall = (tasks, cb) ->
+  runWaterfall: (tasks, cb) ->
     i = -1
     return cb() if tasks.length is 0
 
@@ -105,15 +107,9 @@ utils.factory 'utils', ->
         tasks[i] res..., next
     next()
 
-  _doForAll = (args=[], fn, cb, force)->
+  doForAll: (args=[], fn, cb, force)->
     tasks = for a in args then do (a) -> (next) -> fn a, next
-    _runParallel tasks, cb, force
+    runParallel tasks, cb, force
 
-  typeIsArray: _typeIsArray
-  installFromTo: _installFromTo
-  getArgumentNames: _getArgumentNames
-  getGuid: _generateGuid
-  doForAll: _doForAll
-  runSeries: _runSeries
-  runWaterfall: _runWaterfall
-  runParallel: _runParallel
+angular.module('app_utils', [])
+  .service 'utils', Utils
