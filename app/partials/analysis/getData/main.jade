@@ -46,5 +46,11 @@ div(ng-controller='GetDataMainCtrl as mainArea')
   br
   div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.
-  div(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
-    handsontable(purpose="json")
+  div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
+    hot-table(
+    purpose="json"
+    row-headers="mainArea.rowHeaders"
+    col-headers="mainArea.colHeaders"
+    datarows="mainArea.tableData"
+    stretch-h="mainArea.stretchH"
+    )

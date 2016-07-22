@@ -1,6 +1,8 @@
 'use strict'
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
+require 'handsontable/dist/handsontable.full.css'
+require 'imports?Handsontable=handsontable/dist/handsontable.full.js!ngHandsontable/dist/ngHandsontable.js'
 
 module.exports = class GetDataMainCtrl extends BaseCtrl
   @inject '$scope',
@@ -9,7 +11,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_showState',
     'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
-    'app_analysis_getData_inputCache'
+    'app_analysis_getData_inputCache',
+    '$timeout'
 
   initialize: ->
     @d3 = require 'd3'
@@ -24,6 +27,14 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
     @dataType = ''
     @socrdataset = @socrDatasets[0]
+
+    # init table
+    @rowHeaders = on
+    @colHeaders = on
+    @stretchH = "all"
+    @tableData = [
+      ['Copy', 'paste', 'your', 'data', 'here']
+    ]
 
     try
       @stateService = @showStateService.create ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], @
@@ -51,8 +62,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       # pass a message to update the handsontable div
       # data is the formatted data which plugs into the
       #  handontable.
-      # TODO: getData module shouldn't know about controllers listening for handsontable update
-      @$scope.$emit 'update handsontable', data
+#      # TODO: getData module shouldn't know about controllers listening for handsontable update
+#      @$scope.$emit 'update handsontable', data
+      @$timeout =>
+        @tableData = data.data[1]
+        @colHeaders = data.columnHeader
+        console.log 'ht updated'
 
   # available SOCR Datasets
   socrDatasets: [
