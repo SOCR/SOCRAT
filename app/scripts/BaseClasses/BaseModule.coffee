@@ -8,9 +8,9 @@
 module.exports = class Module
 
   constructor: (options) ->
-    {@id = null, @components = @defaultComponents, @state = @defaultState} = options
+    {@id = null, @components = @defaultComponents, @state = @defaultState, @deps = []} = options
 
-    module = angular.module @id, [] unless !@id?
+    module = angular.module @id, @deps unless !@id?
 
   @defaultComponents =
     services:
