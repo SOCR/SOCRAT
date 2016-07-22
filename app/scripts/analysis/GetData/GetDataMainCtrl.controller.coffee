@@ -7,7 +7,7 @@ require 'imports?Handsontable=handsontable/dist/handsontable.full.js!ngHandsonta
 module.exports = class GetDataMainCtrl extends BaseCtrl
   @inject '$scope',
     '$state',
-    'app_analysis_getData_msgService',
+    'app_analysis_getData_dataService',
     'app_analysis_getData_showState',
     'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
@@ -17,14 +17,14 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   initialize: ->
     @d3 = require 'd3'
     # rename deps
-    @eventManager = @app_analysis_getData_msgService
+    @dataManager = @app_analysis_getData_dataService
     @showStateService = @app_analysis_getData_showState
     @inputCache = @app_analysis_getData_inputCache
     @jsonParser = @app_analysis_getData_jsonParser
     @dataAdaptor = @app_analysis_getData_dataAdaptor
 
     # get initial settings
-    @DATA_TYPES = @eventManager.getSupportedDataTypes()
+    @DATA_TYPES = @dataManager.getDataTypes()
     @dataType = ''
     @socrdataset = @socrDatasets[0]
 
@@ -54,20 +54,19 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
-      @inputCache.setData data
     else
       # default data type is 2d 'flat' table
       data.dataType = @DATA_TYPES.FLAT
       @dataType = @DATA_TYPES.FLAT
-      # pass a message to update the handsontable div
-      # data is the formatted data which plugs into the
-      #  handontable.
-#      # TODO: getData module shouldn't know about controllers listening for handsontable update
-#      @$scope.$emit 'update handsontable', data
+
+      # update table
       @$timeout =>
         @tableData = data.data[1]
         @colHeaders = data.columnHeader
         console.log 'ht updated'
+
+      # save to db
+    @inputCache.setData data
 
   # available SOCR Datasets
   socrDatasets: [
