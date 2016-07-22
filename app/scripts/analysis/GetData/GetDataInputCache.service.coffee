@@ -11,7 +11,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class GetDataInputCache extends BaseService
-  @inject '$q', '$stateParams', '$rootScope', '$timeout', 'app_analysis_getData_msgService'
+  @inject '$q', '$stateParams', '$timeout', 'app_analysis_getData_msgService'
 
   initialize: () ->
     @msgManager = @app_analysis_getData_msgService
@@ -27,7 +27,7 @@ module.exports = class GetDataInputCache extends BaseService
 
     msgEnding = if data.dataType is @DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
 
-    @$rootScope.$broadcast 'app:push notification',
+    @msgManager.broadcast 'app:push notification',
       initial:
         msg: 'Data is being saved in the database...'
         type: 'alert-info'
@@ -39,18 +39,14 @@ module.exports = class GetDataInputCache extends BaseService
         type: 'alert-error'
       promise: deferred.promise
 
-    @msgManager.publish
-      msg: 'save data'
-      data:
-        dataFrame: data
-        tableName: @$stateParams.projectId + ':' + @$stateParams.forkId
-        promise: deferred
-      msgScope: ['getData']
-      callback: ->
-        console.log 'handsontable data updated to db'
+    @msgManager.publish 'save data',
+      -> console.log 'handsontable data updated to db',
+      dataFrame: data
+      tableName: @$stateParams.projectId + ':' + @$stateParams.forkId
+
 
   setData: (data) ->
-    console.log '%c inputCache set called for the project' + @$stateParams.projectId + ':' + @$stateParams.forkId,
+    console.log '%c inputCache set called for the project ' + @$stateParams.projectId + ':' + @$stateParams.forkId,
       'color:steelblue'
 
     # TODO: fix checking existance of parameters to default table name #SOCR-140
