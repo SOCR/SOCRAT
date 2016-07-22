@@ -10,32 +10,37 @@ module.exports = class EventMngr
 
   constructor: (@pubSub) ->
 
+  @msgMap = {}
+
   # supported data types
   @_DATA_TYPES:
     'FLAT': 'FLAT'
     'NESTED': 'NESTED'
 
+  setMsgMap: (msgMap) ->
+    @msgMap = msgMap
+
   # serialized subscription for a list of events
   subscribeForEvents: (events, listener) ->
 
     for msg in events.msgList
-      @subscribe
+      @pubSub.subscribe
         msg: msg
         listener: listener
         msgScope: events.scope
-        context: events.context
+#        context: events.context
 
-  redirectMsg: (msg, data) ->
+  redirectMsg: (msg, data, msgMap) =>
     matches = 0
-    for o in _map when o.msgFrom is msg
-      @publish
+    for o in @constructor.msgMap when o.msgFrom is msg
+      @pubSub.publish
         msg: o.msgTo
         data: data
         msgScope: o.scopeTo
       console.log '%cEVENT MANAGER: redirect mgs ' + o.msgTo + ' to ' + o.scopeTo, 'color:blue'
       matches += 1
     if matches == 0
-      console.log '%ccEVENT MANAGER: no mapping in API for message: ' + o.msgTo, 'color:blue'
+      console.log '%ccEVENT MANAGER: no mapping in API for message: ' + msg, 'color:blue'
       return false
     else
       return true

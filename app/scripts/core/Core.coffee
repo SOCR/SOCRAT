@@ -13,7 +13,6 @@ module.exports = class Core
   @modules = {}
   @instances = {}
   @instanceOpts = {}
-  @map = {}
   @BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffee'
 
   constructor: (@eventMngr, @Sandbox, @utils) ->
@@ -137,12 +136,12 @@ module.exports = class Core
       # TODO: consider checking scope list for containing nothing else but moduleId and "all"
       if instance.msgList? and instance.msgList.outgoing? and moduleId in instance.msgList.scope
         console.log '%cCORE: subscribing for messages from ' + moduleId, 'color:red'
-        @eventMngr.getInterface().subscribeForEvents
+        @eventMngr.subscribeForEvents
           msgList: instance.msgList.outgoing
           scope: [moduleId]
-          # TODO: figure out context
-          context: console
-          , ((_map) => @eventMngr.getInterface().redirectMsg)(@constructor.map)
+#          # TODO: figure out context
+#          context: console
+          , @eventMngr.redirectMsg
 
 #      # if the module wants to init in an asynchronous way
 #      if (@utils.getArgumentNames instance.init).length >= 2
@@ -224,26 +223,10 @@ module.exports = class Core
 
   @ls: (o) -> (id for id, m of o)
 
-  # TODO: move to eventMngr
-  setEventsMapping: (map) ->
-    @constructor.checkType 'object', map, 'event map'
-    @constructor.map = map
+  setEventsMapping: (msgMap) ->
+    @constructor.checkType 'object', msgMap, 'event map'
+    @eventMngr.setMsgMap msgMap
     true
-
-#      _redirectMsg = (msg, data) ->
-#        matches = 0
-#        for o in _map when o.msgFrom is msg
-#          eventMngr.publish
-#            msg: o.msgTo
-#            data: data
-#            msgScope: o.scopeTo
-#          console.log '%cCORE: redirect mgs ' + o.msgTo + ' to ' + o.scopeTo, 'color:red'
-#          matches += 1
-#        if matches == 0
-#          console.log '%cCORE: no mapping in API for message: ' + o.msgTo, 'color:red'
-#          return false
-#        else
-#          return true
 
 
 # inject dependencies
