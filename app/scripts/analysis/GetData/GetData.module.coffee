@@ -20,7 +20,8 @@ module.exports = getData = new Module
     controllers:
       'GetDataSidebarCtrl': require 'scripts/analysis/GetData/GetDataSidebarCtrl.controller.coffee'
       'GetDataMainCtrl': require 'scripts/analysis/GetData/GetDataMainCtrl.controller.coffee'
-    directives: []
+    directives:
+      'handsontable': require 'scripts/analysis/GetData/GetDataHandsontable.directive.coffee'
 
   # module state config
   state:
