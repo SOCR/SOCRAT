@@ -20,8 +20,6 @@ module.exports = getData = new Module
     controllers:
       'GetDataSidebarCtrl': require 'scripts/analysis/GetData/GetDataSidebarCtrl.controller.coffee'
       'GetDataMainCtrl': require 'scripts/analysis/GetData/GetDataMainCtrl.controller.coffee'
-    directives:
-      'handsontable': require 'scripts/analysis/GetData/GetDataHandsontable.directive.coffee'
 
   # module state config
   state:
@@ -30,3 +28,6 @@ module.exports = getData = new Module
     url: '/getData'
     mainTemplate: require 'partials/analysis/getData/main.jade'
     sidebarTemplate: require 'partials/analysis/getData/sidebar.jade'
+
+  # 3rd-party dependencies
+  deps: ['ngHandsontable']
