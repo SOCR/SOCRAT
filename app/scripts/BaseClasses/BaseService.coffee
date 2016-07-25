@@ -26,4 +26,4 @@ module.exports = class BaseService
       for annotation, index in @constructor.annotations
         @[annotation.identifier] = dependencies[index]
 
-      @initialize?()
+    @initialize?()
