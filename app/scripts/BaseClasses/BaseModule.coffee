@@ -16,9 +16,9 @@ module.exports = class Module
     services:
       initService: null
       messageService: null
-    factories: []
     controllers: []
     directives: []
+    runBlock: null
 
   @defaultState =
     id: null
