@@ -8,7 +8,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class DatabaseDataAdaptor extends BaseService
-  @inject 'app_database_msgService'
+  @inject 'app_analysis_getData_msgService'
 
   initialize: ->
     @eventManager = @app_analysis_getData_msgService

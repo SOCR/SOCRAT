@@ -11,14 +11,12 @@ module.exports = class DatabaseDatavore extends BaseService
 
   initialize: ->
 
-    # contains references to all the tables created.
+    # contains references to all the tables created
     @registry = []
     @listeners = {}
     @db = {}
-    window.db = @
-
-# TODO: add dv
-#    @dv = require
+    @dv = require 'data-wrangler/lib/datavore/datavore-r0.1.js'
+#    window.db = @
 
   ###
     @returns {string|boolean}

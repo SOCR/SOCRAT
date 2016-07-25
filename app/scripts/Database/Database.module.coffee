@@ -16,3 +16,5 @@ module.exports = db = new Module
       'app_analysis_database_nestedStorage': require 'scripts/Database/DatabaseNestedStorage.service.coffee'
       'app_analysis_database_dv': require 'scripts/Database/DatabaseDatavore.service.coffee'
       'app_analysis_database_handler': require 'scripts/Database/DatabaseHandler.service.coffee'
+
+    runBlock: require 'scripts/Database/DatabaseRunBlock.run.coffee'

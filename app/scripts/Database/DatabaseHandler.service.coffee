@@ -5,16 +5,16 @@ BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffe
 module.exports = class DatabaseHandler extends BaseModuleInitService
   @inject '$q',
     '$timeout',
-    'app_database_dv',
-    'app_database_nestedStorage',
-    'app_database_dataAdaptor',
-    'app_database_msgService'
+    'app_analysis_database_dv',
+    'app_analysis_database_nestedStorage',
+    'app_analysis_database_dataAdaptor',
+    'app_analysis_database_msgService'
 
   initialize: ->
-    @eventManager = @app_database_msgService
-    @nestedDb = @app_database_nestedStorage
-    @dataAdaptor = @app_database_dataAdaptor
-    @db = @app_database_dv
+    @eventManager = @app_analysis_database_msgService
+    @nestedDb = @app_analysis_database_nestedStorage
+    @dataAdaptor = @app_analysis_database_dataAdaptor
+    @db = @app_analysis_database_dv
 
     @lastDataTypeDATA_TYPES = null
     @lastDataTypelastDataType = ''
@@ -69,7 +69,7 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
       event: @db.addListener
     ]
 
-    status: _methods.map (method) ->
+    status: _methods.map (method) =>
       @eventManager.subscribe
         msg: method['incoming']
         msgScope: ['database']
@@ -94,7 +94,7 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
             msgScope: ['database']
 
   initDb: () ->
-    $timeout ->
-      window.db = @db
-      @DATA_TYPES = eventManager.getSupportedDataTypes()
+    @$timeout =>
+#      window.db = @db
+      @DATA_TYPES = @eventManager.getSupportedDataTypes()
       @setDbListeners()
