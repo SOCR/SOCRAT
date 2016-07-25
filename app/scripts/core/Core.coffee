@@ -17,9 +17,9 @@ module.exports = class Core
 
   constructor: (@eventMngr, @Sandbox, @utils) ->
 
-  @checkType: (type, val, name) ->
+  checkType: (type, val, name) ->
     # TODO: change to $exceptionHandler or return false anf throw exception in caller
-    if typeof val isnt type and utils.typeIsArray(val) isnt true
+    if typeof val isnt type and @utils.typeIsArray(val) isnt true
       console.log '%cCORE: checkType: ' + "#{name} is not a #{type}", 'color:red'
       throw new TypeError "#{name} has to be a #{type}"
 
@@ -62,12 +62,12 @@ module.exports = class Core
     else
       throw new TypeError "cannot init #{moduleId}: msgService is not defined"
 
-  @addModule: (moduleId, moduleObj, opt) =>
+  addModule: (moduleId, moduleObj, opt) ->
     @checkType 'string', moduleId, 'module ID'
     @checkType 'object', opt, 'option parameter'
 
     # check that module instance
-    if moduleObj instanceof @BaseModuleInitService
+    if moduleObj instanceof @constructor.BaseModuleInitService
       @checkType 'function', moduleObj.init, '"init" of the module'
       @checkType 'function', moduleObj.destroy, '"destroy" of the module'
       @checkType 'function', moduleObj.getMsgList, '"getMsgList" of the module'
@@ -76,10 +76,10 @@ module.exports = class Core
       @checkType 'object', moduleMsgList.outgoing, 'outcoming message list of the module'
 
       # TODO: change to $exceptionHandler
-      if @modules[moduleId]?
+      if @constructor.modules[moduleId]?
         throw new TypeError "module #{moduleId} was already registered"
 
-      @modules[moduleId] =
+      @constructor.modules[moduleId] =
         moduleObj: moduleObj
         options: opt
         id: moduleId
@@ -93,9 +93,9 @@ module.exports = class Core
 
   register: (moduleId, creator, opt = {}) ->
     try
-      @constructor.addModule.apply @, [moduleId, creator, opt]
+      @addModule.apply @, [moduleId, creator, opt]
     catch e
-      console.log "%cCORE: could not register module" + moduleId, 'color:red'
+      console.log "%cCORE: could not register module " + moduleId, 'color:red'
       console.error "could not register module #{moduleId}: #{e.message}"
       false
 
@@ -115,11 +115,10 @@ module.exports = class Core
     @instanceOpts[instanceId] ?= {}
     @instanceOpts[instanceId][k] = v for k,v of opt
 
-  start: (moduleId, opt = {}) =>
-    checkType = @constructor.checkType
+  start: (moduleId, opt = {}) ->
     try
-      checkType 'string', moduleId, 'module ID'
-      checkType 'object', opt, 'second parameter'
+      @checkType 'string', moduleId, 'module ID'
+      @checkType 'object', opt, 'second parameter'
       unless @constructor.modules[moduleId]?
         throw new Error "module doesn't exist: #{moduleId}"
 
@@ -224,7 +223,7 @@ module.exports = class Core
   @ls: (o) -> (id for id, m of o)
 
   setEventsMapping: (msgMap) ->
-    @constructor.checkType 'object', msgMap, 'event map'
+    @checkType 'object', msgMap, 'event map'
     @eventMngr.setMsgMap msgMap
     true
 
