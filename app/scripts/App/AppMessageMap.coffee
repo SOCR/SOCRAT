@@ -2,7 +2,7 @@
 
 module.exports = class AppMessageMap
   constructor: () ->
-    map: [
+    @_msgMap = [
     #      msgFrom: 'add numbers'
     #      scopeFrom: ['qualRobEstView']
     #      msgTo: 'add numbers'
@@ -16,7 +16,7 @@ module.exports = class AppMessageMap
       msgFrom: 'save data'
       scopeFrom: ['app_analysis_getData', 'wrangleData']
       msgTo: 'save table'
-      scopeTo: ['database']
+      scopeTo: ['app_analysis_database']
     #    ,
     #      msgFrom:'table saved'
     #      scopeFrom: ['database']
@@ -32,10 +32,10 @@ module.exports = class AppMessageMap
       msgFrom: 'get table'
       scopeFrom: ['instrPerfEval']
       msgTo: 'get table'
-      scopeTo: ['database']
+      scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
-      scopeFrom: ['database']
+      scopeFrom: ['app_analysis_database']
       msgTo: 'take table'
       scopeTo: ['instrPerfEval']
     #    ,
@@ -52,10 +52,10 @@ module.exports = class AppMessageMap
       msgFrom: 'getData'
       scopeFrom: ['app_analysis_cluster']
       msgTo: 'get table'
-      scopeTo: ['database']
+      scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
-      scopeFrom: ['database']
+      scopeFrom: ['app_analysis_database']
       msgTo: 'takeData'
       scopeTo: ['app_analysis_cluster']
     #    ,
@@ -72,21 +72,24 @@ module.exports = class AppMessageMap
       msgFrom: 'get data'
       scopeFrom: ['wrangleData']
       msgTo: 'get table'
-      scopeTo: ['database']
+      scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
-      scopeFrom: ['database']
+      scopeFrom: ['app_analysis_database']
       msgTo: 'wrangle data'
       scopeTo: ['wrangleData']
     ,
       msgFrom: 'get table'
       scopeFrom: ['charts']
       msgTo: 'get table'
-      scopeTo: ['database']
+      scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
-      scopeFrom: ['database']
+      scopeFrom: ['app_analysis_database']
       msgTo: 'take table'
       scopeTo: ['charts']
 
     ]
+
+  getMap: ->
+    @_msgMap
