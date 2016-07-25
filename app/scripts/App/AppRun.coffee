@@ -53,7 +53,6 @@ module.exports = class AppRun
 
     core.setEventsMapping new AppMessageMap()
 
-    # TODO: recover core.register
     @runModules core, runServices
 
     @buildMenu()

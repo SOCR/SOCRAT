@@ -36,8 +36,8 @@ module.exports = class AppConfig
             # adding services
             for serviceName, Service of moduleComponents.services
               Service.register angModule, serviceName
-              service = new Service()
               console.log 'AppConfig: created service ' + serviceName
+              # add init services to app's run block
               if serviceName.endsWith @INIT_SERVICE_SUFFIX
                 @runModules.push module.id
                 @runServices.push serviceName
@@ -46,8 +46,12 @@ module.exports = class AppConfig
             # adding controllers
             for ctrlName, Ctrl of moduleComponents.controllers
               Ctrl.register angModule, ctrlName
-              ctrl = new Ctrl()
               console.log 'AppConfig: created controller ' + ctrlName
+
+          # create run block of module
+          if moduleComponents.runBlock
+            moduleRunBlock = new moduleComponents.runBlock angModule
+            moduleRunBlock.register()
 
           console.log 'AppConfig: created module ' + module.id
 
