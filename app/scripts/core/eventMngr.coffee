@@ -10,7 +10,7 @@ module.exports = class EventMngr
 
   constructor: (@pubSub) ->
 
-  @msgMap = {}
+    @_msgMap = {}
 
   # supported data types
   @_DATA_TYPES:
@@ -18,7 +18,7 @@ module.exports = class EventMngr
     'NESTED': 'NESTED'
 
   setMsgMap: (msgMap) ->
-    @msgMap = msgMap
+    @_msgMap = msgMap
 
   # serialized subscription for a list of events
   subscribeForEvents: (events, listener) ->
@@ -30,9 +30,9 @@ module.exports = class EventMngr
         msgScope: events.scope
 #        context: events.context
 
-  redirectMsg: (msg, data, msgMap) =>
+  redirectMsg: (msg, data) =>
     matches = 0
-    for o in @constructor.msgMap when o.msgFrom is msg
+    for o in @_msgMap when o.msgFrom is msg
       @pubSub.publish
         msg: o.msgTo
         data: data

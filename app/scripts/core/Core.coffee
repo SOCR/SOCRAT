@@ -223,8 +223,9 @@ module.exports = class Core
   @ls: (o) -> (id for id, m of o)
 
   setEventsMapping: (msgMap) ->
-    @checkType 'object', msgMap, 'event map'
-    @eventMngr.setMsgMap msgMap
+    @checkType 'object', msgMap, 'event map object'
+    @checkType 'function', msgMap.getMap, 'event map getter'
+    @eventMngr.setMsgMap msgMap.getMap()
     true
 
 
