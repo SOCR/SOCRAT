@@ -11,7 +11,7 @@ module.extend = class DataWranglerWranglerDir extends BaseDirective
 
     @restrict = 'E'
     @transclude = true
-    @template = require('partials/analysis/wrangleData/wrangler.jade')()
+    @template = require('partials/analysis/DataWrangler/wrangler.jade')()
     @replace = true # replace the directive element with the output of the template
 
     # The link method does the work of setting the directive

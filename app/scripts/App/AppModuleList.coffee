@@ -31,8 +31,8 @@ module.exports = class AppModuleList
   ,
     require 'scripts/analysis/GetData/GetData.module.coffee'
   ,
-#    require 'scripts/analysis/wrangleData/wrangleData.coffee'
-#  ,
+    require 'scripts/analysis/DataWrangler/DataWrangler.module.coffee'
+  ,
     Tools: [
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ]
