@@ -19,6 +19,10 @@ module.exports = class AppSidebarCtrl extends BaseCtrl
     # TODO: add dynamic project loading and naming #SOCRFW-24
     @activeProjectName = 'default'
 
+    # toggle sidebar by request
+    @$scope.$on 'toggle sidebar', (event, results) =>
+      @toggle()
+
   # view function
   view: ->
     if @state is 'show'
