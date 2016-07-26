@@ -1,8 +1,8 @@
 div
-  div.lead.bg-danger(ng-hide="dataType == DATA_TYPES.FLAT")
+  div.lead.bg-danger(ng-hide="mainArea.dataType == mainArea.DATA_TYPES.FLAT")
     | Data Wrangler doesn't support current dataset.
     | Only "flat" data tables are supported.
-  #dt_example(style='height: 400px', ng-hide="dataType != DATA_TYPES.FLAT", ng-cloak)
+  #dt_example(style='height: 400px', ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT", ng-cloak)
       .ui-layout-north#wranglerNorthPanel
           #wranglerDashboard
       .ui-layout-west#profilerWestPanel
