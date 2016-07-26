@@ -14,17 +14,20 @@ module.exports = class DataWranglerWrangler extends BaseService
     '$stateParams'
     '$rootScope'
     'app_analysis_dataWrangler_msgService'
-    'app_analysis_dataWrangler_dataSerice'
+    'app_analysis_dataWrangler_dataService'
     'app_analysis_dataWrangler_dataAdaptor'
 
   initialize: () ->
     @msgManager = @app_analysis_dataWrangler_msgService
-    @dataService = @app_analysis_dataWrangler_dataSerice
+    @dataService = @app_analysis_dataWrangler_dataService
     @dataAdaptor = @app_analysis_dataWrangler_dataAdaptor
     @DATA_TYPES = @msgManager.getSupportedDataTypes()
     @initial_transforms = []
     @table = []
     @csvData = []
+    # TODO: make global?
+    @dv = require 'datavore'
+    @dw = require 'data-wrangler'
 
   init: ->
     data = @dataService.getData()
