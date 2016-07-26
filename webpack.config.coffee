@@ -55,6 +55,12 @@ module.exports =
     ,
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/
       loader: "url?limit=10000&mimetype=image/svg+xml"
+    ,
+      test: /[\/]datavore-d0\.1\.js$/
+      loader: 'exports?dv'
+    ,
+      test: /[\/]dw\.js$/
+      loader: 'imports?dv=datavore!exports?dw'
   ]
 
   resolve:
@@ -68,6 +74,9 @@ module.exports =
     ]
 
     root: appRoot
+
+    alias:
+      datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
 
   plugins: [
 
