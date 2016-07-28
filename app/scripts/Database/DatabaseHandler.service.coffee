@@ -70,9 +70,8 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
     ]
 
     status: _methods.map (method) =>
-      @eventManager.subscribe
-        msg: method['incoming']
-        listener: (msg, obj) ->
+      @eventManager.subscribe method['incoming'],
+        (msg, obj) ->
           console.log "%cDATABASE: listener called for" + msg , "color:green"
           # invoke callback
           _data = method.event.apply null, [obj]
@@ -93,6 +92,5 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
 
   initDb: () ->
     @$timeout =>
-#      window.db = @db
       @DATA_TYPES = @eventManager.getSupportedDataTypes()
       @setDbListeners()
