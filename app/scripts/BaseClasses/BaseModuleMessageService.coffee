@@ -29,7 +29,7 @@ module.exports = class BaseModuleMessageService extends BaseService
   broadcast: (msg, data) ->
     @$rootScope.$broadcast msg, data
 
-  publish: (msg, cb, data=null) ->
+  publish: (msg, cb, dataFrame=null) ->
     if @sb and msg in @msgList.outgoing
       deferred = @$q.defer()
       @sb.publish
@@ -39,7 +39,7 @@ module.exports = class BaseModuleMessageService extends BaseService
         data:
           tableName: @$stateParams.projectId + ':' + @$stateParams.forkId
           promise: deferred
-          data: data
+          dataFrame: dataFrame
     else false
 
   subscribe: (msg, listener) ->
