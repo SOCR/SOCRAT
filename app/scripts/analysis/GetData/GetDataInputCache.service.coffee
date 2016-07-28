@@ -41,9 +41,7 @@ module.exports = class GetDataInputCache extends BaseService
 
     @msgManager.publish 'save data',
       -> console.log 'handsontable data updated to db',
-      dataFrame: data
-      tableName: @$stateParams.projectId + ':' + @$stateParams.forkId
-
+      data
 
   setData: (data) ->
     console.log '%c inputCache set called for the project ' + @$stateParams.projectId + ':' + @$stateParams.forkId,
