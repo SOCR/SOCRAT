@@ -29,9 +29,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @socrdataset = @socrDatasets[0]
 
     # init table
-    @rowHeaders = on
-    @colHeaders = on
-    @stretchH = "all"
+    @tableSettings =
+      colHeaders: on
+      rowHeaders: on
+      stretchH: "all"
+      contextMenu: on
     @tableData = [
       ['Copy', 'paste', 'your', 'data', 'here']
     ]
@@ -61,7 +63,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
       # update table
       @$timeout =>
-        @tableData = data.data[1]
+        @tableData = data.data
         @colHeaders = data.columnHeader
         console.log 'ht updated'
 
@@ -116,7 +118,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           dataResults = @d3.csv.parseRows dataResults
           _data =
             columnHeader: dataResults.shift()
-            data: [null, dataResults]
+            data: dataResults
             # purpose is helps in pin pointing which
             # handsontable directive to update.
             purpose: 'json'

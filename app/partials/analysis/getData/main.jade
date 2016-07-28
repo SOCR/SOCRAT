@@ -49,8 +49,6 @@ div(ng-controller='GetDataMainCtrl as mainArea')
   div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
     hot-table(
     purpose="json"
-    row-headers="mainArea.rowHeaders"
-    col-headers="mainArea.colHeaders"
+    settings="mainArea.tableSettings"
     datarows="mainArea.tableData"
-    stretch-h="mainArea.stretchH"
     )
