@@ -30,10 +30,14 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
     # init table
     @tableSettings =
-      colHeaders: on
+      colHeaders: off
       rowHeaders: on
       stretchH: "all"
       contextMenu: on
+      onAfterChange: (changes, source) =>
+        data = @dataAdaptor.toDataFrame @tableData, @tableSettings.colHeaders
+        @inputCache.setData data
+
     @tableData = [
       ['Copy', 'paste', 'your', 'data', 'here']
     ]
@@ -56,6 +60,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
+      # save to db
+      @inputCache.setData data
     else
       # default data type is 2d 'flat' table
       data.dataType = @DATA_TYPES.FLAT
@@ -63,12 +69,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
       # update table
       @$timeout =>
+        @tableSettings.colHeaders = data.header
+        console.log @tableSettings.colHeaders
         @tableData = data.data
-        @colHeaders = data.columnHeader
         console.log 'ht updated'
-
-      # save to db
-    @inputCache.setData data
 
   # available SOCR Datasets
   socrDatasets: [
@@ -116,14 +120,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         if dataResults?.length > 0
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
-          _data =
-            columnHeader: dataResults.shift()
-            data: dataResults
-            # purpose is helps in pin pointing which
-            # handsontable directive to update.
-            purpose: 'json'
-          console.log 'resolved'
-          @passReceivedData _data
+          data = @dataAdaptor.toDataFrame dataResults
+          @passReceivedData data
         else
           console.log 'rejected:' + msg
 
@@ -135,13 +133,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           res = @dataAdaptor.jsonToFlatTable dataResults
           # check if JSON contains "flat data" - 2d array
           if res
-            _data =
-              columnHeader: if res.length > 1 then res.shift() else []
-              data: [null, res]
-              # purpose is helps in pin pointing which
-              # handsontable directive to update.
-              purpose: 'json'
-              dataType: @DATA_TYPES.FLAT
+            _data = @dataAdaptor.toDataFrame res
           else
             _data =
               data: dataResults

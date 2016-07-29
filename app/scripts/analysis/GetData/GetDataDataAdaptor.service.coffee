@@ -28,27 +28,23 @@ module.exports = class GetDataDataAdaptor extends BaseService
     console.log arr
     arr.every (el) -> typeof el in ['number', 'string']
 
-  # accepts handsontable table as input and returns dataFrame
-  toDataFrame: (tableData, nSpareCols, nSpareRows) ->
-
-    # using pop to remove empty last row
-    tableData.data.pop()
-    # and column
-    row.pop() for row in tableData.data
-
-    # remove empty last column for header
-    tableData.header.pop()
+  # accepts handsontable row-oriented table data as input and returns dataFrame
+  toDataFrame: (tableData, header=false) ->
 
     # by default data types are not known at this step
     #  and should be defined at Clean Data step
-    colTypes = ('symbolic' for [1...tableData.nCols - nSpareCols])
+#    colTypes = ('symbolic' for [1...tableData.nCols])
+
+    if not header
+      header = if tableData.length > 1 then tableData.shift() else []
 
     dataFrame =
-      data: tableData.data
-      header: tableData.header
-      nRows: tableData.nRows - nSpareRows
-      nCols: tableData.nCols - nSpareCols
-      dataType: DATA_TYPES.FLAT
+      header: header
+      nRows: tableData.length
+      nCols: tableData[0].length
+      data: tableData
+      dataType: @DATA_TYPES.FLAT
+      purpose: 'json'
 
   toHandsontable: ->
     # TODO: implement for poping up data when coming back from analysis tabs
