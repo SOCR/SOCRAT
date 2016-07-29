@@ -15,8 +15,7 @@ module.exports = class DatabaseDatavore extends BaseService
     @registry = []
     @listeners = {}
     @db = {}
-    @dv = require 'data-wrangler/lib/datavore/datavore-r0.1.js'
-#    window.db = @
+    @dv = require 'datavore'
 
   ###
     @returns {string|boolean}
@@ -62,13 +61,13 @@ module.exports = class DatabaseDatavore extends BaseService
   # reformat data type
       for col in input
         switch col.type
-          when 'numeric' then col.type = dv.type.numeric
-          when 'nominal' then col.type = dv.type.nominal
-          when 'ordinal' then col.type = dv.type.ordinal
-          else col.type = dv.type.unknown
+          when 'numeric' then col.type = @dv.type.numeric
+          when 'nominal' then col.type = @dv.type.nominal
+          when 'ordinal' then col.type = @dv.type.ordinal
+          else col.type = @dv.type.unknown
 
       # create table
-      _ref = dv.table input
+      _ref = @dv.table input
       # register the reference to the table
       @register tname, _ref
       @
