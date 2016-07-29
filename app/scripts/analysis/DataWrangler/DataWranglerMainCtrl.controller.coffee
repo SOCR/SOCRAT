@@ -16,10 +16,10 @@ module.exports = class DataWranglerMainCtrl extends BaseCtrl
     @DATA_TYPES = @msgManager.getSupportedDataTypes()
     @dataType = ''
 
-    data = @wrangler.init()
-    if data
-      @dataType = @DATA_TYPES.FLAT
-      w = @dw.wrangle()
+    data = @wrangler.init().then (status) =>
+      if status
+        @dataType = @DATA_TYPES.FLAT
+        w = @dw.wrangle()
 
     # listen to state change and save data when exiting Wrangle Data
     stateListener = @$rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) =>

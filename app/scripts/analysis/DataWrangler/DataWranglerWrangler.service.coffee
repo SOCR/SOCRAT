@@ -30,12 +30,12 @@ module.exports = class DataWranglerWrangler extends BaseService
     @dw = require 'data-wrangler'
 
   init: ->
-    data = @dataService.getData()
-    if data.dataType is @DATA_TYPES.FLAT
-      @csvData = @dataAdaptor.toCsvString data
-      true
-    else
-      false
+    data = @dataService.getData().then (data) =>
+      if data.dataFrame.dataType is @DATA_TYPES.FLAT
+        @csvData = @dataAdaptor.toCsvString data.dataFrame
+        true
+      else
+        false
 
   start: (viewContainers) ->
     @table = @wrangle(viewContainers)

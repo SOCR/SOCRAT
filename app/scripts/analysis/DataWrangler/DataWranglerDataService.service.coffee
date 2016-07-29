@@ -8,3 +8,5 @@ module.exports = class DataWranglerDataService extends BaseModuleDataService
   # requires renaming message service injection to @msgService
   initialize: () ->
     @msgManager = @app_analysis_dataWrangler_msgService
+    @getDataRequest = @msgManager.getMsgList().outgoing[0]
+    @getDataResponse = @msgManager.getMsgList().incoming[0]
