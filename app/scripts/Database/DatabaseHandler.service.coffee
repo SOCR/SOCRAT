@@ -16,10 +16,10 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
     @dataAdaptor = @app_analysis_database_dataAdaptor
     @db = @app_analysis_database_dv
 
-    @lastDataTypeDATA_TYPES = null
-    @lastDataTypelastDataType = ''
+    @DATA_TYPES = null
+    @lastDataType = ''
 
-  saveData: (obj) ->
+  saveData: (obj) =>
     if obj.dataFrame?
       dataFrame = obj.dataFrame
       # convert from the universal dataFrame object to datavore table or keep as is
@@ -37,7 +37,7 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
       else console.log '%cDATABASE: data type is unknown' , 'color:green'
     else console.log '%cDATABASE: nothing to save' , 'color:green'
 
-  getData: (data) ->
+  getData: (data) =>
     switch @lastDataType
       when @DATA_TYPES.FLAT
         _data = @db.get data.tableName
@@ -71,7 +71,7 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
 
     status: _methods.map (method) =>
       @eventManager.subscribe method['incoming'],
-        (msg, obj) ->
+        (msg, obj) =>
           console.log "%cDATABASE: listener called for" + msg , "color:green"
           # invoke callback
           _data = method.event.apply null, [obj]
@@ -84,11 +84,9 @@ module.exports = class DatabaseHandler extends BaseModuleInitService
           else
             _data.promise = $q.defer()
 
-          console.log '%cDATABASE: listener response: ' + _data, 'color:green'
-
-          @eventManager.publish
-            msg: method['outgoing']
-            data: _data
+          @eventManager.publish method['outgoing'],
+            => console.log '%cDATABASE: listener response: ' + _data, 'color:green'
+            _data
 
   initDb: () ->
     @$timeout =>
