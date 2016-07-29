@@ -14,7 +14,7 @@ module.exports = class AppMessageMap
     #      scopeTo: ['qualRobEstView']
     #    ,
       msgFrom: 'save data'
-      scopeFrom: ['app_analysis_getData', 'wrangleData']
+      scopeFrom: ['app_analysis_getData', 'app_analysis_dataWrangler']
       msgTo: 'save table'
       scopeTo: ['app_analysis_database']
     #    ,
@@ -27,17 +27,17 @@ module.exports = class AppMessageMap
     #      scopeFrom: ['getData']
     #      msgTo: 'upload csv'
     #      scopeTo: ['app.utils.importer']
-    ,
+#    ,
     # TODO: make message mapping dynamic #SOCRFW-151
-      msgFrom: 'get table'
-      scopeFrom: ['instrPerfEval']
-      msgTo: 'get table'
-      scopeTo: ['app_analysis_database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['app_analysis_database']
-      msgTo: 'take table'
-      scopeTo: ['instrPerfEval']
+#      msgFrom: 'get table'
+#      scopeFrom: ['instrPerfEval']
+#      msgTo: 'get table'
+#      scopeTo: ['app_analysis_database']
+#    ,
+#      msgFrom: 'take table'
+#      scopeFrom: ['app_analysis_database']
+#      msgTo: 'take table'
+#      scopeTo: ['instrPerfEval']
     #    ,
     #      msgFrom: 'get data'
     #      scopeFrom: ['kMeans']
@@ -70,14 +70,14 @@ module.exports = class AppMessageMap
     #      scopeTo: ['spectrClustr']
     ,
       msgFrom: 'get data'
-      scopeFrom: ['wrangleData']
+      scopeFrom: ['app_analysis_dataWrangler']
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['app_analysis_database']
       msgTo: 'wrangle data'
-      scopeTo: ['wrangleData']
+      scopeTo: ['app_analysis_dataWrangler']
     ,
       msgFrom: 'get table'
       scopeFrom: ['charts']

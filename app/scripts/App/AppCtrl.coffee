@@ -2,7 +2,7 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-appControllers = angular.module 'app_controllers', []
+appControllers = angular.module 'app_controllers'
 
 module.extend = class AppCtrl extends BaseCtrl
   @register appControllers

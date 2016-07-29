@@ -10,11 +10,16 @@ require 'angular-cookies'
 require 'angular-resource'
 require 'styles/app.less'
 
+# create app-level modules
+angular.module 'app_controllers', []
+angular.module 'app_directives', []
+
 # base app components
 require 'scripts/App/AppCtrl.coffee'
 require 'scripts/App/AppSidebarCtrl.coffee'
 require 'scripts/App/AppMainCtrl.coffee'
 require 'scripts/App/AppMenubarDirective.coffee'
+require 'scripts/App/AppNotification.directive.coffee'
 require 'scripts/App/filters.coffee'
 require 'scripts/App/services.coffee'
 
@@ -22,6 +27,7 @@ bodyTemplate = require 'index.jade'
 document.body.innerHTML = bodyTemplate()
 
 # load app configs
+
 ModuleList = require 'scripts/App/AppModuleList.coffee'
 AppConfig = require 'scripts/App/AppConfig.coffee'
 # create an instance of Core
