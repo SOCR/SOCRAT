@@ -29,9 +29,9 @@ module.exports = class BaseModuleMessageService extends BaseService
   broadcast: (msg, data) ->
     @$rootScope.$broadcast msg, data
 
-  publish: (msg, cb, dataFrame=null) ->
+  publish: (msg, cb, dataFrame=null, deferred=null) ->
     if @sb and msg in @msgList.outgoing
-      deferred = @$q.defer()
+      deferred = @$q.defer() unless deferred?
       @sb.publish
         msg: msg
         msgScope: @msgList.scope
