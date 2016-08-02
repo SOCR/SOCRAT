@@ -12,12 +12,11 @@ Installation
 ------------
 In case you wish to create your own module or contribute to the project, follow these steps to setup your enviroment.
 
-First, install [nodejs](http://nodejs.org/) if you havent. npm is the package manager for Node.js and comes bundled with it.
+First, install [nodejs](http://nodejs.org/) if you haven't. npm is the package manager for Node.js and comes bundled with it.
 
-Install Bower and Grunt,
+Install Webpack,
 
-    $> npm install -g bower grunt-cli
-    $> npm update -b bower
+    $> npm install webpack -g
 
 Clone the repository.
 
@@ -27,17 +26,16 @@ Now, lets install all the dependencies. Go into the root folder,
 
     $> cd SOCRAT
     $> npm install
-    $> bower install
 
-This will install all the dependencies mentioned in package.json and bower.json files.
+This will install all the dependencies mentioned in package.json files.
 
-Start the server! See the application running at localhost:9000!
+Start the server and see the application running at localhost:8080:
 
-    $> grunt serve
+    $> npm run serve
     
 To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
 
-    $> grunt test
+    $> npm run test
 
 
 Motivation 
@@ -55,7 +53,7 @@ We intend to create a toolbox which will serve users on all platforms. We are pr
  [`CoffeeScript`](http://coffeescript.org/)
  [`Jade`](http://jade-lang.com/)
  [`Less`](http://lesscss.org/)
- [`Grunt`](http://gruntjs.com/) 
+ [`Webpack`](https://webpack.github.io/) 
  [`Node.js`](http://nodejs.org/)
 
  Dependencies
