@@ -48,6 +48,12 @@ module.exports = class AppConfig
               Ctrl.register angModule, ctrlName
               console.log 'AppConfig: created controller ' + ctrlName
 
+          if moduleComponents.directives
+            # adding directives
+            for dirName, Dir of moduleComponents.directives
+              Dir.register angModule, dirName
+              console.log 'AppConfig: created directive ' + dirName
+
           # create run block of module
           if moduleComponents.runBlock
             moduleRunBlock = new moduleComponents.runBlock angModule
