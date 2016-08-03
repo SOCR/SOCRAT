@@ -24,9 +24,9 @@
     "data-wrangler": "^1.0.0",
     "datatables.net": "^1.10.11",
     "handsontable": "^0.26.0",
-    "hoverintent": "^1.0.2",
+    "jquery": "^2.1.0",
     "jquery-highlight": "~3.3.0",
-    "jquery-layout": "git+https://github.com/benosman/layout.git",
+    "jquery-ui-layout": "git+https://github.com/benosman/layout.git",
     "jsfeat": "~0.0.8",
     "jstat": "~1.5.2",
     "ngHandsontable": "git+https://github.com/handsontable/ngHandsontable.git"
