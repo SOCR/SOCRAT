@@ -2,7 +2,7 @@
 
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
-module.extend = class AppNotificationDirective extends BaseDirective
+module.exports = class AppNotificationDirective extends BaseDirective
 
   initialize: () ->
     @restrict = 'E'
