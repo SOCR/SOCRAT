@@ -1,5 +1,24 @@
 'use strict'
 
+#a = require 'data-wrangler/style/images/abc.png'
+#requireAll = (r) ->
+#  console.log r.keys()
+#  r.keys().forEach(r)
+#  console.log 'images'
+#pngContext = require.context('data-wrangler/style/images/', false, /^\.\/.*\.png$/)
+#olo = requireAll pngContext
+#requireAll require.context('data-wrangler/style', true, /\.css$/)
+
+require 'jquery-highlight'
+require 'datatables.net'
+require 'data-wrangler/lib/hoverIntent/hoverIntent.js'
+require 'data-wrangler/style/images/' + /^.*$/
+#require("data-wrangler/style/images/^.png/")
+#require 'data-wrangler/style/layout.css'
+#require 'data-wrangler/style/editor.css'
+#require 'data-wrangler/style/table.css'
+#require 'data-wrangler/style/wrangler.css'
+
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class DataWranglerMainCtrl extends BaseCtrl
