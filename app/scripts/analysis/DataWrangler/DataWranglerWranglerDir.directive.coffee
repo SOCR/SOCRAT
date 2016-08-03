@@ -1,9 +1,11 @@
 'use strict'
 
+require 'jquery-ui-layout'
+
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
-module.extend = class DataWranglerWranglerDir extends BaseDirective
-  @inject 'app_analysis_dataWrangler_wrangler', 'app_analysis_dataWrangler_msgService'
+module.exports = class DataWranglerWranglerDir extends BaseDirective
+  @inject 'app_analysis_dataWrangler_wrangler', 'app_analysis_dataWrangler_msgService', '$timeout'
 
   initialize: ->
     @wrangler = @app_analysis_dataWrangler_wrangler
@@ -22,35 +24,35 @@ module.extend = class DataWranglerWranglerDir extends BaseDirective
 
       DATA_TYPES = @msgManager.getSupportedDataTypes()
 
-      # check if received dataset is flat
-      if scope.dataType? and scope.dataType is DATA_TYPES.FLAT
-        myLayout = $('#dt_example').layout
-          north:
-            spacing_open: 0
-            resizable: false
-            slidable: false
-            fxName: 'none'
-          south:
-            spacing_open: 0
-            resizable: false
-            slidable: false
-            fxName: 'none'
-          west:
-            minSize: 310
+      @$timeout => # check if received dataset is flat
+        if scope.mainArea.dataType? and scope.mainArea.dataType is DATA_TYPES.FLAT
+          myLayout = $('#dt_example').layout
+            north:
+              spacing_open: 0
+              resizable: false
+              slidable: false
+              fxName: 'none'
+            south:
+              spacing_open: 0
+              resizable: false
+              slidable: false
+              fxName: 'none'
+            west:
+              minSize: 310
 
-        container = $('#table')
-        previewContainer = $('#preview')
-        transformContainer = $('#transformEditor')
-        dashboardContainer = $("#wranglerDashboard")
+          container = $('#table')
+          previewContainer = $('#preview')
+          transformContainer = $('#transformEditor')
+          dashboardContainer = $("#wranglerDashboard")
 
-        @wrangler.start
-          tableContainer: container
-          transformContainer: transformContainer
-          previewContainer: previewContainer
-          dashboardContainer: dashboardContainer
+          @wrangler.start
+            tableContainer: container
+            transformContainer: transformContainer
+            previewContainer: previewContainer
+            dashboardContainer: dashboardContainer
 
-        # TODO: find correct programmatic way to invoke header propagation
-        # assuming there always is a header in data, propagate it in Wrangler
-        $('#table .odd .rowHeader').first().mouseup().mousedown()
-        d3.select('div.menu_option.Promote')[0][0].__onmousedown()
-        $('div.suggestion.selected').click()
+          # TODO: find correct programmatic way to invoke header propagation
+          # assuming there always is a header in data, propagate it in Wrangler
+          $('#table .odd .rowHeader').first().mouseup().mousedown()
+          d3.select('div.menu_option.Promote')[0][0].__onmousedown()
+          $('div.suggestion.selected').click()
