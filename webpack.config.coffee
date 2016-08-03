@@ -56,6 +56,9 @@ module.exports =
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/
       loader: "url?limit=10000&mimetype=image/svg+xml"
     ,
+      test: /\.jpe?g$|\.gif$|\.png$/i
+      loader: "file-loader"
+    ,
       test: /[\/]datavore-d0\.1\.js$/
       loader: 'exports?dv'
     ,
@@ -80,9 +83,13 @@ module.exports =
 
   plugins: [
 
-  # disable dynamic requires
-    new webpack.ContextReplacementPlugin(/.*$/, /a^/)
+    # disable dynamic requires
+    new webpack.ContextReplacementPlugin /.*$/, /a^/
 
-#    new webpack.ProvidePlugin
-#      'angular': 'exports?window.angular!bower/angular'
+    new webpack.ProvidePlugin
+      $: "jquery",
+      jQuery: "jquery"
+
+    new webpack.ProvidePlugin
+      d3: "d3"
   ]
