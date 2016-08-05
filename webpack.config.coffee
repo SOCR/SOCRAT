@@ -57,13 +57,19 @@ module.exports =
       loader: "url?limit=10000&mimetype=image/svg+xml"
     ,
       test: /\.jpe?g$|\.gif$|\.png$/i
-      loader: "file-loader"
+      loader: "url"
     ,
       test: /[\/]datavore-d0\.1\.js$/
       loader: 'exports?dv'
     ,
+      test: /[\/]highlight\.js$/
+      loader: 'exports?Highlight'
+    ,
+      test: /datatables\.net.*/,
+      loader: 'imports?define=>false'
+    ,
       test: /[\/]dw\.js$/
-      loader: 'imports?dv=datavore!exports?dw'
+      loader: 'imports?dv=datavore!imports?Highlight=highlight!exports?dw'
   ]
 
   resolve:
@@ -80,6 +86,7 @@ module.exports =
 
     alias:
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
+      highlight: 'data-wrangler/lib/Highlight/highlight.js'
 
   plugins: [
 
