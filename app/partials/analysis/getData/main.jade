@@ -1,27 +1,27 @@
-div(ng-controller='getDataMainCtrl')
+div(ng-controller='GetDataMainCtrl as mainArea')
   h1 Get Data
   //br
   p.lead To perform any analysis, you need data to begin with. Choose one of the available methods
-    |to get the data into the web-app.
+    |to get the data into the app.
 
-  form.socrData(uib-collapse="showState.socrData")
+  form.socrData(uib-collapse="mainArea.showState.socrData")
     legend SOCR Datasets
     div.form-group
       select.form-control(
-        ng-model="socrdataset",
-        ng-options="item as item.name for item in socrDatasets track by item.id")
-    button.btn.btn-primary(ng-click="getSocrData()") Load
+        ng-model="mainArea.socrdataset",
+        ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
+    button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
 
-  div.worldBank(uib-collapse="showState.worldBank")
+  div.worldBank(uib-collapse="mainArea.showState.worldBank")
     h3 WorldBank Data
     span Size:
-      input(type="text",class="input-mini", ng-model="size")
-      select(style="width:100%;margin:0px", ng-model="option")
+      input(type="text",class="input-mini", ng-model="mainArea.size")
+      select(style="width:100%;margin:0px", ng-model="mainArea.option")
         option(value='4.2_BASIC.EDU.SPENDING') Education Spending
         option(value='2.4_OOSC.RATE') Out of School Children rate
-      button.btn.btn-primary(ng-click="getWB()") Load
+      button.btn.btn-primary(ng-click="mainArea.getWB()") Load
 
-  div.generate(uib-collapse="showState.generate")
+  div.generate(uib-collapse="mainArea.showState.generate")
     ul.nav.nav-pills.nav-stacked.disabled
       li
         a Binomial Coin Toss
@@ -34,17 +34,21 @@ div(ng-controller='getDataMainCtrl')
       li
         a The Beta Distribution Experiment
 
-  form.jsonUrl(uib-collapse="showState.jsonParse")
+  form.jsonUrl(uib-collapse="mainArea.showState.jsonParse")
     legend Enter URL to parse JSON file
     div.form-group
       label(for="getDataJsonUrlInput").sr-only Enter URL
       div.btn-group.btn-group-justified(role="group")
         input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
-        span#getDataJsonUrlClear(ng-click="jsonUrl=''").glyphicon.glyphicon-remove-circle
-    button.btn.btn-primary(ng-click="getJsonByUrl()") Parse
+        span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
+    button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
 
   br
-  div.lead.bg-danger(ng-hide="dataType != DATA_TYPES.NESTED")
+  div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.
-  div(ng-class="{'vis-hidden': dataType != DATA_TYPES.FLAT}")
-    handsontable(purpose="json")
+  div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
+    hot-table(
+    purpose="json"
+    settings="mainArea.tableSettings"
+    datarows="mainArea.tableData"
+    )

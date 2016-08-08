@@ -1,6 +1,6 @@
 'use strict'
 
-charts = angular.module('app_analysis_charts', [])
+module.exports = angular.module('app_analysis_charts', [])
 
 .factory('app_analysis_charts_constructor', [
   'app_analysis_charts_manager'

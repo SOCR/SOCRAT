@@ -1,0 +1,62 @@
+div(ng-controller="clusterSidebarCtrl as sidebar")
+  form
+    legend Parameters
+    fieldset(ng-disabled="clustering")
+      div.checkbox
+        label
+          input(type="checkbox", ng-model="useAllData")
+          | Cluster whole dataset (visualize 2D projection)
+      div.form-group
+        fieldset(ng-disabled="!useLabels")
+          label Labels column &nbsp;
+          //- show data header column names
+          select(ng-model="labelCol", ng-options="col for col in cols").form-control
+      div.checkbox
+        label
+          input(type="checkbox", ng-model="useLabels")
+          | Labels present
+      div.form-group
+        fieldset
+          label Algorithms &nbsp;
+          //- show data header column names
+          select(ng-model="algorithms", ng-options="method for method in algorithms").form-control
+      //div.form-group
+      //  label Affinity &nbsp;
+      //  select(ng-model="initMethod", ng-options="a for a in affinities").form-control
+      //div.form-group
+      //  label X column &nbsp;
+      //  //- show data header column names
+      //  select(ng-model="xCol", ng-options="col for col in cols", ng-change="updateDataPoints()").form-control
+      //div.form-group
+      //  label Y column &nbsp;
+      //  //- show data header column names
+      //  select(ng-model="yCol", ng-options="col for col in cols", ng-change="updateDataPoints()").form-control
+      //
+      //
+      //div.form-group
+      //  fieldset.form-inline
+      //    label k &nbsp;
+      //    select(ng-model="k", ng-options="k for k in ks").form-control
+      //    button.btn.btn-info(
+      //    type="submit"
+      //    aria-label="Get k value"
+      //    ng-click="detectKValue()"
+      //    ng-disabled="!labelson")
+      //      | Detect k
+      //div.checkbox(ng-hide="!labelson")
+      //  label
+      //    input(
+      //    type="checkbox"
+      //    ng-model="accuracyon"
+      //    ng-disabled="k !== numUniqueLabels.num || labelCol !== numUniqueLabels.labelCol")
+      //    | Compute accuracy
+      //div.form-group
+      //  label Distance &nbsp;
+      //  select(ng-model="dist", ng-options="dist for dist in distances").form-control
+      //button.btn.btn-primary(
+      //type="submit"
+      //aria-label="Run k-Means"
+      //ng-click="run()"
+      //ng-disabled="kmeanson")
+      //  | Run&nbsp;
+      //  span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")

@@ -1,35 +1,35 @@
-div(ng-controller="getDataSidebarCtrl")
+div(ng-controller="GetDataSidebarCtrl as sidebar")
   p. Data input
   div.list-group
     a#getDataGrid.list-group-item(
       href=""
-      ng-click="show('grid')"
-      ng-class="{active:selected == 'getDataGrid'}")
+      ng-click="sidebar.show('grid')"
+      ng-class="{active: sidebar.selected == 'getDataGrid'}")
       | Copy-paste to spreadsheet
     a#getDataSocrData.list-group-item(
       href=""
-      ng-click="show('socrData')"
-      ng-class="{active:selected == 'getDataSocrData'}")
+      ng-click="sidebar.show('socrData')"
+      ng-class="{active: sidebar.selected == 'getDataSocrData'}")
       | Load SOCR dataset
     a#getDataWorldBank.list-group-item(
       href=""
-      ng-click="show('worldBank')"
-      ng-class="{active:selected == 'getDataWorldBank'}")
+      ng-click="sidebar.show('worldBank')"
+      ng-class="{active: sidebar.selected == 'getDataWorldBank'}")
       | Load data from WorldBank
     a#getDataGenerate.list-group-item(
       href=""
-      ng-click="show('generate')"
-      ng-class="{active:selected == 'getDataGenerate'}")
+      ng-click="sidebar.show('generate')"
+      ng-class="{active: sidebar.selected == 'getDataGenerate'}")
       | Use data generator
     a#getDataJson.list-group-item(
       href=""
-      ng-click="show('jsonParse')"
-      ng-class="{active:selected == 'getDataJson'}")
+      ng-click="sidebar.show('jsonParse')"
+      ng-class="{active: sidebar.selected == 'getDataJson'}")
       | Parse JSON file by URL
     a#getDataSocrPage.list-group-item.disabled(
       href=""
-      ng-click="save()"
-      ng-class="{active:selected == 'getDataSocrPage'}")
+      ng-click="sidebar.save()"
+      ng-class="{active: sidebar.selected == 'getDataSocrPage'}")
       | Parse SOCR Data page by URL
 
 //
