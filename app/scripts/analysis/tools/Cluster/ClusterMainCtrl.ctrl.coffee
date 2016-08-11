@@ -14,8 +14,9 @@ module.exports = class ClusterMainCtrl extends BaseCtrl
     @transformations = []
     @affinityMatrix = null
     @data_types = @dataService.getDataTypes()
+    @getData()
 
   getData: ->
-    @dataService.getData().then (dataFrame) ->
-      @dataType = dataFrame.dataType
+    @dataService.getData().then (obj) =>
+      @dataType = obj.dataFrame.dataType
       # TODO: main controller logic

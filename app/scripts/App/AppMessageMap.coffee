@@ -56,7 +56,7 @@ module.exports = class AppMessageMap
     ,
       msgFrom: 'take table'
       scopeFrom: ['app_analysis_database']
-      msgTo: 'takeData'
+      msgTo: 'take table'
       scopeTo: ['app_analysis_cluster']
     #    ,
     #      msgFrom: 'get data'
