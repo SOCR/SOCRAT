@@ -5,10 +5,9 @@ BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffe
 module.exports = class ClusterAlgorithms extends BaseModuleDataService
   @inject 'app_analysis_cluster_msgService'
 
-  # injected:
-  # @msgManager
-
   initialize: ->
+
+    @msgManager = @app_analysis_cluster_msgService
 
     @algorithms = [
       name: 'K-Means'
