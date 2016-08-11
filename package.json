@@ -1,7 +1,7 @@
 {
   "author": "Alexandr Kalinin<alxndrkalinin@gmail.com>, Selvam Palanimalai<selvam1991@gmail.com>",
   "name": "SOCRAT",
-  "version": "0.1.5",
+  "version": "v0.1.5-alpha.7",
   "description": "Flexible HTML5/JS toolkit for interactive data analysis and visuzalization",
   "homepage": "https://github.com/SOCR/SOCRAT",
   "repository": {
