@@ -27,9 +27,13 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       @selectedAlgorithm = @algorithms[0]
 
     @dataService.getData().then (obj) =>
-      if obj.dataFrame
+      if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
         @dataType = obj.dataFrame.dataType
+        @msgService.broadcast 'kmeans:updateDataType', obj.dataFrame.dataType
         @parseData obj.dataFrame
+      else
+        # TODO: add processing for nested object
+        console.log 'NESTED DATASET'
 
   updateDataPoints: (data) ->
     xCol = data.header.indexOf @xCol
