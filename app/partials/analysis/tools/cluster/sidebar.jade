@@ -14,11 +14,11 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           input(type="checkbox", ng-model="sidebar.useAllData")
           | Cluster whole dataset (visualize 2D projection)
       //- show data header column names
-      div.checkbox
+      div.checkbox(ng-show="sidebar.labelCol")
         label
           input(type="checkbox", ng-model="sidebar.useLabels")
           | Labels present
-      div.form-group
+      div.form-group(ng-show="sidebar.labelCol")
         fieldset(ng-show="sidebar.useLabels")
           label Labels column &nbsp;
           //- show data header column names
@@ -26,7 +26,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
       //div.form-group
       //  label Affinity &nbsp;
       //  select(ng-model="initMethod", ng-options="a for a in affinities").form-control
-      div.form-group
+      div.form-group(ng-show="sidebar.xCol")
         label X column &nbsp;
         //- show data header column names
         select.form-control(
@@ -34,7 +34,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           ng-options="col for col in sidebar.cols"
           ng-change="sidebar.updateDataPoints()"
         )
-      div.form-group
+      div.form-group(ng-show="sidebar.yCol")
         label Y column &nbsp;
         //- show data header column names
         select.form-control(

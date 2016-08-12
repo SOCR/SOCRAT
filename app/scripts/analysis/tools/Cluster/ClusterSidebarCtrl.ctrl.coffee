@@ -23,19 +23,26 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @cols = []
     @dataType = null
 
+    @xCol = null
+    @yCol = null
+    @labelCol = null
+
+    @dataFrame = null
+
     if @algorithms.length > 0
       @selectedAlgorithm = @algorithms[0]
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
         @dataType = obj.dataFrame.dataType
-        @msgService.broadcast 'kmeans:updateDataType', obj.dataFrame.dataType
+        @msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
+        @dataFrame = obj.dataFrame
         @parseData obj.dataFrame
       else
         # TODO: add processing for nested object
         console.log 'NESTED DATASET'
 
-  updateDataPoints: (data) ->
+  updateDataPoints: (data=@dataFrame) ->
     xCol = data.header.indexOf @xCol
     yCol = data.header.indexOf @yCol
     data = ([row[xCol], row[yCol]] for row in data.data)
@@ -43,7 +50,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   # set initial values for sidebar controls
   setSidebarControls: (initControlValues) ->
-    params = @algorithm.getParameters()
+    params = @selectedAlgorithm.getParameters()
     @ks = [params.minK..params.maxK]
     @distances = params.distances
     @inits = params.initMethods
