@@ -17,7 +17,7 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
         initialisation: 'Forgy'
       ]
     ,
-      name: 'Spectral cluster'
+      name: 'Spectral clustering'
       params: [
         k: [2..10]
         distance: 'Euclidean'

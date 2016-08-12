@@ -19,8 +19,8 @@ module.exports = cluster = new Module
       'clusterMainCtrl': require 'scripts/analysis/tools/Cluster/ClusterMainCtrl.ctrl.coffee'
       'clusterSidebarCtrl': require 'scripts/analysis/tools/Cluster/ClusterSidebarCtrl.ctrl.coffee'
 
-    factories: []
-    directives: []
+    directives:
+      'socratClusterViz': require 'scripts/analysis/tools/Cluster/ClusterVizDir.directive.coffee'
 
   # module state config
   state:
