@@ -1,6 +1,6 @@
-div(ng-controller="ChartsSidebarCtrl")
+div(ng-controller='ChartsSidebarCtrl as sidebar')
   h4 Graphs
-  select.form-control#chooseGraph(value="Choose a graph" ng-change="changeName()" ng-model="graphSelect" ng-options="g as g.name for g in graphs")
+  select.form-control#chooseGraph(value="Choose a graph" ng-change="sidebar.changeName()" ng-model="sidebar.graphSelect" ng-options="g as g.name for g in graphs")
   h4 Variables
   div
     p {{graphSelect.message}}
@@ -8,17 +8,17 @@ div(ng-controller="ChartsSidebarCtrl")
       input(ng-model="selectorCat" type="checkbox" id="categorical")
       p X is a categorical variable
   div.form-inline
-    div.form-horizontal(ng-show="graphSelect.x")
+    div.form-horizontal(ng-show="sidebar.graphSelect.x")
       label(for = "x") Add X
-      select#x.form-control(ng-change="changeVar(selector1,headers,'x');" ng-model="selector1" ng-options="v as v.value for v in headers")
-    div.form-horizontal(ng-show="graphSelect.y")
+      select#x.form-control(ng-change="sidebar.changeVar(selector1,headers,'x');" ng-model="sidebar.selector1" ng-options="v as v.value for v in headers")
+    div.form-horizontal(ng-show="sidebar.graphSelect.y")
       label(for = "y") Add Y
-      select#y.form-control(ng-change="changeVar(selector2,headers,'y');" ng-model="selector2" ng-options="v as v.value for v in headers")
-      div(ng-show = "labelVar")
-        input(ng-model="labelCheck" type="checkbox" id = "label")
+      select#y.form-control(ng-change="sidebar.changeVar(selector2,headers,'y');" ng-model="sidebar.selector2" ng-options="v as v.value for v in headers")
+      div(ng-show = "sidebar.labelVar")
+        input(ng-model="sidebar.labelCheck" type="checkbox" id = "label")
         p Check if Y variable is the labels column
 
-    div.form-horizontal(ng-show="graphSelect.z")
+    div.form-horizontal(ng-show="sidebar.graphSelect.z")
       label(for = "z") Add Radius
-      select#z.form-control(ng-change="changeVar(selector3,headers,'z');" ng-model="selector3" ng-options="v as v.value for v in headers")
+      select#z.form-control(ng-change="sidebar.changeVar(selector3,headers,'z');" ng-model="sidebar.selector3" ng-options="v as v.value for v in headers")
 

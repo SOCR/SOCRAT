@@ -3,7 +3,7 @@
 ModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService.coffee'
 
 module.exports = class ChartsMsgService extends ModuleMessageService
-  @msgList:
+  msgList:
     outgoing: ['get table']
     incoming: ['take table']
-    scope: ['charts']
+    scope: ['app_analysis_charts']

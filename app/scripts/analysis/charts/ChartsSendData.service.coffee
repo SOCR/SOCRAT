@@ -4,7 +4,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsSendData extends BaseService
 
-_createGraph: (chartData, graphInfo, headers, $rootScope, dataType, scheme_input) ->
+createGraph: (chartData, graphInfo, headers, $rootScope, dataType, scheme_input) ->
   graphFormat: () ->
     console.log "dataType"
     console.log dataType

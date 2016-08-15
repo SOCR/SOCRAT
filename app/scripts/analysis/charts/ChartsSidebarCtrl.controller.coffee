@@ -73,3 +73,4 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     for h in headers
       if selector.value is h.value then @$scope.graphInfo[ind] = parseFloat h.key
     sendData.createGraph(_chartData,@$scope.graphInfo,_headers, @$rootScope, @$scope.dataType, @$scope.selector4.scheme)
+
