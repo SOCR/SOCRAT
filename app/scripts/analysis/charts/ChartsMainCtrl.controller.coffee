@@ -9,7 +9,7 @@ module.exports = class ChartsMainCtrl extends BaseCtrl
     @_chart_data = null
 
     _updateData: () ->
-    @$scope.chartData = @_chart_data
+    @chartData = @_chart_data
 
     @$scope.$on 'charts:graphDiv', (event, data) ->
       @_chart_data = data

@@ -4,7 +4,10 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsSendData extends BaseService
 
-createGraph: (chartData, graphInfo, headers, $rootScope, dataType, scheme_input) ->
+initialize: () ->
+  @msgManager = @app_analysis_getData_msgService
+
+createGraph: (chartData, graphInfo, headers, dataType, scheme_input) ->
   graphFormat: () ->
     console.log "dataType"
     console.log dataType
@@ -53,4 +56,4 @@ createGraph: (chartData, graphInfo, headers, $rootScope, dataType, scheme_input)
     results.scheme = streamColor
 
 
-  $rootScope.$broadcast 'charts:graphDiv', results
+  @msgManager.$broadcast 'charts:graphDiv', results

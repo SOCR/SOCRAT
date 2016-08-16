@@ -3,10 +3,8 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ChartsSidebarCtrl extends BaseCtrl
-  @inject   '$scope',
-    '$rootScope',
+  @inject '$q',
     '$stateParams',
-    '$q',
     'app_analysis_charts_dataTransform',
     'app_analysis_charts_list',
     'app_analysis_charts_sendData',
@@ -24,13 +22,13 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
   _chartData = null
   _headers = null
 
-  @$scope.selector1 = {}
-  @$scope.selector2 = {}
-  @$scope.selector3 = {}
-  @$scope.selector4 = {}
-  @$scope.stream = false
+  @selector1 = {}
+  @selector2 = {}
+  @selector3 = {}
+  @selector4 = {}
+  @stream = false
 
-  @$scope.streamColors = [
+  @streamColors = [
     name: "blue"
     scheme: ["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"]
   ,
@@ -41,36 +39,36 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     scheme: ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"]
   ]
 
-  @$scope.graphInfo =
+  @graphInfo =
   graph: ""
   x: ""
   y: ""
   z: ""
 
-  @$scope.graphs = list.flat()
-  @$scope.graphSelect = {}
-  @$scope.labelVar = false
-  @$scope.labelCheck = null
+  @graphs = list.flat()
+  @graphSelect = {}
+  @labelVar = false
+  @labelCheck = null
 
-  @$scope.changeName = () ->
-    @$scope.graphInfo.graph = @$scope.graphSelect.name
+  @changeName = () ->
+    @graphInfo.graph = @graphSelect.name
 
-    if @$scope.graphSelect.name is "Stream Graph"
-      @$scope.stream = true
+    if @graphSelect.name is "Stream Graph"
+      @stream = true
     else
-      @$scope.stream = false
+      @stream = false
 
-    if @$scope.dataType is "NESTED"
-      @$scope.graphInfo.x = "initiate"
-      sendData.createGraph(@$scope.data, @$scope.graphInfo, {key: 0, value: "initiate"}, @$rootScope, @$scope.dataType, @$scope.selector4.scheme)
+    if @dataType is "NESTED"
+      @graphInfo.x = "initiate"
+      sendData.createGraph(@data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme)
     else
-      sendData.createGraph(_chartData, @$scope.graphInfo, _headers, @$rootScope, @$scope.dataType, @$scope.selector4.scheme)
+      sendData.createGraph(_chartData, @graphInfo, _headers, @dataType, @selector4.scheme)
 
-  @$scope.changeVar = (selector,headers, ind) ->
-    console.log @$scope.selector4.scheme
+  @changeVar = (selector,headers, ind) ->
+    console.log @selector4.scheme
     #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
     #only allow numerical ones for ind = y or z
     for h in headers
-      if selector.value is h.value then @$scope.graphInfo[ind] = parseFloat h.key
-    sendData.createGraph(_chartData,@$scope.graphInfo,_headers, @$rootScope, @$scope.dataType, @$scope.selector4.scheme)
+      if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
+    sendData.createGraph(_chartData,@graphInfo,_headers, @dataType, @selector4.scheme)
 
