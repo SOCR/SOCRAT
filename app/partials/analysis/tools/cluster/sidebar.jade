@@ -4,70 +4,84 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
     fieldset(ng-disabled="sidebar.clusterRunning")
     div.form-group
       fieldset
-        label Algorithm &nbsp;
+        label(
+          uib-tooltip="Choose an algorithm from the list below"
+          tooltip-placement="right"
+        ) Algorithm &nbsp;
         select.form-control(
-          ng-model="sidebar.selectedAlgorithm"
-          ng-options="method for method in sidebar.algorithms"
+        ng-model="sidebar.selectedAlgorithm"
+        ng-options="method for method in sidebar.algorithms"
+        ng-change="sidebar.updateAlgControls()"
         )
-      div.checkbox
-        label
-          input(type="checkbox", ng-model="sidebar.useAllData")
-          | Cluster whole dataset (visualize 2D projection)
-      //- show data header column names
-      div.checkbox(ng-show="sidebar.labelCol")
-        label
-          input(type="checkbox", ng-model="sidebar.useLabels")
-          | Labels present
-      div.form-group(ng-show="sidebar.labelCol")
-        fieldset(ng-show="sidebar.useLabels")
-          label Labels column &nbsp;
-          //- show data header column names
-          select.form-control(ng-model="sidebar.labelCol", ng-options="col for col in sidebar.cols")
-      //div.form-group
-      //  label Affinity &nbsp;
-      //  select(ng-model="initMethod", ng-options="a for a in affinities").form-control
-      div.form-group(ng-show="sidebar.xCol")
-        label X column &nbsp;
+        div.form-group(ng-show="sidebar.algParams.k")
+          fieldset.form-inline
+            label Number of clusters &nbsp;
+            select.form-control(
+            ng-model="sidebar.k"
+            ng-options="k for k in sidebar.algParams.k"
+            ng-init="sidebar.k = sidebar.algParams.k[0]"
+            )
+            button.btn.btn-info(
+              type="submit"
+              aria-label="Get k value"
+              ng-click="sidebar.detectKValue()"
+              ng-disabled="!sidebar.useLabels"
+              uib-tooltip = "Use labels column to get number of clusters"
+              tooltip-placement="right"
+            )
+              | Detect k
+        div.checkbox(ng-hide="!sidebar.useLabels")
+          label
+            input(
+            type="checkbox"
+            ng-model="accuracyon"
+            ng-disabled="sidebar.algParams.k !== sidebar.numUniqueLabels.num || sidebar.labelCol !== sidebar.numUniqueLabels.labelCol")
+            | Compute accuracy
+        div.form-group(ng-show="sidebar.algParams.distance")
+          label Distance &nbsp;
+          select.form-control(
+            ng-model="sidebar.distance"
+            ng-options="dist for dist in sidebar.algParams.distance"
+            ng-init="sidebar.distance = sidebar.algParams.distance[0]"
+          )
+        hr
+      fieldset(ng-show="sidebar.dataFrame")
+        label Dataset &nbsp;
+        div.checkbox(uib-tooltip="2D projection is always visualized")
+          label
+            input(type="checkbox", ng-model="sidebar.useAllData")
+            | Cluster whole dataset
         //- show data header column names
-        select.form-control(
+        div.checkbox(ng-show="sidebar.labelCol")
+          label
+            input(type="checkbox", ng-model="sidebar.useLabels")
+            | Labels present
+        div.form-group(ng-show="sidebar.labelCol")
+          fieldset(ng-show="sidebar.useLabels")
+            label Labels column &nbsp;
+            //- show data header column names
+            select.form-control(ng-model="sidebar.labelCol", ng-options="col for col in sidebar.cols")
+        div.form-group(ng-show="sidebar.xCol")
+          label X column &nbsp;
+          //- show data header column names
+          select.form-control(
           ng-model="sidebar.xCol"
           ng-options="col for col in sidebar.cols"
           ng-change="sidebar.updateDataPoints()"
-        )
-      div.form-group(ng-show="sidebar.yCol")
-        label Y column &nbsp;
-        //- show data header column names
-        select.form-control(
+          )
+        div.form-group(ng-show="sidebar.yCol")
+          label Y column &nbsp;
+          //- show data header column names
+          select.form-control(
           ng-model="sidebar.yCol"
           ng-options="col for col in sidebar.cols"
           ng-change="sidebar.updateDataPoints()"
-        )
-      //
-      // TODO: design algorithm-specific controls
-      //div.form-group
-      //  fieldset.form-inline
-      //    label k &nbsp;
-      //    select(ng-model="k", ng-options="k for k in ks").form-control
-      //    button.btn.btn-info(
-      //    type="submit"
-      //    aria-label="Get k value"
-      //    ng-click="detectKValue()"
-      //    ng-disabled="!labelson")
-      //      | Detect k
-      //div.checkbox(ng-hide="!labelson")
-      //  label
-      //    input(
-      //    type="checkbox"
-      //    ng-model="accuracyon"
-      //    ng-disabled="k !== numUniqueLabels.num || labelCol !== numUniqueLabels.labelCol")
-      //    | Compute accuracy
-      //div.form-group
-      //  label Distance &nbsp;
-      //  select(ng-model="dist", ng-options="dist for dist in distances").form-control
-      //button.btn.btn-primary(
-      //type="submit"
-      //aria-label="Run k-Means"
-      //ng-click="run()"
-      //ng-disabled="kmeanson")
-      //  | Run&nbsp;
-      //  span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+          )
+      button.btn.btn-primary(
+      ng-show="sidebar.dataFrame && sidebar.ready"
+      type="submit"
+      aria-label="Run k-Means"
+      ng-click="sidebar.run()"
+      ng-disabled="sidebar.kmeanson")
+        | Run&nbsp;
+        span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")

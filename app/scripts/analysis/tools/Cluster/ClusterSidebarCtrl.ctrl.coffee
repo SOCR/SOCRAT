@@ -16,58 +16,51 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @algorithms = @algorithmsService.getNames()
     @DATA_TYPES = @dataService.getDataTypes()
     # set up data and algorithm-agnostic controls
-    @useLabels = on
+    @useLabels = off
     @useAllData = on
     @reportAccuracy = on
     @clusterRunning = off
-    @cols = []
-    @dataType = null
+    @running = 'hidden'
+    @uniqueLabels =
+      labelCol: null
+      num: null
+    @algParams = null
 
+    # dataset-specific
+    @dataFrame = null
+    @dataType = null
+    @cols = []
     @xCol = null
     @yCol = null
     @labelCol = null
 
-    @dataFrame = null
-
+    # choose first algorithm as default one
     if @algorithms.length > 0
       @selectedAlgorithm = @algorithms[0]
+      @updateAlgControls()
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
+        # update local data type
         @dataType = obj.dataFrame.dataType
+        # send update to main are actrl
         @msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
+        # make local copy of data
         @dataFrame = obj.dataFrame
+        # parse dataFrame
         @parseData obj.dataFrame
       else
         # TODO: add processing for nested object
         console.log 'NESTED DATASET'
+
+  updateAlgControls: () ->
+    @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
   updateDataPoints: (data=@dataFrame) ->
     xCol = data.header.indexOf @xCol
     yCol = data.header.indexOf @yCol
     data = ([row[xCol], row[yCol]] for row in data.data)
     @msgService.broadcast 'cluster:updateDataPoints', data
-
-  # set initial values for sidebar controls
-  setSidebarControls: (initControlValues) ->
-    params = @selectedAlgorithm.getParameters()
-    @ks = [params.minK..params.maxK]
-    @distances = params.distances
-    @inits = params.initMethods
-
-    @cols = []
-    @kmeanson = on
-    @running = 'hidden'
-    @uniqueLabels =
-      labelCol: null
-      num: null
-
-    @k = initControlValues.k if initControlValues.k in @ks
-    @dist = initControlValues.distance if initControlValues.distance in @distances
-    @initMethod = initControlValues.initialisation if initControlValues.initialisation in @inits
-    @labelson = initControlValues.labelson
-    @wholedataseton = initControlValues.wholedataseton
-    @accuracyon = initControlValues.accuracyon
 
   # update data-driven sidebar controls
   updateSidebarControls: (data) ->
