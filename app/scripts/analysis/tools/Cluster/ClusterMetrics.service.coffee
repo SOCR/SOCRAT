@@ -47,3 +47,6 @@ module.exports = class ClusterMetrics extends BaseModuleDataService
       for el, j in row
         total += invCov[i][j] * Math.pow(diff[i], 2 - i - j) * Math.pow(diff[j], i + j)
     Math.sqrt(total)
+
+  getNames: ->
+    @metrics.map (metric) -> metric.name
