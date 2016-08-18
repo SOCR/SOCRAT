@@ -15,6 +15,8 @@ module.exports = cluster = new Module
       'app_analysis_cluster_dataService': require 'scripts/analysis/tools/Cluster/ClusterDataService.service.coffee'
       'app_analysis_cluster_algorithms': require 'scripts/analysis/tools/Cluster/ClusterAlgorithms.service.coffee'
       'app_analysis_cluster_metrics': require 'scripts/analysis/tools/Cluster/ClusterMetrics.service.coffee'
+      'app_analysis_cluster_kMeans': require 'scripts/analysis/tools/Cluster/ClusterKMeans.service.coffee'
+      'app_analysis_cluster_spectral': require 'scripts/analysis/tools/Cluster/ClusterSpectral.service.coffee'
 
     controllers:
       'clusterMainCtrl': require 'scripts/analysis/tools/Cluster/ClusterMainCtrl.ctrl.coffee'
