@@ -70,6 +70,9 @@ module.exports =
     ,
       test: /[\/]dw\.js$/
       loader: 'imports?dv=datavore!imports?Highlight=highlight!exports?dw'
+    ,
+      test: /[\/]flat-ui\.js$/
+      loader: 'imports?this=>window'
   ]
 
   resolve:

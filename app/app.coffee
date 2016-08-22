@@ -1,8 +1,18 @@
 'use strict'
 
 # base libraries
+require 'jquery'
 require 'angular'
 require 'bootstrap/dist/css/bootstrap.css'
+require 'designmodo-flat-ui/dist/css/flat-ui.min.css'
+require 'designmodo-flat-ui/dist/fonts/glyphicons/flat-ui-icons-regular.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-black.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-bold.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-bolditalic.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-italic.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-light.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-regular.woff'
+require 'flatui-radiocheck'
 require 'angular-ui-bootstrap'
 require 'angular-ui-router'
 require 'angular-sanitize'
