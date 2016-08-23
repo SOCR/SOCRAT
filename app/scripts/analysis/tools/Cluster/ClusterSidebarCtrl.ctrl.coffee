@@ -20,6 +20,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @useAllData = on
     @reportAccuracy = on
     @clusterRunning = off
+    @ready = off
     @running = 'hidden'
     @uniqueLabels =
       labelCol: null
@@ -33,6 +34,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @xCol = null
     @yCol = null
     @labelCol = null
+
+    $('input[type=checkbox]').bootstrapSwitch()
 
     # choose first algorithm as default one
     if @algorithms.length > 0
@@ -99,19 +102,20 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         num: uniqueLabels.length
 
   # get requested columns from data
-  parseDataForKMeans: (data) ->
+  prepareData: () ->
+    data = @dataFrame
     xCol = data.header.indexOf @xCol
     yCol = data.header.indexOf @yCol
 
     # if usage of labels is on
-    if @labelson
+    if @useLabels
       labelCol = data.header.indexOf @labelCol
       labels = (row[labelCol] for row in data.data)
     else
       labels = null
 
     # if clustering on the whole dataset is on
-    if @wholedataseton
+    if @useAllData
       rawData =
         if labels
           data = (row.filter((el, idx) -> idx isnt labelCol) for row in data.data)
@@ -120,7 +124,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       data = ([row[xCol], row[yCol]] for row in data.data)
 
     # re-check if possible to compute accuracy
-    if @labelson and @k is @numUniqueLabels.num and @accuracyon
+    if @useLabels and @k is @numUniqueLabels.num and @accuracyon
       acc = on
 
     obj =
@@ -131,7 +135,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       acc: acc
 
   # call k-means service with parsed data and current controls values
-  callKMeans: (data) ->
+  cluster: (data) ->
     @kmeanson = on
     @running = 'spinning'
     @$on 'kmeans:done', (event, results) ->
@@ -144,8 +148,9 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
   parseData: (data) ->
     @updateSidebarControls(data)
     @updateDataPoints(data)
+    @ready = on
 
-  runClustering: (data) ->
-    _data = parseDataForKMeans data
-    callKMeans _data
+  runClustering: ->
+    clustData = prepareData()
+    @cluster clustData
 
