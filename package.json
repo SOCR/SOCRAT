@@ -38,7 +38,7 @@
     "jstat": "~1.5.2",
     "ngHandsontable": "git+https://github.com/handsontable/ngHandsontable.git",
     "select2": "^4.0.3",
-    "typeahead": "^0.2.2"
+    "typeahead.js": "git+https://github.com/twitter/typeahead.js.git"
   },
   "devDependencies": {
     "angular-mocks": "^1.5.0",
