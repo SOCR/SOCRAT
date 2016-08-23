@@ -98,7 +98,8 @@ module.exports =
 
     new webpack.ProvidePlugin
       $: "jquery",
-      jQuery: "jquery"
+      jQuery: "jquery",
+      'window.jQuery': "jquery"
 
     new webpack.ProvidePlugin
       d3: "d3"
