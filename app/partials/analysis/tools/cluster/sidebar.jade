@@ -49,18 +49,25 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
         label Dataset &nbsp;
         div.checkbox(uib-tooltip="2D projection is always visualized")
           label
-            input(type="checkbox", ng-model="sidebar.useAllData")
+            input(
+            type="checkbox"
+            ng-model="sidebar.useAllData"
+            )
             | Cluster whole dataset
-        //- show data header column names
-        div.checkbox(ng-show="sidebar.labelCol")
-          label
-            input(type="checkbox", ng-model="sidebar.useLabels")
-            | Labels present
-        div.form-group(ng-show="sidebar.labelCol")
-          fieldset(ng-show="sidebar.useLabels")
+        div.form-group
+          fieldset.checkbox
             label Labels column &nbsp;
+              input(
+                type="checkbox"
+                ng-model="sidebar.useLabels"
+              )
             //- show data header column names
-            select.form-control(ng-model="sidebar.labelCol", ng-options="col for col in sidebar.cols")
+            p
+              select.form-control(
+                ng-show="sidebar.useLabels"
+                ng-model="sidebar.labelCol"
+                ng-options="col for col in sidebar.cols"
+              )
         div.form-group(ng-show="sidebar.xCol")
           label X column &nbsp;
           //- show data header column names
@@ -80,8 +87,17 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
       button.btn.btn-primary(
       ng-show="sidebar.dataFrame && sidebar.ready"
       type="submit"
-      aria-label="Run k-Means"
-      ng-click="sidebar.run()"
+      aria-label="Step"
+      ng-click="sidebar.runClustering()"
+      ng-disabled="sidebar.kmeanson")
+        | Step&nbsp;
+        span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+      span &nbsp;
+      button.btn.btn-primary(
+      ng-show="sidebar.dataFrame && sidebar.ready"
+      type="submit"
+      aria-label="Run"
+      ng-click="sidebar.runClustering()"
       ng-disabled="sidebar.kmeanson")
         | Run&nbsp;
         span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
