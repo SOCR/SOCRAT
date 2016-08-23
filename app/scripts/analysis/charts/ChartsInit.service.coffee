@@ -7,3 +7,4 @@ module.exports = class ChartsInitService extends ModuleInitService
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
+    @setMsgList()
