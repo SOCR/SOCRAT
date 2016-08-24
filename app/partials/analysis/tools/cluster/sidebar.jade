@@ -47,15 +47,14 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
         hr
       fieldset(ng-show="sidebar.dataFrame")
         label Dataset &nbsp;
-        div.checkbox(uib-tooltip="2D projection is always visualized")
-          label
+        div(uib-tooltip="2D projection is always visualized")
+          label Cluster whole dataset &nbsp;
             input(
             type="checkbox"
             ng-model="sidebar.useAllData"
             )
-            | Cluster whole dataset
         div.form-group
-          fieldset.checkbox
+          fieldset
             label Labels column &nbsp;
               input(
                 type="checkbox"
