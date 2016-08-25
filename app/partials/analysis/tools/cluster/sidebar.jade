@@ -24,9 +24,9 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             button.btn.btn-info(
               type="submit"
               aria-label="Get k value"
-              ng-click="sidebar.detectKValue()"
+              ng-click="sidebar.detectK()"
               ng-disabled="!sidebar.useLabels"
-              uib-tooltip = "Use labels column to get number of clusters"
+              uib-tooltip = "Use labels to get number of clusters"
               tooltip-placement="right"
             )
               | Detect k
@@ -39,7 +39,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           )
         hr
       fieldset(ng-show="sidebar.dataFrame")
-        label Dataset &nbsp;
+        legend Dataset
         div(uib-tooltip="2D projection is always visualized")
           label Cluster whole dataset &nbsp;
             input(
@@ -55,8 +55,6 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
                 type="checkbox"
                 ng-model="sidebar.useLabels"
               )
-            //- show data header column names
-            p
               select.form-control(
                 ng-show="sidebar.useLabels"
                 ng-model="sidebar.labelCol"

@@ -78,8 +78,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @$timeout =>
       @updateDataPoints data
 
-  detectK: (data) ->
-    detectedK = @detectKValue data
+  detectK: () ->
+    detectedK = @detectKValue()
     @setDetectedKValue detectedK
 
   setDetectedKValue: (detectedK) ->
@@ -91,11 +91,11 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       # TODO: create popup with warning message
       console.log 'KMEANS: k is more than 10'
 
-  detectKValue: (data) ->
+  detectKValue: () ->
     # extra check that labels are on
-    if @useLabels
-      labelCol = data.header.indexOf @labelCol
-      labels = (row[labelCol] for row in data.data)
+    if @dataFrame and @useLabels
+      labelCol = @dataFrame.header.indexOf @labelCol
+      labels = (row[labelCol] for row in @dataFrame.data)
       uniqueLabels = labels.filter (x, i, a) -> i is a.indexOf x
       uniqueLabels =
         labelCol: @labelCol
