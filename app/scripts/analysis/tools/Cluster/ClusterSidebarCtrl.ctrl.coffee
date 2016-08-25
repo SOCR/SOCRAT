@@ -154,3 +154,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     clustData = prepareData()
     @cluster clustData
 
+  stepClustering: ->
+    clustData = prepareData()
+    @cluster clustData
+
