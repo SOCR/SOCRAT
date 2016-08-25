@@ -21,6 +21,7 @@ module.exports = class AppModuleList
     'app_services'
     'app_core'
     'app_mediator'
+    'frapontillo.bootstrap-switch'
   ]
 
   # this part includes custom modules

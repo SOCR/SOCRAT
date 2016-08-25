@@ -30,13 +30,6 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
               tooltip-placement="right"
             )
               | Detect k
-        div.checkbox(ng-hide="!sidebar.useLabels")
-          label
-            input(
-            type="checkbox"
-            ng-model="accuracyon"
-            ng-disabled="sidebar.algParams.k !== sidebar.numUniqueLabels.num || sidebar.labelCol !== sidebar.numUniqueLabels.labelCol")
-            | Compute accuracy
         div.form-group(ng-show="sidebar.algParams.distance")
           label Distance &nbsp;
           select.form-control(
@@ -50,6 +43,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
         div(uib-tooltip="2D projection is always visualized")
           label Cluster whole dataset &nbsp;
             input(
+            bs-switch
             type="checkbox"
             ng-model="sidebar.useAllData"
             )
@@ -57,6 +51,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           fieldset
             label Labels column &nbsp;
               input(
+                bs-switch
                 type="checkbox"
                 ng-model="sidebar.useLabels"
               )

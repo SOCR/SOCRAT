@@ -35,8 +35,6 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @yCol = null
     @labelCol = null
 
-    $('input[type=checkbox]').bootstrapSwitch()
-
     # choose first algorithm as default one
     if @algorithms.length > 0
       @selectedAlgorithm = @algorithms[0]
@@ -55,6 +53,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       else
         # TODO: add processing for nested object
         console.log 'NESTED DATASET'
+
+    @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
   updateAlgControls: () ->
     @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
