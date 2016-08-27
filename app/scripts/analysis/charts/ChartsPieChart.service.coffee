@@ -3,10 +3,11 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsPieChart extends BaseService
+
   initialize: ->
     @valueSum = 0
 
-  makePieData = (data) ->
+  makePieData: (data) ->
     @valueSum = 0
     counts = {}
     if(!isNaN(data[0].x)) # data is number
@@ -31,7 +32,7 @@ module.exports = class ChartsPieChart extends BaseService
     obj = d3.entries counts
     return obj
 
-  drawPie = (data,width,height,_graph, pie) ->
+  drawPie: (data,width,height,_graph, pie) ->
       radius = Math.min(width, height) / 2
       arc = d3.svg.arc()
       .outerRadius(radius)

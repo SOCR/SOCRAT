@@ -3,6 +3,7 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsTreemap extends BaseService
+  
   initialize: ->
 
   drawTreemap: (svg, width, height, container, data) ->
@@ -75,7 +76,7 @@ module.exports = class ChartsTreemap extends BaseService
         )
 
         # update slider value
-        @$('#sliderText').remove()
+        $('#sliderText').remove()
 
         container.append('text')
         .attr('id', 'sliderText')

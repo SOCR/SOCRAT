@@ -3,10 +3,10 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsTilfordTree extends BaseService
+  
   initialize: ->
 
-
-  drawTilfordTree = (InputData, container) ->
+  drawTilfordTree: (InputData, container) ->
     data = JSON.parse(JSON.stringify(InputData)) # make the InputData immutable
     diameter = 600
     width = diameter

@@ -3,10 +3,10 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsBubbleChart extends BaseService
+  
   initialize: ->
 
-
-  drawBubble = (ranges,width,height,_graph,data,gdata,container) ->
+  drawBubble: (ranges,width,height,_graph,data,gdata,container) ->
     #testing
     nest = d3.nest().key (d) -> d.z
 

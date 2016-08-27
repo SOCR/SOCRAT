@@ -4,15 +4,17 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsDataTransform extends BaseService
 
-transpose: (data) ->
-  data[0].map (col, i) -> data.map (row) -> row[i]
+  initialize: ->
 
-transform: (data) ->
-  for col in data
-    obj = {}
-    for value, i in col
-      obj[i] = value
-    d3.entries obj
+  transpose: (data) ->
+    data[0].map (col, i) -> data.map (row) -> row[i]
 
-format: (data) ->
-  return transform(transpose(data))
+  transform: (data) ->
+    for col in data
+      obj = {}
+      for value, i in col
+        obj[i] = value
+      d3.entries obj
+
+  format: (data) ->
+    return transform(transpose(data))

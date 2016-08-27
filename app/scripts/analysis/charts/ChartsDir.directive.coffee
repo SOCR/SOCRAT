@@ -48,7 +48,7 @@ module.exports = class ChartsDir extends BaseDirective
       gdata = null
       ranges = null
 
-      scope.$watch 'chartData', (newChartData) =>
+      scope.$watch 'scope.mainArea.chartData', (newChartData) =>
         if newChartData
           gdata = newChartData
           data = newChartData.data

@@ -3,16 +3,15 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsSendData extends BaseService
-  @inject 'app_analysis_getData_msgService'
 
-  initialize: () ->
-    @msgManager = @app_analysis_getData_msgService
-  
-  createGraph: (chartData, graphInfo, headers, dataType, scheme_input) ->
+  initialize: ->
+
+  createGraph: (chartData, graphInfo, headers, $rootScope, dataType, scheme_input) ->
+
     graphFormat: () ->
       console.log "dataType"
       console.log dataType
-  
+
       if dataType is "NESTED" then return chartData
       else # dataType = "FLAT"
         obj = []
@@ -32,7 +31,7 @@ module.exports = class ChartsSendData extends BaseService
             obj.push tmp
         else
           obj = []
-  
+
           for i in [0...len] by 1
             tmp =
               x:  chartData[graphInfo.x][i].value
@@ -40,10 +39,10 @@ module.exports = class ChartsSendData extends BaseService
               z:  chartData[graphInfo.z][i].value
             obj.push tmp
         return obj
-  
+
     streamColor = scheme_input
     console.log streamColor
-  
+
     send = graphFormat()
     results =
       data: send
@@ -51,10 +50,9 @@ module.exports = class ChartsSendData extends BaseService
       yLab: headers[graphInfo.y],
       zLab: headers[graphInfo.z],
       name: graphInfo.graph
-  
+
     if graphInfo.graph is "Stream Graph"
       console.log("won't add property")
       results.scheme = streamColor
-  
-  
-    @msgManager.$broadcast 'charts:graphDiv', results
+
+    $rootScope.$broadcast 'charts:graphDiv', results

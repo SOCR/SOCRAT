@@ -3,9 +3,10 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsScatterPlot extends BaseService
+  
   initialize: ->
 
-  drawScatterPlot = (data,ranges,width,height,_graph,container,gdata) ->
+  drawScatterPlot: (data,ranges,width,height,_graph,container,gdata) ->
 
     x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ 0, width ])
     y = d3.scale.linear().domain([ranges.yMin,ranges.yMax]).range([ height, 0 ])

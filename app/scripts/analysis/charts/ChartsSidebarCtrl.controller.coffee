@@ -18,17 +18,17 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
 
+#  _chartData = null
+  @chartData: null
+  @headers: null
 
-  _chartData = null
-  _headers = null
+  @selector1: {}
+  @selector2: {}
+  @selector3: {}
+  @selector4: {}
+  @stream: false
 
-  @selector1 = {}
-  @selector2 = {}
-  @selector3 = {}
-  @selector4 = {}
-  @stream = false
-
-  @streamColors = [
+  @streamColors: [
     name: "blue"
     scheme: ["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"]
   ,
@@ -39,18 +39,18 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     scheme: ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"]
   ]
 
-  @graphInfo =
-  graph: ""
-  x: ""
-  y: ""
-  z: ""
+  @graphInfo:
+    graph: ""
+    x: ""
+    y: ""
+    z: ""
 
-  @graphs = list.flat()
-  @graphSelect = {}
-  @labelVar = false
-  @labelCheck = null
+  @graphs: list.flat()
+  @graphSelect: {}
+  @labelVar: false
+  @labelCheck: null
 
-  @changeName = () ->
+  @changeName: () ->
     @graphInfo.graph = @graphSelect.name
 
     if @graphSelect.name is "Stream Graph"
@@ -62,13 +62,13 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @graphInfo.x = "initiate"
       sendData.createGraph(@data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme)
     else
-      sendData.createGraph(_chartData, @graphInfo, _headers, @dataType, @selector4.scheme)
+      sendData.createGraph(_chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
 
-  @changeVar = (selector,headers, ind) ->
+  @changeVar: (selector,headers, ind) ->
     console.log @selector4.scheme
     #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
     #only allow numerical ones for ind = y or z
     for h in headers
       if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
-    sendData.createGraph(_chartData,@graphInfo,_headers, @dataType, @selector4.scheme)
+    sendData.createGraph(_chartData,@graphInfo,@headers, @dataType, @selector4.scheme)
 
