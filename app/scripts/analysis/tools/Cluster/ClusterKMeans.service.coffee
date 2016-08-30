@@ -15,20 +15,36 @@ module.exports = class ClusterKMeans extends BaseService
     @metrics = @app_analysis_cluster_metrics
 
     @name = 'K-means'
-    @data = {}
     @timer = null
-    @params =
-      k: [2..10]
-      distance: @metrics.getNames()
-      init: ['Forgy', 'Random patition', 'k-means++']
+    @ks = [2..10]
+    @lables = null
+    @iter = 0
+    @maxIter = 100
+    @inits = [
+      name: 'Forgy'
+      method: @forgyInit
+    ,
+      name: 'Random patition'
+      method: @randomPartitionInit
+    ,
+      name: 'k-means++'
+      method: @kMeansPlusPlusInit
+    ]
 
-    @lables = []
+    #runtime variables
+    @data = null
+    @clusters = null
+
+    # module parameters
+    @params =
+      k: ks
+      distance: @metrics.getNames()
+      init: @inits.map (init) -> init.name
 
   getName: -> @name
   getParams: -> @params
 
-  getUniqueLabels: (labels) ->
-    labels.filter (x, i, a) -> i is a.indexOf x
+  getUniqueLabels: (labels) -> labels.filter (x, i, a) -> i is a.indexOf x
 
   arrayEqual: (x, y) ->
     a = x.slice().sort()
@@ -126,16 +142,12 @@ module.exports = class ClusterKMeans extends BaseService
 
     invCov
 
-  @assignSamples = (data, centroids, distanceType) ->
+  assignSamples: (data, centroids, distanceType) ->
     labels = []
     for row in data
       distances = (_distance(row, ctr.val, distanceType) for ctr in centroids)
       labels.push distances.indexOf(Math.min.apply @, distances)
     labels
-
-
-
-  step: ->
 
   runKMeans: (data, k, maxIter, centroids, distanceType, uniqueLabels, trueLabels=null) ->
 
@@ -186,13 +198,13 @@ module.exports = class ClusterKMeans extends BaseService
       centroids: centroids
       labels: labels
 
-    reportAccuracy: (estLabels, trueLabels, uniqueLabels) ->
+    reportAccuracy = (estLabels, trueLabels, uniqueLabels) ->
       acc = {}
       if _computeAcc
         acc = evaluateAccuracy estLabels, trueLabels, uniqueLabels
       _graph.showResults acc
 
-    run: () ->
+    run = ->
       # main loop
       if maxIter
         res = step data, centroids
@@ -205,7 +217,7 @@ module.exports = class ClusterKMeans extends BaseService
           labels = _assignSamples data, centroids, distanceType
         reportAccuracy labels, trueLabels, uniqueLabels
 
-    runMahalanobis: () ->
+    runMahalanobis = ->
       # main loop
       if maxIter
         maxIter--
@@ -246,3 +258,75 @@ module.exports = class ClusterKMeans extends BaseService
     else
       interval = setInterval run, 1000
 
+  forgyInit: (data, k) ->
+    centroids = @initCentroids data, k
+    centroids: centroids
+    initLabels: @assignSamples data, centroids, 'euclidean'
+
+  randomPartitionInit: (data, k) ->
+    initLabels = @initLabels data.length - 1, k
+    centroids: @updateMeans data, uniqueLabels, initLabels
+    initLabels: initLabels
+
+  kMeansPlusPlusInit: (data, k) ->
+    false
+
+  initClusters: (data, k, initMethod, distance) ->
+    # try to initiate clusters
+    clusters = (@inits.filter (init) -> init.name.toLowerCase() is initMethod.toLowerCase()).shift().method(data, k)
+    if clusters
+      @clusters = clusters
+      if distance in @metrics.getNames() and distance.toLowerCase() is 'mahalanobis'
+        @labels = @assignSamples data, @clusters.centroids, 'euclidean'
+        @clusters.centroids = @updateMeans data, @clusters.centroids, labels
+        @covMats = []
+        for ctr, ctrIdx in @clusters.centroids
+          @covMats.push @updatePrecisionMatrix(data, ctrIdx, labels)
+        @labels = @labels.slice()
+
+  updateCentroidsMahalanobis: (data, centroids, lbls) ->
+    for row, i in data
+      ctrDistances = (_distance(row, ctr.val, distanceType, @covMats[j]) for ctr, j in centroids)
+      ctrIdx = ctrDistances.indexOf(Math.min.apply @, ctrDistances)
+
+      if ctrIdx isnt lbls[i]
+        lbls[i] = ctrIdx
+        centroids = @updateMeans data, centroids, lbls
+        for ctr, j in centroids
+          @covMats[j] = @updatePrecisionMatrix(data, j, lbls)
+
+  runIter: (data, centroids, distance) ->
+    console.log 'Iteration: ' + @iter
+    console.log 'Centroids: '
+    console.table centroids
+
+    if distance.toLowerCase() isnt 'mahalanobis'
+      @labels = @assignSamples data, centroids, distance
+      @means = @updateMeans data, centroids, labels
+    else
+      @means = centroids.slice()
+      @updateCentroidsMahalanobis data, centroids
+
+    console.log 'New means: '
+    console.table means
+    if not _arrayEqual means.map((x) -> x.idx), centroids.map((x) -> x.idx)
+      centroids = means
+      _updateGraph(data, means.map((x) -> x.val), labels)
+    else
+      maxIter = 0
+
+  step: (data, k, init, distance) ->
+    # init at the first iteration
+    if @iter is 0 and data?
+      # save data to runtime variable
+      @data = data
+      initClusters(data, k, init, distance)
+    if @iter < @maxIter
+      @iter++
+      res = @runIter data, @clusters.centroids, distance
+      @centroids = res.centroids
+      @labels = res.labels
+    else
+      #TODO: finalize
+
+  run: ->
