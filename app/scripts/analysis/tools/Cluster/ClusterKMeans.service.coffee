@@ -37,7 +37,7 @@ module.exports = class ClusterKMeans extends BaseService
 
     # module parameters
     @params =
-      k: ks
+      k: @ks
       distance: @metrics.getNames()
       init: @inits.map (init) -> init.name
 
