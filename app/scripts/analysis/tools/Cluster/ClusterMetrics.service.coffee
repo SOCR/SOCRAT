@@ -39,14 +39,20 @@ module.exports = class ClusterMetrics extends BaseModuleDataService
     max
 
   mahalanobis: (v1, v2, s) ->
-    l = v1.length
-    invCov = s
-    diff = (v1[k] - v2[k] for k in [0..l - 1])
-    total = 0
-    for row, i in invCov
-      for el, j in row
-        total += invCov[i][j] * Math.pow(diff[i], 2 - i - j) * Math.pow(diff[j], i + j)
-    Math.sqrt(total)
+    if s
+      l = v1.length
+      invCov = s
+      diff = (v1[k] - v2[k] for k in [0..l - 1])
+      total = 0
+      for row, i in invCov
+        for el, j in row
+          total += invCov[i][j] * Math.pow(diff[i], 2 - i - j) * Math.pow(diff[j], i + j)
+      Math.sqrt(total)
+    else
+      false
 
   getNames: ->
     @metrics.map (metric) -> metric.name
+
+  distance: (v1, v2, type) ->
+    (@metrics.filter (metric) -> metric.name.toLowerCase() is type.toLowerCase()).shift().method(v1, v2)
