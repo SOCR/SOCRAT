@@ -37,6 +37,13 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             ng-options="dist for dist in sidebar.algParams.distance"
             ng-init="sidebar.distance = sidebar.algParams.distance[0]"
           )
+        div.form-group(ng-show="sidebar.algParams.init")
+          label Initialization &nbsp;
+          select.form-control(
+          ng-model="sidebar.initMethod"
+          ng-options="init for init in sidebar.algParams.init"
+          ng-init="sidebar.initMethod = sidebar.algParams.init[0]"
+          )
         hr
       fieldset(ng-show="sidebar.dataFrame")
         legend Dataset
@@ -80,7 +87,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
       ng-show="sidebar.dataFrame && sidebar.ready"
       type="submit"
       aria-label="Step"
-      ng-click="sidebar.runClustering()"
+      ng-click="sidebar.stepClustering()"
       ng-disabled="sidebar.kmeanson")
         | Step&nbsp;
         span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
