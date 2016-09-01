@@ -101,6 +101,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         labelCol: @labelCol
         num: uniqueLabels.length
 
+  ## Data preparation methods
+
   # get requested columns from data
   prepareData: () ->
     data = @dataFrame
@@ -119,12 +121,15 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       rawData =
         if labels
           data = (row.filter((el, idx) -> idx isnt labelCol) for row in data.data)
+        else
+          # TODO: add checks for non-numeric data
+          data = data.data
     else
       # get data for 2 chosen columns
       data = ([row[xCol], row[yCol]] for row in data.data)
 
     # re-check if possible to compute accuracy
-    if @useLabels and @k is @numUniqueLabels.num and @accuracyon
+    if @useLabels and @k is @uniqueLabels.num and @accuracyon
       acc = on
 
     obj =
@@ -134,27 +139,24 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       yCol: yCol
       acc: acc
 
-  # call k-means service with parsed data and current controls values
-  cluster: (data) ->
-    @kmeanson = on
-    @running = 'spinning'
-    @$on 'kmeans:done', (event, results) ->
-      # use timeout to call $digest
-      $timeout ->
-        @kmeanson = off
-        @running = 'hidden'
-    kmeans.run data, @k, @dist, @initMethod
-
   parseData: (data) ->
     @updateSidebarControls(data)
     @updateDataPoints(data)
     @ready = on
 
+  ## Interface method to run clustering
+
   runClustering: ->
-    clustData = prepareData()
-    @cluster clustData
+#    clustData = @prepareData()
+#    @cluster clustData
 
   stepClustering: ->
-    clustData = prepareData()
-    @cluster clustData
+    clustData = @prepareData()
+    @kmeanson = on
+    @running = 'spinning'
+    res = @algorithmsService.clusterStep @selectedAlgorithm, clustData, @k, @initMethod, @distance
+    @$timeout =>
+      @kmeanson = off
+      @running = 'hidden'
+
 
