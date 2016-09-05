@@ -151,7 +151,7 @@ module.exports = class ClusterKMeans extends BaseService
     labels
 
   ## Init functions
-  # have to preserve context
+  # have to preserve context with =>
   forgyInit: (data, k) =>
     centroids = @initCentroids data, k
     centroids: centroids
@@ -255,14 +255,14 @@ module.exports = class ClusterKMeans extends BaseService
     # init at the first iteration
     if !@done and @iter is 0 and data?
       firstRes = @prepFirstIter data, k, init, distance
-      data = firstRes.data
+      @data = firstRes.data
       @centroids = firstRes.centroids
       @labels = firstRes.labels
       @covMats = firstRes.covMats unless !firstRes.covMats?
     if @centroids? and @iter < @maxIter and !@done
       @iter++
       console.log 'Iteration: ' + @iter
-      res = @runIter data, @centroids, @labels, distance
+      res = @runIter @data, @centroids, @labels, distance
       if @arrayEqual(@centroids.map((x) -> x.idx), res.centroids.map((x) -> x.idx))
         @done = on
       else
