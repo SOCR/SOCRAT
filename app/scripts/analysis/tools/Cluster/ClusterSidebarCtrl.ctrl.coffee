@@ -26,6 +26,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       labelCol: null
       num: null
     @algParams = null
+    # TODO: allow user control of delay
+    @iterDelay = 750
 
     # dataset-specific
     @dataFrame = null
@@ -59,11 +61,15 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
   updateAlgControls: () ->
     @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
-  updateDataPoints: (data=@dataFrame) ->
-    xCol = data.header.indexOf @xCol
-    yCol = data.header.indexOf @yCol
-    data = ([row[xCol], row[yCol]] for row in data.data)
-    @msgService.broadcast 'cluster:updateDataPoints', data
+  updateDataPoints: (data=null, means=null, labels=null) ->
+    if data
+      xCol = data.header.indexOf @xCol
+      yCol = data.header.indexOf @yCol
+      data = ([row[xCol], row[yCol]] for row in data.data)
+    @msgService.broadcast 'cluster:updateDataPoints',
+      dataPoints: data
+      means: means
+      labels: labels
 
   # update data-driven sidebar controls
   updateSidebarControls: (data) ->
@@ -147,16 +153,29 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
   ## Interface method to run clustering
 
   runClustering: ->
-#    clustData = @prepareData()
-#    @cluster clustData
+    clustData = @prepareData()
+    @kmeanson = on
+    @running = 'spinning'
+    res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
+      xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
+      @updateDataPoints null, xyMeans, res.labels
+      @$timeout =>
+        @kmeanson = off
+        @running = 'hidden'
 
   stepClustering: ->
     clustData = @prepareData()
     @kmeanson = on
     @running = 'spinning'
     res = @algorithmsService.clusterStep @selectedAlgorithm, clustData, @k, @initMethod, @distance
+    xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
+    @updateDataPoints null, xyMeans, res.labels
     @$timeout =>
       @kmeanson = off
       @running = 'hidden'
+
+  reset: ->
+    @algorithmsService.reset @selectedAlgorithm
+    @updateDataPoints(@dataFrame, null, null)
 
 

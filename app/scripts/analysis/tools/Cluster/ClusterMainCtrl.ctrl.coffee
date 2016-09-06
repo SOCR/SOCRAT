@@ -24,10 +24,10 @@ module.exports = class ClusterMainCtrl extends BaseCtrl
     @means = null
     @assignments = null
 
-    @$scope.$on 'cluster:updateDataPoints', (event, dataPoints) =>
-      @showresults = off if @showresults is on
+    @$scope.$on 'cluster:updateDataPoints', (event, data) =>
+#      @showresults = off if @showresults is on
       # safe enforce $scope.$digest to activate directive watchers
-      @$timeout => @updateChartData(dataPoints)
+      @$timeout => @updateChartData(data)
 
     @$scope.$on 'cluster:updateDataType', (event, dataType) =>
       @dataType = dataType
@@ -44,10 +44,11 @@ module.exports = class ClusterMainCtrl extends BaseCtrl
       @accs = accuracy
       @showresults = on
 
-  updateChartData: (dataPoints, means=null, assignments=null) ->
-    @dataPoints = dataPoints
-    @means = means if means
-    @assignments = assignments if assignments
+  updateChartData: (data) ->
+    if data.dataPoints?
+      @dataPoints = data.dataPoints
+    @means = data.means
+    @assignments = data.labels
 
   finish: (results=null) ->
     @msgManager.broadcast 'cluster:done', results

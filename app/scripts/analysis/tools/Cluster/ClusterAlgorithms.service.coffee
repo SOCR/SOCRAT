@@ -6,6 +6,7 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
   @inject 'app_analysis_cluster_msgService',
     'app_analysis_cluster_kMeans'
     'app_analysis_cluster_spectral'
+    '$interval'
 
   initialize: ->
     @msgManager = @app_analysis_cluster_msgService
@@ -26,6 +27,18 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
 
   clusterStep: (algName, data, k, init, distance) ->
     res = (alg.step(data, k, init, distance) for alg in @algorithms when algName is alg.getName()).shift()
+
+  reset: (algName) -> (alg.reset() for alg in @algorithms when algName is alg.getName()).shift()
+
+  cluster: (algName, data, k, init, distance, iterDelay=0, cb=null) ->
+    res = @clusterStep algName, data, k, init, distance
+    cb(res) if cb?
+    interval = @$interval =>
+      if not res.done
+        res = @clusterStep algName
+        cb(res) if cb?
+      else @$interval.cancel interval
+    , iterDelay
 
   evaluateAccuracy: (labels, trueLabels) ->
     accuracy = {}

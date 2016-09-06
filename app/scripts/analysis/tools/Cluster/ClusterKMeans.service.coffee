@@ -259,10 +259,11 @@ module.exports = class ClusterKMeans extends BaseService
       @centroids = firstRes.centroids
       @labels = firstRes.labels
       @covMats = firstRes.covMats unless !firstRes.covMats?
+      @distance = distance
     if @centroids? and @iter < @maxIter and !@done
       @iter++
       console.log 'Iteration: ' + @iter
-      res = @runIter @data, @centroids, @labels, distance
+      res = @runIter @data, @centroids, @labels, @distance
       if @arrayEqual(@centroids.map((x) -> x.idx), res.centroids.map((x) -> x.idx))
         @done = on
       else
@@ -274,5 +275,8 @@ module.exports = class ClusterKMeans extends BaseService
       #TODO: finalize
     centroids: @centroids
     labels: @labels
+    done: @done
 
-  run: ->
+  reset: ()->
+    @done = off
+    @iter = 0
