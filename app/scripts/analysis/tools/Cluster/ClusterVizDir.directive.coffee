@@ -44,6 +44,7 @@ module.exports = class ClusterVizDir extends BaseDirective
       scope.$watchCollection 'mainArea.assignments', (newAssignments) =>
         if newAssignments
           redraw scope.mainArea.dataPoints, scope.mainArea.means, newAssignments
+        else reset()
 
       drawDataPoints = (dataPoints) ->
         meanLayer.selectAll('.meanDots').remove()
@@ -60,6 +61,10 @@ module.exports = class ClusterVizDir extends BaseDirective
         .attr('cy', (d) -> yScale(d[1]))
         pointDots.exit().remove()
 
+      reset = () ->
+        meanLayer.selectAll('.meanDots').remove()
+        meanLayer.selectAll('.assignmentLines').remove()
+
       redraw = (dataPoints, means, assignments) ->
         assignmentLines = meanLayer.selectAll('.assignmentLines').data(assignments)
         assignmentLines.enter().append('line').attr('class','assignmentLines')
@@ -74,7 +79,7 @@ module.exports = class ClusterVizDir extends BaseDirective
         .attr('y2', (d, i) -> yScale(means[d][1]))
         .attr('stroke', (d) -> color(d))
 
-        meanDots = _meanLayer.selectAll('.meanDots').data(means)
+        meanDots = meanLayer.selectAll('.meanDots').data(means)
         meanDots.enter().append('circle').attr('class','meanDots')
         .attr('r', 5)
         .attr('stroke', (d, i) -> color(i))

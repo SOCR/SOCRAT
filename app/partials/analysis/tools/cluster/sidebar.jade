@@ -73,7 +73,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           select.form-control(
           ng-model="sidebar.xCol"
           ng-options="col for col in sidebar.cols"
-          ng-change="sidebar.updateDataPoints()"
+          ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
           )
         div.form-group(ng-show="sidebar.yCol")
           label Y column &nbsp;
@@ -81,22 +81,32 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           select.form-control(
           ng-model="sidebar.yCol"
           ng-options="col for col in sidebar.cols"
-          ng-change="sidebar.updateDataPoints()"
+          ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
           )
-      button.btn.btn-primary(
-      ng-show="sidebar.dataFrame && sidebar.ready"
-      type="submit"
-      aria-label="Step"
-      ng-click="sidebar.stepClustering()"
-      ng-disabled="sidebar.kmeanson")
-        | Step&nbsp;
-        span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
-      span &nbsp;
-      button.btn.btn-primary(
-      ng-show="sidebar.dataFrame && sidebar.ready"
-      type="submit"
-      aria-label="Run"
-      ng-click="sidebar.runClustering()"
-      ng-disabled="sidebar.kmeanson")
-        | Run&nbsp;
-        span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+      div.form-group.btn-group(role="group", area-label="Sidebar flow controls")
+        button.btn.btn-info.btn-sm(
+        ng-show="sidebar.dataFrame && sidebar.ready"
+        type="submit"
+        aria-label="Step"
+        ng-click="sidebar.stepClustering(sidebar.dataFrame)"
+        ng-disabled="sidebar.kmeanson")
+          | Step&nbsp;
+          span.glyphicon.glyphicon-step-forward(aria-hidden="true")
+        span &nbsp;
+        button.btn.btn-primary.btn-sm(
+        ng-show="sidebar.dataFrame && sidebar.ready"
+        type="submit"
+        aria-label="Run"
+        ng-click="sidebar.runClustering()"
+        ng-disabled="sidebar.kmeanson")
+          | Run&nbsp;
+          span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+          span &nbsp;
+        button.btn.btn-danger.btn-sm(
+        ng-show="sidebar.dataFrame && sidebar.ready"
+        type="submit"
+        aria-label="Reset"
+        ng-click="sidebar.reset()"
+        ng-disabled="sidebar.kmeanson")
+          | Reset&nbsp;
+          span.fui-cross(aria-hidden="true")
