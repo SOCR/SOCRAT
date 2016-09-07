@@ -1,5 +1,5 @@
 div(ng-controller='GetDataMainCtrl as mainArea')
-  h1 Get Data
+  h3 Get Data
   //br
   p.lead To perform any analysis, you need data to begin with. Choose one of the available methods
     |to get the data into the app.
@@ -46,6 +46,8 @@ div(ng-controller='GetDataMainCtrl as mainArea')
   br
   div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.
+  div.spreadsheet(uib-collapse="mainArea.showState.grid")
+    legend Copy-paste or drag-n-drop your tabular data here
   div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
     hot-table(
     purpose="json"

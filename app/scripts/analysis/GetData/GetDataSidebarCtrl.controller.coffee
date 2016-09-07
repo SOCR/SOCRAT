@@ -17,7 +17,7 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     @jsonParser = @app_analysis_getData_jsonParser
     @jsonUrl = ''
     @flag = true
-    @selected = null
+    @selected = 'getDataGrid'
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   passReceivedData: (data) ->

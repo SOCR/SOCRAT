@@ -25,12 +25,14 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
     # get initial settings
     @DATA_TYPES = @dataManager.getDataTypes()
+    @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
+    @defaultState = @states[0]
     @dataType = ''
     @socrdataset = @socrDatasets[0]
 
     # init table
     @tableSettings =
-      colHeaders: off
+      colHeaders: on
       rowHeaders: on
       stretchH: "all"
       contextMenu: on
@@ -43,16 +45,22 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     ]
 
     try
-      @stateService = @showStateService.create ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse'], @
+      @stateService = @showStateService.create @states, @
+      console.log @stateService
     catch e
       console.log e.message
+
+    # initialize default state as spreadsheet view
+    # handsontable automatically binds to @tableData
+    @stateService.set @defaultState
+    @dataType = @DATA_TYPES.FLAT
 
     # adding listeners
     @$scope.$on 'update showStates', (obj, data) =>
       @stateService.set data
       console.log @showState
-      # TODO: fix this workaround for displaying copy-paste table
-      @dataType = @DATA_TYPES.FLAT if data is 'grid'
+      # all data are flat, except for arbitrary JSON files
+      @dataType = @DATA_TYPES.FLAT if data in @states.filter (x) -> x isnt 'jsonParse'
 
     @$scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
