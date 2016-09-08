@@ -11,10 +11,15 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class GetDataInputCache extends BaseService
-  @inject '$q', '$stateParams', '$timeout', 'app_analysis_getData_msgService'
+  @inject '$q',
+    '$stateParams'
+    '$timeout'
+    'app_analysis_getData_msgService'
+    'app_analysis_getData_dataService'
 
   initialize: () ->
     @msgManager = @app_analysis_getData_msgService
+    @dataService = @app_analysis_getData_dataService
     @DATA_TYPES = @msgManager.getSupportedDataTypes()
     @data = {}
     @timer = null
@@ -39,7 +44,7 @@ module.exports = class GetDataInputCache extends BaseService
         type: 'alert-error'
       promise: deferred.promise
 
-    @msgManager.publish 'save data',
+    @dataService.saveData @msgManager.saveDataMsg,
       -> console.log 'handsontable data updated to db',
       data,
       deferred

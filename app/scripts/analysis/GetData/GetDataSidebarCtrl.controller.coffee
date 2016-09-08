@@ -33,34 +33,22 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     switch val
       when 'grid'
         @selected = 'getDataGrid'
-        if @flag is true
-          @flag = false
-          #initial the div for the first time
-          data =
-            default: true
-            purpose: 'json'
-          @passReceivedData data
-#        @$scope.$emit 'change in showStates', 'grid'
         @eventManager.broadcast 'getData:updateShowState', 'grid'
 
       when 'socrData'
         @selected = 'getDataSocrData'
-#        @$scope.$emit 'change in showStates', 'socrData'
         @eventManager.broadcast 'getData:updateShowState', 'socrData'
 
       when 'worldBank'
         @selected = 'getDataWorldBank'
-#        @$scope.$emit 'change in showStates', 'worldBank'
         @eventManager.broadcast 'getData:updateShowState', 'worldBank'
 
       when 'generate'
         @selected = 'getDataGenerate'
-#        @$scope.$emit 'change in showStates', 'generate'
         @eventManager.broadcast 'getData:updateShowState', 'generate'
 
       when 'jsonParse'
         @selected = 'getDataJson'
-#        @$scope.$emit 'change in showStates', 'jsonParse'
         @eventManager.broadcast 'getData:updateShowState', 'jsonParse'
 
   # getJson

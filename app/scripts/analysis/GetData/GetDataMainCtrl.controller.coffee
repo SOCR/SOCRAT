@@ -24,10 +24,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataAdaptor = @app_analysis_getData_dataAdaptor
 
     # get initial settings
+    @dataLoadedFromDb = false
     @DATA_TYPES = @dataManager.getDataTypes()
     @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
     @defaultState = @states[0]
-    @dataType = ''
+    @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrdataset = @socrDatasets[0]
 
     # init table
@@ -37,12 +38,14 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       stretchH: "all"
       contextMenu: on
       onAfterChange: (changes, source) =>
-        data = @dataAdaptor.toDataFrame @tableData, @tableSettings.colHeaders
-        @inputCache.setData data
-
-    @tableData = [
-      ['Copy', 'paste', 'your', 'data', 'here']
-    ]
+        # check if table is empty
+        if @tableData?
+          # don't save data if just loaded
+          if @dataLoadedFromDb
+            @dataLoadedFromDb = false
+          else
+            data = @dataAdaptor.toDataFrame @tableData, @tableSettings.colHeaders
+            @inputCache.setData data
 
     try
       @stateService = @showStateService.create @states, @
@@ -50,10 +53,22 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     catch e
       console.log e.message
 
-    # initialize default state as spreadsheet view
-    # handsontable automatically binds to @tableData
-    @stateService.set @defaultState
-    @dataType = @DATA_TYPES.FLAT
+    @dataManager.getData().then (obj) =>
+      if obj.dataFrame and obj.dataFrame.dataType?
+        if obj.dataFrame.dataType is @DATA_TYPES.FLAT
+          @dataType = obj.dataFrame.dataType
+          @tableData = obj.dataFrame.data
+          @dataLoadedFromDb = true
+        else
+          # TODO: add processing for nested object
+          console.log 'NESTED DATASET'
+      else
+        # initialize default state as spreadsheet view
+        # handsontable automatically binds to @tableData
+        @tableData = [
+          ['Copy', 'paste', 'your', 'data', 'here']
+        ]
+        @stateService.set @defaultState
 
     # adding listeners
     @$scope.$on 'getData:updateShowState', (obj, data) =>
@@ -64,6 +79,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
     @$scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
+
+  ## Other instance methods
 
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
