@@ -4,7 +4,7 @@ BaseModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService
 
 module.exports = class ClusterMsgService extends BaseModuleMessageService
   msgList:
-    outgoing: ['get table']
-    incoming: ['take table']
+    outgoing: ['getData']
+    incoming: ['takeTable']
     # currently scope is same as module id
     scope: ['app_analysis_cluster']

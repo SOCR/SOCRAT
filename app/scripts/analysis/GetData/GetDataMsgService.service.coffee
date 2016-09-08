@@ -4,6 +4,6 @@ BaseModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService
 
 module.exports = class GetDataMsgService extends BaseModuleMessageService
   msgList:
-    outgoing: ['save data']
-    incoming: ['get data']
+    outgoing: ['getData', 'saveData']
+    incoming: ['takeTable', 'getData']
     scope: ['app_analysis_getData']

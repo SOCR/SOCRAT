@@ -4,6 +4,6 @@ BaseModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService
 
 module.exports = class DataWranglerMsgService extends BaseModuleMessageService
   msgList:
-    outgoing: ['get data', 'save data']
-    incoming: ['wrangle data']
+    outgoing: ['getData', 'saveData']
+    incoming: ['takeTable']
     scope: ['app_analysis_dataWrangler']
