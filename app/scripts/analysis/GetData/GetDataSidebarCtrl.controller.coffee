@@ -22,15 +22,11 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
 
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
-      @inputCache.setData data
     else
       # default data type is 2d 'flat' table
       data.dataType = @DATA_TYPES.FLAT
-      # pass a message to update the handsontable div
-      # data is the formatted data which plugs into the
-      #  handontable.
-      # TODO: getData module shouldn't know about controllers listening for handsontable update
-      @$scope.$emit 'update handsontable', data
+    @inputCache.setData data
+
 
   # showGrid
   show: (val) ->
@@ -44,23 +40,28 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
             default: true
             purpose: 'json'
           @passReceivedData data
-        @$scope.$emit 'change in showStates', 'grid'
+#        @$scope.$emit 'change in showStates', 'grid'
+        @eventManager.broadcast 'getData:updateShowState', 'grid'
 
       when 'socrData'
         @selected = 'getDataSocrData'
-        @$scope.$emit 'change in showStates', 'socrData'
+#        @$scope.$emit 'change in showStates', 'socrData'
+        @eventManager.broadcast 'getData:updateShowState', 'socrData'
 
       when 'worldBank'
         @selected = 'getDataWorldBank'
-        @$scope.$emit 'change in showStates', 'worldBank'
+#        @$scope.$emit 'change in showStates', 'worldBank'
+        @eventManager.broadcast 'getData:updateShowState', 'worldBank'
 
       when 'generate'
         @selected = 'getDataGenerate'
-        @$scope.$emit 'change in showStates', 'generate'
+#        @$scope.$emit 'change in showStates', 'generate'
+        @eventManager.broadcast 'getData:updateShowState', 'generate'
 
       when 'jsonParse'
         @selected = 'getDataJson'
-        @$scope.$emit 'change in showStates', 'jsonParse'
+#        @$scope.$emit 'change in showStates', 'jsonParse'
+        @eventManager.broadcast 'getData:updateShowState', 'jsonParse'
 
   # getJson
   getJson: ->

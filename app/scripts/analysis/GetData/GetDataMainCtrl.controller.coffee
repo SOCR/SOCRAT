@@ -56,7 +56,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataType = @DATA_TYPES.FLAT
 
     # adding listeners
-    @$scope.$on 'update showStates', (obj, data) =>
+    @$scope.$on 'getData:updateShowState', (obj, data) =>
       @stateService.set data
       console.log @showState
       # all data are flat, except for arbitrary JSON files

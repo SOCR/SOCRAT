@@ -17,14 +17,6 @@ module.extend = class AppCtrl extends BaseCtrl
     @$scope.$on 'change in view', =>
       @$scope.$broadcast 'update view', null
 
-    @$scope.$on 'change in showStates', (obj, data) =>
-      console.log 'change in showStates heard!'
-      @$scope.$broadcast 'update showStates', data
-
-    @$scope.$on 'update handsontable', (obj, data) =>
-      console.log 'update in handsontable'
-      @$scope.$broadcast data.purpose + ':load data to handsontable', data
-
     # listen on message from App.run block to register Tools in menu
     @$scope.$on 'app:set_menu', (event, data) =>
       console.log 'app: creating menu'
