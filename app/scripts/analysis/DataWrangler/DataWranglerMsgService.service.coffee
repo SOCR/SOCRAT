@@ -7,3 +7,5 @@ module.exports = class DataWranglerMsgService extends BaseModuleMessageService
     outgoing: ['getData', 'saveData']
     incoming: ['takeTable']
     scope: ['app_analysis_dataWrangler']
+
+

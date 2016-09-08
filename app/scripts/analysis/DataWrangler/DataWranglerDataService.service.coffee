@@ -10,3 +10,4 @@ module.exports = class DataWranglerDataService extends BaseModuleDataService
     @msgManager = @app_analysis_dataWrangler_msgService
     @getDataRequest = @msgManager.getMsgList().outgoing[0]
     @getDataResponse = @msgManager.getMsgList().incoming[0]
+    @saveDataMsg = @msgManager.getMsgList().outgoing[1]

@@ -32,7 +32,7 @@ module.exports = class DataWranglerMainCtrl extends BaseCtrl
 
     # listen to state change and save data when exiting Wrangle Data
     stateListener = @$rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) =>
-      if fromState.name? and fromState.name is 'dataWrangler'
+      if fromState.name? and fromState.name is 'app_analysis_dataWrangler'
         if @dataType is @DATA_TYPES.FLAT
         # save data to db on exit from wrangler
           @wrangler.saveData()

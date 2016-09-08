@@ -56,36 +56,35 @@ module.exports = class DataWranglerWrangler extends BaseService
 
     table
 
-  saveDataToDb: ->
+  saveDataToDb: (data, deferred) ->
 
-    clearTimeout _timer
+    msgEnding = if data.dataType is @DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
 
-    dataFrame = @dataAdaptor.toDataFrame @table
+    @msgManager.broadcast 'app:push notification',
+      initial:
+        msg: 'Data is being saved in the database...'
+        type: 'alert-info'
+      success:
+        msg: 'Successfully loaded data into database' + msgEnding
+        type: 'alert-success'
+      failure:
+        msg: 'Error in Database'
+        type: 'alert-error'
+      promise: deferred.promise
 
-    @msgService.publish
-      msg: 'save data'
-      data:
-        dataFrame: dataFrame
-        tableName: $stateParams.projectId + ':' + $stateParams.forkId
-        promise: deferred
-      callback: ->
-        console.log 'wrangled data saved to db'
+    console.log data
+    @dataService.saveData @dataService.saveDataMsg,
+      -> console.log 'wrangled data saved to db',
+      data,
+      deferred
 
-    _timer =  @$timeout ( =>
+  saveData: ->
 
-      msgEnding = if dataFrame.dataType is @DATA_TYPES.FLAT then ' as 2D data table' else ' as hierarchical object'
+    clearTimeout @timer
+    @deferred = @$q.defer()
 
-      @msgService.broadcast 'app:push notification',
-        initial:
-          msg: 'Data is being saved in the database...'
-          type: 'alert-info'
-        success:
-          msg: 'Successfully loaded data into database' + msgEnding
-          type: 'alert-success'
-        failure:
-          msg: 'Error in Database'
-          type: 'alert-error'
-        promise:deferred.promise
+    @data = @dataAdaptor.toDataFrame @table
 
-    ), 1000
+    @timer = @$timeout ((data, deferred) => @saveDataToDb(data, deferred))(@data, @deferred), 1000
+
     true
