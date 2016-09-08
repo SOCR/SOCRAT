@@ -44,7 +44,7 @@ module.exports = class GetDataInputCache extends BaseService
         type: 'alert-error'
       promise: deferred.promise
 
-    @dataService.saveData @msgManager.saveDataMsg,
+    @dataService.saveData @dataService.saveDataMsg,
       -> console.log 'handsontable data updated to db',
       data,
       deferred
