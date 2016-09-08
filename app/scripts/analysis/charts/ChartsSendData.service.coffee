@@ -4,9 +4,12 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsSendData extends BaseService
 
-  initialize: ->
+  @inject 'app_analysis_charts_msgService'
 
-  createGraph: (chartData, graphInfo, headers, $rootScope, dataType, scheme_input) ->
+  initialize: ->
+    @msgService = @app_analysis_charts_msgService
+
+  createGraph: (chartData, graphInfo, headers, dataType, scheme_input) ->
 
     graphFormat: () ->
       console.log "dataType"
@@ -55,4 +58,4 @@ module.exports = class ChartsSendData extends BaseService
       console.log("won't add property")
       results.scheme = streamColor
 
-    $rootScope.$broadcast 'charts:graphDiv', results
+    @msgService.broadcast 'charts:graphDiv', results

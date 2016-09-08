@@ -3,7 +3,7 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ChartsMainCtrl extends BaseCtrl
-  
+
   @inject '$scope'
 
   initialize: ->

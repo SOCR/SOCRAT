@@ -17,8 +17,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-
-#  _chartData = null
+#
+##  _chartData = null
   @chartData: null
   @headers: null
 
@@ -45,7 +45,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     y: ""
     z: ""
 
-  @graphs: list.flat()
+#  @graphs: @list._getFlat()
   @graphSelect: {}
   @labelVar: false
   @labelCheck: null
@@ -60,9 +60,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     if @dataType is "NESTED"
       @graphInfo.x = "initiate"
-      sendData.createGraph(@data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme)
+      @sendData.createGraph(@data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme)
     else
-      sendData.createGraph(_chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
+      @sendData.createGraph(_chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
 
   @changeVar: (selector,headers, ind) ->
     console.log @selector4.scheme
@@ -70,5 +70,5 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     #only allow numerical ones for ind = y or z
     for h in headers
       if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
-    sendData.createGraph(_chartData,@graphInfo,@headers, @dataType, @selector4.scheme)
+    @sendData.createGraph(_chartData,@graphInfo,@headers, @dataType, @selector4.scheme)
 

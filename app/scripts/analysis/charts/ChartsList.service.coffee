@@ -67,9 +67,9 @@ module.exports = class ChartsList extends BaseService
       z: false
       message: "Choose one variable to put into a pie chart."
       xLabel: ""
-  
+
     ]
-  
+
   _getNested: () ->
     nested = [
       name: 'Stream Graph'
@@ -89,7 +89,7 @@ module.exports = class ChartsList extends BaseService
       z: false
       message: ""
     ]
-  
+
   _getTime: () ->
     time = [
       name: 'Area Chart'
@@ -190,4 +190,6 @@ module.exports = class ChartsList extends BaseService
       message: "Choose one variable to put into a pie chart."
       xLabel: ""
     ]
-  
+
+
+
