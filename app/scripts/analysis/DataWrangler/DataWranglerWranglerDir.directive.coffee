@@ -56,3 +56,6 @@ module.exports = class DataWranglerWranglerDir extends BaseDirective
           $('#table .odd .rowHeader').first().mouseup().mousedown()
           d3.select('div.menu_option.Promote')[0][0].__onmousedown()
           $('div.suggestion.selected').click()
+
+          # TODO: consider changing header directly
+#          jQuery(container).find('.dataTables_scrollHead tr:nth-child(2) th')

@@ -24,7 +24,7 @@ module.exports = dataWrangler = new Module
   # module state config
   state:
   # module name to show in UI
-    name: 'Wrangle Data'
+    name: 'Data Wrangler'
     url: '/dataWrangler'
     mainTemplate: require 'partials/analysis/DataWrangler/main.jade'
     sidebarTemplate: require 'partials/analysis/DataWrangler/sidebar.jade'

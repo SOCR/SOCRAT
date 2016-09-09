@@ -8,7 +8,6 @@ module.exports = class DataWranglerSidebarCtrl extends BaseCtrl
 
   # toggle sidebar
   toggleSidebar: ->
-    console.log 5675567676
     @$scope.$emit 'toggle sidebar'
 
   initialize: ->
@@ -17,7 +16,6 @@ module.exports = class DataWranglerSidebarCtrl extends BaseCtrl
 
     # bring sidebar back on exit
     @$scope.$on 'wrangler:done', (event, results) =>
-      console.log 123123123
       @toggleSidebar()
 
     @toggleSidebar()

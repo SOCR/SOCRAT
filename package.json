@@ -24,7 +24,7 @@
     "bootstrap-switch": "~3.0.2",
     "bootstrap-tagsinput": "^0.7.1",
     "d3": "~3.5.15",
-    "data-wrangler": "^1.0.0",
+    "data-wrangler": "^1.0.4",
     "datatables.net": "^1.10.12",
     "datatables.net-bs": "^1.10.12",
     "designmodo-flat-ui": "^2.3.0",
