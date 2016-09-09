@@ -30,10 +30,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @defaultState = @states[0]
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrdataset = @socrDatasets[0]
+    @colHeaders = on
 
     # init table
     @tableSettings =
-      colHeaders: on
       rowHeaders: on
       stretchH: "all"
       contextMenu: on
@@ -44,7 +44,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           if @dataLoadedFromDb
             @dataLoadedFromDb = false
           else
-            data = @dataAdaptor.toDataFrame @tableData, @tableSettings.colHeaders
+            data = @dataAdaptor.toDataFrame @tableData, @colHeaders
             @inputCache.setData data
 
     try
@@ -56,9 +56,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataManager.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType?
         if obj.dataFrame.dataType is @DATA_TYPES.FLAT
-          @dataType = obj.dataFrame.dataType
-          @tableData = obj.dataFrame.data
           @dataLoadedFromDb = true
+          @dataType = obj.dataFrame.dataType
+          @$timeout =>
+            @colHeaders = obj.dataFrame.header
+            @tableData = obj.dataFrame.data
         else
           # TODO: add processing for nested object
           console.log 'NESTED DATASET'
@@ -94,8 +96,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
       # update table
       @$timeout =>
-        @tableSettings.colHeaders = data.header
-        console.log @tableSettings.colHeaders
+        @colHeaders = data.header
         @tableData = data.data
         console.log 'ht updated'
 
