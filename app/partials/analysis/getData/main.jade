@@ -46,8 +46,19 @@ div(ng-controller='GetDataMainCtrl as mainArea')
   br
   div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.
-  div.spreadsheet(uib-collapse="mainArea.showState.grid")
-    legend Copy-paste or drag-n-drop your tabular data here
+  div.spreadsheet(
+    uib-collapse="mainArea.showState.grid"
+    ngf-drop
+    ngf-select
+    ng-model="file"
+    class="drop-box"
+    ngf-drag-over-class="'dragover'"
+    ngf-multiple="false"
+    ngf-allow-dir="false"
+    accept=".csv"
+    ngf-pattern="'.csv'"
+  )
+    legend Copy-paste or upload your tabular data here
   div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
     hot-table(
     purpose="json"

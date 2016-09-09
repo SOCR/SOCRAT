@@ -3,6 +3,7 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 require 'handsontable/dist/handsontable.full.css'
 require 'imports?Handsontable=handsontable/dist/handsontable.full.js!ngHandsontable/dist/ngHandsontable.js'
+require 'ng-file-upload'
 
 module.exports = class GetDataMainCtrl extends BaseCtrl
   @inject '$scope',
@@ -13,6 +14,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
     '$timeout'
+    'Upload'
 
   initialize: ->
     @d3 = require 'd3'
@@ -31,6 +33,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrdataset = @socrDatasets[0]
     @colHeaders = on
+    @file = null
 
     # init table
     @tableSettings =
@@ -81,6 +84,13 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
     @$scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
+
+    @$scope.$watch( =>
+      @$scope.mainArea.file
+    , (file) =>
+      console.log 'file detected'
+      @upload file
+    )
 
   ## Other instance methods
 
@@ -167,3 +177,19 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           @passReceivedData _data
         else
           console.log 'GETDATA: request failed'
+
+  upload: (file) ->
+    if file and !file.$error
+      @Upload.upload(
+        url: '/#/getData',
+        data:
+          file: file
+      ).then (resp) =>
+        console.log 'File uploaded'
+        dataResults = @d3.csv.parseRows resp
+        data = @dataAdaptor.toDataFrame dataResults
+        @passReceivedData data
+      , null, (evt) =>
+        progressPercentage = parseInt 100.0 * evt.loaded / evt.total
+        @log = 'progress: ' + progressPercentage +
+            '% ' + evt.config.data.file.name + '\n' + @log
