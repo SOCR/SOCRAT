@@ -20,6 +20,8 @@ module.exports = getData = new Module
     controllers:
       'GetDataSidebarCtrl': require 'scripts/analysis/GetData/GetDataSidebarCtrl.controller.coffee'
       'GetDataMainCtrl': require 'scripts/analysis/GetData/GetDataMainCtrl.controller.coffee'
+    directives:
+      'getdatadragndrop': require 'scripts/analysis/GetData/GetDataDragNDropDir.directive.coffee'
 
   # module state config
   state:
@@ -30,4 +32,4 @@ module.exports = getData = new Module
     sidebarTemplate: require 'partials/analysis/getData/sidebar.jade'
 
   # 3rd-party dependencies
-  deps: ['ngHandsontable', 'ngFileUpload']
+  deps: ['ngHandsontable']
