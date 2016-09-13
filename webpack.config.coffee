@@ -65,9 +65,6 @@ module.exports =
       test: /[\/]highlight\.js$/
       loader: 'exports?Highlight'
     ,
-      test: /datatables\.net.*/,
-      loader: 'imports?define=>false'
-    ,
       test: /[\/]dw\.js$/
       loader: 'imports?dv=datavore!imports?Highlight=highlight!exports?dw'
     ,
