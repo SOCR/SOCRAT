@@ -1,8 +1,5 @@
 div(ng-controller='GetDataMainCtrl as mainArea')
-  h3 Get Data
-  //br
-  p.lead To perform any analysis, you need data to begin with. Choose one of the available methods
-    |to get the data into the app.
+  h4 Get Data
 
   form.socrData(uib-collapse="mainArea.showState.socrData")
     legend SOCR Datasets
@@ -43,10 +40,8 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
     button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
 
-  br
-  div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
-    | Visual representation of hierarchical data currently is not available.
   div.getdata-dragndrop(
+    ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}"
     getdatadragndrop="[text/csv, text/tsv]"
     file="mainArea.file"
     max-file-size="50"
@@ -61,3 +56,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       column-sorting="true"
       sort-indicator="true"
       )
+
+  br
+  div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
+    | Visual representation of hierarchical data currently is not available.

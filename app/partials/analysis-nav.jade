@@ -19,7 +19,11 @@ ul.nav.navbar-nav
             div.form-group(ng-click="$event.stopPropagation()")
               label(for="nav-tool-search").sr-only Search tools
               div.btn-group
-                input#nav-tool-search(ng-model='query', type='text', placeholder='Search for...').form-control
+                input#nav-tool-search.form-control.flat.input-sm(
+                  ng-model='query'
+                  type='text'
+                  placeholder='Search for...'
+                )
                 span#nav-clear-tool-search.fui-cross(ng-click="query=''")
         li(ng-repeat="subitem in item.items | filter:query", ng-class="app.getClass(subitem.url)")
           a(ng-href='#{{subitem.url}}') {{subitem.name}}
