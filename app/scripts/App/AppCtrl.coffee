@@ -39,9 +39,7 @@ module.extend = class AppCtrl extends BaseCtrl
     #
 
   getNavbar: () ->
-    console.log 'GET NAVBAR'
     @navbar = require('partials/analysis-nav.jade')()
-    console.log @navbar
     @navbar
 
   # uses the url to determine if the selected
