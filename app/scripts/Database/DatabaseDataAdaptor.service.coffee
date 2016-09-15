@@ -25,7 +25,7 @@ module.exports = class DatabaseDataAdaptor extends BaseService
       table.push
         name: dataFrame.header[i]
         values: col
-        type: 'symbolic'
+        type: if dataFrame.types then dataFrame.types[i] else 'symbolic'
 
     table
 
