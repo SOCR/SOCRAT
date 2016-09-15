@@ -25,6 +25,7 @@
     "bootstrap-tagsinput": "^0.7.1",
     "d3": "~3.5.15",
     "data-wrangler": "^1.0.5",
+    "datalib": "^1.7.2",
     "datatables.net": "^1.10.12",
     "datatables.net-dt": "^1.10.12",
     "designmodo-flat-ui": "^2.3.0",

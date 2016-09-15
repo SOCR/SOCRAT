@@ -24,11 +24,14 @@ module.exports = class AppModuleList
     'frapontillo.bootstrap-switch'
   ]
 
-  # this part includes custom modules
+  # include custom modules
   # single module are included as entries into main menu
+  # if they have state in their module config file
   # named lists are included as drop-downs into main menu
   analysis: [
     require 'scripts/Database/Database.module.coffee'
+  ,
+    require 'scripts/analysis/Datalib/Datalib.module.coffee'
   ,
     require 'scripts/analysis/GetData/GetData.module.coffee'
   ,
