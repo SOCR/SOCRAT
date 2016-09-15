@@ -27,18 +27,18 @@ module.exports = class DatalibApi extends BaseModuleInitService
 
   inferType: (obj) =>
     if obj.dataFrame? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
-      colData = @dataAdaptor.toColTable dataFrame
-      types = @dl.typeInfer colData.values
+      colData = @dataAdaptor.toColTable obj.dataFrame
+      types = @dl.typeInfer colData.map (col) -> col.values
       colData = colData.map (col, i) -> col.type = types.i
       data = @dataAdaptor.toDataFrame colData
     else false
 
   inferAll: (obj) =>
     if obj.dataFrame? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
-      colData = @dataAdaptor.toColTable dataFrame
-      types = @dl.typeInferAll colData.values
-      colData = colData.map (col, i) -> col.type = types.i
-      data = @dataAdaptor.toDataFrame colData
+      dataFrame = obj.dataFrame
+      types = @dl.typeInferAll dataFrame.data
+      dataFrame.types = dataFrame.types.map (type, i) -> type = types[i]
+      dataFrame
     else false
 
   setDlListeners: () ->
@@ -59,14 +59,6 @@ module.exports = class DatalibApi extends BaseModuleInitService
         (msg, obj) =>
           # invoke callback
           data = method.event.apply null, [obj]
-
-          # all publish calls should pass a promise in the data object
-          # if promise is not defined, create one and pass it along
-          deferred = obj.promise
-          if deferred?
-            if data isnt false then deferred.resolve() else deferred.reject()
-          else
-            data.promise = @$q.defer()
 
           @eventManager.publish method['outgoing'],
             ->
