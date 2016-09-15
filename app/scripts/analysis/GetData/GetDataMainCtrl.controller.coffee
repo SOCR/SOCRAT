@@ -72,6 +72,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         @tableData = [
           ['Copy', 'paste', 'your', 'data', 'here']
         ]
+        # manually create col header since ht doesn't bind default value to scope
+        @colHeaders = ['A', 'B', 'C', 'D', 'E']
         @stateService.set @defaultState
 
     # adding listeners
