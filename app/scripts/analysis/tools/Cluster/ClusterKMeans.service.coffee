@@ -16,7 +16,7 @@ module.exports = class ClusterKMeans extends BaseService
 
     @name = 'K-means'
     @timer = null
-    @ks = [2..10]
+    @ks = [2..20]
     @lables = null
     @iter = 0
     @done = off

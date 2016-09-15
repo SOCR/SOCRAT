@@ -44,10 +44,11 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
-        # update local data type
-        @dataType = obj.dataFrame.dataType
-        # send update to main are actrl
-        @msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
+        if @dataType isnt obj.dataFrame.dataType
+          # update local data type
+          @dataType = obj.dataFrame.dataType
+          # send update to main are actrl
+          @msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
         # make local copy of data
         @dataFrame = obj.dataFrame
         # parse dataFrame
@@ -74,15 +75,23 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
   # update data-driven sidebar controls
   updateSidebarControls: (data) ->
     @cols = data.header
-    [firstCol, secondCol, ..., lastCol] = @cols
-    @xCol = firstCol
-    @yCol = secondCol
-    @labelCol = lastCol
+    @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
+    @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
+    # make sure number of unique labels is less than maximum number of clusters for visualization
+    if @algParams.k
+      [minK, ..., maxK] = @algParams.k
+      colData = d3.transpose(data.data)
+      @categoricalCols = @categoricalCols.filter (x, i) =>
+        @uniqueVals(colData[i]).length > maxK
+    [@xCol, @yCol, ..., lastCol] = @numericalCols
+    [first, ..., @labelCol] = @categoricalCols
     @clusterRunning = off
     if @useLabels
       @numUniqueLabels = @detectK data
     @$timeout =>
       @updateDataPoints data
+
+  uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
   detectK: () ->
     detectedK = @detectKValue()
@@ -102,7 +111,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     if @dataFrame and @useLabels
       labelCol = @dataFrame.header.indexOf @labelCol
       labels = (row[labelCol] for row in @dataFrame.data)
-      uniqueLabels = labels.filter (x, i, a) -> i is a.indexOf x
+      uniqueLabels = @uniqueVals labels
       uniqueLabels =
         labelCol: @labelCol
         num: uniqueLabels.length
@@ -146,9 +155,11 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       acc: acc
 
   parseData: (data) ->
-    @updateSidebarControls(data)
-    @updateDataPoints(data)
-    @ready = on
+    @dataService.inferDataTypes data, (resp) =>
+      if resp and resp.dataFrame
+        @updateSidebarControls(resp.dataFrame)
+        @updateDataPoints(resp.dataFrame)
+        @ready = on
 
   ## Interface method to run clustering
 

@@ -65,14 +65,14 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
               select.form-control(
                 ng-show="sidebar.useLabels"
                 ng-model="sidebar.labelCol"
-                ng-options="col for col in sidebar.cols"
+                ng-options="col for col in sidebar.categoricalCols"
               )
         div.form-group(ng-show="sidebar.xCol")
           label X column &nbsp;
           //- show data header column names
           select.form-control(
           ng-model="sidebar.xCol"
-          ng-options="col for col in sidebar.cols"
+          ng-options="col for col in sidebar.numericalCols"
           ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
           )
         div.form-group(ng-show="sidebar.yCol")
@@ -80,7 +80,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           //- show data header column names
           select.form-control(
           ng-model="sidebar.yCol"
-          ng-options="col for col in sidebar.cols"
+          ng-options="col for col in sidebar.numericalCols"
           ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
           )
       div.form-group.btn-group(role="group", area-label="Sidebar flow controls")
