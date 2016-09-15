@@ -40,9 +40,6 @@ module.exports = class DataWranglerDataAdaptor extends BaseService
 
   toDataFrame: (table) ->
 
-    # remove last empty row
-    row.pop() for row in table
-
     _nRows = table[0].length
     _nCols = table.length
 
