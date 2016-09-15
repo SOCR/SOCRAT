@@ -3,15 +3,15 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
-  @name: DatabaseDataAdaptor
+  @name: DatalibDataAdaptor
   @desc: Reformats data from input table format to the universal DataFrame object
 ###
 
-module.exports = class DatabaseDataAdaptor extends BaseService
-  @inject 'app_analysis_database_msgService'
+module.exports = class DatalibDataAdaptor extends BaseService
+  @inject 'app_analysis_datalib_msgService'
 
   initialize: ->
-    @eventManager = @app_analysis_database_msgService
+    @eventManager = @app_analysis_datalib_msgService
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   toDvTable: (dataFrame) ->
