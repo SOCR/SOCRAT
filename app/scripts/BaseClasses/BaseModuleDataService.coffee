@@ -30,6 +30,19 @@ module.exports = class BaseModuleDataService extends BaseService
 
     deferred.promise
 
+  post: (outMsg, inMsg, data) ->
+    deferred = @$q.defer()
+    if outMsg and inMsg
+      token = @msgManager.subscribe inMsg, (msg, data) -> deferred.resolve data
+      @msgManager.publish outMsg,
+        -> @msgManager.unsubscribe token,
+        data,
+        deferred
+    else
+      deferred.reject()
+
+    deferred.promise
+
   saveData: (outMsg=null, cb=null, data, deferred=null) ->
     deferred = @$q.defer() unless deferred?
     # by default use second messages
