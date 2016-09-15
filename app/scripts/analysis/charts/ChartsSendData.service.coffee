@@ -8,6 +8,7 @@ module.exports = class ChartsSendData extends BaseService
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
+    @getDataRequest = @msgService.getMsgList().outgoing[0]
 
   createGraph: (chartData, graphInfo, headers, dataType, scheme_input) ->
 
