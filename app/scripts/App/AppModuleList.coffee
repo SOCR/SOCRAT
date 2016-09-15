@@ -40,8 +40,8 @@ module.exports = class AppModuleList
     Tools: [
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ]
-#    ,
-#      require 'scripts/analysis/charts/charts.coffee'
+    ,
+      require 'scripts/analysis/charts/Charts.module.coffee'
   ]
 
   ##### access methods #####

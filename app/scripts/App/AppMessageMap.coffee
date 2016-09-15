@@ -46,14 +46,14 @@ module.exports = class AppMessageMap
       scopeTo: ['app_analysis_cluster', 'app_analysis_getData', 'app_analysis_dataWrangler']
     ,
       msgFrom: 'get table'
-      scopeFrom: ['charts']
+      scopeFrom: ['app_analysis_charts']
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['app_analysis_database']
       msgTo: 'take table'
-      scopeTo: ['charts']
+      scopeTo: ['app_analysis_charts']
     ]
 
   getMap: ->
