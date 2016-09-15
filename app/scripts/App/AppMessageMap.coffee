@@ -8,6 +8,16 @@ module.exports = class AppMessageMap
       scopeFrom: ['app_analysis_getData', 'app_analysis_dataWrangler']
       msgTo: 'save table'
       scopeTo: ['app_analysis_database']
+    ,
+      msgFrom: 'infer data types'
+      scopeFrom: ['app_analysis_getData', 'app_analysis_dataWrangler', 'app_analysis_cluster']
+      msgTo: 'infer all types'
+      scopeTo: ['app_analysis_datalib']
+    ,
+      msgFrom: 'all types inferred'
+      scopeFrom: ['app_analysis_datalib']
+      msgTo: 'data types inferred'
+      scopeTo: ['app_analysis_getData', 'app_analysis_dataWrangler', 'app_analysis_cluster']
     #    ,
     #      msgFrom: 'upload csv'
     #      scopeFrom: ['getData']
@@ -44,7 +54,6 @@ module.exports = class AppMessageMap
       scopeFrom: ['app_analysis_database']
       msgTo: 'take table'
       scopeTo: ['charts']
-
     ]
 
   getMap: ->

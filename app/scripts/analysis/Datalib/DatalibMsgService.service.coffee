@@ -4,6 +4,6 @@ BaseModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService
 
 module.exports = class DatalibMsgService extends BaseModuleMessageService
   msgList:
-    incoming: ['save table', 'create table', 'get table', 'delete table']
-    outgoing: ['table saved', 'table created', 'take table', 'table deleted']
+    incoming: ['infer type', 'infer all types']
+    outgoing: ['type inferred', 'all types inferred']
     scope: ['app_analysis_datalib']

@@ -14,7 +14,7 @@ module.exports = class DatalibDataAdaptor extends BaseService
     @eventManager = @app_analysis_datalib_msgService
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
-  toDvTable: (dataFrame) ->
+  toColTable: (dataFrame) ->
 
     table = []
 
