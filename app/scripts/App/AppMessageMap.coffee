@@ -36,24 +36,22 @@ module.exports = class AppMessageMap
 #      scopeTo: ['instrPerfEval']
     ,
       msgFrom: 'getData'
-      scopeFrom: ['app_analysis_cluster', 'app_analysis_getData', 'app_analysis_dataWrangler']
+      scopeFrom: ['app_analysis_cluster',
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_charts'
+      ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['app_analysis_database']
       msgTo: 'takeTable'
-      scopeTo: ['app_analysis_cluster', 'app_analysis_getData', 'app_analysis_dataWrangler']
-    ,
-      msgFrom: 'get table'
-      scopeFrom: ['app_analysis_charts']
-      msgTo: 'get table'
-      scopeTo: ['app_analysis_database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['app_analysis_database']
-      msgTo: 'take table'
-      scopeTo: ['app_analysis_charts']
+      scopeTo: ['app_analysis_cluster',
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_charts'
+      ]
     ]
 
   getMap: ->

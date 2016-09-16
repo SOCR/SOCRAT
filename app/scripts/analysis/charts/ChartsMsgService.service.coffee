@@ -4,6 +4,6 @@ ModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService.cof
 
 module.exports = class ChartsMsgService extends ModuleMessageService
   msgList:
-    outgoing: ['get table']
-    incoming: ['take table']
+    outgoing: ['getData']
+    incoming: ['takeTable']
     scope: ['app_analysis_charts']
