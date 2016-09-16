@@ -87,6 +87,7 @@ module.exports =
     alias:
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
       highlight: 'data-wrangler/lib/Highlight/highlight.js'
+      'jquery-ui': 'jquery-ui/ui/widgets'
 
   plugins: [
 
