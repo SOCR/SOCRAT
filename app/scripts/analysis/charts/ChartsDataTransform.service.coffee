@@ -17,4 +17,4 @@ module.exports = class ChartsDataTransform extends BaseService
       d3.entries obj
 
   format: (data) ->
-    return transform(transpose(data))
+    return @transform @transpose(data)

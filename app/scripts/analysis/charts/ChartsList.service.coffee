@@ -6,7 +6,7 @@ module.exports = class ChartsList extends BaseService
 
   initialize: ->
 
-  _getFlat: () ->
+  getFlat: () ->
     flat = [
       name: 'Bar Graph'
       value: 0
@@ -70,7 +70,7 @@ module.exports = class ChartsList extends BaseService
 
     ]
 
-  _getNested: () ->
+  getNested: () ->
     nested = [
       name: 'Stream Graph'
       value: 6
@@ -90,7 +90,7 @@ module.exports = class ChartsList extends BaseService
       message: ""
     ]
 
-  _getTime: () ->
+  getTime: () ->
     time = [
       name: 'Area Chart'
       value: 5

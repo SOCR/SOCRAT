@@ -12,6 +12,7 @@ module.exports = charts = new Module
     services:
       'app_analysis_charts_initService': require 'scripts/analysis/charts/ChartsInit.service.coffee'
       'app_analysis_charts_msgService': require 'scripts/analysis/charts/ChartsMsgService.service.coffee'
+      'app_analysis_charts_dataService': require 'scripts/analysis/charts/ChartsDataService.service.coffee'
       'app_analysis_charts_areaChart': require 'scripts/analysis/charts/ChartsAreaChart.service.coffee'
       'app_analysis_charts_barChart': require 'scripts/analysis/charts/ChartsBarChart.service.coffee'
       'app_analysis_charts_bivariateLineChart': require 'scripts/analysis/charts/ChartsBivariateLineChart.service.coffee'

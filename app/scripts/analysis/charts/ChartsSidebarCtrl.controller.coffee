@@ -9,17 +9,18 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     'app_analysis_charts_list',
     'app_analysis_charts_sendData',
     'app_analysis_charts_checkTime',
-    'app_analysis_charts_msgService'
+    'app_analysis_charts_dataService'
 
   initialize: ->
-    @eventManager = @app_analysis_charts_msgService
+    @dataService = @app_analysis_charts_dataService
     @dataTransform = @app_analysis_charts_dataTransform
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
+    @DATA_TYPES = @dataService.getDataTypes()
 
-    _chartData = null
-    _headers = null
+    @chartData = null
+    @headers = null
 
     @selector1 = {}
     @selector2 = {}
@@ -44,11 +45,27 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     y: ""
     z: ""
 
-    @graphs = @list._getFlat()
+    @graphs = @list.getFlat()
     @graphSelect = {}
     @labelVar = false
     @labelCheck = null
 
+    @dataService.getData().then (obj) =>
+      if obj.dataFrame and obj.dataFrame.dataType?
+        dataFrame = obj.dataFrame
+        switch dataFrame.dataType
+          when @DATA_TYPES.FLAT
+            @graphs = @list.getFlat()
+            @dataType = @DATA_TYPES.FLAT
+            @headers = d3.entries dataFrame.header
+            @chartData = @dataTransform.format dataFrame.data
+            if @checkTime.checkForTime @chartData
+              @graphs = @list.getTime()
+          when @DATA_TYPES.NESTED
+            @graphs = @list.getNested()
+            @data = dataFrame.data
+            @dataType = @DATA_TYPES.NESTED
+            @header = {key: 0, value: "initiate"}
 
   @changeName: () ->
     @graphInfo.graph = @graphSelect.name
@@ -62,14 +79,14 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @graphInfo.x = "initiate"
       @sendData.createGraph(@data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme)
     else
-      @sendData.createGraph(_chartData, @graphInfo, _headers, @dataType, @selector4.scheme)
+      @sendData.createGraph(@chartData, @graphInfo, _headers, @dataType, @selector4.scheme)
 
-  @changeVar: (selector,headers, ind) ->
+  @changeVar: (selector, headers, ind) ->
     console.log @selector4.scheme
     #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
     #only allow numerical ones for ind = y or z
     for h in headers
       if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
-    @sendData.createGraph(_chartData,@graphInfo,_headers, @dataType, @selector4.scheme)
+    @sendData.createGraph(@chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
 
 
