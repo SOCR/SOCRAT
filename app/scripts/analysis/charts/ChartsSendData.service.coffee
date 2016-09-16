@@ -17,27 +17,16 @@ module.exports = class ChartsSendData extends BaseService
       obj = []
       len = chartData[0].length
       if graphInfo.y is "" and graphInfo.z is ""
-        obj = []
-        for i in [0...len] by 1
-          tmp =
-            x:  chartData[graphInfo.x][i].value
-          obj.push tmp
+        obj = (x: chartData[graphInfo.x][i].value for i in [0...len])
       else if graphInfo.y isnt "" and graphInfo.z is ""
-        obj = []
-        for i in [0...len] by 1
-          tmp =
-            x:  chartData[graphInfo.x][i].value
-            y:  chartData[graphInfo.y][i].value
-          obj.push tmp
+        obj = for i in [0...len]
+          x: chartData[graphInfo.x][i].value
+          y:  chartData[graphInfo.y][i].value
       else
-        obj = []
-
-        for i in [0...len] by 1
-          tmp =
-            x:  chartData[graphInfo.x][i].value
-            y:  chartData[graphInfo.y][i].value
-            z:  chartData[graphInfo.z][i].value
-          obj.push tmp
+        obj = for i in [0...len]
+          x:  chartData[graphInfo.x][i].value
+          y:  chartData[graphInfo.y][i].value
+          z:  chartData[graphInfo.z][i].value
       return obj
 
   createGraph: (chartData, graphInfo, headers, dataType, scheme_input) ->

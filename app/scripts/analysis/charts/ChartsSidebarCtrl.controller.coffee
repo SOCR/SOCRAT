@@ -41,9 +41,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     @graphInfo =
       graph: ""
-      x: 0
-      y: ""
-      z: ""
+      x: 1
+      y: 2
+      z: 3
 
     @graphs = @list.getFlat()
     @graphSelect = {}
