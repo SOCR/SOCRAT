@@ -1,5 +1,7 @@
 'use strict'
 
+require 'jquery-ui/ui/widgets/slider'
+
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class ChartsDir extends BaseDirective
@@ -48,7 +50,21 @@ module.exports = class ChartsDir extends BaseDirective
       gdata = null
       ranges = null
 
-      scope.$watch 'scope.mainArea.chartData', (newChartData) =>
+      # add segments to a slider
+      # https://designmodo.github.io/Flat-UI/docs/components.html#fui-slider
+      $.fn.addSliderSegments = (amount, orientation) ->
+        @.each () ->
+          if orientation is "vertical"
+            output = ''
+            for i in [0..amount-2]
+              output += '<div class="ui-slider-segment" style="top:' + 100 / (amount - 1) * i + '%;"></div>'
+            $(this).prepend(output)
+          else
+            segmentGap = 100 / (amount - 1) + "%"
+            segment = '<div class="ui-slider-segment" style="margin-left: ' + segmentGap + ';"></div>'
+            $(this).prepend(segment.repeat(amount - 2))
+
+      scope.$watch 'mainArea.chartData', (newChartData) =>
         if newChartData
           gdata = newChartData
           data = newChartData.data

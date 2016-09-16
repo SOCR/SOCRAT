@@ -40,10 +40,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     ]
 
     @graphInfo =
-    graph: ""
-    x: ""
-    y: ""
-    z: ""
+      graph: ""
+      x: 0
+      y: ""
+      z: ""
 
     @graphs = @list.getFlat()
     @graphSelect = {}
@@ -67,7 +67,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @dataType = @DATA_TYPES.NESTED
             @header = {key: 0, value: "initiate"}
 
-  @changeName: () ->
+  changeName: () ->
     @graphInfo.graph = @graphSelect.name
 
     if @graphSelect.name is "Stream Graph"
@@ -77,11 +77,11 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     if @dataType is "NESTED"
       @graphInfo.x = "initiate"
-      @sendData.createGraph(@data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme)
+      @sendData.createGraph @data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme
     else
-      @sendData.createGraph(@chartData, @graphInfo, _headers, @dataType, @selector4.scheme)
+      @sendData.createGraph @chartData, @graphInfo, @headers, @dataType, @selector4.scheme
 
-  @changeVar: (selector, headers, ind) ->
+  changeVar: (selector, headers, ind) ->
     console.log @selector4.scheme
     #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
     #only allow numerical ones for ind = y or z
