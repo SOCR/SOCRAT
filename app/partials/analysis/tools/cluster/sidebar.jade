@@ -55,18 +55,15 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             ng-model="sidebar.useAllData"
             )
         div.form-group
-          fieldset
-            label Labels column &nbsp;
-              input(
-                bs-switch
-                type="checkbox"
-                ng-model="sidebar.useLabels"
-              )
-              select.form-control(
-                ng-show="sidebar.useLabels"
-                ng-model="sidebar.labelCol"
-                ng-options="col for col in sidebar.categoricalCols"
-              )
+          label Labels column &nbsp;
+          //- show data header column names
+          select.form-control(
+          ng-model="sidebar.labelCol"
+          ng-options="col for col in sidebar.categoricalCols"
+          ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+          ng-init="sidebar.labelCol = null"
+          )
+            option(value="") No labels
         div.form-group(ng-show="sidebar.xCol")
           label X column &nbsp;
           //- show data header column names

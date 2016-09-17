@@ -84,7 +84,6 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       @categoricalCols = @categoricalCols.filter (x, i) =>
         @uniqueVals(colData[i]).length > maxK
     [@xCol, @yCol, ..., lastCol] = @numericalCols
-    [first, ..., @labelCol] = @categoricalCols
     @clusterRunning = off
     if @useLabels
       @numUniqueLabels = @detectK data
