@@ -1,0 +1,74 @@
+.wrap {
+  display: table;
+  width: 100%;
+  height: 100%; /* For at least Firefox */
+  min-height: 100%;
+}
+
+.wrap-inner {
+  display: table-cell;
+  vertical-align: top;
+}
+
+.cover-container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.content-container {
+  height: 100%;
+  min-height: 100%;
+}
+
+.wrap:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0.4;
+  background: url(img/screenshot.png);
+  background-repeat: no-repeat;
+  background-position: 50% 0;
+  -ms-background-size: cover;
+  -o-background-size: cover;
+  -moz-background-size: cover;
+  -webkit-background-size: cover;
+  background-size: cover;
+  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+  box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+}
+
+.socrat-title-container {
+  position: relative;
+  top: 100px;
+  text-align: center;
+  z-index: 2;
+  background: rgba(238, 238, 238, 0.8);
+}
+
+.jumbotron-container {
+  color: #2c3e50;
+}
+
+.socr-start {
+  margin: 0 100px;
+  color: #2c3e50;
+}
+
+.footer-container {
+  padding-top: 15px;
+  text-align: center;
+}
+
+.footer-container a {
+  color: #34495e;
+
+}
+
+.footer-container a:hover {
+  color: #1abc9c;
+}
