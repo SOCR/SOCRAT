@@ -78,13 +78,17 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             ng-options="col for col in sidebar.numericalCols"
             ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
-        div.form-group.btn-group(role="group", area-label="Sidebar flow controls")
+        div.form-group.btn-group(
+          role="group"
+          area-label="Sidebar flow controls"
+          uib-tooltip = "Choose at least 2 columns to start"
+        )
           button.btn.btn-info.btn-sm(
           ng-show="sidebar.dataFrame && sidebar.ready"
           type="submit"
           aria-label="Step"
           ng-click="sidebar.stepClustering(sidebar.dataFrame)"
-          ng-disabled="sidebar.kmeanson")
+          ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
             | Step&nbsp;
             span.glyphicon.glyphicon-step-forward(aria-hidden="true")
           span &nbsp;
@@ -93,7 +97,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           type="submit"
           aria-label="Run"
           ng-click="sidebar.runClustering()"
-          ng-disabled="sidebar.kmeanson")
+          ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
             | Run&nbsp;
             span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
             span &nbsp;
@@ -102,6 +106,6 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           type="submit"
           aria-label="Reset"
           ng-click="sidebar.reset()"
-          ng-disabled="sidebar.kmeanson")
+          ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
             | Reset&nbsp;
             span.fui-cross(aria-hidden="true")

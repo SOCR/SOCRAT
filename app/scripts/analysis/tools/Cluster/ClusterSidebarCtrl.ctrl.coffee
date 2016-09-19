@@ -17,7 +17,6 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @DATA_TYPES = @dataService.getDataTypes()
     # set up data and algorithm-agnostic controls
     @useLabels = off
-    @useAllData = on
     @reportAccuracy = on
     @clusterRunning = off
     @ready = off
@@ -33,6 +32,9 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @dataFrame = null
     @dataType = null
     @cols = []
+    @chosenCols = []
+    @numericalCols = []
+    @categoricalCols = []
     @xCol = null
     @yCol = null
     @labelCol = null
@@ -120,38 +122,34 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
   # get requested columns from data
   prepareData: () ->
     data = @dataFrame
-    xCol = data.header.indexOf @xCol
-    yCol = data.header.indexOf @yCol
 
-    # if usage of labels is on
-    if @useLabels
-      labelCol = data.header.indexOf @labelCol
-      labels = (row[labelCol] for row in data.data)
-    else
-      labels = null
+    if @chosenCols.length > 1
 
-    # if clustering on the whole dataset is on
-    if @useAllData
-      rawData =
-        if labels
-          data = (row.filter((el, idx) -> idx isnt labelCol) for row in data.data)
-        else
-          # TODO: add checks for non-numeric data
-          data = data.data
-    else
-      # get data for 2 chosen columns
-      data = ([row[xCol], row[yCol]] for row in data.data)
+      xCol = data.header.indexOf @xCol
+      yCol = data.header.indexOf @yCol
+      chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
 
-    # re-check if possible to compute accuracy
-    if @useLabels and @k is @uniqueLabels.num and @accuracyon
-      acc = on
+      # if usage of labels is on
+      if @labelCol
+        labelColIdx = data.header.indexOf @labelCol
+        labels = (row[labelColIdx] for row in data.data)
+      else
+        labels = null
 
-    obj =
-      data: data
-      labels: labels
-      xCol: xCol
-      yCol: yCol
-      acc: acc
+      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+
+      # re-check if possible to compute accuracy
+      if @useLabels and @k is @uniqueLabels.num and @accuracyon
+        acc = on
+
+      obj =
+        data: data
+        labels: labels
+        xCol: xCol
+        yCol: yCol
+        acc: acc
+
+    else false
 
   parseData: (data) ->
     @dataService.inferDataTypes data, (resp) =>
