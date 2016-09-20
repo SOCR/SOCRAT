@@ -10,14 +10,24 @@ module.exports = class AppMessageMap
       scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'infer data types'
-      scopeFrom: ['app_analysis_getData', 'app_analysis_dataWrangler', 'app_analysis_cluster']
+      scopeFrom: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts'
+      ]
       msgTo: 'infer all types'
       scopeTo: ['app_analysis_datalib']
     ,
       msgFrom: 'all types inferred'
       scopeFrom: ['app_analysis_datalib']
       msgTo: 'data types inferred'
-      scopeTo: ['app_analysis_getData', 'app_analysis_dataWrangler', 'app_analysis_cluster']
+      scopeTo: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts'
+      ]
     #    ,
     #      msgFrom: 'upload csv'
     #      scopeFrom: ['getData']
@@ -36,24 +46,22 @@ module.exports = class AppMessageMap
 #      scopeTo: ['instrPerfEval']
     ,
       msgFrom: 'getData'
-      scopeFrom: ['app_analysis_cluster', 'app_analysis_getData', 'app_analysis_dataWrangler']
+      scopeFrom: ['app_analysis_cluster',
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_charts'
+      ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['app_analysis_database']
       msgTo: 'takeTable'
-      scopeTo: ['app_analysis_cluster', 'app_analysis_getData', 'app_analysis_dataWrangler']
-    ,
-      msgFrom: 'get table'
-      scopeFrom: ['charts']
-      msgTo: 'get table'
-      scopeTo: ['app_analysis_database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['app_analysis_database']
-      msgTo: 'take table'
-      scopeTo: ['charts']
+      scopeTo: ['app_analysis_cluster',
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_charts'
+      ]
     ]
 
   getMap: ->
