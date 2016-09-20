@@ -10,8 +10,8 @@ module.exports = class ChartsList extends BaseService
     flat = [
       name: 'Bar Graph'
       value: 0
-      x: true
-      y: true
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
       z: false
       message: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
       xLabel: "Add x"
@@ -19,8 +19,8 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Scatter Plot'
       value: 1
-      x: true
-      y: true
+      x: ['integer', 'number']
+      y: ['integer', 'number']
       z: false
       message: "Choose an x variable and a y variable."
       xLabel: "Add x"
@@ -28,7 +28,7 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Histogram'
       value: 2
-      x: true
+      x: ['integer', 'number']
       y: false
       z: false
       message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
@@ -36,9 +36,9 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Bubble Chart'
       value: 3
-      x: true
-      y: true
-      z: true
+      x: ['integer', 'number']
+      y: ['integer', 'number']
+      z: ['integer', 'number']
       message: "Choose an x variable, a y variable and a radius variable."
       xLabel: "Add x"
       yLabel: "Add y"
@@ -46,7 +46,7 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Pie Chart'
       value: 4
-      x: true
+      x: ['integer', 'number', 'string']
       y: false
       z: false
       message: "Choose one variable to put into a pie chart."
@@ -54,7 +54,7 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Normal Distribution'
       value: 5
-      x: true
+      x: ['integer', 'number']
       y: false
       z: false
       message: "Choose one variable. This chart assumes there is a normal distribution."
@@ -62,7 +62,7 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Ring Chart'
       value: 4
-      x: true
+      x: ['integer', 'number', 'string']
       y: false
       z: false
       message: "Choose one variable to put into a pie chart."

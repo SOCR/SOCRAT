@@ -2,39 +2,31 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
   legend Graphs
   select#chooseGraph.form-control(
     value="Choose a graph"
-    ng-change="sidebar.changeName()"
-    ng-model="sidebar.graphSelect"
+    ng-change="sidebar.updateSidebarControls()"
+    ng-model="sidebar.selectedGraph"
     ng-options="g as g.name for g in sidebar.graphs"
+    ng-init="sidebar.selectedGraph = sidebar.graphs[0]"
   )
   legend Variables
-  div
-    p {{sidebar.graphInfo.graph}}
-    //div(ng-show=categorical).form-inline
-      input(ng-model="selectorCat" type="checkbox" id="categorical")
-      p X is a categorical variable
   div.form-inline
-    div.form-horizontal(ng-show="sidebar.graphInfo.x")
-      label(for = "x") Add X
+    div.form-horizontal(ng-show="sidebar.selectedGraph.x")
+      label(for = "x") X &nbsp;
       select#x.form-control(
-        ng-change="sidebar.changeVar(sidebar.selector1, sidebar.headers,'x');"
-        ng-model="sidebar.selector1"
-        ng-options="v as v.value for v in sidebar.headers"
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.xCol"
+        ng-options="col for col in sidebar.xCols"
       )
-    div.form-horizontal(ng-show="sidebar.graphInfo.y")
-      label(for = "y") Add Y
+    div.form-horizontal(ng-show="sidebar.selectedGraph.y")
+      label(for = "y") Y &nbsp;
       select#y.form-control(
-        ng-change="sidebar.changeVar(sidebar.selector2,sidebar.headers,'y');"
-        ng-model="sidebar.selector2"
-        ng-options="v as v.value for v in sidebar.headers"
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.yCol"
+        ng-options="col for col in sidebar.yCols"
       )
-      div(ng-show = "sidebar.labelVar")
-        input(ng-model="sidebar.labelCheck" type="checkbox" id = "label")
-        p Check if Y variable is the labels column
-
-    div.form-horizontal(ng-show="sidebar.graphInfo.z")
-      label(for = "z") Add Radius
+    div.form-horizontal(ng-show="sidebar.selectedGraph.z")
+      label(for = "z") Z (radius) &nbsp;
       select#z.form-control(
-        ng-change="sidebar.changeVar(sidebar.selector3,sidebar.headers,'z');"
-        ng-model="sidebar.selector3"
-        ng-options="v as v.value for v in sidebar.headers"
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.zCol"
+        ng-options="col for col in sidebar.zCols"
       )
