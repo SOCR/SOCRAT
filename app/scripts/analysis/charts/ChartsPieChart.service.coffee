@@ -69,5 +69,5 @@ module.exports = class ChartsPieChart extends BaseService
       .attr('id','tooltip')
       .attr('transform', (d) -> 'translate('+arc.centroid(d)+')')
       .attr('text-anchor', 'middle')
-      .text (d) -> d.data.key + ': ' + parseFloat(100*d.data.value/@valueSum).toFixed(2) + '%'
+      .text (d) => d.data.key + ': ' + parseFloat(100 * d.data.value / @valueSum).toFixed(2) + '%'
 
