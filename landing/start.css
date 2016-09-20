@@ -64,9 +64,8 @@
   text-align: center;
 }
 
-.footer-container a {
+.footer-container a, p {
   color: #34495e;
-
 }
 
 .footer-container a:hover {
