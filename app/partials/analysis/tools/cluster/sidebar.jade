@@ -24,7 +24,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
                 type="submit"
                 aria-label="Get k value"
                 ng-click="sidebar.detectK()"
-                ng-disabled="!sidebar.useLabels"
+                ng-disabled="!sidebar.labelCol"
                 uib-tooltip = "Use labels to get number of clusters"
                 tooltip-placement="right"
               )

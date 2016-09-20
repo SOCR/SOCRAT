@@ -66,6 +66,10 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   updateDataPoints: (data=null, means=null, labels=null) ->
     if data
+      if @labelCol
+        @uniqueLabels =
+          num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
+          labelCol: @labelCol
       xCol = data.header.indexOf @xCol
       yCol = data.header.indexOf @yCol
       data = ([row[xCol], row[yCol]] for row in data.data)
@@ -87,8 +91,10 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         @uniqueVals(colData[i]).length > maxK
     [@xCol, @yCol, ..., lastCol] = @numericalCols
     @clusterRunning = off
-    if @useLabels
-      @numUniqueLabels = @detectK data
+    if @labelCol
+      @uniqueLabels =
+        num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
+        labelCol: @labelCol
     @$timeout =>
       @updateDataPoints data
 
@@ -109,7 +115,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   detectKValue: () ->
     # extra check that labels are on
-    if @dataFrame and @useLabels
+    if @dataFrame and @labelCol
       labelCol = @dataFrame.header.indexOf @labelCol
       labels = (row[labelCol] for row in @dataFrame.data)
       uniqueLabels = @uniqueVals labels
@@ -139,7 +145,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
 
       # re-check if possible to compute accuracy
-      if @useLabels and @k is @uniqueLabels.num and @accuracyon
+      if @k is @uniqueLabels.num and @accuracyon
         acc = on
 
       obj =
