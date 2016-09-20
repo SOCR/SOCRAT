@@ -51,7 +51,7 @@ module.exports = class ChartsPieChart extends BaseService
       .value((d)-> d.value)
       .sort(null)
 
-      formatted_data = makePieData(data)
+      formatted_data = @makePieData data
 
       arcs = _graph.selectAll(".arc")
       .data(pie(formatted_data))

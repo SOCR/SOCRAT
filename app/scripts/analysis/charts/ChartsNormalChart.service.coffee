@@ -14,15 +14,15 @@ module.exports = class ChartsNormalChart extends BaseService
     tmp
 
   getRightBound: (middle,step) ->
-    middle + step *@distanceFromMean
+    middle + step * @distanceFromMean
 
   getLeftBound: (middle,step) ->
-    middle - (step*@distanceFromMean)
+    middle - step * @distanceFromMean
 
   sort: (values) ->
-    values.sort (a,b) -> a-b
+    values.sort (a, b) -> a-b
 
-  getVariance: (values,mean) ->
+  getVariance: (values, mean) ->
     temp = 0
     numberOfValues = values.length
     while( numberOfValues--)
@@ -33,18 +33,20 @@ module.exports = class ChartsNormalChart extends BaseService
   getSum: (values) ->
     values.reduce (previousValue, currentValue) -> previousValue + currentValue
 
-  getGaussianFunctionPoints: (std,mean,variance,leftBound,rightBound) ->
+  getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
     data = []
     for i in [leftBound...rightBound] by 1
-      data.push({x:i,y:(1/(std*Math.sqrt(Math.PI*2)))*Math.exp(-(Math.pow(i-mean,2)/ (2*variance)))})
+      data.push
+        x: i
+        y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
     console.log(data)
-    data;
+    data
 
-  getMean: (valueSum,numberOfOccurrences) ->
+  getMean: (valueSum, numberOfOccurrences) ->
     valueSum / numberOfOccurrences
 
-  getZ: (x,mean,standardDerivation) ->
-    (x-mean)/standardDerivation
+  getZ: (x, mean, standardDerivation) ->
+    (x - mean) / standardDerivation
 
   getWeightedValues: (values) ->
     weightedValues= {}
@@ -87,19 +89,19 @@ module.exports = class ChartsNormalChart extends BaseService
       toolTipElement.style('display', 'none')
       toolTipElement.innerHTML = " "
 
-    console.log extract(data, "x")
-    sample = sort(getRandomValueArray(extract(data,"x")))
-    sum = getSum(sample)
+    console.log @extract(data, "x")
+    sample = sort(@getRandomValueArray(@extract(data,"x")))
+    sum = @getSum(sample)
     min = sample[0]
     max = sample[sample.length - 1]
-    mean = getMean(sum, sample.length)
-    variance = getVariance(sample, mean)
+    mean = @getMean(sum, sample.length)
+    variance = @getVariance(sample, mean)
     standardDerivation =  Math.sqrt(variance)
-    rightBound = getRightBound(mean, standardDerivation)
-    leftBound = getLeftBound(mean,standardDerivation)
+    rightBound = @getRightBound(mean, standardDerivation)
+    leftBound = @getLeftBound(mean,standardDerivation)
     bottomBound = 0
-    topBound = 1/(standardDerivation*Math.sqrt(Math.PI*2))
-    gaussianCurveData = getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
+    topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
+    gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
 
     xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
