@@ -93,13 +93,22 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    xCol = data.header.indexOf @xCol
-    yCol = data.header.indexOf @yCol
-    zCol = data.header.indexOf @zCol
+    [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
+    [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
     data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data
       graph: @selectedGraph
+      labels:
+        xLab:
+          value: @xCol
+          type: xType
+        yLab:
+          value: @yCol
+          type: yType
+        zLab:
+          value: @zCol
+          type: zType
 
 #  changeGraph: () ->
 #    if @graphSelect.name is "Stream Graph"

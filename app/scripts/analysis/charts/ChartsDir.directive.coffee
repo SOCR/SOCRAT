@@ -50,6 +50,8 @@ module.exports = class ChartsDir extends BaseDirective
       gdata = null
       ranges = null
 
+      numerics = ['integer', 'number']
+
       # add segments to a slider
       # https://designmodo.github.io/Flat-UI/docs/components.html#fui-slider
       $.fn.addSliderSegments = (amount, orientation) ->
@@ -66,23 +68,36 @@ module.exports = class ChartsDir extends BaseDirective
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
         if newChartData
-          gdata = newChartData
-          data = newChartData.data
-          scheme = newChartData.scheme
+          gdata = newChartData.labels
+          data = newChartData.dataPoints
+          scheme = newChartData.graph
+
+          data = data.map (row) ->
+            x: row[0]
+            y: row[1]
+            z: row[2]
+
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
-          svg = container.append('svg').attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom)
+
+          svg = container.append('svg')
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
           #svg.select("#remove").remove()
-          _graph = svg.append('g').attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+          _graph = svg.append('g')
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
           ranges =
-            xMin: d3.min data, (d) -> parseFloat d.x
-            yMin: d3.min data, (d) -> parseFloat d.y
+            xMin: if gdata.xLab.type in numerics then d3.min(data, (d) -> parseFloat(d.x)) else null
+            yMin: if gdata.yLab.type in numerics then d3.min(data, (d) -> parseFloat(d.y)) else null
+            zMin: if gdata.zLab.type in numerics then d3.min(data, (d) -> parseFloat(d.z)) else null
 
-            xMax: d3.max data, (d) -> parseFloat d.x
-            yMax: d3.max data, (d) -> parseFloat d.y
+            xMax: if gdata.xLab.type in numerics then d3.max(data, (d) -> parseFloat(d.x)) else null
+            yMax: if gdata.yLab.type in numerics then d3.max(data, (d) -> parseFloat(d.y)) else null
+            zMax: if gdata.zLab.type in numerics then d3.max(data, (d) -> parseFloat(d.z)) else null
 
-          switch gdata.name
+          switch scheme.name
             when 'Bar Graph'
               @bar.drawBar(width,height,data,_graph,gdata)
             when 'Bubble Chart'

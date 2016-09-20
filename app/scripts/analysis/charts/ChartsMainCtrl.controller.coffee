@@ -8,5 +8,5 @@ module.exports = class ChartsMainCtrl extends BaseCtrl
   initialize: ->
     @chartData = null
 
-    @$scope.$on 'charts:graphDiv', (event, data) =>
+    @$scope.$on 'charts:updateGraph', (event, data) =>
       @chartData = data
