@@ -23,6 +23,7 @@
     "bootstrap": "^3.3.6",
     "bootstrap-switch": "~3.0.2",
     "bootstrap-tagsinput": "^0.7.1",
+    "connect": "^3.5.0",
     "d3": "~3.5.15",
     "data-wrangler": "^1.0.5",
     "datalib": "^1.7.2",
@@ -40,6 +41,7 @@
     "jstat": "~1.5.2",
     "ngHandsontable": "git+https://github.com/handsontable/ngHandsontable.git",
     "select2": "^4.0.3",
+    "serve-static": "^1.11.1",
     "typeahead.js": "git+https://github.com/twitter/typeahead.js.git"
   },
   "devDependencies": {
@@ -67,6 +69,7 @@
     "less-loader": "*",
     "phantomjs2": "~2.2.0",
     "raw-loader": "*",
+    "strip-loader": "^0.1.2",
     "style-loader": "*",
     "url-loader": "^0.5.7",
     "webpack": "1.13.0",
@@ -78,7 +81,8 @@
   "scripts": {
     "build": "node_modules/webpack/bin/webpack.js",
     "watch": "node_modules/webpack/bin/webpack.js --watch",
-    "serve": "node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot -d --colors --content-base _build/"
+    "serve": "node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot -d --colors --content-base _build/",
+    "prod": "node_modules/webpack/bin/webpack.js -p --config ./webpack.production.config.coffee"
   },
   "license": "LGPL-3.0"
 }
