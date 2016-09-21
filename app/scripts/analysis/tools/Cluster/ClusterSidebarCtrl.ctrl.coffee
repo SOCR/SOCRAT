@@ -151,8 +151,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       obj =
         data: data
         labels: labels
-        xCol: xCol
-        yCol: yCol
+        xCol: @xCol
+        yCol: @yCol
         acc: acc
 
     else false
@@ -171,7 +171,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @kmeanson = on
     @running = 'spinning'
     res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
-      xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
+      xyMeans = ([row.val[@chosenCols.indexOf(@xCol)], row.val[@chosenCols.indexOf(@yCol)]] for row in res.centroids)
       @updateDataPoints null, xyMeans, res.labels
       @$timeout =>
         @kmeanson = off
@@ -182,7 +182,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @kmeanson = on
     @running = 'spinning'
     res = @algorithmsService.clusterStep @selectedAlgorithm, clustData, @k, @initMethod, @distance
-    xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
+    xyMeans = ([row.val[@chosenCols.indexOf(@xCol)], row.val[@chosenCols.indexOf(@yCol)]] for row in res.centroids)
     @updateDataPoints null, xyMeans, res.labels
     @$timeout =>
       @kmeanson = off
