@@ -40,12 +40,14 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
         @eventManager.broadcast 'getData:updateShowState', 'socrData'
 
       when 'worldBank'
-        @selected = 'getDataWorldBank'
-        @eventManager.broadcast 'getData:updateShowState', 'worldBank'
+        console.log 'WorldBank is not available'
+#        @selected = 'getDataWorldBank'
+#        @eventManager.broadcast 'getData:updateShowState', 'worldBank'
 
       when 'generate'
-        @selected = 'getDataGenerate'
-        @eventManager.broadcast 'getData:updateShowState', 'generate'
+        console.log 'Data generation is not available'
+#        @selected = 'getDataGenerate'
+#        @eventManager.broadcast 'getData:updateShowState', 'generate'
 
       when 'jsonParse'
         @selected = 'getDataJson'
