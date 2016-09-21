@@ -8,6 +8,14 @@ module.exports = class ChartsList extends BaseService
 
   getFlat: () ->
     flat = [
+      name: 'Histogram'
+      value: 2
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
+      xLabel: ""
+    ,
       name: 'Bar Graph'
       value: 0
       x: ['integer', 'number', 'string']
@@ -25,14 +33,6 @@ module.exports = class ChartsList extends BaseService
       message: "Choose an x variable and a y variable."
       xLabel: "Add x"
       yLabel: "Add y"
-    ,
-      name: 'Histogram'
-      value: 2
-      x: ['integer', 'number']
-      y: false
-      z: false
-      message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
-      xLabel: ""
     ,
       name: 'Bubble Chart'
       value: 3
