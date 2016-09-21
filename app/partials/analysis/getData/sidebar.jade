@@ -11,12 +11,12 @@ div(ng-controller="GetDataSidebarCtrl as sidebar")
       ng-click="sidebar.show('socrData')"
       ng-class="{active: sidebar.selected == 'getDataSocrData'}")
       | Load SOCR dataset
-    a#getDataWorldBank.list-group-item(
+    a#getDataWorldBank.list-group-item.disabled(
       href=""
       ng-click="sidebar.show('worldBank')"
       ng-class="{active: sidebar.selected == 'getDataWorldBank'}")
       | Load data from WorldBank
-    a#getDataGenerate.list-group-item(
+    a#getDataGenerate.list-group-item.disabled(
       href=""
       ng-click="sidebar.show('generate')"
       ng-class="{active: sidebar.selected == 'getDataGenerate'}")
