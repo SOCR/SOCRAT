@@ -13,6 +13,7 @@ module.exports = class ClusterKMeans extends BaseService
 
   initialize: () ->
     @metrics = @app_analysis_cluster_metrics
+    @jsfeat = require 'jsfeat'
 
     @name = 'K-means'
     @timer = null
@@ -27,9 +28,10 @@ module.exports = class ClusterKMeans extends BaseService
     ,
       name: 'Random patition'
       method: @randomPartitionInit
-    ,
-      name: 'k-means++'
-      method: @kMeansPlusPlusInit
+      # TODO: implement k-means++
+#    ,
+#      name: 'k-means++'
+#      method: @kMeansPlusPlusInit
     ]
 
     #runtime variables
@@ -37,9 +39,12 @@ module.exports = class ClusterKMeans extends BaseService
     @clusters = null
 
     # module parameters
+    distances = @metrics.getNames()
+    # TODO: fix mahalanobis calculations
+    distances.pop()
     @params =
       k: @ks
-      distance: @metrics.getNames()
+      distance: distances
       init: @inits.map (init) -> init.name
 
   getName: -> @name
@@ -125,16 +130,16 @@ module.exports = class ClusterKMeans extends BaseService
     matrixT = d3.transpose(matrix)
 
     cov = (0 for e1 in [0..l - 1] for e2 in [0..l - 1])
-    cov = _matrixMultiply matrixT, matrix
+    cov = @matrixMultiply matrixT, matrix
     cov = cov.map((row) -> row.map((el) -> el / (n - 1)))
 
     # calculate pseudo-inverse covariance matrix
-    tCov = new jsfeat.matrix_t l, l, jsfeat.F32_t | jsfeat.C1_t
+    tCov = new @jsfeat.matrix_t l, l, @jsfeat.F32_t | @jsfeat.C1_t
     covData = []
     (covData.push(e) for e in row for row in cov)
     tCov.data = covData
-    tCovInv = new jsfeat.matrix_t l, l, jsfeat.F32_t | jsfeat.C1_t
-    jsfeat.linalg.svd_invert tCovInv, tCov
+    tCovInv = new @jsfeat.matrix_t l, l, @jsfeat.F32_t | @jsfeat.C1_t
+    @jsfeat.linalg.svd_invert tCovInv, tCov
 
     invCov = (0 for e1 in [0..l - 1] for e2 in [0..l - 1])
     for row, i in invCov
@@ -172,7 +177,7 @@ module.exports = class ClusterKMeans extends BaseService
       centroids = clusters.centroids
       labels = clusters.initLabels
       # if mahalanobis distance, need to precompute covariance matrices
-      if distance in @metrics.getNames() and distance.toLowerCase() is 'mahalanobis'
+      if distance.toLowerCase() in @metrics.getNames().map((x) -> x.toLowerCase()) and distance.toLowerCase() is 'mahalanobis'
         labels = @assignSamples data, centroids, 'euclidean'
         centroids = @updateMeans data, centroids, labels
         covMats = []
