@@ -120,6 +120,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   ,
     id: 'KNEE_PAIN'
     name: 'Simulated SOCR Knee Pain Centroid Location Data'
+  ,
+    id: 'CURVEDNESS_AD'
+    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
+  ,
+    id: 'PCV_SPECIES'
+    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
   ]
 
   getWB: ->
@@ -148,9 +154,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   getSocrData: ->
     switch @socrdataset.id
-      # TODO: host on SOCR server
-      when 'IRIS' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
-      when 'KNEE_PAIN' then url = 'https://www.googledrive.com/host//0BzJubeARG-hsLUU1Ul9WekZRV0U'
+      when 'IRIS' then url = 'datasets/iris.csv'
+      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
+      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
+      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
       # default option
       else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 
