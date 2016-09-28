@@ -88,7 +88,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       [minK, ..., maxK] = @algParams.k
       colData = d3.transpose(data.data)
       @categoricalCols = @categoricalCols.filter (x, i) =>
-        @uniqueVals(colData[i]).length > maxK
+        @uniqueVals(colData[@cols.indexOf(x)]).length < maxK
     [@xCol, @yCol, ..., lastCol] = @numericalCols
     @clusterRunning = off
     if @labelCol
