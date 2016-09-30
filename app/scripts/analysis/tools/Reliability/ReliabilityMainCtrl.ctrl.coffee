@@ -8,48 +8,32 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
   initialize: ->
     @dataService = @app_analysis_reliability_dataService
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @title = 'Clustering module'
+    @tests = @app_analysis_reliability_tests
     @dataType = ''
-    @transforming = off
-    @transformation = ''
-    @transformations = []
-    @affinityMatrix = null
-
-    @showresults = off
-    @avgAccuracy = ''
-    @accs = {}
-
-    @dataPoints = null
-    @means = null
-    @assignments = null
-
-    @$scope.$on 'cluster:updateDataPoints', (event, data) =>
-#      @showresults = off if @showresults is on
-      # safe enforce $scope.$digest to activate directive watchers
-      @$timeout => @updateChartData(data)
-
-    @$scope.$on 'cluster:updateDataType', (event, dataType) =>
-      @dataType = dataType
 
   prettifyArrayOutput: (arr) ->
     if arr?
       arr = arr.map (x) -> x.toFixed 3
       '[' + arr.toString().split(',').join('; ') + ']'
 
-  showResults: (accuracy) ->
-    if Object.keys(accuracy).length isnt 0
-      @avgAccuracy = accuracy.average.toFixed(2)
-      delete accuracy.average
-      @accs = accuracy
-      @showresults = on
+  showResults: (data) ->
+    cAlpha = Number data.cronAlpha
 
-  updateChartData: (data) ->
-    if data.dataPoints?
-      @dataPoints = data.dataPoints
-    @means = data.means
-    @assignments = data.labels
+    if not isNaN(cAlpha)
+      @cronAlpha = cAlpha.toFixed(3)
+      @cronAlphaIdInterval = @prettifyArrayOutput(data.idInterval)
+      @cronAlphaKfInterval = @prettifyArrayOutput(data.kfInterval)
+      @cronAlphaLogitInterval = @prettifyArrayOutput(data.logitInterval)
+      @cronAlphaBootstrapInterval = @prettifyArrayOutput(data.bootstrapInterval)
+      @cronAlphaAdfInterval = @prettifyArrayOutput(data.adfInterval)
 
-  finish: (results=null) ->
-    @msgManager.broadcast 'cluster:done', results
-    showResults results
+    @icc = Number(data.icc).toFixed(3)
+    @kr20 = if data.kr20 is 'Not a binary data' then data.kr20 else Number(data.kr20).toFixed(3)
+
+    @splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
+
+  $scope.$on 'reliability:updateDataType', (event, dataType) ->
+    @dataType = dataType
+
+  $scope.$on 'reliability:showResults', (event, data) ->
+    @showResults data
