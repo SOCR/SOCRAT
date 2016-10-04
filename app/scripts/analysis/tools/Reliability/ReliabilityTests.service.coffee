@@ -7,6 +7,7 @@ BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffe
 #  1. TSAGRIS, MICHAIL, CONSTANTINOS C. FRANGOS, and CHRISTOS C. FRANGOS.
 #   "Confidence intervals for Cronbach’s reliability coefficient."
 #   http://www.wseas.us/e-library/conferences/2013/Vouliagmeni/CCC/CCC-25.pdf
+#   Proceedings of the 1st International Conference on Computer Supported Education (COSUE '13)
 #  2. Maydeu-Olivares, Alberto, Donna L. Coffman, and Wolfgang M. Hartmann.
 #   "Asymptotically distribution-free (ADF) interval estimation of coefficient alpha."
 #   Psychological methods 12.2 (2007): 157.
@@ -30,10 +31,28 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
       method: @kr20
     ]
 
+    @matrix = []
+    @gamma = null
+
+  getMetricNames: () -> @metrics.map (metric) -> metric.name
+
+  calculateMetric: (name, data, confLevel) ->
+    res = (metric.method(data, confLevel) for metric in @metrics when name is metric.name).shift()
+
   cAlphaAndConfIntervals: (data, confLevel) ->
     matrix = jStat data
-    matrix = jStat jStat.map matrix, Number
+    @matrix = jStat jStat.map matrix, Number
     @gamma = (1 - confLevel) * 2 # confidence coefficient
+    cAplha = cronbachAlpha @matrix
+    cAplhaConfIntervals = cronbachAlphaConfIntervals cAplha
+
+    cAlpha: cAlpha
+    confIntervals:
+      id: cAplhaConfIntervals.id
+      adf: cAplhaConfIntervals.adf
+      kf: cAplhaConfIntervals.kf
+      bootstrap: cAplhaConfIntervals.bootstrap
+      logit: cAplhaConfIntervals.logit
 
   cronbachAlpha: (matrix) ->
     matrix = jStat(matrix)
@@ -43,57 +62,74 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
     rowTotalsVar = jStat.variance matrix.transpose().sum()
     cAlpha = (k / (k - 1)) * (1 - sumColsVar / rowTotalsVar)
 
-  cronbachAlphaConfIntervals: () ->
-    matrix = jStat(matrix)
-    k = jStat.cols matrix
-    r = jStat.rows matrix
+  cronbachAlphaConfIntervals: (cAlpha) ->
+    id: @cAplhaIdConfInterval @matrix, cAlpha, @gamma
+    adf: @cAplhaAdfConfInterval @matrix, cAlpha, @gamma
+    kf: @cAlphaKfConfInterval @matrix, cAlpha, @gamma
+    bootstrap: @cAlphaBootstrapConfInterval @matrix, cAlpha, @gamma
+    logit: @cAlphaLogitConfInterval @matrix, cAlpha, @gamma
 
-    # calculate covariance matrix
-    matrixSquared = jStat.create k, (i, j) -> return 0
-    for row, i in matrix.transpose()
-      for col, j in matrix.transpose()
-        matrixSquared[i][j] = (a * col[l] for l, a of row).reduce (t, s) -> t + s
-    colMeans = matrix.mean() # row vector
-    colMeansSquared = jStat.create k, (i, j) -> return 0
-    for i in [0..k-1]
-      for j in [0..k-1]
-        colMeansSquared[i][j] = colMeans[i] * colMeans[j] * r
-    cov = jStat.create k, (i, j) -> return 0
-    covSum = 0
-    covDiagSum = 0
-    for i in [0..k-1]
-      for j in [0..k-1]
-        cov[i][j] = (matrixSquared[i][j] - colMeansSquared[i][j]) * (1 / (r - 1))
-        covSum = covSum + cov[i][j]
-        covDiagSum = covDiagSum + cov[i][j] if i == j
-    covOffDiagSum = (covSum - covDiagSum) / 2
+  covMatrix: (matrix) ->
+    if matrix?
+      matrix = jStat @matrix
+      k = jStat.cols matrix
+      r = jStat.rows matrix
 
-  # asymptotically distribution-free (ADF) interval
-  cAplhaAdfConfInterval: () ->
-    # calculate ADF confidence intervals
-    dwrtvar = -2 * (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
-    dwrtcov = (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
-    jac = jStat.create k, (i, j) -> return dwrtcov
-    for j in [0..k - 1]
-      jac[j][j] = dwrtvar
-
-    trac = 0
-    for isub in [0..r - 1]
-      v = jStat(matrix).row(isub)[0].map (x, i) -> x - colMeans[i] # row vector
-      wcv = jStat.create k, (i, j) -> return 0
-      wcvSum = 0
+      # calculate covariance matrix
+      matrixSquared = jStat.create k, (i, j) -> return 0
+      for row, i in matrix.transpose()
+        for col, j in matrix.transpose()
+          matrixSquared[i][j] = (a * col[l] for l, a of row).reduce (t, s) -> t + s
+      colMeans = matrix.mean() # row vector
+      colMeansSquared = jStat.create k, (i, j) -> return 0
       for i in [0..k-1]
         for j in [0..k-1]
-          wcv[i][j] = jac[i][j] * (v[i] * v[j] - cov[i][j])
-          wcvSum = wcvSum + wcv[i][j]
-      trac = trac + wcvSum * wcvSum
-    nnase = Math.sqrt((1 / r) * (1 / (r - 1)) * trac)
-    adfIntervalLeft = cAlpha - jStat.normal.inv(1 - gamma / 2, 0, 1) * nnase
-    adfIntervalRight = cAlpha + jStat.normal.inv(1 - gamma / 2, 0, 1) * nnase
-    [Math.max(0, adfIntervalLeft), Math.min(1, adfIntervalRight)]
+          colMeansSquared[i][j] = colMeans[i] * colMeans[j] * r
+      cov = jStat.create k, (i, j) -> return 0
+      for i in [0..k-1]
+        for j in [0..k-1]
+          cov[i][j] = (matrixSquared[i][j] - colMeansSquared[i][j]) * (1 / (r - 1))
+      cov
+    else false
+
+  # asymptotically distribution-free (ADF) interval
+  cAplhaAdfConfInterval: (matrix, cAlpha, gamma) ->
+    covMatrix = @covMatrix matrix
+    if covMatrix
+      covSum = 0
+      covDiagSum = 0
+      for row, i in covMatrix
+        covSum += row.reduce (a, b) -> a + b
+        covDiagSum += row[i]
+      covOffDiagSum = (covSum - covDiagSum) / 2
+      colMeans = @jStat(matrix).mean() # row vector
+      #  calculate ADF confidence intervals
+      dwrtvar = -2 * (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
+      dwrtcov = (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
+      jac = jStat.create k, (i, j) -> return dwrtcov
+      for j in [0..k - 1]
+        jac[j][j] = dwrtvar
+
+      trac = 0
+      for isub in [0..r - 1]
+        v = jStat(matrix).row(isub)[0].map (x, i) -> x - colMeans[i] # row vector
+        wcv = jStat.create k, (i, j) -> return 0
+        wcvSum = 0
+        for i in [0..k-1]
+          for j in [0..k-1]
+            wcv[i][j] = jac[i][j] * (v[i] * v[j] - cov[i][j])
+            wcvSum = wcvSum + wcv[i][j]
+        trac = trac + wcvSum * wcvSum
+      nnase = Math.sqrt((1 / r) * (1 / (r - 1)) * trac)
+      adfIntervalLeft = cAlpha - jStat.normal.inv(1 - gamma / 2, 0, 1) * nnase
+      adfIntervalRight = cAlpha + jStat.normal.inv(1 - gamma / 2, 0, 1) * nnase
+      [Math.max(0, adfIntervalLeft), Math.min(1, adfIntervalRight)]
+    else false
 
   # ID confidence interval
-  cAplhaIdConfInterval: () ->
+  cAplhaIdConfInterval: (matrix, cAlpha, gamma) ->
+    k = k = jStat.cols matrix
+    r = jStat.rows matrix
     omega = 2 * (k - 1) * (1 - cAlpha) / k
     varCapAlphaCap = (k * k * omega) / (r * (k - 1) * (k - 1))
     idIntervalAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt(varCapAlphaCap)
@@ -102,7 +138,9 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
     [Math.max(0, idIntervalLeft), Math.min(1, idIntervalRight)]
 
   # Koning and Franses confidence interval
-  cAlphaKfConfInterval: () ->
+  cAlphaKfConfInterval: (matrix, cAlpha, gamma) ->
+    k = jStat.cols matrix
+    r = jStat.rows matrix
     kfIntervalLeft = 1 - (1 - cAlpha) * Math.exp jStat.normal.inv(1 - gamma / 2, 0, 1) *
         Math.sqrt 2 * k / (r * (k - 1))
     kfIntervalRight = 1 - (1 - cAlpha) * Math.exp -1 * jStat.normal.inv(1 - gamma / 2, 0, 1) *
@@ -110,14 +148,14 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
     [Math.max(0, kfIntervalLeft), Math.min(1, kfIntervalRight)]
 
   # bootstrap confidence intervals
-  cAlphaBootstrapConfInterval: () ->
+  cAlphaBootstrapConfInterval: (matrix, cAlpha, gamma) ->
     #  calculate acceleration term using Jackknife
     alphaCapIthDeleted = []
     for idx in [0..r - 1] # get sample estimates when Ith row is deleted
       rowsBeforeIdx = matrix.slice 0, idx
       rowsAfterIdx = matrix.slice idx + 1
       matrixWithoutIdxRow = rowsBeforeIdx.concat rowsAfterIdx
-      alphaCapIthDeleted.push(_getCAlpha matrixWithoutIdxRow)
+      alphaCapIthDeleted.push(@cronbachAlpha matrixWithoutIdxRow)
     alphaCapJackknife = (alphaCapIthDeleted.reduce (t, s) -> t + s) / r
     accelAlphaNum = (alphaCapIthDeleted.map (x) -> x - alphaCapJackknife).map (x) -> Math.pow(x, 3)
     accelAlphaNum = accelAlphaNum.reduce (t, s) -> t + s
@@ -133,7 +171,7 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
       for idx in [0..r - 1]
         newRowIdx = Math.floor(Math.random() * r)
         sampleMatrix.push(matrix[newRowIdx])
-      alphaBootstrapped.push(_getCAlpha(sampleMatrix))
+      alphaBootstrapped.push(@cronbachAlpha(sampleMatrix))
     smallerAlphas = (val for val in alphaBootstrapped when val < cAlpha)
     zCapZero = jStat.normal.inv(smallerAlphas.length / B, 0, 1)
 
@@ -150,7 +188,11 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
     [Math.max(0, bootstrapPercentiles[0]), Math.min(1, bootstrapPercentiles[1])]
 
   # calculate logit confidence intervals
-  cAlphaLogitConfInterval: () ->
+  cAlphaLogitConfInterval: (matrix, cAlpha, gamma) ->
+    k = jStat.cols matrix
+    r = jStat.rows matrix
+    omega = 2 * (k - 1) * (1 - cAlpha) / k
+    varCapAlphaCap = (k * k * omega) / (r * (k - 1) * (k - 1))
     thetaCap = Math.log(cAlpha / (1 - cAlpha))
     varCapThetaCap = varCapAlphaCap * Math.pow(1 / cAlpha + 1 / (1 - cAlpha), 2)
     thetaAbsDev = jStat.normal.inv(1 - gamma / 2, 0, 1) * Math.sqrt(varCapThetaCap)
