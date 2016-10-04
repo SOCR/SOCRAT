@@ -1,12 +1,29 @@
-div(ng-controller="instrPerfEvalSidebarCtrl")
+div(ng-controller="reliabilitySidebarCtrl as sidebar")
   form
-    fieldset(ng-disabled="!perfeval")
-      legend Data parameters
-      label Number of columns&nbsp;
-          input(ng-model="nCols").input-small
-      label Number of rows&nbsp;
-          input(ng-model="nRows").input-small
-      label Confidence level&nbsp;
-          input(ng-model="confLevel").input-small
-      div
-        button(type="submit", ng-click="calculate()").btn.btn-primary Calculate
+    fieldset
+      legend Statistic
+      div.form-group(ng-show="sidebar.dataFrame")
+        label Reliability measure &nbsp;
+        //- show data header column names
+        select.form-control(
+        ng-model="sidebar.metric"
+        ng-options="metric for metric in sidebar.metrics"
+        ng-init="sidebar.metrics[0]"
+        )
+    fieldset(ng-disabled="sidebar.perfeval")
+      legend Dataset
+      div.form-group(
+        uib-tooltip="Only integer values are supported"
+        ng-show="sidebar.dataType == sidebar.DATA_TYPES.FLAT"
+      )
+        label Choose data columns &nbsp;
+          select.form-control(
+          multiple
+          ng-model="sidebar.chosenCols"
+          ng-options="col for col in sidebar.intCols"
+          )
+      div.form-group
+        label Confidence level&nbsp;
+            input(ng-model="sidebar.confLevel").input-small
+      div.form-group
+        button(type="submit", ng-click="sidebar.processData()").btn.btn-primary Calculate
