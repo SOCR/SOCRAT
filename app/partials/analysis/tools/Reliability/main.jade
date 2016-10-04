@@ -1,13 +1,13 @@
-div(ng-controller="instrPerfEvalMainCtrl")
-  h2 Instrument Performance Evaluation
-  div.lead.bg-danger(ng-hide="dataType == DATA_TYPES.FLAT")
-    | Instrument Performance Evaluation doesn't support current dataset.
-    | Only "flat" data tables are supported.
-  div(ng-hide="dataType != DATA_TYPES.FLAT")
+div(ng-controller="reliabilityMainCtrl as mainArea")
+  h4 Reliability Evaluation
+  div.lead.bg-danger(ng-hide="mainArea.dataType == mainArea.DATA_TYPES.FLAT")
+    | Reliability Evaluation doesn't support current dataset.
+    | Only tabular data tables are supported.
+  div(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT")
     p.
       Cronbach’s Alpha (α) is a measure of internal consistency or reliability of a psychometric instrument and measures
       how well a set of items measure a single, one-dimensional latent aspect of individuals.
-    p.lead <strong> Cronbach's α: </strong> {{cronAlpha}}
+    p.lead <strong> Cronbach's α: </strong> {{mainArea.cronAlpha}}
     div.table-responsive
       table.table.table-bordered.table-striped
         thead
@@ -37,30 +37,30 @@ div(ng-controller="instrPerfEvalMainCtrl")
       There are parametric and non-parametric methods to estimate the variance of Cronbach's α,
       and compute confidence intervals.
     p <strong> Cronbach’s Alpha confidence intervals </strong>
-    p.bg-info ID confidence interval: {{cronAlphaIdInterval}}
-    p.bg-info Koning and Franses confidence interval: {{cronAlphaKfInterval}}
-    p.bg-info Bootstrap confidence interval: {{cronAlphaBootstrapInterval}}
-    p.bg-info Logit confidence interval: {{cronAlphaLogitInterval}}
-    p.bg-info Asymptotically distribution-free (ADF) interval: {{cronAlphaAdfInterval}}
+    p.bg-info ID confidence interval: {{mainArea.cronAlphaIdInterval}}
+    p.bg-info Koning and Franses confidence interval: {{mainArea.cronAlphaKfInterval}}
+    p.bg-info Bootstrap confidence interval: {{mainArea.cronAlphaBootstrapInterval}}
+    p.bg-info Logit confidence interval: {{mainArea.cronAlphaLogitInterval}}
+    p.bg-info Asymptotically distribution-free (ADF) interval: {{mainArea.cronAlphaAdfInterval}}
     br
     p <strong> Other metrics of reliability: </strong>
     p.
       The Intra-class correlation coefficient (ICC) assesses the consistency, or reproducibility,
       of quantitative measurements made by different observers measuring the same quantity.
       Broadly speaking, the ICC is defined as the ratio of between-cluster variance to total variance.
-    p.bg-info Intraclass correlation coefficient (ICC): {{icc}}
+    p.bg-info Intraclass correlation coefficient (ICC): {{mainArea.icc}}
     p.
       In Split-Half Reliability assessment, the test is split in half (e.g., odd / even) creating "equivalent forms".
       The two "forms" are correlated with each other and the correlation coefficient is adjusted
       to reflect the entire test length, using the Spearman-Brown Prophecy formula.
-    p.bg-info Split-Half Reliability coefficient: {{splitHalfCoef}}
+    p.bg-info Split-Half Reliability coefficient: {{mainArea.splitHalfCoef}}
     p.
       The Kuder–Richardson Formula 20 (KR-20) is a very reliable internal reliability estimate which simulates
       calculating split-half reliability for every possible combination of items.
       The Cronbach's α and KR-20 are similar ― KR-20 is a derivative of the Cronbach's α with the advantage that
       it can handle both dichotomous and continuous variables, however, KR-20 can't be used
       when multiple-choice questions involve partial credit and require systematic item-based analysis.
-    p.bg-info Kuder–Richardson Formula 20 (KR-20): {{kr20}}
+    p.bg-info Kuder–Richardson Formula 20 (KR-20): {{mainArea.kr20}}
     br
     p
       small

@@ -11,6 +11,12 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
     @tests = @app_analysis_reliability_tests
     @dataType = ''
 
+    @$scope.$on 'reliability:updateDataType', (event, dataType) =>
+      @dataType = dataType
+
+    @$scope.$on 'reliability:showResults', (event, data) =>
+      @showResults data
+
   prettifyArrayOutput: (arr) ->
     if arr?
       arr = arr.map (x) -> x.toFixed 3
@@ -31,9 +37,3 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
     @kr20 = if data.kr20 is 'Not a binary data' then data.kr20 else Number(data.kr20).toFixed(3)
 
     @splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
-
-  $scope.$on 'reliability:updateDataType', (event, dataType) ->
-    @dataType = dataType
-
-  $scope.$on 'reliability:showResults', (event, data) ->
-    @showResults data
