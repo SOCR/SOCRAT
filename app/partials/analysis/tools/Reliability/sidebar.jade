@@ -2,14 +2,18 @@ div(ng-controller="reliabilitySidebarCtrl as sidebar")
   form
     fieldset
       legend Statistic
-      div.form-group(ng-show="sidebar.dataFrame")
+      div.form-group
         label Reliability measure: &nbsp;
         //- show data header column names
         select.form-control(
         ng-model="sidebar.metric"
         ng-options="metric for metric in sidebar.metrics"
         ng-init="sidebar.metric = sidebar.metrics[0]"
+        ng-change="sidebar.updateMetricDescription()"
         )
+      div.form-group(ng-show="sidebar.metric == sidebar.metrics[0]")
+        label Confidence level: {{sidebar.confLevel}} &nbsp;
+          div#slider(uib-tooltip="{{sidebar.confLevel}}" tooltip-placement="right")
     fieldset(ng-disabled="sidebar.perfeval")
       legend Dataset
       div.form-group(
@@ -22,8 +26,9 @@ div(ng-controller="reliabilitySidebarCtrl as sidebar")
           ng-model="sidebar.chosenCols"
           ng-options="col for col in sidebar.intCols"
           )
-      div.form-group
-        label Confidence level: {{sidebar.confLevel}} &nbsp;
-          div#slider(uib-tooltip="{{sidebar.confLevel}}" tooltip-placement="right")
-      div.form-group
-        button(type="submit", ng-click="sidebar.processData()").btn.btn-primary Calculate
+      div.form-group()
+        button.btn.btn-primary(
+        type="submit"
+        ng-click="sidebar.processData()"
+        ng-disabled="!sidebar.dataFrame"
+        ) Calculate

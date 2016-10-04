@@ -67,6 +67,9 @@ module.exports = class ReliabilitySidebarCtrl extends BaseCtrl
         slide: (event, ui) => @$timeout => @confLevel = ui.value / 100
       ).addSliderSegments($slider.slider("option").max)
 
+  updateMetricDescription: () ->
+    @msgService.broadcast 'reliability:updateMetric', @metric
+
   parseData: (obj) ->
     @dataService.inferDataTypes obj.dataFrame, (resp) =>
       if resp and resp.dataFrame
