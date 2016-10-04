@@ -3,12 +3,12 @@ div(ng-controller="reliabilitySidebarCtrl as sidebar")
     fieldset
       legend Statistic
       div.form-group(ng-show="sidebar.dataFrame")
-        label Reliability measure &nbsp;
+        label Reliability measure: &nbsp;
         //- show data header column names
         select.form-control(
         ng-model="sidebar.metric"
         ng-options="metric for metric in sidebar.metrics"
-        ng-init="sidebar.metrics[0]"
+        ng-init="sidebar.metric = sidebar.metrics[0]"
         )
     fieldset(ng-disabled="sidebar.perfeval")
       legend Dataset
@@ -16,14 +16,14 @@ div(ng-controller="reliabilitySidebarCtrl as sidebar")
         uib-tooltip="Only integer values are supported"
         ng-show="sidebar.dataType == sidebar.DATA_TYPES.FLAT"
       )
-        label Choose data columns &nbsp;
+        label Choose data columns: &nbsp;
           select.form-control(
           multiple
           ng-model="sidebar.chosenCols"
           ng-options="col for col in sidebar.intCols"
           )
       div.form-group
-        label Confidence level&nbsp;
-            input(ng-model="sidebar.confLevel").input-small
+        label Confidence level: {{sidebar.confLevel}} &nbsp;
+          div#slider(uib-tooltip="{{sidebar.confLevel}}" tooltip-placement="right")
       div.form-group
         button(type="submit", ng-click="sidebar.processData()").btn.btn-primary Calculate
