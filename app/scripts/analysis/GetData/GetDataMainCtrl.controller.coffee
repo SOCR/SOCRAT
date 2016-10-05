@@ -24,7 +24,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataAdaptor = @app_analysis_getData_dataAdaptor
 
     # get initial settings
+    @LARGE_DATA_SIZE = 20000 # number of cells in table
     @dataLoadedFromDb = false
+    @largeData = false
+    @maxRows = 1000
     @DATA_TYPES = @dataManager.getDataTypes()
     @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
     @defaultState = @states[0]
@@ -93,6 +96,25 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   ## Other instance methods
 
+  checkDataSize: (nRows, nCols) ->
+    if nRows and nCols and nRows * nCols > @LARGE_DATA_SIZE
+        @largeData = true
+        @maxRows = Math.floor(@LARGE_DATA_SIZE / @colHeaders.length) - 1
+    else
+        @largeData = false
+        @maxRows = 1000
+
+  subsampleData: () ->
+    subsample = (@getRandomInt(0, @tableData.length - 1) for i in [0..@maxRows])
+    data = (@tableData[idx] for idx in subsample.sort((a, b) => (a - b)))
+    @$timeout =>
+      @tableData = data
+      @largeData = false
+      @saveTableData()
+
+  getRandomInt: (min, max) ->
+    Math.floor(Math.random() * (max - min)) + min
+
   saveTableData: () =>
     # check if table is empty
     if @tableData?
@@ -101,11 +123,13 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         @dataLoadedFromDb = false
       else
         data = @dataAdaptor.toDataFrame @tableData, @colHeaders
+        @checkDataSize data.nRows, data.nCols
         @inputCache.setData data
 
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
+      @checkDataSize data.nRows, data.nCols
       # save to db
       @inputCache.setData data
     else
@@ -132,6 +156,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   ,
     id: 'PCV_SPECIES'
     name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
+  ,
+    id: 'TURKIYE_STUDENT_EVAL'
+    name: 'Turkiye Student Evaluation Data Set'
   ]
 
   getWB: ->
@@ -164,6 +191,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
       when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
       when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
+      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
       # default option
       else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 
