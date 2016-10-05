@@ -1,6 +1,6 @@
 'use strict'
 
-jStat = require 'jstat'
+jStat = require('jstat').jStat
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
 # Confidence intervals for Crobach's Alpha
@@ -39,12 +39,12 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
   calculateMetric: (name, data, confLevel) ->
     res = (metric.method(data, confLevel) for metric in @metrics when name is metric.name).shift()
 
-  cAlphaAndConfIntervals: (data, confLevel) ->
+  cAlphaAndConfIntervals: (data, confLevel) =>
     matrix = jStat data
     @matrix = jStat jStat.map matrix, Number
     @gamma = (1 - confLevel) * 2 # confidence coefficient
-    cAplha = cronbachAlpha @matrix
-    cAplhaConfIntervals = cronbachAlphaConfIntervals cAplha
+    cAlpha = @cronbachAlpha @matrix
+    cAplhaConfIntervals = @cronbachAlphaConfIntervals cAlpha
 
     cAlpha: cAlpha
     confIntervals:
@@ -95,6 +95,8 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
   # asymptotically distribution-free (ADF) interval
   cAplhaAdfConfInterval: (matrix, cAlpha, gamma) ->
     covMatrix = @covMatrix matrix
+    k = k = jStat.cols matrix
+    r = jStat.rows matrix
     if covMatrix
       covSum = 0
       covDiagSum = 0
@@ -102,7 +104,7 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
         covSum += row.reduce (a, b) -> a + b
         covDiagSum += row[i]
       covOffDiagSum = (covSum - covDiagSum) / 2
-      colMeans = @jStat(matrix).mean() # row vector
+      colMeans = jStat(matrix).mean() # row vector
       #  calculate ADF confidence intervals
       dwrtvar = -2 * (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
       dwrtcov = (k / (k - 1)) * covOffDiagSum / (covSum * covSum)
@@ -117,7 +119,7 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
         wcvSum = 0
         for i in [0..k-1]
           for j in [0..k-1]
-            wcv[i][j] = jac[i][j] * (v[i] * v[j] - cov[i][j])
+            wcv[i][j] = jac[i][j] * (v[i] * v[j] - covMatrix[i][j])
             wcvSum = wcvSum + wcv[i][j]
         trac = trac + wcvSum * wcvSum
       nnase = Math.sqrt((1 / r) * (1 / (r - 1)) * trac)
@@ -149,6 +151,8 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
 
   # bootstrap confidence intervals
   cAlphaBootstrapConfInterval: (matrix, cAlpha, gamma) ->
+    k = k = jStat.cols matrix
+    r = jStat.rows matrix
     #  calculate acceleration term using Jackknife
     alphaCapIthDeleted = []
     for idx in [0..r - 1] # get sample estimates when Ith row is deleted
@@ -206,8 +210,8 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
   #  https://en.wikipedia.org/wiki/Intraclass_correlation#Modern_ICC_definitions:_simpler_formula_but_positive_bias
   #  http://www.real-statistics.com/reliability/intraclass-correlation/
   #  http://statwiki.ucdavis.edu/Statistical_Computing/Analysis_of_Variance/Two-Factor_ANOVA_model_with_n_%3D_1_(no_replication)
-  icc: (matrix) ->
-    matrix = jStat(matrix)
+  icc: (matrix) =>
+    matrix = jStat jStat.map matrix, Number
     k = jStat.cols matrix
     r = jStat.rows matrix
 
@@ -230,8 +234,8 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
   # Split-Half Reliability coefficient
   #  http://www.real-statistics.com/reliability/split-half-methodology/
   #  https://en.wikipedia.org/wiki/Spearman–Brown prediction formula
-  splitHalfReliability: () ->
-    matrix = jStat(matrix)
+  splitHalfReliability: (matrix) =>
+    matrix = jStat jStat.map matrix, Number
     k = jStat.cols matrix
     r = jStat.rows matrix
 
@@ -250,8 +254,8 @@ module.exports = class ReliabilityTests extends BaseModuleDataService
 
   # Calculating Kuder–Richardson Formula 20 (KR-20)
   # TODO: finish calculations
-  kr20: (matrix) ->
-    matrix = jStat(matrix)
+  kr20: (matrix) =>
+    matrix = jStat jStat.map matrix, Number
     zeroMatrix = matrix.subtract 1
     if jStat.sum(jStat(zeroMatrix).sum()) isnt 0
       kr20 = 'Not a binary data'
