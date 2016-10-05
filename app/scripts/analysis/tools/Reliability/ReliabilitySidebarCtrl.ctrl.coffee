@@ -67,8 +67,11 @@ module.exports = class ReliabilitySidebarCtrl extends BaseCtrl
         slide: (event, ui) => @$timeout => @confLevel = ui.value / 100
       ).addSliderSegments($slider.slider("option").max)
 
-  updateMetricDescription: () ->
-    @msgService.broadcast 'reliability:updateMetric', @metric
+  updateMetric: () ->
+    res = @processData @dataFrame
+    @msgService.broadcast 'reliability:showResults',
+      metric: @metric
+      data: res
 
   parseData: (obj) ->
     @dataService.inferDataTypes obj.dataFrame, (resp) =>
@@ -77,7 +80,9 @@ module.exports = class ReliabilitySidebarCtrl extends BaseCtrl
         cols = @dataFrame.header
         @intCols = (col for col, idx in cols when @dataFrame.types[idx] is 'integer')
         res = @processData @dataFrame
-        @msgService.broadcast 'reliability:showResults', res
+        @msgService.broadcast 'reliability:showResults',
+          metric: @metric
+          data: res
 
   processData: (obj=@dataFrame) ->
     if @chosenCols.length is 0
