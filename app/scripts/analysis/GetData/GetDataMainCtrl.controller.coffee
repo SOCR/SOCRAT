@@ -39,15 +39,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       rowHeaders: on
       stretchH: "all"
       contextMenu: on
-      onAfterChange: (changes, source) =>
-        # check if table is empty
-        if @tableData?
-          # don't save data if just loaded
-          if @dataLoadedFromDb
-            @dataLoadedFromDb = false
-          else
-            data = @dataAdaptor.toDataFrame @tableData, @colHeaders
-            @inputCache.setData data
+      onAfterChange: @saveTableData
+      onAfterCreateCol: @saveTableData
+      onAfterCreateRow: @saveTableData
+      onAfterRemoveCol: @saveTableData
+      onAfterRemoveRow: @saveTableData
 
     try
       @stateService = @showStateService.create @states, @
@@ -96,6 +92,16 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     )
 
   ## Other instance methods
+
+  saveTableData: () =>
+    # check if table is empty
+    if @tableData?
+      # don't save data if just loaded
+      if @dataLoadedFromDb
+        @dataLoadedFromDb = false
+      else
+        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
+        @inputCache.setData data
 
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
