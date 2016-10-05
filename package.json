@@ -72,7 +72,7 @@
     "strip-loader": "^0.1.2",
     "style-loader": "*",
     "url-loader": "^0.5.7",
-    "webpack": "1.13.0",
+    "webpack": "^1.13.0",
     "webpack-dev-server": "^1.14.1"
   },
   "engines": {
