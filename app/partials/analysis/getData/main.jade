@@ -1,27 +1,24 @@
-div(ng-controller='getDataMainCtrl')
-  h1 Get Data
-  //br
-  p.lead To perform any analysis, you need data to begin with. Choose one of the available methods
-    |to get the data into the web-app.
+div(ng-controller='GetDataMainCtrl as mainArea')
+  h4 Get Data
 
-  form.socrData(uib-collapse="showState.socrData")
+  form.socrData(uib-collapse="mainArea.showState.socrData")
     legend SOCR Datasets
     div.form-group
       select.form-control(
-        ng-model="socrdataset",
-        ng-options="item as item.name for item in socrDatasets track by item.id")
-    button.btn.btn-primary(ng-click="getSocrData()") Load
+        ng-model="mainArea.socrdataset",
+        ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
+    button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
 
-  div.worldBank(uib-collapse="showState.worldBank")
+  div.worldBank(uib-collapse="mainArea.showState.worldBank")
     h3 WorldBank Data
     span Size:
-      input(type="text",class="input-mini", ng-model="size")
-      select(style="width:100%;margin:0px", ng-model="option")
+      input(type="text",class="input-mini", ng-model="mainArea.size")
+      select(style="width:100%;margin:0px", ng-model="mainArea.option")
         option(value='4.2_BASIC.EDU.SPENDING') Education Spending
         option(value='2.4_OOSC.RATE') Out of School Children rate
-      button.btn.btn-primary(ng-click="getWB()") Load
+      button.btn.btn-primary(ng-click="mainArea.getWB()") Load
 
-  div.generate(uib-collapse="showState.generate")
+  div.generate(uib-collapse="mainArea.showState.generate")
     ul.nav.nav-pills.nav-stacked.disabled
       li
         a Binomial Coin Toss
@@ -34,17 +31,42 @@ div(ng-controller='getDataMainCtrl')
       li
         a The Beta Distribution Experiment
 
-  form.jsonUrl(uib-collapse="showState.jsonParse")
+  form.jsonUrl(uib-collapse="mainArea.showState.jsonParse")
     legend Enter URL to parse JSON file
     div.form-group
       label(for="getDataJsonUrlInput").sr-only Enter URL
       div.btn-group.btn-group-justified(role="group")
         input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
-        span#getDataJsonUrlClear(ng-click="jsonUrl=''").glyphicon.glyphicon-remove-circle
-    button.btn.btn-primary(ng-click="getJsonByUrl()") Parse
+        span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
+    button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
 
+  div.form-inline(ng-hide="!mainArea.largeData")
+    br
+    p.bg-info Dataset size might be too large for some tools, e.g. Data Wrangler.
+      | Delays and screen freezes are possible. Consider deleting some columns or subsampling rows.
+    div.form-group(uib-tooltip='Suggested value based on number of columns')
+      label Random row subsampling &nbsp; &nbsp;
+      input.form-control(type="text" placeholder="1000" ng-model='mainArea.maxRows')
+      | &nbsp;
+    button.btn.btn-primary.btn-sm(type="submit" ng-click="mainArea.subsampleData()") Subsample
+
+  div.getdata-dragndrop(
+    ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}"
+    getdatadragndrop="[text/csv, text/tsv]"
+    file="mainArea.file"
+    max-file-size="50"
+  )
+    legend Copy-paste data or drag-and-drop CSV file
+    div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
+      hot-table(
+      purpose="json"
+      settings="mainArea.tableSettings"
+      col-headers="mainArea.colHeaders"
+      datarows="mainArea.tableData"
+      column-sorting="true"
+      sort-indicator="true"
+      manual-column-resize="true"
+      )
   br
-  div.lead.bg-danger(ng-hide="dataType != DATA_TYPES.NESTED")
+  div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.
-  div(ng-class="{'vis-hidden': dataType != DATA_TYPES.FLAT}")
-    handsontable(purpose="json")

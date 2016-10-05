@@ -16,9 +16,9 @@ The technology stack used in this framework is described below.
 
 **AngularJS** - JavaScript framework that we employ. Very elegant. [Official website](https://angularjs.org/) has the best documentation.
 
-### Optional
+**[WebPack](https://webpack.github.io/)** - module bundler. 
 
-**[Brunch](http://brunch.io)** - HTML5 built tool. 
+### Optional
 
 **[D3](http://d3js.org)** - Data driven charts
   
