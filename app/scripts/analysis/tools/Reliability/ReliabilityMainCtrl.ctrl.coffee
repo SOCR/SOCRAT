@@ -13,25 +13,31 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
     @DATA_TYPES = @dataService.getDataTypes()
     @tests = @app_analysis_reliability_tests
     @dataType = ''
-    @metrics = @tests.getMetricNames()
-    @showMetric =
-      cronAlpha: false
-      icc: true
-      splitHalf: true
-      kr20: true
+    @result = ''
+
+    @showMetric = {}
+    @metrics = @tests.getMetricNames().map (metric) -> metric.toLowerCase().replace(/[^\w\s]/gi, '')
+    @showMetric[metric] = true for metric in @metrics
+
+    # TODO: look for workaround https://github.com/angular/angular.js/issues/13960
+    try
+      $('.socrat-reliability-metric').each (idx, el) =>
+        console.log el
+        try
+          $(el).attr("uib-collapse", "mainArea.showMetric['#{@metrics[idx]}']")
+        console.log $(el).attr()
+    catch e
+      console.log 'ERROR' + e
+
+    # default output
+    @setShowMetric @metrics[0]
 
     @$scope.$on 'reliability:updateDataType', (event, dataType) =>
       @dataType = dataType
 
-    @$scope.$on 'reliability:updateMetric', (event, metric) =>
-      switch metric
-        when @metrics[0] then @setShowMetric 'cronAlpha'
-        when @metrics[1] then @setShowMetric 'icc'
-        when @metrics[2] then @setShowMetric 'splitHalf'
-        when @metrics[3] then @setShowMetric 'kr20'
-
-    @$scope.$on 'reliability:showResults', (event, data) =>
-      @showResults data
+    @$scope.$on 'reliability:showResults', (event, obj) =>
+      @setShowMetric obj.metric.toLowerCase().replace(/[^\w\s]/gi, '')
+      @showResults obj.data
 
   setShowMetric: (metric) ->
     for key of @showMetric
@@ -42,18 +48,22 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
       arr = arr.map (x) -> x.toFixed 3
       '[' + arr.toString().split(',').join('; ') + ']'
 
-  showResults: (data) ->
-    cAlpha = Number data.cronAlpha
+  showResults: (res) ->
+    if not isNaN(Number(res))
+      @result = Number(res).toFixed(3)
+    else if res.confIntervals
+      cAlpha = Number(res.cAlpha)
+      if not isNaN cAlpha
+        @result = Number(res.cAlpha).toFixed(3)
+        @cronAlphaIdInterval = @prettifyArrayOutput(res.confIntervals.id)
+        @cronAlphaKfInterval = @prettifyArrayOutput(res.confIntervals.kf)
+        @cronAlphaLogitInterval = @prettifyArrayOutput(res.confIntervals.logit)
+        @cronAlphaBootstrapInterval = @prettifyArrayOutput(res.confIntervals.bootstrap)
+        @cronAlphaAdfInterval = @prettifyArrayOutput(res.confIntervals.adf)
+      else
+        @result = 'ERROR'
+    else if typeof res is 'string'
+      @result = res
+    else @result = 'ERROR'
 
-    if not isNaN(cAlpha)
-      @cronAlpha = cAlpha.toFixed(3)
-      @cronAlphaIdInterval = @prettifyArrayOutput(data.idInterval)
-      @cronAlphaKfInterval = @prettifyArrayOutput(data.kfInterval)
-      @cronAlphaLogitInterval = @prettifyArrayOutput(data.logitInterval)
-      @cronAlphaBootstrapInterval = @prettifyArrayOutput(data.bootstrapInterval)
-      @cronAlphaAdfInterval = @prettifyArrayOutput(data.adfInterval)
 
-    @icc = Number(data.icc).toFixed(3)
-    @kr20 = if data.kr20 is 'Not a binary data' then data.kr20 else Number(data.kr20).toFixed(3)
-
-    @splitHalfCoef = Number(data.adjRCorrCoef).toFixed(3)
