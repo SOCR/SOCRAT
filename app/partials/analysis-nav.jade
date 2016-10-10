@@ -1,12 +1,29 @@
-//main navigation template
+// main navigation template
 ul.nav.navbar-nav
-  li(ng-class="getClass('/getData')")
-    a(ng-href='#/getData') Raw Data
-  li(ng-class="getClass('/wrangleData')")
-    a(ng-href='#/wrangleData') Wrangle Data
-  li(ng-class="getClass('/tools')")
-    a(ng-href='#/tools') Tools
-  li(ng-class="getClass('/charts')")
-      a(ng-href='#/charts') Charts
-  li(ng-class="getClass('/results')")
-      a(ng-href='#/results') Results
+  li(
+  ng-repeat="item in app.menu"
+  ng-class="(item.type === 'text') ? app.getClass(item.url) : ''"
+  uib-dropdown="{{(item.type === 'group') ? True : False}}"
+  keyboard-nav="true"
+  )
+    a(
+    ng-if="item.type === 'text'"
+    ng-href="#{{item.url}}"
+    ) {{item.name}}
+    a(ng-if="item.type === 'group'", uib-dropdown-toggle, href="")
+        | {{item.name}}
+        span.caret
+      ul.dropdown-menu.dropdown-menu-inverse(ng-if="item.type === 'group'", uib-dropdown-menu, role="menu")
+        li(role="menuitem")
+          form.form-inline
+            div.form-group(ng-click="$event.stopPropagation()")
+              label(for="nav-tool-search").sr-only Search tools
+              div.btn-group
+                input#nav-tool-search.form-control.flat.input-sm(
+                  ng-model='query'
+                  type='text'
+                  placeholder='Search for...'
+                )
+                span#nav-clear-tool-search.fui-cross(ng-click="query=''")
+        li(ng-repeat="subitem in item.items | filter:query", ng-class="app.getClass(subitem.url)")
+          a(ng-href='#{{subitem.url}}') {{subitem.name}}

@@ -1,40 +1,33 @@
-div(ng-controller="getDataSidebarCtrl")
-  span Traditional spreadsheet where you can copy-paste your data and edit it as you like!
-  button.btn.btn-info.btn-sm(ng-click="show('grid')") Show
-  hr
-  span Use the exhaustive WorldBank data to fuel your analysis.
-  button.btn.btn-info.btn-sm(ng-click="show('worldBank')") Use
-  hr
-  span Use the inbuilt experiment to generate data for your analysis.
-  button.btn.btn-info.btn-sm(ng-click="show('generate')") Generate
-  hr
-  span Enter json url here. We will try to give the best output!
-  input(ng-model="jsonUrl",type="text",
-  tooltip="Enter url here...",tooltip-trigger="focus",
-  tooltip-placement="right").input-medium
-  button.btn.btn-info.btn-sm(ng-click="getJson()") Use
-  hr
-  span Enter SOCR Data url here. We will parse it for you!
-  input(type="url",ng-model="socrUrl").input-medium
-  div
-      button.btn.btn-success.btn-sm(ng-click="save()") SAVE
-//
-  accordion(close-others="true")
-    accordion-group(heading="Grid")
-        p Traditional spreadsheet where you can copy-paste your data and edit it as you like!
-        button.btn.btn-info(ng-click="showGrid()") Show
-    accordion-group(heading="WorldBank")
-        p Use the exhaustive WorldBank data to fuel your analysis.
-        button.btn.btn-info(ng-click="showWBInterface()") Use
-    accordion-group(heading="Generate")
-        p Use the inbuilt experiment to generate data for your analysis.
-        button.btn.btn-info(ng-click="showGenerate()") Generate
-    accordion-group(heading="JSON")
-        p Enter json url here. We will try to give the best output!
-        input(ng-model="jsonUrl",type="text",
-        tooltip="See? Now click away...",tooltip-trigger="focus",
-        tooltip-placement="right").input-medium
-        button.btn.btn-info(ng-click="getJson()") Use
-    accordion-group(heading="SOCR Data")
-        p Enter SOCR Data url here. We will parse it for you!
-        input(type="url",ng-model="socrUrl").input-medium
+div(ng-controller="GetDataSidebarCtrl as sidebar")
+  legend Data inputs
+  div.list-group
+    a#getDataGrid.list-group-item(
+      href=""
+      ng-click="sidebar.show('grid')"
+      ng-class="{active: sidebar.selected == 'getDataGrid'}")
+      | Interactive spreadsheet
+    a#getDataSocrData.list-group-item(
+      href=""
+      ng-click="sidebar.show('socrData')"
+      ng-class="{active: sidebar.selected == 'getDataSocrData'}")
+      | Load SOCR dataset
+    a#getDataWorldBank.list-group-item(
+      href=""
+      ng-click="sidebar.show('worldBank')"
+      ng-class="{active: sidebar.selected == 'getDataWorldBank'}")
+      | Load data from WorldBank
+    a#getDataGenerate.list-group-item(
+      href=""
+      ng-click="sidebar.show('generate')"
+      ng-class="{active: sidebar.selected == 'getDataGenerate'}")
+      | Use data generator
+    a#getDataJson.list-group-item(
+      href=""
+      ng-click="sidebar.show('jsonParse')"
+      ng-class="{active: sidebar.selected == 'getDataJson'}")
+      | Parse JSON file by URL
+    a#getDataSocrPage.list-group-item.disabled(
+      href=""
+      ng-click="sidebar.save()"
+      ng-class="{active: sidebar.selected == 'getDataSocrPage'}")
+      | Parse SOCR Data page by URL

@@ -21,6 +21,10 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 
 }
 
+.vis-hidden{
+  visibility: hidden;
+}
+
 #welcome-screen {
   height: 100%;
   width: 100%;
@@ -54,8 +58,68 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
   height: 300px;
 }
 
+.socrat-navbar-menu {
+  margin-bottom: 20px;
+}
+
+.socrat-content-wrap {
+  min-height: 100%;
+  height: auto;
+  margin: 0 auto -43px;
+  padding: 0 0 146px;
+}
+
 .hot-scroll-container {
   width: 100%;
   height: 300px;
   overflow: auto;
+}
+
+.spinning {
+  animation-name: spin;
+  animation-duration: .5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes spin {
+  from { transform: scale( 1 ) rotate( 0deg );   }
+  to   { transform: scale( 1 ) rotate( 360deg ); }
+}
+
+.clear-search-input {
+  position: absolute;
+  right: 15px;
+  top: -5px;
+  bottom: 0;
+  height: 14px;
+  margin: auto;
+  font-size: 14px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.margin-search-input {
+  margin: 2px 10px;
+}
+
+#nav-clear-tool-search {
+  .clear-search-input
+}
+
+#nav-tool-search {
+  .margin-search-input
+}
+
+#getDataJsonUrlClear {
+  .clear-search-input;
+   right: 5px;
+}
+
+#getDataJsonUrlInput {
+  padding-right: 20px;
+}
+
+.tortoise-link {
+  color: #1abc9c;
 }

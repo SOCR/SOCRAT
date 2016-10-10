@@ -17,9 +17,8 @@ module.exports = (config) ->
     # list of files / patterns to load in the browser
     files: [
       # bower:js
-      'bower_components/jquery/dist/jquery.js'
       'bower_components/angular/angular.js'
-      'bower_components/jquery-layout/source/stable/jquery.layout.js'
+      'bower_components/jquery/dist/jquery.js'
       'bower_components/jquery-highlight/jquery.highlight.js'
       'bower_components/jquery-hoverintent/jquery.hoverIntent.js'
       'bower_components/datatables/media/js/jquery.dataTables.js'
@@ -41,7 +40,9 @@ module.exports = (config) ->
       'bower_components/wrangler/dw.js'
       'bower_components/bootstrap/dist/js/bootstrap.js'
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js'
+      'bower_components/jquery-layout/source/stable/jquery.layout.js'
       'bower_components/jstat/dist/jstat.js'
+      'bower_components/jsfeat/build/jsfeat.js'
       'bower_components/angular-mocks/angular-mocks.js'
       # endbower
       # bower:coffee
@@ -71,12 +72,12 @@ module.exports = (config) ->
     # - PhantomJS
     # - IE (only Windows)
     browsers: [
-      "PhantomJS"
+      "PhantomJS2"
     ]
 
     # Which plugins to enable
     plugins: [
-      "karma-phantomjs-launcher",
+      "karma-phantomjs2-launcher",
       "karma-jasmine",
       "karma-coffee-preprocessor"
     ]

@@ -4,39 +4,39 @@ A scalable and highly flexible HTML5/JS platform to build and run in-browser app
 
 * Web site: http://socr.umich.edu
 * Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
+* **Disclaimer: project is under active development, unit tests currently are not passing, bugs are possible**
 
-[![Build Status](https://travis-ci.org/SOCRedu/SOCR-framework.svg?branch=master)](https://travis-ci.org/SOCRedu/SOCR-framework)
-[![Dependency Status](https://gemnasium.com/SOCRedu/SOCR-framework.png?branch=master)](https://gemnasium.com/SOCRedu/SOCR-framework)
+[![Build Status](https://travis-ci.org/SOCR/SOCRAT.svg?branch=master)](https://travis-ci.org/SOCR/SOCRAT)
+[![Dependency Status](https://gemnasium.com/SOCR/SOCRAT.png?branch=master)](https://gemnasium.com/SOCR/SOCRAT)
 
 Installation
 ------------
 In case you wish to create your own module or contribute to the project, follow these steps to setup your enviroment.
 
-First, install [nodejs](http://nodejs.org/) if you havent. npm is the package manager for Node.js and comes bundled with it.
+First, install [nodejs](http://nodejs.org/) if you haven't. npm is the package manager for Node.js and comes bundled with it.
 
-Install Bower and Grunt,
+Install Webpack,
 
-    $> npm install -g bower grunt-cli
-    $> npm update -b bower
+    $> npm install webpack -g
 
 Clone the repository.
 
     $> git clone https://github.com/SOCR/SOCRAT.git 
 
 Now, lets install all the dependencies. Go into the root folder,
+
     $> cd SOCRAT
     $> npm install
-    $> bower install
 
-This will install all the dependencies mentioned in package.json and bower.json files.
+This will install all the dependencies mentioned in package.json files.
 
-Start the server! See the application running at localhost:9000!
+Start the server and see the application running at localhost:8080:
 
-    $> grunt serve
+    $> npm run serve
     
 To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
 
-    $> grunt test
+    $> npm run test
 
 
 Motivation 
@@ -54,16 +54,16 @@ We intend to create a toolbox which will serve users on all platforms. We are pr
  [`CoffeeScript`](http://coffeescript.org/)
  [`Jade`](http://jade-lang.com/)
  [`Less`](http://lesscss.org/)
- [`Grunt`](http://gruntjs.com/) 
+ [`Webpack`](https://webpack.github.io/) 
  [`Node.js`](http://nodejs.org/)
 
  Dependencies
 --------------
  [`Bootstrap`](http://getbootstrap.com/)
  [`jQuery`](https://jquery.com/)
- [`AngularJS`](http://angularjs.org)
+ [`AngularJS`](http://angularjs.org) with [`AngularUI`](https://angular-ui.github.io/)
  [`D3.js`](http://d3js.org)
- [`Handsontable`](http://handsontable.com/)
+ [`Handsontable`](http://handsontable.com/) with [`ngHandsontable`](https://handsontable.github.io/ngHandsontable/)
  [`jStat`](https://jstat.github.io/)
  [`Wrangler`](http://vis.stanford.edu/wrangler/)
 
@@ -72,7 +72,7 @@ Copyright and License
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013-2015 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2016 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License
