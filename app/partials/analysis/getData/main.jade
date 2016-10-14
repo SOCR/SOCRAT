@@ -40,6 +40,16 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
     button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
 
+  div.form-inline(ng-hide="!mainArea.largeData")
+    br
+    p.bg-info Dataset size might be too large for some tools, e.g. Data Wrangler.
+      | Delays and screen freezes are possible. Consider deleting some columns or subsampling rows.
+    div.form-group(uib-tooltip='Suggested value based on number of columns')
+      label Random row subsampling &nbsp; &nbsp;
+      input.form-control(type="text" placeholder="1000" ng-model='mainArea.maxRows')
+      | &nbsp;
+    button.btn.btn-primary.btn-sm(type="submit" ng-click="mainArea.subsampleData()") Subsample
+
   div.getdata-dragndrop(
     ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}"
     getdatadragndrop="[text/csv, text/tsv]"
@@ -57,7 +67,6 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       sort-indicator="true"
       manual-column-resize="true"
       )
-
   br
   div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.

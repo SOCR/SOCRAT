@@ -4,6 +4,7 @@ A scalable and highly flexible HTML5/JS platform to build and run in-browser app
 
 * Web site: http://socr.umich.edu
 * Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
+* **Disclaimer: project is under active development, unit tests currently are not passing, bugs are possible**
 
 [![Build Status](https://travis-ci.org/SOCR/SOCRAT.svg?branch=master)](https://travis-ci.org/SOCR/SOCRAT)
 [![Dependency Status](https://gemnasium.com/SOCR/SOCRAT.png?branch=master)](https://gemnasium.com/SOCR/SOCRAT)
@@ -60,9 +61,9 @@ We intend to create a toolbox which will serve users on all platforms. We are pr
 --------------
  [`Bootstrap`](http://getbootstrap.com/)
  [`jQuery`](https://jquery.com/)
- [`AngularJS`](http://angularjs.org)
+ [`AngularJS`](http://angularjs.org) with [`AngularUI`](https://angular-ui.github.io/)
  [`D3.js`](http://d3js.org)
- [`Handsontable`](http://handsontable.com/)
+ [`Handsontable`](http://handsontable.com/) with [`ngHandsontable`](https://handsontable.github.io/ngHandsontable/)
  [`jStat`](https://jstat.github.io/)
  [`Wrangler`](http://vis.stanford.edu/wrangler/)
 
