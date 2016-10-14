@@ -15,7 +15,15 @@ module.exports = class ChartsBarChart extends BaseService
     yAxis = d3.svg.axis().scale(y).orient('left')
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
     y.domain([d3.min(data, (d)->parseFloat d.y), d3.max(data, (d)->parseFloat d.y)])
+    
+    xAxisLabel_x = width - 80
+    xAxisLabel_y = 40
+    
+    yAxisLabel_x = -70
+    yAxisLabel_y = -70
 
+
+	
     #without y
     if !data[0].y
   #Works
@@ -26,11 +34,11 @@ module.exports = class ChartsBarChart extends BaseService
           counts[currentVar] = counts[currentVar] || 0
           counts[currentVar]++
         counts = d3.entries counts
-        #          console.log counts
+        console.log counts
         x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
         xAxis = d3.svg.axis().scale(x).orient('bottom')
         x.domain(counts.map (d) -> d.key)
-        y.domain([d3.min(counts, (d)-> parseFloat d.value), d3.max(counts, (d)-> parseFloat d.value)])
+        y.domain([d3.min(counts, (d)-> parseInt d.value), d3.max(counts, (d)-> parseInt d.value)])
 
         _graph.append('g')
         .attr('class', 'x axis')
@@ -38,17 +46,18 @@ module.exports = class ChartsBarChart extends BaseService
         .call xAxis
         .append('text')
         .attr('class', 'label')
-        .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+        .attr('x', xAxisLabel_x)
+        .attr('y', xAxisLabel_y)
         .text gdata.xLab.value
 
         _graph.append('g')
         .attr('class', 'y axis')
         .call yAxis
         .append('text')
+        .attr('class', 'label')
         .attr('transform', 'rotate(-90)')
-        .attr('y', -50 )
-        .attr('x', -(height / 2))
-        .attr('dy', '1em')
+        .attr('y', yAxisLabel_x)
+        .attr('x', yAxisLabel_y)
         .text "Count"
 
         # create bar elements
@@ -76,18 +85,13 @@ module.exports = class ChartsBarChart extends BaseService
         .call xAxis
         .append('text')
         .attr('class', 'label')
-        .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+        .attr('x', xAxisLabel_x)
+        .attr('y', xAxisLabel_y)
         .text gdata.xLab.value
 
         _graph.append('g')
         .attr('class', 'y axis')
         .call yAxis
-        .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', -50 )
-        .attr('x', -(height / 2))
-        .attr('dy', '1em')
-        .text "Null"
 
         rectWidth = height/data.length
         # create bar elements
@@ -117,17 +121,18 @@ module.exports = class ChartsBarChart extends BaseService
         .call xAxis
         .append('text')
         .attr('class', 'label')
-        .attr('x', width-80)
-        .attr('y', 30)
+        .attr('x', xAxisLabel_x)
+        .attr('y', xAxisLabel_y)
         .text gdata.xLab.value
 
         _graph.append('g')
         .attr('class', 'y axis')
         .call yAxis
         .append('text')
+        .attr('class', 'label')
         .attr('transform', 'rotate(-90)')
-        .attr("x", -80)
-        .attr("y", -40)
+        .attr("x", yAxisLabel_x)
+        .attr("y", yAxisLabel_y)
         .attr('dy', '1em')
         .text gdata.yLab.value
 
@@ -155,17 +160,18 @@ module.exports = class ChartsBarChart extends BaseService
           .call xAxis
           .append('text')
           .attr('class', 'label')
-          .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
+          .attr('x', xAxisLabel_x)
+          .attr('y', xAxisLabel_y)
           .text gdata.xLab.value
 
           _graph.append('g')
           .attr('class', 'y axis')
           .call yAxis
           .append('text')
+          .attr('class', 'label')
           .attr('transform', 'rotate(-90)')
-          .attr('y', -50 )
-          .attr('x', -(height / 2))
-          .attr('dy', '1em')
+          .attr("x", yAxisLabel_x)
+          .attr("y", yAxisLabel_y + 10)
           .text "Count"
 
           # create bar elements
@@ -189,18 +195,18 @@ module.exports = class ChartsBarChart extends BaseService
           .call xAxis
           .append('text')
           .attr('class', 'label')
-          .attr('x', width-80)
-          .attr('y', 30)
+          .attr('x', xAxisLabel_x)
+          .attr('y', xAxisLabel_y)
           .text gdata.xLab.value
 
           _graph.append('g')
           .attr('class', 'y axis')
           .call yAxis
           .append('text')
+          .attr('class', 'label')
           .attr('transform', 'rotate(-90)')
-          .attr("x", -80)
-          .attr("y", -40)
-          .attr('dy', '1em')
+          .attr("x", yAxisLabel_x)
+          .attr("y", yAxisLabel_y)
           .text gdata.yLab.value
 
   
