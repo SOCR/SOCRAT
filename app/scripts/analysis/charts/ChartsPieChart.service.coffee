@@ -33,7 +33,7 @@ module.exports = class ChartsPieChart extends BaseService
     return obj
 
   drawPie: (data,width,height,_graph, pie) -> # "pie" is a boolean
-      radius = Math.min(width, height) / 2 - 10
+      radius = Math.min(width, height) / 2 - 15
       outerRadius = radius
       arc = d3.svg.arc()
       .outerRadius(outerRadius)
@@ -85,6 +85,7 @@ module.exports = class ChartsPieChart extends BaseService
           'translate('+ (x/h * desiredLabelRad) + ',' + (y/h * desiredLabelRad) + ')')
         .attr('text-anchor', 'middle')
         .text (d) => d.data.key + ': ' + parseFloat(100 * d.data.value / @valueSum).toFixed(2) + '%'
+        .style('font-size', '16px')
       
       
 
