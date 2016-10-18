@@ -7,7 +7,7 @@ module.exports = class ChartsBarChart extends BaseService
   initialize: ->
 
   drawBar: (width,height,data,_graph,gdata) ->
-    
+    padding = 30
     x = d3.scale.linear().range([ 0, width ])
     y = d3.scale.linear().range([ height, 0 ])
 
@@ -34,31 +34,58 @@ module.exports = class ChartsBarChart extends BaseService
           counts[currentVar] = counts[currentVar] || 0
           counts[currentVar]++
         counts = d3.entries counts
-        console.log counts
+        #console.log counts
         x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
-        xAxis = d3.svg.axis().scale(x).orient('bottom')
+        xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(counts.length)
         x.domain(counts.map (d) -> d.key)
         y.domain([d3.min(counts, (d)-> parseInt d.value), d3.max(counts, (d)-> parseInt d.value)])
-
+        
+        
+        # draw x axis with labels and move in from the size by the amount of padding
         _graph.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + height + ')')
+        .attr('transform', 'translate(0,' + (height - padding) + ')')
         .call xAxis
-        .append('text')
-        .attr('class', 'label')
-        .attr('x', xAxisLabel_x)
-        .attr('y', xAxisLabel_y)
-        .text gdata.xLab.value
-
+        
+        
+        # draw y axis with labels and move in from the size by the amount of padding
         _graph.append('g')
         .attr('class', 'y axis')
+        .attr('transform', 'translate(' + padding + ',0)' )
         .call yAxis
-        .append('text')
+        .style('font-size', '16px')
+        
+        
+        _graph.selectAll('.x.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        
+        
+        _graph.selectAll('.y.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        
+        
+        # now rotate text on x axis
+        # solution based on idea here: https://groups.google.com/forum/?fromgroups#!topic/d3-js/heOBPQF3sAY
+        # first move the text left so no longer centered on the tick
+        # then rotate up to get 45 degrees.
+        _graph.selectAll('.x.axis text')
+        .attr('transform', (d) ->
+         'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-45)'
+        ).style('font-size', '16px')
+        
+        # Titles on x-axis 
+        _graph.append('text')
         .attr('class', 'label')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', yAxisLabel_x)
-        .attr('x', yAxisLabel_y)
-        .text "Count"
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(' + (width) + ',' + height + ')')
+        .text gdata.xLab.value
+        
+        # Titles on y-axis 
+        _graph.append('text')
+        .attr('class', 'label')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(' + (padding/2) + ',' + (height/2) + ')rotate(-90)')
+        .text gdata.yLab.value
 
         # create bar elements
         _graph.selectAll('rect')
@@ -68,7 +95,7 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('x',(d)-> x d.key  )
         .attr('width', x.rangeBand())
         .attr('y', (d)-> y d.value )
-        .attr('height', (d)-> Math.abs(height - y d.value))
+        .attr('height', (d)-> Math.abs(height - y d.value) - padding)
         .attr('fill', 'steelblue')
 
 
