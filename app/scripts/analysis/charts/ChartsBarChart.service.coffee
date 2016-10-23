@@ -218,42 +218,64 @@ module.exports = class ChartsBarChart extends BaseService
 
       else if !isNaN data[0].y
         if isNaN data[0].x
-  #console.log "xCat and yNum"
-          x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
+          x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
           x.domain(data.map (d) -> d.x)
           xAxis = d3.svg.axis().scale(x).orient('bottom')
-          #y.domain([d3.min(data, (d)-> parseFloat d.y), d3.max(data, (d)-> parseFloat d.y)])
-
-          _graph.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(0,' + height + ')')
-          .call xAxis
-          .append('text')
-          .attr('class', 'label')
-          .attr('x', xAxisLabel_x)
-          .attr('y', xAxisLabel_y)
-          .text gdata.xLab.value
-
-          _graph.append('g')
-          .attr('class', 'y axis')
-          .call yAxis
-          .append('text')
-          .attr('class', 'label')
-          .attr('transform', 'rotate(-90)')
-          .attr("x", yAxisLabel_x)
-          .attr("y", yAxisLabel_y + 10)
-          .text "Count"
-
+          
           # create bar elements
+          minYvalue = d3.min(data, (d)-> d.y)
+          console.log minYvalue
           _graph.selectAll('rect')
           .data(data)
           .enter().append('rect')
           .attr('class', 'bar')
-          .attr('x',(d)-> x d.x  )
+          .attr('x',(d)-> x d.x )
           .attr('width', x.rangeBand())
-          .attr('y', (d)-> y d.y )
-          .attr('height', (d)-> Math.abs(height - y d.y))
+          .attr('y', (d)-> y d.y)
+          .attr('height', (d)-> Math.abs(height - y d.y) - padding)
           .attr('fill', 'steelblue')
+          
+          # x axis
+          _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + (height - padding) + ')')
+          .call xAxis
+          .style('font-size', '16px')
+          
+          # y axis
+          _graph.append('g')
+          .attr('class', 'y axis')
+          .attr('transform', 'translate(' + padding + ',0)' )
+          .call yAxis
+          .style('font-size', '16px')
+          
+          # make x y axis thin
+          _graph.selectAll('.x.axis path')
+          .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+          _graph.selectAll('.y.axis path')
+          .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+          
+          # rotate text on x axis
+          _graph.selectAll('.x.axis text')
+          .attr('transform', (d) ->
+            'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+          .style('font-size', '16px')
+        
+          # Title on x-axis
+          _graph.append('text')
+          .attr('class', 'label')
+          .attr('text-anchor', 'middle')
+          .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
+          .text gdata.xLab.value
+          
+          # Title on y-axis
+          _graph.append('text')
+          .attr('class', 'label')
+          .attr('text-anchor', 'middle')
+          .attr('transform', 'translate(0,' + padding/2 + ')')
+          .text gdata.yLab.value
+
+          
         else
 
   #else if !isNaN data[0].y and !isNaN data[0].x
