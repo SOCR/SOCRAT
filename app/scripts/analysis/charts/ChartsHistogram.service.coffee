@@ -73,7 +73,7 @@ module.exports = class ChartsHistogram extends BaseService
     .attr('class', 'label')
     .attr('text-anchor', 'middle')
     .attr('transform', 'translate(0,' + padding/2 + ')')
-    .text "Count"
+    .text "Counts"
     
     # bar elements
     bar = _graph.selectAll('.bar')
@@ -96,7 +96,7 @@ module.exports = class ChartsHistogram extends BaseService
 
     bar.append('text')
     .attr('x', (d) -> x d.x)
-    .attr('y', (d) -> (y d.y) - 15)
+    .attr('y', (d) -> (y d.y) - 25)
     .attr('dx', (d) -> .5 * rect_width)
     .attr('dy', '20px')
     .attr('fill', 'black')
