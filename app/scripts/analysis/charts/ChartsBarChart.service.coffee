@@ -7,9 +7,9 @@ module.exports = class ChartsBarChart extends BaseService
   initialize: ->
 
   drawBar: (width,height,data,_graph,gdata) ->
-    padding = 30
-    x = d3.scale.linear().range([ 0, width ])
-    y = d3.scale.linear().range([ height, 0 ])
+    padding = 50
+    x = d3.scale.linear().range([ padding, width - padding ])
+    y = d3.scale.linear().range([ height - padding, padding ])
 
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
@@ -35,58 +35,22 @@ module.exports = class ChartsBarChart extends BaseService
           counts[currentVar]++
         counts = d3.entries counts
         #console.log counts
-        x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
-        xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(counts.length)
-        x.domain(counts.map (d) -> d.key)
-        y.domain([d3.min(counts, (d)-> parseInt d.value), d3.max(counts, (d)-> parseInt d.value)])
-        
-        
-        # draw x axis with labels and move in from the size by the amount of padding
-        _graph.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + (height - padding) + ')')
-        .call xAxis
-        
-        
-        # draw y axis with labels and move in from the size by the amount of padding
-        _graph.append('g')
-        .attr('class', 'y axis')
-        .attr('transform', 'translate(' + padding + ',0)' )
-        .call yAxis
-        .style('font-size', '16px')
-        
-        
-        _graph.selectAll('.x.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        
-        
-        _graph.selectAll('.y.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        
-        
-        # now rotate text on x axis
-        # solution based on idea here: https://groups.google.com/forum/?fromgroups#!topic/d3-js/heOBPQF3sAY
-        # first move the text left so no longer centered on the tick
-        # then rotate up to get 45 degrees.
-        _graph.selectAll('.x.axis text')
-        .attr('transform', (d) ->
-         'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-45)'
-        ).style('font-size', '16px')
-        
-        # Titles on x-axis 
-        _graph.append('text')
-        .attr('class', 'label')
-        .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(' + (width) + ',' + height + ')')
-        .text gdata.xLab.value
-        
-        # Titles on y-axis 
-        _graph.append('text')
-        .attr('class', 'label')
-        .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(' + (padding/2) + ',' + (height/2) + ')rotate(-90)')
-        .text gdata.yLab.value
 
+        # check if all the counts are the same
+        # if the all counts are the same, need to fix y.domain([min, max])
+        sameCounts = true 
+        for i in [1..counts.length-1] by 1
+          if counts[i].value != counts[0].value
+           sameCounts = false
+        #console.log sameCounts
+        x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
+        xAxis = d3.svg.axis().scale(x).orient('bottom')
+        x.domain(counts.map (d) -> d.key)
+        if sameCounts
+          y.domain([0, counts[0].value])
+        else 
+          y.domain([d3.min(counts, (d)-> parseInt d.value), d3.max(counts, (d)-> parseInt d.value)])
+        
         # create bar elements
         _graph.selectAll('rect')
         .data(counts)
@@ -98,7 +62,49 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('height', (d)-> Math.abs(height - y d.value) - padding)
         .attr('fill', 'steelblue')
 
+        # draw x axis with labels and move in from the size by the amount of padding
+        _graph.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + (height - padding) + ')')
+        .call xAxis
 
+        # draw y axis with labels and move in from the size by the amount of padding
+        _graph.append('g')
+        .attr('class', 'y axis')
+        .attr('transform', 'translate(' + padding + ',0)' )
+        .call yAxis
+        .style('font-size', '16px')
+
+        _graph.selectAll('.x.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        
+        _graph.selectAll('.y.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+   
+        # now rotate text on x axis
+        # solution based on idea here: https://groups.google.com/forum/?fromgroups#!topic/d3-js/heOBPQF3sAY
+        # first move the text left so no longer centered on the tick
+        # then rotate up to get 45 degrees.
+        _graph.selectAll('.x.axis text')
+        .attr('transform', (d) ->
+         'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)'
+        ).style('font-size', '16px')
+        
+        # Titles on x-axis 
+        _graph.append('text')
+        .attr('class', 'label')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
+        .text gdata.xLab.value
+        
+        # Titles on y-axis 
+        _graph.append('text')
+        .attr('class', 'label')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(0,' + padding/2 + ')')
+        .text "Counts"
+
+ 
       else #data is numerical and only x. height is rect width, width is x of d.x,
   #y becomes the categorical
         y = d3.scale.ordinal().rangeRoundBands([height, 0], .1)
