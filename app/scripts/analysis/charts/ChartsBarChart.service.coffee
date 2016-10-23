@@ -74,17 +74,17 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('transform', 'translate(' + padding + ',0)' )
         .call yAxis
         .style('font-size', '16px')
-
+        
+         # make x y axis thin
         _graph.selectAll('.x.axis path')
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        
         _graph.selectAll('.y.axis path')
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
    
         # now rotate text on x axis
         # solution based on idea here: https://groups.google.com/forum/?fromgroups#!topic/d3-js/heOBPQF3sAY
         # first move the text left so no longer centered on the tick
-        # then rotate up to get 45 degrees.
+        # then rotate up to get 40 degrees.
         _graph.selectAll('.x.axis text')
         .attr('transform', (d) ->
          'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)'
@@ -107,37 +107,53 @@ module.exports = class ChartsBarChart extends BaseService
  
       else #data is numerical and only x. height is rect width, width is x of d.x,
   #y becomes the categorical
-        y = d3.scale.ordinal().rangeRoundBands([height, 0], .1)
+        y = d3.scale.ordinal().rangeRoundBands([height-padding, padding], .1)
         yAxis = d3.svg.axis().scale(y).orient('left')
-
         y.domain((d) -> d.x)
-
-        _graph.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + height + ')')
-        .call xAxis
-        .append('text')
-        .attr('class', 'label')
-        .attr('x', xAxisLabel_x)
-        .attr('y', xAxisLabel_y)
-        .text gdata.xLab.value
-
-        _graph.append('g')
-        .attr('class', 'y axis')
-        .call yAxis
-
-        rectWidth = height/data.length
+        
         # create bar elements
+        minXvalue = d3.min(data, (d)-> d.x)
+        rectWidth = (height-2*padding)/data.length
         _graph.selectAll('rect')
         .data(data)
         .enter().append('rect')
         .attr('class', 'bar')
-        .attr('width', (d)-> x d.x)
-        .attr('y', (d,i)-> i*rectWidth)
+        .attr('x', padding  )
+        .attr('width', (d)-> (x d.x) - (x minXvalue))
+        .attr('y', (d,i)-> i*rectWidth + padding)
         .attr('height', rectWidth)
         .attr('fill', 'steelblue')
-
-
+        
+        # x axis
+        _graph.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + (height - padding) + ')')
+        .call xAxis
+        
+        # y axis
+        _graph.append('g')
+        .attr('class', 'y axis')
+        .attr('transform', 'translate(' + padding + ',0)' )
+        .call yAxis
+        
+        # make x y axis thin
+        _graph.selectAll('.x.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        _graph.selectAll('.y.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        
+        # rotate text on x axis
+        _graph.selectAll('.x.axis text')
+        .attr('transform', (d) ->
+         'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)'
+        ).style('font-size', '16px')
+        
+        # Title on x axis 
+        _graph.append('text')
+        .attr('class', 'label')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
+        .text gdata.xLab.value
 
   #with y
     else
