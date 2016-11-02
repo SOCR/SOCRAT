@@ -39,7 +39,7 @@
     "jquery-ui-layout": "git+https://github.com/benosman/layout.git",
     "jsfeat": "~0.0.8",
     "jstat": "~1.5.2",
-    "ngHandsontable": "git+https://github.com/handsontable/ngHandsontable.git",
+    "ng-handsontable": "git+https://github.com/handsontable/ngHandsontable.git",
     "select2": "^4.0.3",
     "serve-static": "^1.11.1",
     "typeahead.js": "git+https://github.com/twitter/typeahead.js.git"
