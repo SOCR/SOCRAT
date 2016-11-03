@@ -103,9 +103,10 @@ module.exports = class ChartsNormalChart extends BaseService
     topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
     gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
-
+    
+    padding = 50
     xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
-    yScale = d3.scale.linear().range([height, 0]).domain([bottomBound, topBound])
+    yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
 
     xAxis = d3.svg.axis().ticks(20)
     .scale(xScale)
@@ -129,17 +130,24 @@ module.exports = class ChartsNormalChart extends BaseService
     .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
     .on('mouseout', (d) -> hideToolTip())
     .attr('fill', "aquamarine")
-    #      .style("opacity", .2)
+
 
     _graph.append("svg:g")
     .attr("class", "x axis")
-    .attr("transform", "translate(0," + (height) + ")")
+    .attr("transform", "translate(0," + (height - padding) + ")")
     .call(xAxis)
 
     _graph.append("svg:g")
     .attr("class", "y axis")
     .attr("transform", "translate(" + (xScale(mean)) + ",0)")
     .call(yAxis)
+    
+    # make x y axis thin
+    _graph.selectAll('.x.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    _graph.selectAll('.y.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        
 
     _graph.append("svg:g")
     .append("text")      #text label for the x axis
@@ -147,14 +155,10 @@ module.exports = class ChartsNormalChart extends BaseService
     .attr("y", 20  )
     .style("text-anchor", "middle")
     .style("fill", "white")
-  #      .text(seriesName)
+    
+    # rotate text on x axis
+    _graph.selectAll('.x.axis text')
+    .attr('transform', (d) ->
+       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+    .style('font-size', '16px')
 
-  # Weighted Values
-  #      _graph.selectAll("circle")
-  #      .data(getWeightedValues(sample)).enter().append("circle")
-  #      #text label for the x axis
-  #      .attr("cx", (d) -> xScale(d.value))
-  #      .attr("cy", height)
-  #      .attr("r", (d) -> radiusCoef)
-  #      .style("fill","red")
-  #      .style("opacity",.5)
