@@ -55,7 +55,9 @@ module.exports = class ChartsPieChart extends BaseService
       .sort(null)
 
       formatted_data = @makePieData data
-      
+      sum = @valueSum
+      clickOn = (false for [0..formatted_data.length-1])
+     
       # PIE ARCS / SLICES
 
       arcs = _graph.selectAll(".arc")
@@ -64,11 +66,11 @@ module.exports = class ChartsPieChart extends BaseService
       .append('g')
       .attr("class", "arc")   
       
-      sum = @valueSum
+      
       
       # Create Event Handlers for mouse
       handleMouseOver = (d, i) ->
-      
+       if clickOn[i] is false
         # Use d3 to select element
         d3.select(this)
         .attr("stroke","white") 
@@ -95,22 +97,38 @@ module.exports = class ChartsPieChart extends BaseService
         
         
       handleMouseOut= (d, i) ->
-    
-        d3.select(this)
-        .transition()
-        .attr('d', arc)
-        .attr("stroke", "none")
+        if clickOn[i] is false
+          d3.select(this)
+          .transition()
+          .attr('d', arc)
+          .attr("stroke", "none")
         
-        # remove the text label
-        d3.select('#t' + d.x + '-' + d.y + '-' + i)
-        .transition()
-        .remove()
-
+          # remove the text label
+          d3.select('#t' + d.x + '-' + d.y + '-' + i)
+          .transition()
+          .remove()
+        
+      handleClick= (d,i) ->
+        if clickOn[i] is true
+          clickOn[i] = false
+          d3.select(this)
+          .transition()
+          .attr('d', arc)
+          .attr("stroke", "none")
+        
+          # remove the text label
+          d3.select('#t' + d.x + '-' + d.y + '-' + i)
+          .transition()
+          .remove()
+        else
+          clickOn[i] = true
+		  
       arcs.append('path')
       .attr('d', arc)
       .attr('fill', (d) -> color(d.data.value))
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
+      .on('click', handleClick)
       
       
       
