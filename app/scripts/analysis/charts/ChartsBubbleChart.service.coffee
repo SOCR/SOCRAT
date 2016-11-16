@@ -10,8 +10,9 @@ module.exports = class ChartsBubbleChart extends BaseService
     #testing
     nest = d3.nest().key (d) -> d.z
 
-    x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ 0, width ])
-    y = d3.scale.linear().domain([ranges.yMin,ranges.yMax]).range([ height, 0 ])
+    padding = 50
+    x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ padding, width-padding])
+    y = d3.scale.linear().domain([ranges.yMin,ranges.yMax]).range([ height-padding, padding ])
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
 
@@ -39,23 +40,41 @@ module.exports = class ChartsBubbleChart extends BaseService
     # x axis
     _graph.append("g")
     .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis)
-    .append('text')
-    .attr('class', 'label')
-    .attr('transform', 'translate(' + (width / 2) + ',' + 40 + ')')
-    .text gdata.xLab.value
-
+    .attr('transform', 'translate(0,' + (height-padding) + ')')
+    .call xAxis
+    .style('font-size', '16px')
+    
     # y axis
     _graph.append("g")
     .attr("class", "y axis")
-    .call(yAxis)
-    .append("text")
+    .attr('transform', 'translate(' + padding + ',0)' )
+    .call yAxis
+    .style('font-size', '16px')
+    
+    # make x y axis thin
+    _graph.selectAll('.x.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    _graph.selectAll('.y.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    
+    # rotate text on x axis
+    _graph.selectAll('.x.axis text')
+    .attr('transform', (d) ->
+       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+    .style('font-size', '16px')
+    
+    # Title on x-axis
+    _graph.append('text')
     .attr('class', 'label')
-    .attr("transform", "rotate(-90)")
-    .attr('y', -50 )
-    .attr('x', -(height / 2))
-    .attr("dy", ".71em")
+    .attr('text-anchor', 'middle')
+    .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
+    .text gdata.xLab.value
+    
+    # Title on y-axis
+    _graph.append("text")
+    .attr('class', 'label')
+    .attr('text-anchor', 'middle')
+    .attr('transform', 'translate(0,' + padding/2 + ')')
     .text gdata.yLab.value
 
     # create circle

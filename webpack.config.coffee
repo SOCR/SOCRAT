@@ -70,6 +70,12 @@ module.exports =
     ,
       test: /[\/]flat-ui\.js$/
       loader: 'imports?this=>window'
+    ,
+      test: require.resolve('vega'),
+      loaders: [
+        'transform?vega/scripts/strip-schema.js',
+        'transform?browserify-versionify'
+      ]
   ]
 
   resolve:
