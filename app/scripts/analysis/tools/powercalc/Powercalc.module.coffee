@@ -10,12 +10,13 @@ module.exports = powercalc = new Module
   # module components
   components:
     services:
-      'app_analysis_powercalc_allService': require 'powercalc'
+      'app_analysis_powercalc_cfap': require 'powercalc'
       'app_analysis_powercalc_msgService': require 'PowercalcMsgService.service.coffee'
+      'app_analysis_powercalc_dataService': require 'app_analysis_powercalc_dataService'
 
     controllers:
-      'powercalcMainCtrl': require 'scripts/analysis/tools/powercalc/PowercalcMainCtrl.ctrl.coffee'
-      'clusterSidebarCtrl': require 'scripts/analysis/tools/powercalc/PowercalcSliderbarCtrl.ctrl.coffee'
+      #'powercalcMainCtrl': require 'scripts/analysis/tools/powercalc/PowercalcMainCtrl.ctrl.coffee'
+      'clusterCtrl': require 'scripts/analysis/tools/powercalc/PowercalcCtrl.ctrl.coffee'
 
     #directives:
       #'socratClusterViz': require 'scripts/analysis/tools/Cluster/ClusterVizDir.directive.coffee'

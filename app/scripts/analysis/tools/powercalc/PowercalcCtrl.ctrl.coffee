@@ -3,7 +3,7 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class PowercalcSidebarCtrl extends BaseCtrl
-	@inject 'app_analysis_powercalc_allService',
+	@inject 'app_analysis_powercalc_dataService',
 		'app_analysis_powercalc_msgService'
 		'app_analysis_powercalc_algorithms'
 		'$scope'
@@ -15,15 +15,22 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@algorithmsService = @app_analysis_powercalc_algorithms
 		@algorithms = @algorithmsService.getNames()
 		@DATA_TYPES = @dataService.getDataTypes()
+		@selectedAlgorithm = @algorithms[0]
+		@is_cfap = off
 		# set up data and algorithm-agnostic controls
 		@powercalcRunning = off
 		@algParams = null
 
-		# choose first algorithm as default one
-		if @algorithms.length > 0
-			@selectedAlgorithm @algorithms[0]
-			#@updateAlgControls()
+		#var needed for cfap
+		@is_finite_population = off
+		@is_worst_case = off
+		@cfap_N = null
+		@cfap_pi = null
+
 
 
 	updateAlgControls: () ->
-		algParams = @algorithmsService.getParamsByName @selectedAlgorithm
+		if selectedAlgorithm is algorithms[0]
+			is_cfap = on
+
+
