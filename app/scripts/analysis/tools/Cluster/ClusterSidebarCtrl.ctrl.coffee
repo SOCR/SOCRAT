@@ -1,4 +1,4 @@
-'use strict'
+ 'use strict'
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 

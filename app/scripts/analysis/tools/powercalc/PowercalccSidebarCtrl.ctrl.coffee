@@ -30,7 +30,10 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 
 	updateAlgControls: () ->
+		#update algorithm method in local and broadcast to main control
 		if selectedAlgorithm is algorithms[0]
 			is_cfap = on
+		@msgService.broadcast('powercalc:updateAlgorithm')
+			is_cfap = is_cfap
 
 
