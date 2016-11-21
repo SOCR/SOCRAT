@@ -8,26 +8,14 @@ div(ng-controller="PowercalcSidebarCtrl as sidebar")
             tooltip-placement="right"
           ) Algorithm &nbsp;
           select.form-control(
-          	ng-model="sidebar.selectedAlgorithm"
-          	ng-options="method for method in sidebar.algorithms"
-          	ng-change="sidebar.updateAlgControls()"
+            ng-model="sidebar.selectedAlgorithm"
+            ng-options="method for method in sidebar.algorithms"
+            ng-change="sidebar.updateAlgControls()"
           )
-          div.cfap(ng-show='sidebar.is_cfap')
-            input.form-control(
-              type="checkbox"
-              ng-model="sidebar.is_finite_population"
-            ) Finite Population
-            input.form-control(
-              type="number"
-              ng-model="cfap_N"
-            ) N: &nbsp;
-            input.form-control(
-              type="checkbox"
-              ng-model="sidebar.is_worst_case"
-            ) Worst Case 
-            input.form-control(
-              type="number"
-              ng-model="sidebar.cfap_pi"
-            ) pi &nbsp;
+          input.form-control(
+            type="button"
+            ng-change="sidebar.help()"
+          ) Help &nbsp
+
 
 

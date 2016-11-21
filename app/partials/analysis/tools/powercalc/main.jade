@@ -1,6 +1,23 @@
 div(ng-cotroller='powercalcMainCtrl as mainArea')
-	h4 {{mainArea.titile}}
-	div.lead.bd-danger
-		|powercalc still under testing
-	div.lead(ng-show="mainArea.control")
+  h4 {{mainArea.titile}}
+  div.lead.bd-danger
+    |powercalc still under testing
+  div.cfap(ng-show='sidebar.is_cfap')
+    input.form-control(
+    type="checkbox"
+    ng-model="sidebar.is_finite_population"
+    onclick="mainArea.cfap_click(this)"
+    ) Finite Population
+    input.form-control(
+    type="number"
+    ng-model="cfap_N"
+    ) N: &nbsp;
+    input.form-control(
+    type="checkbox"
+    ng-model="sidebar.is_worst_case"
+    ) Worst Case
+    input.form-control(
+    type="number"
+    ng-model="sidebar.cfap_pi"
+    ) pi &nbsp;
 

@@ -10,18 +10,19 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		'$timeout'
 
 	initialize: ->
-		@dataService = @app_analysis_powercalc_allService
-		@msgService = @app_analysis_powercalc_msgService
-		@algorithmsService = @app_analysis_powercalc_algorithms
-		@algorithms = @algorithmsService.getNames()
-		@DATA_TYPES = @dataService.getDataTypes()
-		@selectedAlgorithm = @algorithms[0]
-		@is_cfap = off
+      	@dataService = @app_analysis_powercalc_dataService
+	  	@msgService = @app_analysis_powercalc_msgService
+	  	@algorithmsService = @app_analysis_powercalc_algorithms
+	  	@DATA_TYPES = @dataService.getDataTypes()
+	  	@selectedAlgorithm = @algorithms[0]
+
 		# set up data and algorithm-agnostic controls
-		@powercalcRunning = off
+    @algorithms = @algorithmsService.getNames()
+	  	@powercalcRunning = off
 		@algParams = null
 
 		#var needed for cfap
+    @is_cfap = off
 		@is_finite_population = off
 		@is_worst_case = off
 		@cfap_N = null
@@ -33,7 +34,11 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		#update algorithm method in local and broadcast to main control
 		if selectedAlgorithm is algorithms[0]
 			is_cfap = on
-		@msgService.broadcast('powercalc:updateAlgorithm')
-			is_cfap = is_cfap
+		@msgService.broadcast 'powercalc:updateAlgorithm',
+			cfap = is_cfap
 
 
+	help: () ->
+		#get help message from corresponding interfaces
+		if is_cfap
+			algorithmsService.get_cfap_help()
