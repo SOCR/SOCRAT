@@ -11,12 +11,26 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
 		@title = 'Power Calculator Module'
 		#algorithm type
-		is_cfap = off
+		@is_cfap = off
 
 		@$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
 			@is_cfap = data.cfap
 
 
 
-  cfap_ckick: (obj) ->
-  	cfap.clk(obj)
+	cfap_ckick: (obj) ->
+  		cfap.clk(obj)
+
+  	cfap_valiad: (id, data, event) ->
+  		cfap.valiad(id, data, event)
+
+  	cfap_submit: (id, key, value) ->
+  		cfap.submit(id, key, value)
+
+  	cfap_showDiv(sliderId, key) ->
+  		cfap.showDiv(sliderId, key)
+
+
+
+
+
