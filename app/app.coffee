@@ -27,8 +27,8 @@ require 'angular-resource'
 require 'styles/app.less'
 
 # TODO: consider relocating to Charts
-require 'vega'
-require 'vega-lite/vega-lite.js'
+require("expose?vg!vega")
+require("expose?vl!vega-lite")
 require 'vega-embed/vega-embed.js'
 require 'compassql'
 

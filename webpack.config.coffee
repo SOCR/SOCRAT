@@ -94,6 +94,7 @@ module.exports =
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
       highlight: 'data-wrangler/lib/Highlight/highlight.js'
       'jquery-ui': 'jquery-ui/ui/widgets'
+      'vega-lite': 'vega-lite/vega-lite.js'
 
   plugins: [
 
@@ -104,7 +105,4 @@ module.exports =
       $: "jquery",
       jQuery: "jquery",
       'window.jQuery': "jquery"
-
-    new webpack.ProvidePlugin
-      d3: "d3"
   ]
