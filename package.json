@@ -61,6 +61,7 @@
     "coffee-script": "*",
     "css-loader": "*",
     "exports-loader": "*",
+    "expose-loader": "*",
     "file-loader": "^0.8.5",
     "html-loader": "^0.4.3",
     "imports-loader": "*",
