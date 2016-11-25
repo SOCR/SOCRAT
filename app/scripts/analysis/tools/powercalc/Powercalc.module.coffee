@@ -10,10 +10,9 @@ module.exports = powercalc = new Module
   # module components
   components:
     services:
-      'app_analysis_powercalc_cfap': require 'powercalc'
-      'app_analysis_powercalc_msgService': require 'PowercalcMsgService.service.coffee'
-      'app_analysis_powercalc_dataService': require 'PowercalcDataService.service.coffee'
-      'app_analysis_powercalc_algorithms': require 'PowercalcAlgorithms.service.coffee'
+      'app_analysis_powercalc_msgService': require 'scripts/analysis/tools/powercalc/PowercalcMsgService.service.coffee'
+      'app_analysis_powercalc_dataService': require 'scripts/analysis/tools/powercalc/PowercalcDataService.service.coffee'
+      'app_analysis_powercalc_algorithms': require 'scripts/analysis/tools/powercalc/PowercalcAlgorithms.service.coffee'
 
     controllers:
       'PowercalcMainCtrl': require 'scripts/analysis/tools/powercalc/PowercalcMainCtrl.ctrl.coffee'

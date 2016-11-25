@@ -8,7 +8,7 @@ div(ng-cotroller='powercalcMainCtrl as mainArea')
         table.tables(border='0')
           tr
             td(width='50%')
-              input#isFinite(type='checkbox', name='isFinite', ng-model='mainArea.cfap_isFinite', ng-click='mainArea.cfap_clk(this);')
+              input#isFinite(type='checkbox', name='isFinite', ng-model='mainArea.cfap_isFinite', ng-click='mainArea.cfap_clk();')
               | Finite Population
             td#showN(width='50%')
               | N 

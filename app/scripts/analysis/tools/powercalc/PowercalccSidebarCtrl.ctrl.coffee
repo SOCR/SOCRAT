@@ -17,12 +17,12 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	  	@selectedAlgorithm = @algorithms[0]
 
 		# set up data and algorithm-agnostic controls
-    @algorithms = @algorithmsService.getNames()
+    	@algorithms = @algorithmsService.getNames()
 	  	@powercalcRunning = off
 		@algParams = null
 
 		#var needed for cfap
-    @is_cfap = off
+    	@is_cfap = off
 		@is_finite_population = off
 		@is_worst_case = off
 		@cfap_N = null
@@ -35,7 +35,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		if selectedAlgorithm is algorithms[0]
 			is_cfap = on
 		@msgService.broadcast 'powercalc:updateAlgorithm',
-			cfap = is_cfap
+			@is_cfap
 
 
 	help: () ->

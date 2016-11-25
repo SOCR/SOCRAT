@@ -8,7 +8,7 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
 
   initialize: ->
     @msgManager = @app_analysis_powercalc_msgService
-    @cfap = @app_analysis_cluster_cfap
+    @cfap = require 'powercalc'
 
     @algorithms = [@cfap]
 

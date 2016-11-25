@@ -7,28 +7,28 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
 	initialize: ->
 
-		@cfap = @app_analysis_powercalc_cfap
+		@cfap = require 'powercalc'
 
 		@title = 'Power Calculator Module'
 		#algorithm type
 		@is_cfap = off
 
 		@$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
-			@is_cfap = data.cfap
+			@is_cfap = data
 
 
 
-	cfap_ckick: (obj) ->
-  		cfap.clk(obj)
+	cfap_click: (obj) ->
+  		@cfap.clk(obj)
 
   	cfap_valiad: (id, data, event) ->
-  		cfap.valiad(id, data, event)
+  		@cfap.valiad(id, data, event)
 
   	cfap_submit: (id, key, value) ->
-  		cfap.submit(id, key, value)
+  		@cfap.submit(id, key, value)
 
   	cfap_showDiv(sliderId, key) ->
-  		cfap.showDiv(sliderId, key)
+  		@cfap.showDiv(sliderId, key)
 
 
 
