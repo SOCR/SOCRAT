@@ -64,8 +64,7 @@ module.exports = class ChartsPieChart extends BaseService
       .data(pie(formatted_data))
       .enter()
       .append('g')
-      .attr("class", "arc")   
-      
+      .attr("class", "arc")
       
       
       # Create Event Handlers for mouse
@@ -78,35 +77,13 @@ module.exports = class ChartsPieChart extends BaseService
         .attr("d", arcOver)
         .attr("stroke-width",3)
         
-        # Specify where to put text label
-        _graph.append('text').attr(
-          # Create an id for text so we can select 
-          # it later for removing on mouseout
-          id: 't' + d.x + '-' + d.y + '-' + i
-        ).attr('transform', () -> 
-          c = arc.centroid(d)
-          x = c[0]
-          y = c[1]
-          h = Math.sqrt(x*x + y*y)
-          desiredLabelRad = 220
-          'translate('+ (x/h * desiredLabelRad) + ',' + (y/h * desiredLabelRad) + ')'
-        ).transition()
-        .text () => 
-          d.data.key + ' (' + parseFloat(100 * d.value / sum).toFixed(1) + '%)'
-        .style('font-size', '16px')
-        
-        
       handleMouseOut= (d, i) ->
         if clickOn[i] is false
           d3.select(this)
           .transition()
           .attr('d', arc)
           .attr("stroke", "none")
-        
-          # remove the text label
-          d3.select('#t' + d.x + '-' + d.y + '-' + i)
-          .transition()
-          .remove()
+
         
       handleClick= (d,i) ->
         if clickOn[i] is true
@@ -114,14 +91,14 @@ module.exports = class ChartsPieChart extends BaseService
           d3.select(this)
           .transition()
           .attr('d', arc)
-          .attr("stroke", "none")
-        
-          # remove the text label
-          d3.select('#t' + d.x + '-' + d.y + '-' + i)
-          .transition()
-          .remove()
+          .attr("stroke", 'none')
         else
           clickOn[i] = true
+          d3.select(this)
+          .attr('stroke', 'white')
+          .transition()
+          .attr('d', arcOver)
+          .attr('stroke', 3)
 		  
       arcs.append('path')
       .attr('d', arc)
@@ -129,6 +106,21 @@ module.exports = class ChartsPieChart extends BaseService
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
       .on('click', handleClick)
+      
+      # Specify where to put text label
+      arcs.append('text')
+      .attr('transform', (d) ->
+        c = arc.centroid(d)
+        x = c[0]
+        y = c[1]
+        h = Math.sqrt(x*x + y*y)
+        desiredLabelRad = 220
+        'translate(' + (x/h * desiredLabelRad) + ',' + (y/h * desiredLabelRad) + ')'
+      ).transition()
+      .text (d) =>
+        d.data.key + ' (' + parseFloat(100 * d.data.value / sum).toFixed(1) + '%)'
+      .style('font-size', '16px')
+
       
       
       
