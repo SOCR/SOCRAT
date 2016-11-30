@@ -3,26 +3,25 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class PowercalcSidebarCtrl extends BaseCtrl
-	@inject 'app_analysis_powercalc_dataService',
-		'app_analysis_powercalc_msgService'
+	@inject 'app_analysis_powercalc_msgService',
 		'app_analysis_powercalc_algorithms'
 		'$scope'
 		'$timeout'
 
 	initialize: ->
-      	@dataService = @app_analysis_powercalc_dataService
-	  	@msgService = @app_analysis_powercalc_msgService
-	  	@algorithmsService = @app_analysis_powercalc_algorithms
-	  	@DATA_TYPES = @dataService.getDataTypes()
-	  	@selectedAlgorithm = @algorithms[0]
+    @dataService = @app_analysis_powercalc_dataService
+	  @msgService = @app_analysis_powercalc_msgService
+	  @algorithmsService = @app_analysis_powercalc_algorithms
+	  @DATA_TYPES = @dataService.getDataTypes()
+	  @selectedAlgorithm = @algorithms[0]
 
 		# set up data and algorithm-agnostic controls
-    	@algorithms = @algorithmsService.getNames()
-	  	@powercalcRunning = off
+    @algorithms = @algorithmsService.getNames()
+	  @powercalcRunning = off
 		@algParams = null
 
 		#var needed for cfap
-    	@is_cfap = off
+    @is_cfap = off
 		@is_finite_population = off
 		@is_worst_case = off
 		@cfap_N = null

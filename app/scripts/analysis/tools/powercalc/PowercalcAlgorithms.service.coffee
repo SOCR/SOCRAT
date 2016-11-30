@@ -55,7 +55,7 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
       The dialog is designed such that a sample size n is computed whenever you change any of the other input values. If you change n, a new ME is computed (using sigma in place of s in the above formulas).\n\n
       Finite population\n
       If Finite Population is checked, calculations are based on the population size N entered in the adjacent input field.\n
-      If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.\n\n
+      If the box is unchecked, the \"N\" field is hidden, and calculations are based on an infinite population.\n\n
       Worst case\n
       If Worst case is checked, computations are based on the assumption that the true sample proportion, pi, is .5. If it is not checked, then a pi value other than .5 may be entered in the field to the right of the checkbox.\n\n
       Confidence\n
