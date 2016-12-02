@@ -3,7 +3,7 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class PowercalcMainCtrl extends BaseCtrl
-	@inject 'app_analysis_powercalc_cfap', '$timeout', 'scope'
+	@inject '$timeout', 'scope'
 
 	initialize: ->
 
@@ -27,7 +27,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   	cfap_submit: (id, key, value) ->
   		@cfap.submit(id, key, value)
 
-  	cfap_showDiv(sliderId, key) ->
+ 	cfap_showDiv: (sliderId, key) ->
   		@cfap.showDiv(sliderId, key)
 
 

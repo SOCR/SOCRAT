@@ -1,18 +1,18 @@
-div(ng-cotroller='powercalcMainCtrl as mainArea')
+div(ng-cotroller="powercalcMainCtrl as mainArea")
   h4 {{mainArea.titile}}
     div.lead.bd-danger
       |powercalc still under testing
     div.cfap(ng-show='sidebar.is_cfap')
       div(style='width:100%;overflow:hidden;height:400px;')
         input(type='hidden', name='id', value='1')
-        table.tables(border='0')
+        table.tables(border='0', width='90%')
           tr
             td(width='50%')
-              input#isFinite(type='checkbox', name='isFinite', ng-model='mainArea.cfap_isFinite', onclick='mainArea.cfap_clk(this);')
+              input#isFinite(type='checkbox', name='isFinite', ng-model='mainArea.cfap_isFinite', ng-click='mainArea.cfap_clk($event);')
               | Finite Population
             td#showN(width='50%')
               | N 
-              input#N(type='text', size='10', name='N', onchange='mainArea.cfap_valiad(this.id,this.value,event);')
+              input#N(type='text', size='10', name='N', ng-change='mainArea.cfap_valiad(this.id,this.value,event);')
               span#Nerror
           tr
             td(width='50%')
@@ -25,7 +25,7 @@ div(ng-cotroller='powercalcMainCtrl as mainArea')
           tr
             td(width='50%') Confidence
             td(width='50%')
-              select#conf(name='conf', value='0.95', onchange="mainArea.cfap_submit('1','conf',this.value);")
+              select#conf(name='conf', value='0.95', ng-change="mainArea.cfap_submit('1','conf',this.value);")
                 option(value='0.9') 0.9
                 option(value='0.95') 0.95
                 option(value='0.98') 0.98
@@ -35,7 +35,7 @@ div(ng-cotroller='powercalcMainCtrl as mainArea')
             td(colspan='2')
               label(for='me') Margin of Error= 
               input#me(type='text', style='border:0; color:#f6931f; font-weight:bold;')
-              input(type='button', style='float:right', value='set value', onclick="main_Area.cfap_showDiv('meui', 'ME')")
+              input(type='button', style='float:right', value='set value', ng-click="mainArea.cfap_showDiv('meui', 'ME')")
           tr
             td(colspan='2')
               #meui
@@ -43,7 +43,7 @@ div(ng-cotroller='powercalcMainCtrl as mainArea')
             td(colspan='2')
               label(for='n') n = 
               input#n(type='text', style='border:0; color:#f6931f; font-weight:bold;')
-              input(type='button', style='float:right', value='set value', onclick="main_area.cfap_showDiv('nui', 'n')")
+              input(type='button', style='float:right', value='set value', ng-click="main_area.cfap_showDiv('nui', 'n')")
           tr
             td(colspan='2')
               #nui

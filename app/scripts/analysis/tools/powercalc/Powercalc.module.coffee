@@ -14,8 +14,8 @@ module.exports = powercalc = new Module
       'app_analysis_powercalc_algorithms': require 'scripts/analysis/tools/powercalc/PowercalcAlgorithms.service.coffee'
 
     controllers:
-      'PowercalcMainCtrl': require 'scripts/analysis/tools/powercalc/PowercalcMainCtrl.ctrl.coffee'
-      'PowercalcSiderbarCtrl': require 'scripts/analysis/tools/powercalc/PowercalcCtrl.ctrl.coffee'
+      'powercalcMainCtrl': require 'scripts/analysis/tools/powercalc/PowercalcMainCtrl.ctrl.coffee'
+      'powercalcSidebarCtrl': require 'scripts/analysis/tools/powercalc/PowercalcSidebarCtrl.ctrl.coffee'
 
     #directives:
       #'socratClusterViz': require 'scripts/analysis/tools/Cluster/ClusterVizDir.directive.coffee'

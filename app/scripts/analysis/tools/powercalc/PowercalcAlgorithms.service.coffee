@@ -3,14 +3,11 @@
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
 module.exports = class ClusterAlgorithms extends BaseModuleDataService
-  @inject 'app_analysis_powerclac_msgService',
-    'app_analysis_powercalc_cfap'
+  @inject 'app_analysis_powercalc_msgService'
 
   initialize: ->
     @msgManager = @app_analysis_powercalc_msgService
     @cfap = require 'powercalc'
-
-    @algorithms = [@cfap]
 
   ############
 
