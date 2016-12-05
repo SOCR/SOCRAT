@@ -8,11 +8,12 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	initialize: ->
 		@msgService = @app_analysis_powercalc_msgService
 		@algorithmsService = @app_analysis_powercalc_algorithms
-		@selectedAlgorithm = @algorithms[0]
+		
 
 		@algorithms = ['cfap']
 		@powercalcRunning = off
 		@algParams = null
+		@selectedAlgorithm = @algorithms[0]
 
 		# var needed for cfap
 		@is_cfap = off
@@ -23,7 +24,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 
 
-	updateAlgControls: () ->
+	updateAlgControls: () -> 
 		#update algorithm method in local and broadcast to main control
 		if selectedAlgorithm is algorithms[0]
 			is_cfap = on
@@ -32,6 +33,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 
 	help: () ->
-		#get help message from corresponding interfaces
-		if is_cfap
-			algorithmsService.get_cfap_help()
+		#console.log("Hit")
+		#get help message from corresponding interface
+		@algorithmsService.get_cfap_help()

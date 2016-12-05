@@ -11,7 +11,7 @@ div(ng-cotroller="powercalcMainCtrl as mainArea")
               input#isFinite(type='checkbox', name='isFinite', ng-model='mainArea.cfap_isFinite', ng-click='mainArea.cfap_clk($event);')
               | Finite Population
             td#showN(width='50%')
-              | N 
+              | N 
               input#N(type='text', size='10', name='N', ng-change='mainArea.cfap_valiad(this.id,this.value,event);')
               span#Nerror
           tr
@@ -19,7 +19,7 @@ div(ng-cotroller="powercalcMainCtrl as mainArea")
               input#worstCase(type='checkbox', name='worstCase', ng-click='mainArea.cfap_clk(this);')
               | Worst case
             td(width='50%')
-              | pi 
+              | pi 
               input#pi(type='text', size='10', name='pi', ng-change='mainArea.cfap_valiad(this.id,this.value,event);')
               span#pierror
           tr

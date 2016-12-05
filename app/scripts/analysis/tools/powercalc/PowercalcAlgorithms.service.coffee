@@ -2,22 +2,15 @@
 
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class ClusterAlgorithms extends BaseModuleDataService
+module.exports = class PowercalcAlgorithms extends BaseModuleDataService
   @inject 'app_analysis_powercalc_msgService'
 
   initialize: ->
     @msgManager = @app_analysis_powercalc_msgService
-    @cfap = require 'powercalc'
+    
 
   ############
 
-  getNames: -> @algorithms.map (alg) -> alg.getName()
-
-  getParamsByName: (algName) ->
-    (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()
-
-  getDataTypes: ->
-    @msgService.getSupportedDataTypes()
 
 
 
@@ -37,11 +30,7 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
 
 
 
-
-
-
-
-  get_cfap_help: ->
+  get_cfap_help: ()->
     alert("
       This dialog provides for sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement).\n\n
       The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error:\n
@@ -66,16 +55,3 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
       Graphics\n
       A simple graphics facility is available from the Options menu. Enter the variables for the x and y axes, and the range of values for the x variable. More information is available through the graphics dialog's help menu."
     )
-
-
-
-
-
-
-
-
-
-
-
-
-    
