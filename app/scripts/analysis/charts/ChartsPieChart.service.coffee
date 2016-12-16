@@ -33,7 +33,7 @@ module.exports = class ChartsPieChart extends BaseService
     return obj
 
   drawPie: (data,width,height,_graph, pie) -> # "pie" is a boolean
-      radius = Math.min(width, height) / 2 - 15
+      radius = Math.min(width, height) / 2
       outerRadius = radius
       arc = d3.svg.arc()
       .outerRadius(outerRadius)
@@ -55,7 +55,9 @@ module.exports = class ChartsPieChart extends BaseService
       .sort(null)
 
       formatted_data = @makePieData data
-      
+      sum = @valueSum
+      clickOn = (false for [0..formatted_data.length-1])
+     
       # PIE ARCS / SLICES
 
       arcs = _graph.selectAll(".arc")
@@ -63,29 +65,70 @@ module.exports = class ChartsPieChart extends BaseService
       .enter()
       .append('g')
       .attr("class", "arc")
+      
+      
+      # Create Event Handlers for mouse
+      handleMouseOver = (d, i) ->
+       if clickOn[i] is false
+        # Use d3 to select element
+        d3.select(this)
+        .attr("stroke","white") 
+        .transition()
+        .attr("d", arcOver)
+        .attr("stroke-width",3)
+        
+      handleMouseOut= (d, i) ->
+        if clickOn[i] is false
+          d3.select(this)
+          .transition()
+          .attr('d', arc)
+          .attr("stroke", "none")
 
+        
+      handleClick= (d,i) ->
+        if clickOn[i] is true
+          clickOn[i] = false
+          d3.select(this)
+          .transition()
+          .attr('d', arc)
+          .attr("stroke", 'none')
+        else
+          clickOn[i] = true
+          d3.select(this)
+          .attr('stroke', 'white')
+          .transition()
+          .attr('d', arcOver)
+          .attr('stroke', 3)
+		  
       arcs.append('path')
       .attr('d', arc)
       .attr('fill', (d) -> color(d.data.value))
-      .on('mouseenter', (d) -> 
-        d3.select(this).attr("stroke","white") .transition().attr("d", arcOver).attr("stroke-width",3)
-      ).on('mouseleave', (d) -> 
-        d3.select(this).transition().attr('d', arc).attr("stroke", "none")
-      )
-
-      # TEXT LABELS
+      .on('mouseover', handleMouseOver)
+      .on('mouseout', handleMouseOut)
+      .on('click', handleClick)
       
+      # Specify where to put text label
       arcs.append('text')
-        .attr('transform', (d) -> 
-          c = arc.centroid(d)
-          x = c[0]
-          y = c[1]
-          h = Math.sqrt(x*x + y*y)
-          desiredLabelRad = 220
-          'translate('+ (x/h * desiredLabelRad) + ',' + (y/h * desiredLabelRad) + ')')
-        .attr('text-anchor', 'middle')
-        .text (d) => d.data.key + ': ' + parseFloat(100 * d.data.value / @valueSum).toFixed(2) + '%'
-        .style('font-size', '16px')
+      .attr('transform', (d) ->
+        c = arc.centroid(d)
+        x = c[0]
+        y = c[1]
+        h = Math.sqrt(x*x + y*y)
+        desiredLabelRad = 220
+        'translate(' + (x/h * desiredLabelRad) + ',' + (y/h * desiredLabelRad) + ')'
+      ).transition()
+      .text (d) =>
+        d.data.key + ' (' + parseFloat(100 * d.data.value / sum).toFixed(1) + '%)'
+      .style('font-size', '16px')
+
+      
+      
+      
+      
+      
+      
+      
+
       
       
 
