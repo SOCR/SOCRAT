@@ -66,6 +66,12 @@ module.exports = class ChartsPieChart extends BaseService
       .append('g')
       .attr("class", "arc")
       
+      paths = arcs.append('path')
+      .attr('d', arc)
+      .attr('fill', (d) -> color(d.data.value))
+      .on('mouseover', handleMouseOver)
+      .on('mouseout', handleMouseOut)
+      .on('click', handleClick)
       
       # Create Event Handlers for mouse
       handleMouseOver = (d, i) ->
@@ -77,12 +83,22 @@ module.exports = class ChartsPieChart extends BaseService
         .attr("d", arcOver)
         .attr("stroke-width",3)
         
+        # bold the label
+        d3.select(this.parentNode)
+        .select('text')
+        .attr('font-weight', 'bold')
+        
       handleMouseOut= (d, i) ->
         if clickOn[i] is false
           d3.select(this)
           .transition()
           .attr('d', arc)
           .attr("stroke", "none")
+          
+          # unbold the label
+          d3.select(this.parentNode)
+          .select('text')
+          .attr('font-weight', 'normal')
 
         
       handleClick= (d,i) ->
@@ -92,6 +108,12 @@ module.exports = class ChartsPieChart extends BaseService
           .transition()
           .attr('d', arc)
           .attr("stroke", 'none')
+          
+          # unbold the label
+          d3.select(this.parentNode)
+          .select('text')
+          .attr('font-weight', 'normal')
+          
         else
           clickOn[i] = true
           d3.select(this)
@@ -99,7 +121,8 @@ module.exports = class ChartsPieChart extends BaseService
           .transition()
           .attr('d', arcOver)
           .attr('stroke', 3)
-		  
+          
+          		  
       arcs.append('path')
       .attr('d', arc)
       .attr('fill', (d) -> color(d.data.value))
@@ -107,8 +130,10 @@ module.exports = class ChartsPieChart extends BaseService
       .on('mouseout', handleMouseOut)
       .on('click', handleClick)
       
+      
       # Specify where to put text label
       arcs.append('text')
+      .attr('class', 'text')
       .attr('transform', (d) ->
         c = arc.centroid(d)
         x = c[0]
@@ -131,5 +156,4 @@ module.exports = class ChartsPieChart extends BaseService
 
       
       
-
 
