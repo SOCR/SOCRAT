@@ -12,20 +12,20 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               | Finite Population
             td#showN(width='50%')
               | N
-              input#N(type='text', size='10', name='N', ng-change='mainArea.cfap_valiad(this.id,this.value,event);')
+              input#N(type='text', size='10', name='N', ng-model = 'mainArea.d.N;' ng-change='mainArea.cfap_valiad($event.target.id, $event.target.value. $event);')
               span#Nerror
           tr
             td(width='50%')
-              input#worstCase(type='checkbox', name='worstCase', ng-click='mainArea.cfap_clk(this);')
+              input#worstCase(type='checkbox', name='worstCase', ng-click='mainArea.cfap_clk($event);')
               | Worst case
             td(width='50%')
               | pi
-              input#pi(type='text', size='10', name='pi', ng-change='mainArea.cfap_valiad(this.id,this.value,event);')
+              input#pi(type='text', size='10', name='pi', ng-click='mainArea.cfap_valiad($event);')
               span#pierror
           tr
             td(width='50%') Confidence
             td(width='50%')
-              select#conf(name='conf', value='0.95', ng-change="mainArea.cfap_submit('1','conf',this.value);")
+              select#conf(name='conf', value='0.95', ng-click="mainArea.cfap_presubmit('1','conf',$event);")
                 option(value='0.9') 0.9
                 option(value='0.95') 0.95
                 option(value='0.98') 0.98
@@ -35,7 +35,6 @@ div(ng-controller="powercalcMainCtrl as mainArea")
             td(colspan='2')
               label(for='me') Margin of Error=
               input#me(type='text', style='border:0; color:#f6931f; font-weight:bold;')
-              input(type='button', style='float:right', value='set value', ng-click="mainArea.cfap_showDiv('meui', 'ME')")
           tr
             td(colspan='2')
               #meui
@@ -43,7 +42,6 @@ div(ng-controller="powercalcMainCtrl as mainArea")
             td(colspan='2')
               label(for='n') n =
               input#n(type='text', style='border:0; color:#f6931f; font-weight:bold;')
-              input(type='button', style='float:right', value='set value', ng-click="main_area.cfap_showDiv('nui', 'n')")
           tr
             td(colspan='2')
               #nui
