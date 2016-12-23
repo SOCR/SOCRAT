@@ -45,7 +45,7 @@ module.extend = class AppCtrl extends BaseCtrl
   # uses the url to determine if the selected
   #  menu item should have the class active
   getClass: (id) ->
-    console.log id
+    #console.log id
     if @activeNavId.substring(0, id.length) == id
       'active'
     else

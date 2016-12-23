@@ -6,11 +6,12 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	@inject 'app_analysis_powercalc_msgService', 'app_analysis_powercalc_algorithms', '$scope', '$timeout'
 
 	initialize: ->
+		console.log("sidebar initialized")
 		@msgService = @app_analysis_powercalc_msgService
 		@algorithmsService = @app_analysis_powercalc_algorithms
-		
 
-		@algorithms = ['cfap']
+
+		@algorithms = ['cfap', 'other']
 		@powercalcRunning = off
 		@algParams = null
 		@selectedAlgorithm = @algorithms[0]
@@ -21,15 +22,21 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@is_worst_case = off
 		@cfap_N = null
 		@cfap_pi = null
+		#console.log("algorithms initialized, is_cfap:",@is_cfap)
 
 
 
-	updateAlgControls: () -> 
+	updateAlgControls: () ->
 		#update algorithm method in local and broadcast to main control
-		if selectedAlgorithm is algorithms[0]
-			is_cfap = on
+		if @selectedAlgorithm is @algorithms[0]
+			#console.log("cfap selected")
+			@is_cfap = on
+		else
+			@is_cfap = false;
+		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@is_cfap
+		console.log("algorithms updated, cfap:", @is_cfap)
 
 
 	help: () ->
