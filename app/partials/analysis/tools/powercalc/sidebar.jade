@@ -4,10 +4,12 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
       div.form-group
         fieldset
           label(
+            style=''
             uib-tooltip="Choose an algorithm from the list below"
-            tooltip-placement="right"
-          ) Choose an algorithm from the list belows &nbsp;
+            tooltip-placement="left"
+          ) Choose an algorithm from the list below &nbsp;
           select.form-control(
+            style='margin-bottom:20px;'
             ng-model="sidebar.selectedAlgorithm"
             ng-options="method for method in sidebar.algorithms"
             ng-change="sidebar.updateAlgControls()"
@@ -17,4 +19,3 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             value="Help"
             ng-click="sidebar.help()"
           )
-          

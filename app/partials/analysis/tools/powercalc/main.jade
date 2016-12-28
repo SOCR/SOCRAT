@@ -1,47 +1,42 @@
 div(ng-controller="powercalcMainCtrl as mainArea")
-  h4 {{mainArea.titile}}
     div.lead.bd-danger
       |powercalc still under testing
-    div.cfap()
+    div.cfap(ng-show='mainArea.is_cfap;')
       div(style='width:100%;overflow:hidden;height:400px;')
         input(type='hidden', name='id', value='1')
-        table.tables(border='0', width='90%')
-          tr
-            td(width='50%')
-              input#isFinite(type='checkbox', name='isFinite', ng-click='mainArea.cfap_clk($event);')
-              | Finite Population
-            td#showN(width='50%')
-              | N
-              input#N(type='text', size='10', name='N', ng-mouseleave='mainArea.cfap_valiad($event);')
-              span#Nerror
-          tr
-            td(width='50%')
-              input#worstCase(type='checkbox', name='worstCase', ng-click='mainArea.cfap_clk($event);')
-              | Worst case
-            td(width='50%')
-              | pi
-              input#pi(type='text', size='10', name='pi', ng-mouseleave='mainArea.cfap_valiad($event);')
-              span#pierror
-          tr
-            td(width='50%') Confidence
-            td(width='50%')
-              select#conf(name='conf', value='0.95', ng-mouseleave="mainArea.cfap_presubmit('1','conf',$event);")
-                option(value='0.9') 0.9
-                option(value='0.95') 0.95
-                option(value='0.98') 0.98
-                option(value='0.99') 0.99
-                option(value='0.995') 0.995
-          tr
-            td(colspan='2')
-              label(for='me') Margin of Error=
-              input#me(type='text', style='border:0; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('ME',$event);")
-          tr
-            td(colspan='3')
-              #meui
-          tr
-            td(colspan='2')
-              label(for='n') n =
-              input#n(type='text', style='border:0; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('n',$event);")
-          tr
-            td(colspan='3')
-              #nui
+        div
+          div(style='line-height:10px;display:inline')
+            input#isFinite(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='isFinite', ng-click='mainArea.cfap_clk($event);')
+            | Finite Population &nbsp &nbsp;
+          div#showN(style='margin-left=40%;display:inline')
+            | N: &nbsp
+            input#N(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='N', ng-mouseleave='mainArea.cfap_valiad($event);')
+            span#Nerror
+        div(style='margin-top:10px;')
+          div(style='display:inline')
+            input#worstCase(type='checkbox',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='worstCase', ng-click='mainArea.cfap_clk($event);')
+            | Worst case &nbsp &nbsp;
+          div(style='display:inline')
+            | pi: &nbsp;
+            input#pi(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='pi', ng-mouseleave='mainArea.cfap_valiad($event);')
+            span#pierror
+        div(style='margin-top:20px;')
+          div(style='display:inline')
+            | Confidence Level: &nbsp
+            input#conf(name='conf',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cfap_presubmit('1','conf',$event);")
+          div(style='display:inline')
+            #slider
+        div
+          div(style='display:inline')
+            | Margin of Error: &nbsp
+            input#me(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('ME',$event);")
+          div(style='display:inline')
+            #meui
+        div
+          div(style='display:inline')
+            | n : &nbsp
+            input#n(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('n',$event);")
+          div(style='display:inline')
+            #nui
+          p #{+a*b}
+

@@ -7,7 +7,7 @@ module.exports = class PowercalcAlgorithms extends BaseModuleDataService
 
   initialize: ->
     @msgManager = @app_analysis_powercalc_msgService
-    
+
 
   ############
 

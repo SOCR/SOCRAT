@@ -17,6 +17,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @n=101
     @maxn=120
     @maxme=0.12
+    @conf_level=0.95
     @cfap_click()
     @cfap_submit()
 
@@ -60,7 +61,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       value: @n
       min: 0
       max: 400
-      range: false
+      range: "min"
       step: 0.01
       slide: (event, ui) =>
         $('#n').val ui.value
@@ -72,7 +73,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       value: @me
       min: 0
       max: @maxme
-      range: false
+      range: "min"
       step: 0.00001
       slide: (event, ui) =>
         $('#me').val ui.value
@@ -80,6 +81,19 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         return
     )
     $('#me').val $('#meui').slider('value')
+    $("#slider").slider(
+      min: 0.90
+      max: 0.99
+      value: @conf_level
+      orientation: "horizontal"
+      range: "min"
+      step: 0.01
+      slide: (event, ui) =>
+        @conf_level = ui.value
+        $('#conf').val ui.value
+        @cfap_submit '1', 'conf', ui.value
+        return
+    )
     return
 
 

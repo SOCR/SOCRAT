@@ -11,7 +11,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@algorithmsService = @app_analysis_powercalc_algorithms
 
 
-		@algorithms = ['cfap', 'other']
+		@algorithms = ['Please Choose an Algorithm', 'cfap', 'other']
 		@powercalcRunning = off
 		@algParams = null
 		@selectedAlgorithm = @algorithms[0]
@@ -28,8 +28,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 	updateAlgControls: () ->
 		#update algorithm method in local and broadcast to main control
-		if @selectedAlgorithm is @algorithms[0]
-			#console.log("cfap selected")
+		if @selectedAlgorithm is @algorithms[1]
 			@is_cfap = on
 		else
 			@is_cfap = false;
