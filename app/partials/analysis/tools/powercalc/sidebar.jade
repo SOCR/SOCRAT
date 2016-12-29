@@ -14,8 +14,4 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             ng-options="method for method in sidebar.algorithms"
             ng-change="sidebar.updateAlgControls()"
           )
-          input.form-control(
-            type="button"
-            value="Help"
-            ng-click="sidebar.help()"
-          )
+
