@@ -43,7 +43,7 @@
     "jstat": "~1.5.2",
     "jstransform": "^11.0.2",
     "ng-handsontable": "git+https://github.com/handsontable/ngHandsontable.git",
-    "powercalc": "^1.0.1",
+    "powercalc": "^2.1.0",
     "select2": "^4.0.3",
     "serve-static": "^1.11.1",
     "through": "^2.3.8",
