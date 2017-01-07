@@ -24,7 +24,7 @@ module.exports = powercalc = new Module
   # module state config
   state:
     # module name to show in UI
-    name: 'powercalc'
+    name: 'Power Analysis'
     url: '/tools/powercalc'
     mainTemplate: require 'partials/analysis/tools/powercalc/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/powercalc/sidebar.jade'

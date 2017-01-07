@@ -10,7 +10,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cfap = require 'powercalc'
     @title = 'Power Calculator Module'
     #algorithm type
-    @is_cfap = off
+    @selectedAlgorithm = "Select"
 
     #variables needed for cfap only
     @me=0.09297
@@ -22,7 +22,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cfap_submit()
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
-      @is_cfap = data
+      @selectedAlgorithm = data
       console.log("broadcasting received")
       console.log("algorithms updated, cfap:", @is_cfap)
 

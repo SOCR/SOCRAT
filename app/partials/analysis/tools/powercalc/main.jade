@@ -1,7 +1,9 @@
 div(ng-controller="powercalcMainCtrl as mainArea")
-    div.lead.bd-danger
-      |powercalc still under testing
-    div.cfap(ng-show='mainArea.is_cfap;')
+    div.lead.bd-danger(ng-show='mainArea.selectedAlgorithm == "Select"')
+      h4 Power Analysis for statistical power analysis, manually manipulate the controls below to explore the relations between different factors
+    div.cfap(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
+      h3 CI for One Proportion
+      p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
       div(style='width:100%;overflow:hidden;height:400px;')
         input(type='hidden', name='id', value='1')
         div
@@ -25,18 +27,20 @@ div(ng-controller="powercalcMainCtrl as mainArea")
             | Confidence Level: &nbsp
             input#conf(name='conf',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cfap_presubmit('1','conf',$event);")
           div(style='display:inline')
-            #slider
+            #slider(uib-tooltip="Manipulate this bar to adjust confidence level" tooltip-placement="top")
         div
           div(style='display:inline')
             | Margin of Error: &nbsp
             input#me(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('ME',$event);")
           div(style='display:inline')
-            #meui
+            #meui(uib-tooltip="Manipulate this bar to adjust margin of error" tooltip-placement="top")
         div
           div(style='display:inline')
             | n : &nbsp
             input#n(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('n',$event);")
           div(style='display:inline')
-            #nui
-          p #{+a*b}
+            #nui(uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
+        div
+          input(type='button' value='Show Help')
+
 
