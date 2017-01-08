@@ -18,8 +18,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @maxn=120
     @maxme=0.12
     @conf_level=0.95
+    @cfap_help=true
     @cfap_click()
     @cfap_submit()
+    @cfap_show_help()
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
@@ -136,4 +138,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     key = evt.target.value
     console.log(key)
     @cfap_submit '1', sliderId, key
+    return
+
+  cfap_show_help: () ->
+    console.log(@cfap_help)
+    if (@cfap_help == false)
+      $('#cfapH').val "Hide Help"
+    else
+      $('#cfapH').val "Show Help"
+    @cfap_help = !@cfap_help;
     return

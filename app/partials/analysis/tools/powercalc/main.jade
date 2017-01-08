@@ -1,3 +1,15 @@
+script(type='text/x-mathjax-config').
+  MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                processEscapes: true
+            },
+            "HTML-CSS": { availableFonts: ["TeX"] }
+        });
+script(type='text/javascript', src='http://cdn.mathjax.org/mathjax/latest/MathJax.js')
 div(ng-controller="powercalcMainCtrl as mainArea")
     div.lead.bd-danger(ng-show='mainArea.selectedAlgorithm == "Select"')
       h4 Power Analysis for statistical power analysis, manually manipulate the controls below to explore the relations between different factors
@@ -41,6 +53,9 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           div(style='display:inline')
             #nui(uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
         div
-          input(type='button' value='Show Help')
+          input#cfapH(type='button' value='Show Help' ng-click='mainArea.cfap_show_help();')
+          div(ng-show='mainArea.cfap_help == true;')
+            p help will display here
+            p When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
 
 
