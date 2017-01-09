@@ -16,7 +16,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
     div.cfap(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
       h3 CI for One Proportion
       p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
-      div(style='width:100%;overflow:hidden;height:400px;')
+      div(style='width:100%;overflow:hidden;height:100%;')
         input(type='hidden', name='id', value='1')
         div
           div(style='line-height:10px;display:inline')
@@ -53,9 +53,33 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           div(style='display:inline')
             #nui(uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
         div
-          input#cfapH(type='button' value='Show Help' ng-click='mainArea.cfap_show_help();')
+          input#cfapH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cfap_show_help();')
           div(ng-show='mainArea.cfap_help == true;')
-            p help will display here
-            p When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
-
-
+            p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error: 
+            p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} $  &nbsp;&nbsp;&nbsp; (infinite population)
+            p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} * \sqrt{1- \frac{n}{N}} $  &nbsp;&nbsp;&nbsp; (finite population)
+            p where z is a critical value from the normal distribution, p is the sample proportion, n is the sample size, and N is the population size.
+            br
+            p <b>Using The Graphical Interface</b>
+            p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
+            br
+            p <b>Finite Population</b>
+            p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
+            br 
+            p <b>Worst Case</b>
+            p If "Worst case" is checked, computations are based on the assumption that the true sample proportion, pi, is .5.  If it is not checked, then a pi value other than .5 may be entered in the field to the right of the checkbox.
+            br
+            p <b>Confidence</b>
+            p Choose the desired confidence coefficient for the ME.  This determines the value of z.
+            br
+            p <b>Margin of Error</b>
+            p Enter the target value of the margin of error here.  Note that the actual value achieved after you collect the data will be more or less than this amount, because it will be based on p (estimated from the data) rather than pi.
+            br
+            p <b>n</b>
+            p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
+            br
+            p <b>Note on Sliders</b>
+            p Sliders may be varied by clicking or dragging along the center of the scale.  If you drag along at the level of the tick labels, you can change the endpoints of the scale.  The small button at the upper right of each slider converts it to and from a keyboard-input mode.  In that mode, you can also change the scale endpoints and number of digits displayed.
+            br
+            p <b>Graphics</b>
+            p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.

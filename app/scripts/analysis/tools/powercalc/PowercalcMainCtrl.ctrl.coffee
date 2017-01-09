@@ -84,7 +84,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     )
     $('#me').val $('#meui').slider('value')
     $("#slider").slider(
-      min: 0.90
+      min: 0.80
       max: 0.99
       value: @conf_level
       orientation: "horizontal"
