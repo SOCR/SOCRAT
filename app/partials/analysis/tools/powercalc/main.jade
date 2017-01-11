@@ -13,7 +13,7 @@ script(type='text/javascript', src='http://cdn.mathjax.org/mathjax/latest/MathJa
 div(ng-controller="powercalcMainCtrl as mainArea")
     div.lead.bd-danger(ng-show='mainArea.selectedAlgorithm == "Select"')
       h4 Power Analysis for statistical power analysis, manually manipulate the controls below to explore the relations between different factors
-    div.cfap(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
+    div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
       h3 CI for One Proportion
       p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
       div(style='width:100%;overflow:hidden;height:100%;')
@@ -83,3 +83,6 @@ div(ng-controller="powercalcMainCtrl as mainArea")
             br
             p <b>Graphics</b>
             p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
+    div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
+      h3 CI for One Mean
+      p <i>This dialog provides for sample-size determination for estimating a mean to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i>

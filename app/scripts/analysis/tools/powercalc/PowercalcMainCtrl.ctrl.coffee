@@ -13,20 +13,27 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @selectedAlgorithm = "Select"
 
     #variables needed for cfap only
-    @me=0.09297
-    @n=101
-    @maxn=120
-    @maxme=0.12
-    @conf_level=0.95
+    @cfap_me=0.09297
+    @cfap_n=101
+    @cfap_maxn=120
+    @cfap_maxme=0.12
+    @cfap_conf_level=0.95
     @cfap_help=true
     @cfap_click()
     @cfap_submit()
     @cfap_show_help()
 
+    #variables needed for clmean only
+    @clmean_me=null;
+    @clmean_n=null;
+    @clmean_signa=null;
+    @clmean_maxn=35;
+    @clmean_maxme=0.4;
+    @clmean_maxs=2;
+
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
-      console.log("broadcasting received")
-      console.log("algorithms updated, cfap:", @is_cfap)
+      console.log("algorithms updated:", selectedAlgorithm)
 
 
   #cfap function only
@@ -41,8 +48,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @cfap_submit("1",id,"1")
       else
         @cfap_submit("1",id,"")
-    return
-
+    return 
   cfap_valiad: (evt) ->
     id = evt.currentTarget.id
     data = evt.currentTarget.value
@@ -53,14 +59,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       return false
     return
-
   cfap_presubmit: (id, key, evt) ->
     @cfap_submit id, key, evt.target.value
-
   cfap_click: () ->
     $('#nui').slider(
       animate: 'slow'
-      value: @n
+      value: @cfap_n
       min: 0
       max: 400
       range: "min"
@@ -72,9 +76,9 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     )
     $('#n').val $('#nui').slider('value')
     $('#meui').slider(
-      value: @me
+      value: @cfap_me
       min: 0
-      max: @maxme
+      max: @cfap_maxme
       range: "min"
       step: 0.00001
       slide: (event, ui) =>
@@ -86,20 +90,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $("#slider").slider(
       min: 0.80
       max: 0.99
-      value: @conf_level
+      value: @cfap_conf_level
       orientation: "horizontal"
       range: "min"
       step: 0.01
       slide: (event, ui) =>
-        @conf_level = ui.value
+        @cfap_conf_level = ui.value
         $('#conf').val ui.value
         @cfap_submit '1', 'conf', ui.value
         return
     )
     return
-
-
-  #cfap function only
   cfap_submit: (id, key, value) ->
     d = @cfap.cfap(id, key, value);
     if d.isFinite == 1
@@ -124,22 +125,20 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     #n
     $('#n').val d.n
     #check
-    @me = d.ME
-    if @me > @maxme
-      @maxme = (@me / 0.02 + 1) * 0.02
-    @n = d.n
-    if @n > @maxn
-      @maxn = (@n / 20 + 1) * 20
+    @cfap_me = d.ME
+    if @cfap_me > @cfap_maxme
+      @cfap_maxme = (@cfap_me / 0.02 + 1) * 0.02
+    @cfap_n = d.n
+    if @cfap_n > @cfap_maxn
+      @cfap_maxn = (@cfap_n / 20 + 1) * 20
     @cfap_click()
     return
-
   cfap_changeSlider: (sliderId, evt) ->
     console.log("changeSlider hit")
     key = evt.target.value
     console.log(key)
     @cfap_submit '1', sliderId, key
     return
-
   cfap_show_help: () ->
     console.log(@cfap_help)
     if (@cfap_help == false)
@@ -148,3 +147,5 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#cfapH').val "Show Help"
     @cfap_help = !@cfap_help;
     return
+
+  #clmean function only

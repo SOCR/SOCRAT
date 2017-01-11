@@ -11,7 +11,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@algorithmsService = @app_analysis_powercalc_algorithms
 
 
-		@algorithms = ['Select', 'CI for One Proportion', 'other']
+		@algorithms = ['Select', 'CI for One Proportion', 'CI for One Mean', 'other']
 		@powercalcRunning = off
 		@algParams = null
 		@selectedAlgorithm = @algorithms[0]
@@ -28,14 +28,9 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 	updateAlgControls: () ->
 		#update algorithm method in local and broadcast to main control
-		if @selectedAlgorithm is @algorithms[1]
-			@is_cfap = on
-		else
-			@is_cfap = false;
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
-		console.log("algorithms updated, cfap:", @is_cfap)
 
 
 	help: () ->
