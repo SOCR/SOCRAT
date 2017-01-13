@@ -22,8 +22,9 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@is_worst_case = off
 		@cfap_N = null
 		@cfap_pi = null
-		#console.log("algorithms initialized, is_cfap:",@is_cfap)
-
+		
+		@$scope.$on 'powercalc:updateAlgorithm_back', (event, data)=>
+      		@selectedAlgorithm = data
 
 
 	updateAlgControls: () ->

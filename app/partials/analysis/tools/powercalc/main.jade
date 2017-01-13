@@ -12,7 +12,14 @@ script(type='text/x-mathjax-config').
 script(type='text/javascript', src='http://cdn.mathjax.org/mathjax/latest/MathJax.js')
 div(ng-controller="powercalcMainCtrl as mainArea")
     div.lead.bd-danger(ng-show='mainArea.selectedAlgorithm == "Select"')
-      h4 Power Analysis for statistical power analysis, manually manipulate the controls below to explore the relations between different factors
+      h1 <b>Power Analysis Explanation</b>
+      br
+      h4 <b>CI for One Proportion</b>
+      p <b><i>sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i></b>
+      input(type='button' style='font-size:20px; margin-bottom:80px' value='CI for One Proportion' ng-click='mainArea.update_algo($event)')
+      h4 <b>CI for One Mean</b>
+      p <b><i>sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i></b>
+      input(type='button' style='font-size:20px; margin-bottom:80px' value='CI for One Mean' ng-click='mainArea.update_algo($event)')
     div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
       h3 CI for One Proportion
       p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
@@ -37,7 +44,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div(style='margin-top:20px;')
           div(style='display:inline')
             | Confidence Level: &nbsp
-            input#conf(name='conf',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cfap_presubmit('1','conf',$event);")
+            input#conf(name='conf',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cfap_presubmit('1','conf',$event);")
           div(style='display:inline')
             #slider(uib-tooltip="Manipulate this bar to adjust confidence level" tooltip-placement="top")
         div
@@ -78,11 +85,68 @@ div(ng-controller="powercalcMainCtrl as mainArea")
             p <b>n</b>
             p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
             br
-            p <b>Note on Sliders</b>
-            p Sliders may be varied by clicking or dragging along the center of the scale.  If you drag along at the level of the tick labels, you can change the endpoints of the scale.  The small button at the upper right of each slider converts it to and from a keyboard-input mode.  In that mode, you can also change the scale endpoints and number of digits displayed.
-            br
             p <b>Graphics</b>
             p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
     div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
       h3 CI for One Mean
       p <i>This dialog provides for sample-size determination for estimating a mean to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i>
+      div(style='width:100%;overflow:hidden;height:100%;')
+        input(type='hidden', name='id', value='1')
+        div
+          div(style='line-height:10px;display:inline')
+            input#isFinitea(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='isFinite', ng-click='mainArea.cimean_clk($event);')
+            | Finite Population &nbsp &nbsp;
+          div#showNa(style='margin-left=40%;display:inline')
+            | N: &nbsp
+            input#NN(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='NN', ng-mouseleave="mainArea.cimean_presubmit('1','NN',$event);")
+            span#Nerror
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              | Confidence Level: &nbsp
+              input#confa(name='conf',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_presubmit('1','conf',$event);")
+            div(style='display:inline')
+              #slidera_conf(uib-tooltip="Manipulate this bar to adjust confidence level" tooltip-placement="top")
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              | Sigma: &nbsp
+              input#sgn(name='sigma',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('sgn',$event);")
+            div(style='display:inline')
+              #sgnui(uib-tooltip="Manipulate this bar to adjust Sigma" tooltip-placement="top")
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              | Margin of Error: &nbsp
+              input#mea(name='me',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('me',$event);")
+            div(style='display:inline')
+              #meuia(uib-tooltip="Manipulate this bar to adjust Margin of Error" tooltip-placement="top")
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              | n: &nbsp
+              input#na(name='me',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('n',$event);")
+            div(style='display:inline')
+              #nuia(uib-tooltip="Manipulate this bar to adjust n" tooltip-placement="top")
+          div
+            input#cimeanH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cimean_show_help();')
+            div(ng-show='mainArea.cimean_help == true;')
+              p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error: 
+              p $ ME = t * s / \sqrt{n} $  &nbsp;&nbsp;&nbsp; (infinite population)
+              p $ ME = t * s * \sqrt{\frac{\frac{1-n}{N}}{n}} $  &nbsp;&nbsp;&nbsp; (finite population)
+              p where t is a critical value from the t distribution, s is the sample SD, n is the sample size, and N is the population size.
+              br
+              p <b>Using The Graphical Interface</b>
+              p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
+              br
+              p <b>Finite Population</b>
+              p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
+              br 
+              p <b>Confidence</b>
+              p Choose the desired confidence coefficient for the ME.  This determines the value of t.
+              br
+              p <b>Margin of Error</b>
+              p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
+              br
+              p <b>n</b>
+              p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
+              br
+              p <b>Graphics</b>
+              p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
+              
