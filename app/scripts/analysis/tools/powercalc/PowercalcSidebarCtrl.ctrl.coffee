@@ -11,7 +11,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@algorithmsService = @app_analysis_powercalc_algorithms
 
 
-		@algorithms = ['Select', 'CI for One Proportion', 'CI for One Mean', 'other']
+		@algorithms = ['Select', 'CI for One Proportion', 'CI for One Mean', 'Test of One Proportion']
 		@powercalcRunning = off
 		@algParams = null
 		@selectedAlgorithm = @algorithms[0]

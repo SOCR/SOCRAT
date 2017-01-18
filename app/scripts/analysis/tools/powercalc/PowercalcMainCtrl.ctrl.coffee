@@ -22,7 +22,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cfap_help=false
     @cfap_click()
     @cfap_submit()
-    #@cfap_show_help()
 
     #variables needed for cimean only
     @cimean_me=null
@@ -35,7 +34,20 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cimean_help=false
     @cimean_click()
     @cimean_submit()
-    #@cimean_show_help()
+
+    #variables needed for OnePGUI only
+    @OnePGUI_p0=null
+    @OnePGUI_p=null
+    @OnePGUI_ssize=null
+    @OnePGUI_power=null
+    @OnePGUI_maxp0=1.0
+    @OnePGUI_maxp=1.0
+    @OnePGUI_maxssize=77
+    @OnePGUI_maxpower=1.0
+    @OnePGUI_alpha=0.02
+    @OnePGUI_help=false
+
+
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
@@ -270,3 +282,119 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#cimeanH').val "Hide Help"
     @cimean_help = !@cimean_help;
     return
+
+  #OnePGUI function only
+  OnePGUI_click: ->
+        $( "#p0ui" ).slider(
+            value:@OnePGUI_p0
+            min: 0
+            max: @OnePGUI_maxp0
+            range: false
+            step: 0.0001
+            slide: ( event, ui ) =>
+              $( "#p0" ).val( ui.value )
+              @OnePGUI_submit('1','p0',ui.value)
+              return
+          )           
+        $( "#p0" ).val( $( "#p0ui" ).slider( "value" ) )
+        $( "#pui" ).slider(
+            value:@OnePGUI_p
+            min: 0
+            max: @OnePGUI_maxp
+            range: false 
+            step: 0.0001
+            slide: ( event, ui ) =>
+              $( "#p" ).val( ui.value )
+              @OnePGUI_submit('1','p',ui.value)
+              return
+          )           
+        $( "#p" ).val( $( "#pui" ).slider( "value" ) )
+        $( "#ssizeui" ).slider(
+            value:@OnePGUI_ssize,
+            min: 0,
+            max: @OnePGUI_maxssize,
+            range: false, 
+            step: 0.01,
+            slide:( event, ui ) =>
+              $( "#ssize" ).val( ui.value );
+              @OnePGUI_submit('1','ssize',ui.value);
+              return
+          )           
+        $( "#ssize" ).val( $( "#ssizeui" ).slider( "value" ) )
+        $( "#powerui" ).slider(
+            value:@OnePGUI_power,
+            min: 0,
+            max: @OnePGUI_maxpower,
+            range: false, 
+            step: 0.0001,
+            slide: ( event, ui ) =>
+              $( "#power" ).val( ui.value );
+              @OnePGUI_submit('1','power',ui.value);
+              return
+          )            
+        $( "#power" ).val( $( "#powerui" ).slider( "value" ) );
+        $("#alpha").slider(
+          min: 0.005
+          max: 0.2
+          value: @OnePGUI_alpha
+          orientation: "horizontal"
+          range: "min"
+          step: 0.01
+          slide: (event, ui) =>
+            @OnePGUI_alpha = ui.value
+            $('#alpha').val ui.value
+            @OnePGUI_submit '1', 'alpha', ui.value
+            return
+          )
+
+  OnePGUI_clk: (obj) ->
+    obj = evt.currentTarget
+    if obj
+      id=obj.id;
+      ck=$(obj).prop("checked")
+      if ck
+        #console.log(evt.currentTarget.value)
+        @OnePGUI_submit("1",id,"1")
+      else
+        @OnePGUI_submit("1",id,"")
+    return    
+  OnePGUI_presubmit: (id, key, evt) ->
+    value = evt.currentTarget.value
+    #console.log(evt.currentTarget.value)
+    @OnePGUI_submit(id, key, value)
+  OnePGUI_submit: (id, key, value) ->
+    d = @powerAnalysis.cfap(id, key, value);
+    $("#p0").prop("value",d.p0);
+    @OnePGUI_p0=d.p0;
+    $("#p").val(d.p);
+    @OnePGUI_p=d.p;
+    $("#ssize").val(d.n);
+    @OnePGUI_ssize=d.n;
+    $("#altt").prop("value",d.alt);
+    $("#alpha").prop("value",d.Alpha);
+    if d.Method is 0
+      $("#showsize").show();
+      $("#size").val(d.sizes);
+    else if d.Method is 3
+      $("#showsize").show();
+      $("#size").val(d.sizes);
+    else
+      $("#showsize").hide();
+    $("#method").prop("value",d.Method);
+    @OnePGUI_power=d.Power;      
+    @OnePGUI_click();                    
+  OnePGUI_changeSlider: (sliderId, evt) ->
+    #console.log("changeSlider hit")
+    key = evt.target.value
+    console.log(key)
+    @OnePGUI_submit '1', sliderId, key
+    return
+  OnePGUI_show_help: () ->
+    #console.log(@cfap_help)
+    if (@OnePGUI_help == true)
+      $('#OnePGUIH').val "Show Help"
+    else
+      $('#OnePGUIH').val "Hide Help"
+    @OnePGUI_help = !@OnePGUI_help
+    return
+    

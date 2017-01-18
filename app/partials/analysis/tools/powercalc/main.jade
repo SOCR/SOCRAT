@@ -148,5 +148,52 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
               br
               p <b>Graphics</b>
-              p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
-              
+              p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.             
+    div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
+      h3 Test of One Proportion
+      p <i>This dialog provides for power analysis of a one-sample test of proportions. You have your choice of the normal approximation, the beta approximation (which is more accurate), or two exact calculations based on the binomial distribution.  In the latter cases, the size of the test (i.e., the probability of a type I error) is often much smaller than the stated significance level.</i>
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Null Value (p0): &nbsp
+          input#p0(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('p0',$event);")
+        div(style='display:inline')
+          #p0ui(uib-tooltip="Manipulate this bar to adjust Null Value" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Actual Value (p): &nbsp
+          input#p(name='p',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('p',$event);")
+        div(style='display:inline')
+          #pui(uib-tooltip="Manipulate this bar to adjust Actual Value" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Sample Size: &nbsp
+          input#ssize(name='ssize',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('ssize',$event);")
+        div(style='display:inline')
+          #ssizeui(uib-tooltip="Manipulate this bar to adjust Sample Size" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        | Alternative: &nbsp
+        select#altt(name='altt', ng-mouseleave="mainArea.OnePGUI_presubmit('1','altt', $event);")
+          option(value='0') p < p0
+          option(value='1') p != p0
+          option(value='2') p > p0
+      div(style='margin-top:20px;')
+        | Method: &nbsp
+        select#method(name='method', ng-mouseleave="mainArea.OnePGUI_presubmit('1','method', $event);")
+          option(value='0') Exact
+          option(value='1') Normal approx
+          option(value='2') Beta approx
+          option(value='3') Exact(Wald CV)
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Alpha: &nbsp
+          input#alpha(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OnePGUI_presubmit('1','alpha',$event);")
+          div(style='display:inline')
+            #alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Power: &nbsp
+          input#power(name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('power',$event);")
+        div(style='display:inline')
+          #powerui(uib-tooltip="Manipulate this bar to adjust Power" tooltip-placement="top")
+
+
