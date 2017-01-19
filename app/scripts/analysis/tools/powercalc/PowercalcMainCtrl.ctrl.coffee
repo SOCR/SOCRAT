@@ -46,6 +46,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OnePGUI_maxpower=1.0
     @OnePGUI_alpha=0.02
     @OnePGUI_help=false
+    @OnePGUI_altt_value = 1
+    @OnePGUI_method_value = 1
+    @OnePGUI_click()
+    @OnePGUI_submit()
 
 
 
@@ -286,10 +290,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   #OnePGUI function only
   OnePGUI_click: ->
         $( "#p0ui" ).slider(
-            value:@OnePGUI_p0
+            value: @OnePGUI_p0
             min: 0
             max: @OnePGUI_maxp0
-            range: false
+            range: "min"
             step: 0.0001
             slide: ( event, ui ) =>
               $( "#p0" ).val( ui.value )
@@ -301,7 +305,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
             value:@OnePGUI_p
             min: 0
             max: @OnePGUI_maxp
-            range: false 
+            range: "min"
             step: 0.0001
             slide: ( event, ui ) =>
               $( "#p" ).val( ui.value )
@@ -313,7 +317,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
             value:@OnePGUI_ssize,
             min: 0,
             max: @OnePGUI_maxssize,
-            range: false, 
+            range: "min", 
             step: 0.01,
             slide:( event, ui ) =>
               $( "#ssize" ).val( ui.value );
@@ -325,15 +329,16 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
             value:@OnePGUI_power,
             min: 0,
             max: @OnePGUI_maxpower,
-            range: false, 
+            range: "min" 
             step: 0.0001,
             slide: ( event, ui ) =>
-              $( "#power" ).val( ui.value );
+              #$( "#power" ).val( ui.value );
               @OnePGUI_submit('1','power',ui.value);
+              console.log("moving")
               return
           )            
         $( "#power" ).val( $( "#powerui" ).slider( "value" ) );
-        $("#alpha").slider(
+        $("#alphaui").slider(
           min: 0.005
           max: 0.2
           value: @OnePGUI_alpha
@@ -359,11 +364,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @OnePGUI_submit("1",id,"")
     return    
   OnePGUI_presubmit: (id, key, evt) ->
-    value = evt.currentTarget.value
+    value = evt.target.value
     #console.log(evt.currentTarget.value)
     @OnePGUI_submit(id, key, value)
   OnePGUI_submit: (id, key, value) ->
-    d = @powerAnalysis.cfap(id, key, value);
+    d = @powerAnalysis.OnePGUI_cfap(id, key, value);
+    @OnePGUI_altt_value = d.altt
+    @OnePGUI_method_value = d.method
     $("#p0").prop("value",d.p0);
     @OnePGUI_p0=d.p0;
     $("#p").val(d.p);
@@ -386,9 +393,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   OnePGUI_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value
-    console.log(key)
     @OnePGUI_submit '1', sliderId, key
     return
+  OnePGUI_altt_submit: (id, key) ->
+    @OnePGUI_submit(id, key, @OnePGUI_altt_value)
+  OnePGUI_method_submit: (id, key) ->
+    @OnePGUI_submit(id,key,@OnePGUI_method_value)
   OnePGUI_show_help: () ->
     #console.log(@cfap_help)
     if (@OnePGUI_help == true)

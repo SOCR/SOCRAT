@@ -44,7 +44,7 @@
     "jstransform": "^11.0.2",
     "mathjax": "^2.7.0",
     "ng-handsontable": "git+https://github.com/handsontable/ngHandsontable.git",
-    "powercalc": "^2.1.0",
+    "powercalc": "^3.0.0",
     "select2": "^4.0.3",
     "serve-static": "^1.11.1",
     "through": "^2.3.8",

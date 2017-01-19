@@ -171,14 +171,14 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div(style='display:inline')
           #ssizeui(uib-tooltip="Manipulate this bar to adjust Sample Size" tooltip-placement="top")
       div(style='margin-top:20px;')
-        | Alternative: &nbsp
-        select#altt(name='altt', ng-mouseleave="mainArea.OnePGUI_presubmit('1','altt', $event);")
+        | Select Alternative: &nbsp
+        select#altt(name='altt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_altt_value" ng-change="mainArea.OnePGUI_altt_submit('1','altt');")
           option(value='0') p < p0
           option(value='1') p != p0
           option(value='2') p > p0
       div(style='margin-top:20px;')
-        | Method: &nbsp
-        select#method(name='method', ng-mouseleave="mainArea.OnePGUI_presubmit('1','method', $event);")
+        | Select Method: &nbsp
+        select#method(name='method' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_method_value", ng-change="mainArea.OnePGUI_method_submit('1','method');")
           option(value='0') Exact
           option(value='1') Normal approx
           option(value='2') Beta approx
@@ -192,8 +192,8 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       div(style='margin-top:20px;')
         div(style='display:inline')
           | Power: &nbsp
-          input#power(name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('power',$event);")
+          input#power(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('power',$event);")
         div(style='display:inline')
-          #powerui(uib-tooltip="Manipulate this bar to adjust Power" tooltip-placement="top")
+          #powerui(disableds uib-tooltip="You Cannot Manipulate This Bar" tooltip-placement="top")
 
 
