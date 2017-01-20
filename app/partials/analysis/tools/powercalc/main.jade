@@ -15,11 +15,14 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       h1 <b>Power Analysis Explanation</b>
       br
       h4 <b>CI for One Proportion</b>
-      p <b><i>sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i></b>
+      p <b><i> sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i></b>
       input(type='button' style='font-size:20px; margin-bottom:80px' value='CI for One Proportion' ng-click='mainArea.update_algo($event)')
       h4 <b>CI for One Mean</b>
-      p <b><i>sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i></b>
+      p <b><i>sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i></b>
       input(type='button' style='font-size:20px; margin-bottom:80px' value='CI for One Mean' ng-click='mainArea.update_algo($event)')
+      h4 <b>Test of One Proportion</b>
+      p <b><i>power analysis of a one-sample test of proportions. You have your choice of the normal approximation, the beta approximation (which is more accurate), or two exact calculations based on the binomial distribution.  In the latter cases, the size of the test (i.e., the probability of a type I error) is often much smaller than the stated significance level.</i></b>
+      input(type='button' style='font-size:20px; margin-bottom:80px' value='Test of One Proportion' ng-click='mainArea.update_algo($event)')
     div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
       h3 CI for One Proportion
       p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
@@ -186,7 +189,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       div(style='margin-top:20px;')
         div(style='display:inline')
           | Alpha: &nbsp
-          input#alpha(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OnePGUI_presubmit('1','alpha',$event);")
+          input#alpha(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OnePGUI_changeSlider('alpha',$event);")
           div(style='display:inline')
             #alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
       div(style='margin-top:20px;')
@@ -195,5 +198,27 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           input#power(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('power',$event);")
         div(style='display:inline')
           #powerui(disableds uib-tooltip="You Cannot Manipulate This Bar" tooltip-placement="top")
-
+      div
+        input#OnePGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OnePGUI_show_help();')
+        div(ng-show='mainArea.OnePGUI_help == true;')
+          p Common notations: Suppose that X is a binomial random variable with "success" probability p and n independent trials, and let:
+          p $ P = \frac{X}{n} $ 
+          br
+          p <b>Normal approximation:</b> 
+          p We approximate distribution of P with N ($ mu=p $, $ sigma^2=p* \frac{1-p}{n} $). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
+          br
+          p <b>Beta approximation: </b>
+          p We approximate distribution of P with Beta( a=(n-1)*p, b=(n-1)*(1-p) ). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
+          br 
+          p <b>Exact:</b>
+          p In the exact test, the significance level alpha is taken as an upper bound on the size of the test (its power under the null hypothesis). Since X has a discrete distribution, the size cannot be controlled exactly and is often much lower than the specified alpha.
+          br
+          p For the alternative p &lt p0, let xl denote the largest x for which Pr($ X \leq x | p = p0 $) &lt= alpha. Then the power is equal to Pr($ X \leq xl | p = p1 $) and the size of the test is Pr($ X \leq xl | p = p0 $).
+          br
+          p For the alternative p > p0, let xu denote the smallest x for which Pr($ X \geq x | p = p0 $) &lt= alpha. Then the power is equal to Pr($ X \geq xu | p = p1 $). And the size of the test is Pr($ X \geq xu | p = p0 $).
+          br
+          p For the alternative p != p0, compute both powers as above but replace alpha by $ \frac{alpha}{2} $; then sum the powers and sizes.
+          p <b>Exact (Wald CV):</b>
+          p This is like the exact method, except the critical values are calculated based on an adjusted Wald statistic.  This does NOT guarantee that the size of the test is less than alpha.
+          p Note: This is the exact method used in the JMP statistical software.
 

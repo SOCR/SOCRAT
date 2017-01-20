@@ -369,8 +369,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OnePGUI_submit(id, key, value)
   OnePGUI_submit: (id, key, value) ->
     d = @powerAnalysis.OnePGUI_cfap(id, key, value);
-    @OnePGUI_altt_value = d.altt
-    @OnePGUI_method_value = d.method
+    @OnePGUI_altt_value = d.alt
+    @OnePGUI_method_value = d.Method
     $("#p0").prop("value",d.p0);
     @OnePGUI_p0=d.p0;
     $("#p").val(d.p);
@@ -397,8 +397,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     return
   OnePGUI_altt_submit: (id, key) ->
     @OnePGUI_submit(id, key, @OnePGUI_altt_value)
+    return
   OnePGUI_method_submit: (id, key) ->
-    @OnePGUI_submit(id,key,@OnePGUI_method_value)
+    @OnePGUI_submit(id, key, @OnePGUI_method_value)
+    return
   OnePGUI_show_help: () ->
     #console.log(@cfap_help)
     if (@OnePGUI_help == true)
