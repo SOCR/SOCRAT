@@ -203,7 +203,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           data = @dataAdaptor.toDataFrame dataResults
           @passReceivedData data
         else
-          console.log 'rejected:' + msg
+          console.log 'GETDATA: request failed'
 
   getJsonByUrl: (type) ->
     @d3.json @jsonUrl,
