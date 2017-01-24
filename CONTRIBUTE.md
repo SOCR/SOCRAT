@@ -20,5 +20,10 @@ The technology stack used in this framework is described below.
 
 ### Optional
 
-**[D3](http://d3js.org)** - Data driven charts
-  
+**[D3](http://d3js.org)** - Data driven charts  
+
+### SOCR Datasets for testing
+
+**Iris** - famous dataset in machine learning [1]. To be able to use it locally for testing, download [CSV file](https://drive.google.com/file/d/0BzJubeARG-hsdTdRTC03RFdhRTg/view?usp=sharing) and place it under ``_build/datasets/iris.csv``
+
+[1] Lichman, M. (2013). [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml). Irvine, CA: University of California, School of Information and Computer Science.
