@@ -23,6 +23,9 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       h4 <b>Test of One Proportion</b>
       p <b><i>power analysis of a one-sample test of proportions. You have your choice of the normal approximation, the beta approximation (which is more accurate), or two exact calculations based on the binomial distribution.  In the latter cases, the size of the test (i.e., the probability of a type I error) is often much smaller than the stated significance level.</i></b>
       input(type='button' style='font-size:20px; margin-bottom:80px' value='Test of One Proportion' ng-click='mainArea.update_algo($event)')
+      h4 <b>One-Sample (or Paired) t Test</b>
+      p <b><i>This dialog provides for power analysis of a one-sample t test or a pooled t test.  The effect size is the difference between the null and the target mean (in the one-sample test), or the mean difference of the pairs (in the paired t test). </i></b>
+      input(type='button' style='font-size:20px; margin-bottom:80px' value='Test of One Proportion' ng-click='mainArea.update_algo($event)')
     div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
       h3 CI for One Proportion
       p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
@@ -221,4 +224,41 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           p <b>Exact (Wald CV):</b>
           p This is like the exact method, except the critical values are calculated based on an adjusted Wald statistic.  This does NOT guarantee that the size of the test is less than alpha.
           p Note: This is the exact method used in the JMP statistical software.
-
+    div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
+      h3 One-Sample (or Paired) t Test
+      p <i>xxx</i>
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Sigma: &nbsp
+          input#sigmad(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('sigmad',$event);")
+        div(style='display:inline')
+          #sigmauid(uib-tooltip="Manipulate this bar to adjust Sigma" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | True|mu-mu_0|: &nbsp
+          input#diffd(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('diffd',$event);")
+        div(style='display:inline')
+          #diffuid(uib-tooltip="Manipulate this bar to adjust value" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | n: &nbsp
+          input#nd(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('nd',$event);")
+        div(style='display:inline')
+          #nuid(uib-tooltip="Manipulate this bar to adjust n" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | power: &nbsp
+          input#powerd(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('powerd',$event);")
+        div(style='display:inline')
+          #poweruid(uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        | Solve for: &nbsp
+        select#optd(name='altt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_optd" ng-change="mainArea.OnePGUI_optd_submit('1','altt');")
+          option(value='0') n
+          option(value='1') Effec Size
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Alpha: &nbsp
+          input#alphad(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OneTGUI_changeSlider('alphad',$event);")
+        div(style='display:inline')
+          #alphauid(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
