@@ -51,14 +51,31 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OnePGUI_click()
     @OnePGUI_submit()
 
+    #variables needed for OneTGUI only
+    @OneTGUI_sigma=null;
+    @OneTGUI_diff=null;
+    @OneTGUI_n=null;
+    @OneTGUI_power=null;
+    @OneTGUI_maxsigma=1.4;
+    @OneTGUI_maxdiff=0.7;
+    @OneTGUI_maxn=35;
+    @OneTGUI_maxpower=1;
+    @OneTGUI_first = true;
+    @OneTGUI_show_help = false;
+    @OneTGUI_alpha = 0.02
+    @OneTGUI_optd = 0;
+    @OneTGUI_click()
+    @OneTGUI_submit()
+
 
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
-      #console.log("algorithms updated:", @selectedAlgorithm)
+      console.log("algorithms updated:", @selectedAlgorithm)
 
   #global
   update_algo: (evt) ->
+    console.log(@selectedAlgorithm)
     @selectedAlgorithm = evt.currentTarget.value
     @msgService.broadcast 'powercalc:updateAlgorithm_back',
       @selectedAlgorithm
@@ -129,36 +146,36 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     )
     return
   cfap_submit: (id, key, value) ->
-    d = @powerAnalysis.cfap(id, key, value);
-    if d.isFinite == 1
+    a = @powerAnalysis.cfap(id, key, value);
+    if a.isFinite == 1
       $('#isFinite').prop 'checked', 'checked'
       $('#showN').show()
     else
       $('#isFinite').prop 'checked', ''
       $('#showN').hide()
     #N
-    $('#N').val d.N
+    $('#N').val a.N
     #worstCase
-    if d.worstCase == 1
+    if a.worstCase == 1
       $('#worstCase').prop 'checked', 'checked'
     else
       $('#worstCase').prop 'checked', ''
     #pi
-    $('#pi').val d.pi
+    $('#pi').val a.pi
     #Conf
-    $('#conf').prop 'value', d.conf
+    $('#conf').prop 'value', a.conf
     #ME
-    $('#me').val d.ME
+    $('#me').val a.ME
     #n
-    $('#n').val d.n
+    $('#n').val a.n
     #check
-    @cfap_me = d.ME
+    @cfap_me = a.ME
     if @cfap_me > @cfap_maxme
       @cfap_maxme = (@cfap_me / 0.02 + 1) * 0.02
-    @cfap_n = d.n
+    @cfap_n = a.n
     if @cfap_n > @cfap_maxn
       @cfap_maxn = (@cfap_n / 20 + 1) * 20
-    @cfap_conf_level = d.conf
+    @cfap_conf_level = a.conf
     @cfap_click()
     return
   cfap_changeSlider: (sliderId, evt) ->
@@ -244,32 +261,32 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     #console.log(evt.currentTarget.value)
     @cimean_submit(id, key, value)
   cimean_submit: (id, key, value) ->
-    d = @powerAnalysis.CImean(id, key, value)
-    if d.isFinite == 1
+    b = @powerAnalysis.CImean(id, key, value)
+    if b.isFinite == 1
       $('#isFinitea').prop("checked","checked")
       $('#showNa').show();
     else
       $('#isFinitea').prop("checked","")
       $('#showNa').hide()
     #N
-    $('#NN').val(d.NN);
+    $('#NN').val(b.NN);
     #signa
-    $('#sgn').val(d.Sigma)
+    $('#sgn').val(b.Sigma)
     #Conf
-    $('#confa').prop("value",d.conf)
+    $('#confa').prop("value",b.conf)
     #ME
-    $('#mea').val(d.ME)
+    $('#mea').val(b.ME)
     #n
-    $('#na').val(d.n)                   
-    @cimean_signa=d.Sigma
+    $('#na').val(b.n)                   
+    @cimean_signa=b.Sigma
     #check
-    @cimean_me=d.ME
+    @cimean_me=b.ME
     if @cimean_me > @cimean_maxme
       @cimean_maxme=(@cimean_me/0.02+1)*0.02
-    @cimean_n=d.n
+    @cimean_n=b.n
     if @cimean_n > @cimean_maxn
       @cimean_maxn=(@cimean_n/20+1)*20
-    @cimean_conf_level = d.conf
+    @cimean_conf_level = b.conf
     @cimean_click()
     return
   cimean_changeSlider: (sliderId, evt) ->
@@ -351,7 +368,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
             @OnePGUI_submit '1', 'alpha', ui.value
             return
           )
-
   OnePGUI_clk: (obj) ->
     obj = evt.currentTarget
     if obj
@@ -368,27 +384,27 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     #console.log(evt.currentTarget.value)
     @OnePGUI_submit(id, key, value)
   OnePGUI_submit: (id, key, value) ->
-    d = @powerAnalysis.OnePGUI_cfap(id, key, value);
-    @OnePGUI_altt_value = d.alt
-    @OnePGUI_method_value = d.Method
-    $("#p0").prop("value",d.p0);
-    @OnePGUI_p0=d.p0;
-    $("#p").val(d.p);
-    @OnePGUI_p=d.p;
-    $("#ssize").val(d.n);
-    @OnePGUI_ssize=d.n;
-    $("#altt").prop("value",d.alt);
-    $("#alpha").prop("value",d.Alpha);
-    if d.Method is 0
+    c = @powerAnalysis.OnePGUI_cfap(id, key, value);
+    @OnePGUI_altt_value = c.alt
+    @OnePGUI_method_value = c.Method
+    $("#p0").prop("value",c.p0);
+    @OnePGUI_p0=c.p0;
+    $("#p").val(c.p);
+    @OnePGUI_p=c.p;
+    $("#ssize").val(c.n);
+    @OnePGUI_ssize=c.n;
+    $("#altt").prop("value",c.alt);
+    $("#alpha").prop("value",c.Alpha);
+    if c.Method is 0
       $("#showsize").show();
-      $("#size").val(d.sizes);
-    else if d.Method is 3
+      $("#size").val(c.sizes);
+    else if c.Method is 3
       $("#showsize").show();
-      $("#size").val(d.sizes);
+      $("#size").val(c.sizes);
     else
       $("#showsize").hide();
-    $("#method").prop("value",d.Method);
-    @OnePGUI_power=d.Power;      
+    $("#method").prop("value",c.Method);
+    @OnePGUI_power=c.Power;      
     @OnePGUI_click();                    
   OnePGUI_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
@@ -410,3 +426,117 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OnePGUI_help = !@OnePGUI_help
     return
     
+  #functions for OneTGUI only  
+  OneTGUI_click: () ->
+    if @OneTGUI_first
+      $( "#sigmauid" ).slider(
+        value:@OneTGUI_sigma,
+        min: 0,
+        max: @OneTGUI_maxsigma,
+        range: "min", 
+        step: 0.0001,
+        slide: ( event, ui ) =>
+          $( "#sigmad" ).val( ui.value );
+          @OneTGUI_submit('1','sigma',ui.value);
+          return
+      )           
+      $( "#diffuid" ).slider(
+        value:@OneTGUI_diff,
+        min: 0,
+        max: @OneTGUI_maxdiff,
+        range: "min", 
+        step: 0.00005,
+        slide: ( event, ui ) =>
+          $( "#diffd" ).val( ui.value );
+          @OneTGUI_submit('1','diff',ui.value);
+          return
+      )           
+      $( "#nuid" ).slider(
+        value:@OneTGUI_n,
+        min: 0,
+        max: @OneTGUI_maxn,
+        range: "min", 
+        step: 0.0025,
+        slide: ( event, ui ) =>
+          $( "#nd" ).val( ui.value );
+          @OneTGUI_submit('1','n',ui.value);
+          return
+      )
+      $( "#poweruid" ).slider(
+        value:@OneTGUI_power,
+        min: 0,
+        max: @OneTGUI_maxpower,
+        range: "min", 
+        step: 0.0001,
+        slide: ( event, ui ) =>
+          #$( "#powerd" ).val( ui.value );
+          @OneTGUI_submit('1','power',ui.value);
+          return
+      )
+      $("#alphauid").slider(
+          min: 0.005
+          max: 0.2
+          value: @OneTGUI_alpha
+          orientation: "horizontal"
+          range: "min"
+          step: 0.01
+          slide: (event, ui) =>
+            @OneTGUI_alpha = ui.value
+            $('#alphad').val ui.value
+            @OneTGUI_submit '1', 'alpha', ui.value
+            return
+          )
+      @OneTGUI_first = false;
+    $( "#sigmauid" ).slider('value', @OneTGUI_sigma);
+    $( "#diffuid" ).slider('value',@OneTGUI_diff);
+    $( "#nuid" ).slider('value',@OneTGUI_n);
+    $( "#poweruid" ).slider('value',@OneTGUI_power);  
+    $( "#sigmad" ).val( $( "#sigmauid" ).slider( "value" ) );
+    $( "#diffd" ).val( $( "#diffuid" ).slider( "value" ) );
+    $( "#nd" ).val( $( "#nuid" ).slider( "value" ) );
+    $( "#powerd" ).val( $( "#poweruid" ).slider( "value" ) );
+  OneTGUI_clk: (obj) ->
+    obj = evt.currentTarget
+    if obj
+      id=obj.id;
+      ck=$(obj).prop("checked")
+      if ck
+        #console.log(evt.currentTarget.value)
+        @OnePGUI_submit("1",id,"1")
+      else
+        @OnePGUI_submit("1",id,"")
+    return  
+  OneTGUI_optd_submit: (id, key) ->
+    @OneTGUI_submit(id, key, @OneTGUI_optd)
+    return
+  OneTGUI_submit: (id, key, value) ->
+    console.log(key)
+    d = @powerAnalysis.handle(id, key, value)
+    @OneTGUI_sigma=d.sigma
+    $("#sigmad").prop("value",d.sigma)
+    @OneTGUI_diff=d.diff;
+    $("#diffd").prop("value",d.diff);
+    @OneTGUI_n=d.n;
+    $("#nd").val(d.n);
+    @OneTGUI_power=d.power;
+    #$("#powerd").prop("value",d.power);
+    $("#optd").prop("value",d.opt);
+    $("#alphad").prop("value",d.alpha);
+    if d.tt is 1
+      $("#ttd").prop("checked","checked");
+    else
+      $("#ttd").prop("checked","");
+    @OneTGUI_click();                    
+  OneTGUI_show_help: () ->
+    #console.log(@cfap_help)
+    if (@OneTGUI_help == true)
+      $('#OneTGUIH').val "Show Help"
+    else
+      $('#OnePGUIH').val "Hide Help"
+    @OneTGUI_help = !@OneTGUI_help
+    return
+  OneTGUI_changeSlider: (sliderId, evt) ->
+    #console.log("changeSlider hit")
+    key = evt.target.value
+    @OneTGUI_submit '1', sliderId, key
+    return
