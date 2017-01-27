@@ -253,12 +253,19 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           #poweruid(uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
       div(style='margin-top:20px;')
         | Solve for: &nbsp
-        select#optd(name='altt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_optd" ng-change="mainArea.OneTGUI_optd_submit('1','altt');")
+        select#optd(name='altt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OneTGUI_optd" ng-change="mainArea.OneTGUI_optd_submit('1','opt');")
           option(value='0') n
           option(value='1') Effec Size
+      div(style='margin-top:20px;')
+        |Two-Tailed
+        input#tt(type="checkbox" name="tt" ng-click="mainArea.OneTGUI_clk($event);")
       div(style='margin-top:20px;')
         div(style='display:inline')
           | Alpha: &nbsp
           input#alphad(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OneTGUI_changeSlider('alpha',$event);")
         div(style='display:inline')
           #alphauid(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
+      div
+        input#OneTGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OneTGUI_show_help();')
+        div(ng-show='mainArea.OneTGUI_help == true;')
+          p You may choose whether to solve for effect size or sample size when you click on the "Power" slider.  The current values are scaled upward or downward to make the power come out right, while preserving (at least approximately) the ratio of the two SDs or two ns

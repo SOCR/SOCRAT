@@ -61,9 +61,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OneTGUI_maxn=35;
     @OneTGUI_maxpower=1;
     @OneTGUI_first = true;
-    @OneTGUI_show_help = false;
+    @OneTGUI_help = false;
     @OneTGUI_alpha = 0.02
     @OneTGUI_optd = 0;
+    @OneTGUI_optd_submit()
     @OneTGUI_click()
     @OneTGUI_submit()
 
@@ -368,7 +369,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
             @OnePGUI_submit '1', 'alpha', ui.value
             return
           )
-  OnePGUI_clk: (obj) ->
+  OnePGUI_clk: (evt) ->
     obj = evt.currentTarget
     if obj
       id=obj.id;
@@ -393,7 +394,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OnePGUI_p=c.p;
     $("#ssize").val(c.n);
     @OnePGUI_ssize=c.n;
-    $("#altt").prop("value",c.alt);
+    $("#altt").prop("value",@OnePGUI_altt_value);
     $("#alpha").prop("value",c.Alpha);
     if c.Method is 0
       $("#showsize").show();
@@ -403,7 +404,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $("#size").val(c.sizes);
     else
       $("#showsize").hide();
-    $("#method").prop("value",c.Method);
+    $("#method").prop("value",@OnePGUI_method_value);
     @OnePGUI_power=c.Power;      
     @OnePGUI_click();                    
   OnePGUI_changeSlider: (sliderId, evt) ->
@@ -495,22 +496,22 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $( "#diffd" ).val( $( "#diffuid" ).slider( "value" ) );
     $( "#nd" ).val( $( "#nuid" ).slider( "value" ) );
     $( "#powerd" ).val( $( "#poweruid" ).slider( "value" ) );
-  OneTGUI_clk: (obj) ->
+  OneTGUI_clk: (evt) ->
     obj = evt.currentTarget
     if obj
       id=obj.id;
       ck=$(obj).prop("checked")
+      console.log(ck)
       if ck
         #console.log(evt.currentTarget.value)
-        @OnePGUI_submit("1",id,"1")
+        @OneTGUI_submit("1",id,"1")
       else
-        @OnePGUI_submit("1",id,"")
+        @OneTGUI_submit("1",id,"")
     return  
   OneTGUI_optd_submit: (id, key) ->
     @OneTGUI_submit(id, key, @OneTGUI_optd)
     return
   OneTGUI_submit: (id, key, value) ->
-    console.log(key)
     d = @powerAnalysis.handle(id, key, value)
     @OneTGUI_sigma=d.sigma
     $("#sigmad").prop("value",d.sigma)
@@ -523,16 +524,16 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $("#optd").prop("value",d.opt);
     $("#alphad").prop("value",d.alpha);
     if d.tt is 1
-      $("#ttd").prop("checked","checked");
+      $("#tt").prop("checked","checked");
     else
-      $("#ttd").prop("checked","");
+      $("#tt").prop("checked","");
     @OneTGUI_click();                    
   OneTGUI_show_help: () ->
     #console.log(@cfap_help)
     if (@OneTGUI_help == true)
-      $('#OneTGUIH').val "Show Help"
+      $('#OneTGUI_H').val "Show Help"
     else
-      $('#OnePGUIH').val "Hide Help"
+      $('#OnePGUI_H').val "Hide Help"
     @OneTGUI_help = !@OneTGUI_help
     return
   OneTGUI_changeSlider: (sliderId, evt) ->
