@@ -68,6 +68,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OneTGUI_click()
     @OneTGUI_submit()
 
+    #variables needed for Pilot only
+    @Pilot_pctUnder=null;
+    @Pilot_risk=null;
+    @Pilot_df=null;
+    @Pilot_maxpctUnder=30;
+    @Pilot_maxrisk=0.114;
+    @Pilot_maxdf=120;
+    @Pilot_help = false;
+    @Pilot_click()
+    @Pilot_submit()
+
 
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
@@ -540,4 +551,76 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     #console.log("changeSlider hit")
     key = evt.target.value
     @OneTGUI_submit '1', sliderId, key
+    return
+
+  #functions for Pilot only
+  Pilot_click: () ->
+    $( "#pctUnderui" ).slider(
+      value:@Pilot_pctUnder,
+      min: 0,
+      max: @Pilot_maxpctUnder,
+      range: "min", 
+      step: 0.0025,
+      slide:( event, ui ) =>
+        $( "#pctUnder" ).val( ui.value );
+        @Pilot_submit('1','pctUnder',ui.value);
+        return
+    )               
+    $( "#pctUnder" ).val( $( "#pctUnderui" ).slider( "value" ) );
+    $( "#riskui" ).slider(
+      value:@Pilot_risk,
+      min: 0,
+      max: @Pilot_maxrisk,
+      range: "min", 
+      step: 0.00001,
+      slide: ( event, ui ) =>
+        $( "#risk" ).val( ui.value );
+        @Pilot_submit('1','risk',ui.value);
+        return
+    )         
+    $( "#risk" ).val( $( "#riskui" ).slider( "value" ) );    
+    $( "#dfui" ).slider(
+      value:@Pilot_df,
+      min: 0,
+      max: @Pilot_maxdf,
+      range: "min", 
+      step: 0.01,
+      slide: ( event, ui ) =>
+        console.log "hit"
+        $( "#df" ).val( ui.value );
+        @Pilot_submit('1','df',ui.value);
+        return
+    )          
+    $( "#df" ).val( $( "#dfui" ).slider( "value" ) );   
+  Pilot_submit: (id, key, value) ->
+    d = @powerAnalysis.pilot_handle(id, key, value); 
+    $("#pctUnder").val(d.pctUnder);
+    @Pilot_pctUnder=d.pctUnder;
+    $("#risk").prop("value",d.risk);
+    @Pilot_risk=d.risk;
+    $("#df").val(d.df);
+    @Pilot_df=d.df;
+    @Pilot_click();                    
+    return
+  Pilot_valiad: (evt) ->
+    id = evt.currentTarget.id
+    data = evt.currentTarget.value
+    e = evt || window.event || arguments.callee.caller.arguments[0];  
+    r = /^\d+(\.\d+)?$/;
+    if r.test(data)
+      @Pilot_submit('1',id,data);
+    else
+      return false;
+  Pilot_changeSlider: (sliderId, evt) ->
+    #console.log("changeSlider hit")
+    key = evt.target.value
+    @Pilot_submit '1', sliderId, key
+    return
+  Pilot_show_help: () ->
+    #console.log(@cfap_help)
+    if (@Pilot_help == true)
+      $('#Pilot_H').val "Show Help"
+    else
+      $('#Pilot_H').val "Hide Help"
+    @Pilot_help = !@Pilot_help
     return

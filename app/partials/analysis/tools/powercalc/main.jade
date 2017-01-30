@@ -26,6 +26,9 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       h4 <b>One-Sample (or Paired) t Test</b>
       p <b><i>This dialog provides for power analysis of a one-sample t test or a pooled t test.  The effect size is the difference between the null and the target mean (in the one-sample test), or the mean difference of the pairs (in the paired t test). </i></b>
       input(type='button' style='font-size:20px; margin-bottom:80px' value='One-Sample (or Paired) t Test' ng-click='mainArea.update_algo($event)')
+      h4 <b>Pilot Study</b>
+      p <b><i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study </i></b>
+      input(type='button' style='font-size:20px; margin-bottom:80px' value='Pilot Study' ng-click='mainArea.update_algo($event)')
     div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
       h3 CI for One Proportion
       p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
@@ -269,3 +272,32 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         input#OneTGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OneTGUI_show_help();')
         div(ng-show='mainArea.OneTGUI_help == true;')
           p You may choose whether to solve for effect size or sample size when you click on the "Power" slider.  The current values are scaled upward or downward to make the power come out right, while preserving (at least approximately) the ratio of the two SDs or two ns
+    div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
+      h3 Pilot Study
+      p <i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study</i>
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Percent by which N is under-estimated: &nbsp
+          input#pctUnder(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('pctUnder',$event);")
+        div(style='display:inline')
+          #pctUnderui(uib-tooltip="Manipulate this bar to adjust Percentage" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Risk of exceeding this percentage: &nbsp
+          input#risk(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('risk',$event);")
+        div(style='display:inline')
+          #riskui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | d.f. for error in pilot studye: &nbsp
+          input#df(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('df',$event);")
+        div(style='display:inline')
+          #dfui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
+      div
+        input#Pilot_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.Pilot_show_help();')
+        div(ng-show='mainArea.Pilot_help == true;')
+          p the criterion employed in this dialog is the risk of underestimating N by a specified percentage 100*P.  This is approximately equal to the risk of underestimating sigma (pretty much regardless of what criterion -- power, CI width, etc. -- is used for sample-size determination). In a normal setting, this risk is a simple calculation on the chi-square distribution: risk = Pr{Q < (1-P)nu}, where Q is chi-square with nu d.f.
+          <br>
+          p The dialog has three sliders -- for 100P, for risk, and for nu.  If you vary P or nu, the risk is recomuted based on the above formula.  If you vary risk, nu is recomputed. (If the solve method fails, simply set the d.f. so the risk is in the ballpark, and try again
+
+
