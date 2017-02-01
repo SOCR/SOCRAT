@@ -79,7 +79,19 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @Pilot_click()
     @Pilot_submit()
 
-
+    #variables needed for RsquareGUI only
+    @RsquareGUI_rho2=null;
+    @RsquareGUI_n=null;
+    @RsquareGUI_preds=null;
+    @RsquareGUI_power=null;
+    @RsquareGUI_maxrho2=0.14;
+    @RsquareGUI_maxn=70;
+    @RsquareGUI_maxpreds=1.4;
+    @RsquareGUI_maxpower=1;
+    @RsquareGUI_first = true;
+    @RsquareGUI_help = false;
+    @RsquareGUI_click()
+    @RsquareGUI_submit()
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
@@ -623,4 +635,99 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       $('#Pilot_H').val "Hide Help"
     @Pilot_help = !@Pilot_help
+    return
+
+  #functions for RsquareGUI only
+  RsquareGUI_click: () ->
+    $( "#rho2uif" ).slider(
+      value:@RsquareGUI_rho2,
+      min: 0,
+      max: @RsquareGUI_maxrho2,
+      range: "min", 
+      step: 0.00001,
+      slide: ( event, ui ) =>
+        $( "#rho2" ).val( ui.value );
+        @RsquareGUI_submit('1','rho2',ui.value);
+        return
+    )         
+         
+    $( "#nuif" ).slider(
+      value:@RsquareGUI_n,
+      min: 0,
+      max: @RsquareGUI_maxn,
+      range: "min", 
+      step: 0.005,
+      slide: ( event, ui ) ->
+        $( "#nf" ).val( ui.value );
+        @RsquareGUI_submit('1','n',ui.value);
+        return
+    )           
+          
+    $( "#predsuif" ).slider(
+      value:@RsquareGUI_preds,
+      min: 0,
+      max: @RsquareGUI_maxpreds,
+      range: "min", 
+      step: 0.0001,
+      slide: ( event, ui ) ->
+        $( "#preds" ).val( ui.value );
+        @RsquareGUI_submit('1','preds',ui.value);
+        return
+    )          
+          
+    $( "#poweruif" ).slider(
+      value:@RsquareGUI_power,
+      min: 0,
+      max: @RsquareGUI_maxpower,
+      range: "min", 
+      step: 0.0001,
+      disabled:true
+    )
+      
+    $( "#rho2f" ).val( $( "#rho2uif" ).slider( "value" ) );
+    $( "#nf" ).val( $( "#nuif" ).slider( "value" ) );
+    $( "#predsf" ).val( $( "#predsuif" ).slider( "value" ) );
+    $( "#powerf" ).val( $( "#poweruif" ).slider( "value" ) );
+  RsquareGUI_clk: (evt) ->
+    obj=evt.currentTarget
+    if obj 
+      id=obj.id;          
+      ck=$(obj).prop("checked");
+      if ck
+        @RsquareGUI_submit("1",id,"1");
+      else
+        @RsquareGUI_submit("1",id,"");    
+  RsquareGUI_submit: (id, key, value) ->
+    d = @powerAnalysis.RsquareGUI_handle(id, key, value);
+    $("#alphaf").val(d.alpha);
+    $("#rho2f").val(d.rho2);
+    @RsquareGUI_rho2 = d.rho2;
+    $("#nf").val(d.n);
+    $("#predsf").val(d.preds);
+    @RsquareGUI_n = d.n;
+    @RsquareGUI_preds = d.preds;
+    $("#powerf").val(d.power);
+    @RsquareGUI_power = d.power;
+    @RsquareGUI_click();                    
+  RsquareGUI_valiad: (evt) ->
+    id = evt.currentTarget.id
+    data = evt.currentTarget.value
+    e = event || window.event || arguments.callee.caller.arguments[0];
+    r=/^\d+(\.\d+)?$/;
+    if r.test(data)
+      @Rsquaregui_submit('1','alpha',data);
+    else
+      return false;
+  RsquareGUI_changeSlider: (sliderId, evt) ->
+    #console.log("changeSlider hit")
+    key = evt.target.value
+    @RsquareGUI_submit '1', sliderId, key
+    return
+  RsquareGUI_show_help: () ->
+    #console.log(@cfap_help)
+    if (@RsquareGUI_help == true)
+      $('#RsquareGUI_H').val "Show Help"
+    else
+      $('#RsquareGUI_H').val "Hide Help"
+    @RsquareGUI_help = !@RsquareGUI_help
     return
