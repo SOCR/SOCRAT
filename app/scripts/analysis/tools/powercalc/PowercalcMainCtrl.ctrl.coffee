@@ -93,6 +93,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @RsquareGUI_click()
     @RsquareGUI_submit()
 
+
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
@@ -657,7 +658,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       max: @RsquareGUI_maxn,
       range: "min", 
       step: 0.005,
-      slide: ( event, ui ) ->
+      slide: ( event, ui ) =>
         $( "#nf" ).val( ui.value );
         @RsquareGUI_submit('1','n',ui.value);
         return
@@ -669,8 +670,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       max: @RsquareGUI_maxpreds,
       range: "min", 
       step: 0.0001,
-      slide: ( event, ui ) ->
-        $( "#preds" ).val( ui.value );
+      slide: ( event, ui ) =>
+        $( "#predsf" ).val( ui.value );
         @RsquareGUI_submit('1','preds',ui.value);
         return
     )          

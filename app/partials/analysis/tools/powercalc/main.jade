@@ -323,21 +323,35 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       div(style='margin-top:20px;')
         div(style='display:inline')
           | Number of Regressors: &nbsp
-          input#nf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('n',$event);")
+          input#predsf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('preds',$event);")
         div(style='display:inline')
-          #nuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
+          #predsuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
       div(style='margin-top:20px;')
         div(style='display:inline')
           | power: &nbsp
-          input#powerf(name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('power',$event);")
+          input#powerf(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('power',$event);")
         div(style='display:inline')
-          #poweruif(uib-tooltip="You cannot manipulate this bar" tooltip-placement="top")
+          #poweruif(disabled uib-tooltip="You cannot manipulate this bar" tooltip-placement="top")
       div
         input#RsuareGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.RsquareGUI_show_help();')
         div(ng-show='mainArea.RsquareGUI_help == true;')
-          p The usual way to test a hypothesis about R^2 is to transform it to an F statistic:
+          p The usual way to test a hypothesis about $ R^2 $ is to transform it to an F statistic:
           <br>
-          p The dialog has three sliders -- for 100P, for risk, and for nu.  If you vary P or nu, the risk is recomuted based on the above formula.  If you vary risk, nu is recomputed. (If the solve method fails, simply set the d.f. so the risk is in the ballpark, and try again
+          p $$ F = \frac{(n-k-1)*R^2}{k*(1-R^2)} $$
+          <br>
+          p This is the usual ANOVA F.  The distinction that makes this dialog different from the one for regular ANOVA is  that the predictors are random.  The power computed here is unconditional, rather than conditional.
+          <br>
+          p The GUI components are as follows:
+          <br>
+          p Alpha: The desired significance level of the test
+          p True $ rho^2 $ value: The population value of R^2 at which we want to compute the power.
+          p Sample size: The number of N multivariate observations in the data set
+          p Number of regressors: The value of k = p - 1.
+          p Power (output only):  The power of the test.
+          <br>
+          p References:
+          p Gatsonis, C. and Sampson, A. (1989),  Multiple correlation: Exact power and sample size calculations. Psychological Bulletin, 106, 516--524.
+          p Benton, D. and Krishnamoorthy, K. (2003),  Computing discrete mixtures of continuous distributions..., Computational Statistics and Data Analysis, 43, 249--267
 
 
 
