@@ -90,8 +90,19 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @RsquareGUI_maxpower=1;
     @RsquareGUI_first = true;
     @RsquareGUI_help = false;
-    @RsquareGUI_click()
-    @RsquareGUI_submit()
+    @RsquareGUI_click();
+    @RsquareGUI_submit();
+
+    #variables needed for SimpleChi2GUI only
+    @SimpleChi2GUI_Power=null;
+    @SimpleChi2GUI_n=null;
+    @SimpleChi2GUI_maxn=75;
+    @SimpleChi2GUI_maxPower=1;
+    @SimpleChi2GUI_help = false;
+    @SimpleChi2GUI_click();
+    @SimpleChi2GUI_submit();
+
+
 
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
@@ -731,4 +742,75 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       $('#RsquareGUI_H').val "Hide Help"
     @RsquareGUI_help = !@RsquareGUI_help
+    return
+
+
+  #functions for SimpleChi2GUI only
+  SimpleChi2GUI_click: () ->
+    $( "#nuig" ).slider(
+      value:@SimpleChi2GUI_n,
+      min: 0,
+      max: @SimpleChi2GUI_maxn,
+      range: "min", 
+      step: 0.005,
+      slide: ( event, ui ) =>
+        $( "#ng" ).val( ui.value );
+        @SimpleChi2GUI_submit('1','n',ui.value);
+    )       
+    $( "#nf" ).val( $( "#nuif" ).slider( "value" ) );
+    $( "#Poweruif" ).slider(
+      value:@SimpleChi2GUI_Power,
+      min: 0,
+      max: @SimpleChi2GUI_maxPower,
+      range: 'min', 
+      step: 0.0001,
+      slide: ( event, ui ) =>
+        $( "#Powerf" ).val( ui.value );
+        @SimpleChi2GUI_submit('1','Power',ui.value);
+    )           
+    $( "#Power" ).val( $( "#Powerui" ).slider( "value" ) );
+  SimpleChi2GUI_clk: (evt) ->
+    obj=evt.currentTarget
+    if obj 
+      id=obj.id;          
+      ck=$(obj).prop("checked");
+    if ck
+      @SimpleChi2GUI_submit("1",id,"1");
+    else
+      @SimpleChi2GUI_submit("1",id,"");
+  SimpleChi2GUI_submit: (id, key, value) ->
+    d = @powerAnalysis.SimpleChi2GUI_handle(id, key, value);
+    $("#proChi2f").prop("value",d.proChi2);
+    $("#proNf").prop("value",d.proN);
+    $("#dff").prop("value",d.df);
+    $("#Alphaf").prop("value",d.Alpha);
+    $("#nf").val(d.n);
+    $("#Powerf").val(d.Power);
+    @SimpleChi2GUI_Power=d.Power;
+    if @SimpleChi2GUI_Power > @SimpleChi2GUI_maxPower
+      @SimpleChi2GUI_maxPower= (@SimpleChi2GUI_Power / 0.02 + 1) * 0.02;   
+    @SimpleChi2GUI_n = d.n;
+    if @SimpleChi2GUI_n > @SimpleChi2GUI_maxn
+      @SimpleChi2GUI_maxn = (@SimpleChi2GUI_n / 20 + 1) * 20;
+    @SimpleChi2GUI_click();                    
+  SimpleChi2GUI_valiad: (evt) ->
+    id = evt.currentTarget.id
+    data = evt.currentTarget.value
+    r=/^\d+(\.\d+)?$/;
+    if r.test(data) 
+      @SimpleChi2GUI_submit('1',id,data);
+    else
+      return false;
+  SimpleChi2GUI_changeSlider: (sliderId, evt) ->
+    #console.log("changeSlider hit")
+    key = evt.target.value
+    @SimpleChi2GUI_submit '1', sliderId, key
+    return
+  SimpleChi2GUI_show_help: () ->
+    #console.log(@cfap_help)
+    if @SimpleChi2GUI_help is true
+      $('#SimpleChi2GUI_H').val "Show Help"
+    else
+      $('#SimpleChi2GUI_H').val "Hide Help"
+    @SimpleChi2GUI_help = !@SimpleChi2GUI_help
     return
