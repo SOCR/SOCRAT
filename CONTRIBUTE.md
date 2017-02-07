@@ -33,4 +33,10 @@ First line of the git message has to be in the following format: `<type>(<scope>
 * `<scope>` is a specific module within SOCRAT you're contributing to, i.e. `Core` or `Charts` or `PowerCalc`
 * `<subject>` is a description of the change starting with a verb in imperative form, present tense, not capitalized, without period in the end; when commiting unfinished work (e.g. with known bugs), prepend `<subject>` with `WIP`.
 
-Additional details can be added on a second line of the message.
+Additional details can be added on a second line of the message. 
+
+## SOCR Datasets for testing
+
+**Iris** - famous dataset in machine learning [1]. To be able to use it locally for testing, download [CSV file](https://drive.google.com/file/d/0BzJubeARG-hsdTdRTC03RFdhRTg/view?usp=sharing) and place it under ``_build/datasets/iris.csv``
+
+[1] Lichman, M. (2013). [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml). Irvine, CA: University of California, School of Information and Computer Science.
