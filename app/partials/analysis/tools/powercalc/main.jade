@@ -28,9 +28,13 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       input(type='button' style='font-size:20px; margin-bottom:80px' value='One-Sample (or Paired) t Test' ng-click='mainArea.update_algo($event)')
       h4 <b>Pilot Study</b>
       p <b><i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study </i></b>
+      input(type='button' style='font-size:20px; margin-bottom:80px' value='Pilot Study' ng-click='mainArea.update_algo($event)')
       h4 <b>R-square (multiple correlation)</b>
       p <b><i>This dialog provides rudimentary power analysis for a test of a coefficient of multiple determination (R-square). The underlying model is that we have a sample of N IID multivariate random vectors of length p, and that the p^{th} variable is regressed on the first p-1 variables. $ R^2 = 1 - \frac{SS(error)}{SS(total)} $ is the coefficient of multiple determination. </i></b>
       input(type='button' style='font-size:20px; margin-bottom:80px' value='R-square (multiple correlation)' ng-click='mainArea.update_algo($event)')
+      h4 <b>Generic chi-square test</b>
+      p <b><i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations </i></b>
+      input(type='button' style='font-size:20px; margin-bottom:80px' value='Generic chi-square test' ng-click='mainArea.update_algo($event)')
     div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
       h3 CI for One Proportion
       p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
@@ -352,7 +356,40 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           p References:
           p Gatsonis, C. and Sampson, A. (1989),  Multiple correlation: Exact power and sample size calculations. Psychological Bulletin, 106, 516--524.
           p Benton, D. and Krishnamoorthy, K. (2003),  Computing discrete mixtures of continuous distributions..., Computational Statistics and Data Analysis, 43, 249--267
-
-
-
-
+    div(ng-show='mainArea.selectedAlgorithm == "Generic chi-square test"')
+      h3 Generic chi-square test
+      p <i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations</i>
+      h5 Prototype Data:
+      div
+        div(style='margin-left=40%;display:inline')
+          | Chi2*: &nbsp
+          input#proChi2g(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='proChi2', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
+      div(style='margin-top:20px;')
+        div(style='margin-left=40%;display:inline')
+          | n*: &nbsp
+          input#proNg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='proN', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
+      h5 Study Parameter
+      div(style='margin-top:20px;')
+        div(style='margin-left=40%;display:inline')
+          | df: &nbsp
+          input#dfg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='df', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);') 
+      div(style='margin-top:20px;')
+        div(style='margin-left=40%;display:inline')
+          | Alpha*: &nbsp
+          input#Alphag(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='Alpha', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | n: &nbsp
+          input#ng(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimpleChi2GUI_changeSlider('n',$event);")
+        div(style='display:inline')
+          #nuig(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top") 
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Power: &nbsp
+          input#Powerg(name='Power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimpleChi2GUI_changeSlider('Power',$event);")
+        div(style='display:inline')
+          #Poweruig(disabled uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
+      div
+        input#SimpleChi2GUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.SimpleChi2GUI_show_help();')
+        div(ng-show='mainArea.SimpleChi2GUI_help == true;')
+          p The prototype data should be fake data constructed to reflect the effect size of clinical or scientific importance.  Use the analysis you plan to do on these ake data to obtain the chi-square value Chi2* for the dialog.  The prototype data should include the expected frequencies (or whatever), but should not include random fluctuations

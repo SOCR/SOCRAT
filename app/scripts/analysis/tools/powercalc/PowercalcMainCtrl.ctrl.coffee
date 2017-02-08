@@ -757,18 +757,18 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         $( "#ng" ).val( ui.value );
         @SimpleChi2GUI_submit('1','n',ui.value);
     )       
-    $( "#nf" ).val( $( "#nuif" ).slider( "value" ) );
-    $( "#Poweruif" ).slider(
+    $( "#ng" ).val( $( "#nuig" ).slider( "value" ) );
+    $( "#Poweruig" ).slider(
       value:@SimpleChi2GUI_Power,
       min: 0,
       max: @SimpleChi2GUI_maxPower,
       range: 'min', 
       step: 0.0001,
       slide: ( event, ui ) =>
-        $( "#Powerf" ).val( ui.value );
+        $( "#Powerg" ).val( ui.value );
         @SimpleChi2GUI_submit('1','Power',ui.value);
     )           
-    $( "#Power" ).val( $( "#Powerui" ).slider( "value" ) );
+    $( "#Powerg" ).val( $( "#Poweruig" ).slider( "value" ) );
   SimpleChi2GUI_clk: (evt) ->
     obj=evt.currentTarget
     if obj 
@@ -780,12 +780,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       @SimpleChi2GUI_submit("1",id,"");
   SimpleChi2GUI_submit: (id, key, value) ->
     d = @powerAnalysis.SimpleChi2GUI_handle(id, key, value);
-    $("#proChi2f").prop("value",d.proChi2);
-    $("#proNf").prop("value",d.proN);
-    $("#dff").prop("value",d.df);
-    $("#Alphaf").prop("value",d.Alpha);
-    $("#nf").val(d.n);
-    $("#Powerf").val(d.Power);
+    $("#proChi2g").prop("value",d.proChi2);
+    $("#proNg").prop("value",d.proN);
+    $("#dfg").prop("value",d.df);
+    $("#Alphag").prop("value",d.Alpha);
+    $("#ng").val(d.n);
+    $("#Powerg").val(d.Power);
     @SimpleChi2GUI_Power=d.Power;
     if @SimpleChi2GUI_Power > @SimpleChi2GUI_maxPower
       @SimpleChi2GUI_maxPower= (@SimpleChi2GUI_Power / 0.02 + 1) * 0.02;   
@@ -794,8 +794,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       @SimpleChi2GUI_maxn = (@SimpleChi2GUI_n / 20 + 1) * 20;
     @SimpleChi2GUI_click();                    
   SimpleChi2GUI_valiad: (evt) ->
-    id = evt.currentTarget.id
-    data = evt.currentTarget.value
+    id = evt.target.name
+    data = evt.target.value
     r=/^\d+(\.\d+)?$/;
     if r.test(data) 
       @SimpleChi2GUI_submit('1',id,data);
