@@ -11,10 +11,12 @@ AppRun = require 'scripts/App/AppRun.coffee'
 module.exports = class AppConfig
 
   # suffix to detect initialization service
-  INIT_SERVICE_SUFFIX: '_initService'
+  INIT_SERVICE_SUFFIX: Module.INIT_SERVICE_SUFFIX
+  MSG_LIST_SUFFIX: Module.MSG_LIST_SUFFIX
   # list of custom modules and their services that need to be initialized
   runModules: []
   runServices: []
+  runValues: []
 
   constructor: (@moduleList) ->
     # create angular modules
@@ -28,6 +30,11 @@ module.exports = class AppConfig
 
         # get module
         angModule = angular.module module.id
+
+        if module.msgList
+          msgListValueName = module.id + @MSG_LIST_SUFFIX
+          angModule.constant msgListValueName, module.msgList
+          @runValues.push msgListValueName
 
         if module.components?
           moduleComponents = module.components
@@ -81,5 +88,5 @@ module.exports = class AppConfig
     runBlock = ($rootScope, core, modules...) =>
       appRun.getRun $rootScope, core, modules
     # dependencies for run block
-    runBlock.$inject = ['$rootScope', 'app_core_service'].concat @runServices
+    runBlock.$inject = ['$rootScope', 'app_core_service'].concat @runServices, @runValues
     runBlock

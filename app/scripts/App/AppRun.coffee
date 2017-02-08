@@ -14,10 +14,16 @@ module.exports = class AppRun
 
   constructor: (@modules, @runModuleNames) ->
 
-  runModules: (core, runServices) ->
+  runModules: (core, runServicesAndValues) ->
     for module, idx in @runModuleNames
-      if core.register module, runServices[idx]
-        core.start module
+      initService = runServicesAndValues[idx]
+      msgList = runServicesAndValues[idx + @runModuleNames.length]
+
+      # set msgList to module init service
+      if initService.setMsgList msgList
+        # register and start SOCRAT module
+        if core.register module, initService
+          core.start module
 
   buildMenu: () ->
 
@@ -47,13 +53,13 @@ module.exports = class AppRun
       if item
         @menu.push item
 
-  getRun: ($rootScope, core, runServices) ->
+  getRun: ($rootScope, core, runServicesAndValues) ->
 
     console.log 'APP RUN'
 
     core.setEventsMapping new AppMessageMap()
 
-    @runModules core, runServices
+    @runModules core, runServicesAndValues
 
     @buildMenu()
 
