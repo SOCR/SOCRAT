@@ -718,9 +718,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     e = event || window.event || arguments.callee.caller.arguments[0];
     r=/^\d+(\.\d+)?$/;
     if r.test(data)
-      @Rsquaregui_submit('1','alpha',data);
+      @RsquareGUI_submit('1','alpha',data);
+      return true;
     else
-      return false;
+      return true;
   RsquareGUI_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value
@@ -790,8 +791,9 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     r=/^\d+(\.\d+)?$/;
     if r.test(data) 
       @SimpleChi2GUI_submit('1',id,data);
+      return true;
     else
-      return false;
+      return true;
   SimpleChi2GUI_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value
