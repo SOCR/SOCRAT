@@ -103,7 +103,7 @@ module.exports = class ChartsNormalChart extends BaseService
     topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
     gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
-    
+
     padding = 50
     xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
     yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
@@ -113,7 +113,7 @@ module.exports = class ChartsNormalChart extends BaseService
 
     yAxis = d3.svg.axis()
     .scale(yScale)
-    .ticks(10)
+    .ticks(12)
     .tickPadding(0)
     .orient("right")
 
@@ -126,7 +126,7 @@ module.exports = class ChartsNormalChart extends BaseService
     .attr('d', lineGen(gaussianCurveData))
     .data([gaussianCurveData])
     .attr('stroke', 'black')
-    .attr('stroke-width', 2)
+    .attr('stroke-width', 1)
     .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
     .on('mouseout', (d) -> hideToolTip())
     .attr('fill', "aquamarine")
@@ -141,13 +141,13 @@ module.exports = class ChartsNormalChart extends BaseService
     .attr("class", "y axis")
     .attr("transform", "translate(" + (xScale(mean)) + ",0)")
     .call(yAxis)
-    
+
     # make x y axis thin
     _graph.selectAll('.x.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     _graph.selectAll('.y.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        
+
 
     _graph.append("svg:g")
     .append("text")      #text label for the x axis
@@ -155,10 +155,17 @@ module.exports = class ChartsNormalChart extends BaseService
     .attr("y", 20  )
     .style("text-anchor", "middle")
     .style("fill", "white")
-    
+
     # rotate text on x axis
     _graph.selectAll('.x.axis text')
     .attr('transform', (d) ->
        'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
     .style('font-size', '16px')
+
+    # make y axis ticks not intersect with x-axis, ticks on x and y axes
+    # appear to be the same size
+    _graph.selectAll('.y.axis text')
+    .attr('transform', (d) ->
+       'translate(' + (this.getBBox().height*-2-5) + ',' + (this.getBBox().height-30) + ')')
+    .style('font-size', '15.7px')
 
