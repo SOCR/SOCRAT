@@ -626,15 +626,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @Pilot_df=d.df;
     @Pilot_click();                    
     return
-  Pilot_valiad: (evt) ->
-    id = evt.currentTarget.id
-    data = evt.currentTarget.value
-    e = evt || window.event || arguments.callee.caller.arguments[0];  
-    r = /^\d+(\.\d+)?$/;
-    if r.test(data)
-      @Pilot_submit('1',id,data);
-    else
-      return false;
   Pilot_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value
@@ -722,7 +713,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @RsquareGUI_power = d.power;
     @RsquareGUI_click();                    
   RsquareGUI_valiad: (evt) ->
-    id = evt.currentTarget.id
+    id = evt.currentTarget.name
     data = evt.currentTarget.value
     e = event || window.event || arguments.callee.caller.arguments[0];
     r=/^\d+(\.\d+)?$/;
