@@ -126,7 +126,7 @@ module.exports = class ChartsNormalChart extends BaseService
     .attr('d', lineGen(gaussianCurveData))
     .data([gaussianCurveData])
     .attr('stroke', 'black')
-    .attr('stroke-width', 1)
+    .attr('stroke-width', 0)
     .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
     .on('mouseout', (d) -> hideToolTip())
     .attr('fill', "aquamarine")
