@@ -102,6 +102,19 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimpleChi2GUI_click();
     @SimpleChi2GUI_submit();
 
+    #variables needed for SimplePoissonGUI only
+    @SimplePoissonGUI_lambda0=null;
+    @SimplePoissonGUI_lambda=null;
+    @SimplePoissonGUI_n=null;
+    @SimplePoissonGUI_power=null;
+    @SimplePoissonGUI_maxlambda0=1.4;
+    @SimplePoissonGUI_maxlambda=7;
+    @SimplePoissonGUI_maxn=70;
+    @SimplePoissonGUI_maxpower=1;
+    @SimplePoissonGUI_help=false;
+    @SimplePoissonGUI_click();
+    @SimplePoissonGUI_submit();
+
 
 
 
@@ -806,4 +819,106 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       $('#SimpleChi2GUI_H').val "Hide Help"
     @SimpleChi2GUI_help = !@SimpleChi2GUI_help
+    return
+
+  #functions for SimplePoissonGUI only
+  SimplePoissonGUI_click: () ->
+    $( "#lambda0uih" ).slider(
+      value: @SimplePoissonGUI_lambda0,
+      min: 0,
+      max: @SimplePoissonGUI_maxlambda0,
+      range: "min", 
+      step: 0.0001,
+      slide: ( event, ui ) =>
+        $( "#lambda0f" ).val( ui.value );
+        @SimplePoissonGUI_submit('1','lambda0',ui.value);  
+        return
+    )         
+    $( "#lambda0h" ).val( $( "#lambda0uih" ).slider( "value" ) );
+    $( "#lambdauih" ).slider(
+      value:@SimplePoissonGUI_lambda,
+      min: 0,
+      max: @SimplePoissonGUI_maxlambda,
+      range: "min", 
+      step: 0.0005,
+      slide: ( event, ui ) =>
+        $( "#lambdah" ).val( ui.value );
+        @SimplePoissonGUI_submit('1','lambda',ui.value);
+        return  
+    )         
+    $( "#lambdah" ).val( $( "#lambdauih" ).slider( "value" ) );
+    $( "#nuih" ).slider(
+      value:@SimplePoissonGUI_n,
+      min: 0,
+      max: @SimplePoissonGUI_maxn,
+      range: "min", 
+      step: 0.01,
+      slide: ( event, ui ) =>
+        $( "#nh" ).val( ui.value );
+        @SimplePoissonGUI_submit('1','n',ui.value);
+        return
+      )           
+      $("#nh").val($("#nuih").slider("value"));
+      $( "#poweruih" ).slider(
+        value:@SimplePoissonGUI_power,
+        min: 0,
+        max: @SimplePoisson_maxpower,
+        range: "min", 
+        step: 0.0001,
+        slide: ( event, ui ) =>
+          $( "#powerh" ).val( ui.value );
+          @SimplePoissonGUI_submit('1','power',ui.value);
+          return
+      )           
+      $("#powerh").val($("#poweruih").slider("value"));
+      }
+  SimplePoissonGUI_clk: (evt) =>
+    obj=evt.currentTarget
+    if obj 
+      id=obj.id;          
+      ck=$(obj).prop("checked");
+    if ck
+      @SimplePoissonGUI_submit("1",id,"1");
+    else
+      @SimplePoissonGUI_submit("1",id,"");  
+    return
+  SimplePoissonGUI_submit: (id, key, value) ->
+    d = @powerAnalysis.SimplePoissonGUI_handle(id, key, value);
+    $("#lambda0h").val(d.lambda0);
+    @SimplePoissonGUI_lambda0 = d.lambda0;
+    $("#lambdah").val(d.lambda);
+    @SimplePoissonGUI_lambda = d.lambda;                 
+    $("#alphah").prop("value",d.alpha);
+    $("#powerh").val(d.power);
+    @SimplePoissonGUI_power = d.power;
+    $("#sizeh").html(d.size);
+    $("#lowerh").html(d.lower);
+    $("#upperh").html(d.upper);
+    $("#nh").val(d.n);
+    @SimplePoissonGUI_n=d.n;
+    $("#alth").prop("value",d.alt);
+    @SimplePoissonGUI_click();
+    return                    
+  SimplePoissonGUI_valiad: (evt) ->
+    id = evt.target.name
+    data = evt.target.value
+    var r=/^\d+(\.\d+)?$/;
+    if r.test(data) 
+      @SimplePoissonGUI_submit('1',id,data);
+      return
+    else
+      return false;
+      
+  SimplePoissonGUI_changeSlider: (sliderId, evt) ->
+    #console.log("changeSlider hit")
+    key = evt.target.value
+    @SimplePoisson2GUI_submit '1', sliderId, key
+    return
+  SimplePoissonGUI_show_help: () ->
+    #console.log(@cfap_help)
+    if @SimplePoissonGUI_help is true
+      $('#SimplePoissonGUI_H').val "Show Help"
+    else
+      $('#SimplePoissonGUI_H').val "Hide Help"
+    @SimplePoissonGUI_help = !@SimplePoissonGUI_help
     return
