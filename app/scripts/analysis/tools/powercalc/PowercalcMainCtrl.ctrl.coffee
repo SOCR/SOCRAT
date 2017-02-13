@@ -112,6 +112,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimplePoissonGUI_maxn=70;
     @SimplePoissonGUI_maxpower=1;
     @SimplePoissonGUI_help=false;
+    @SimplePoissonGUI_alt=0;
     @SimplePoissonGUI_click();
     @SimplePoissonGUI_submit();
 
@@ -857,21 +858,20 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         $( "#nh" ).val( ui.value );
         @SimplePoissonGUI_submit('1','n',ui.value);
         return
-      )           
-      $("#nh").val($("#nuih").slider("value"));
-      $( "#poweruih" ).slider(
-        value:@SimplePoissonGUI_power,
-        min: 0,
-        max: @SimplePoisson_maxpower,
-        range: "min", 
-        step: 0.0001,
-        slide: ( event, ui ) =>
-          $( "#powerh" ).val( ui.value );
-          @SimplePoissonGUI_submit('1','power',ui.value);
-          return
-      )           
-      $("#powerh").val($("#poweruih").slider("value"));
-      }
+    )           
+    $("#nh").val($("#nuih").slider("value"));
+    $( "#poweruih" ).slider(
+      value:@SimplePoissonGUI_power,
+      min: 0,
+      max: @SimplePoisson_maxpower,
+      range: "min", 
+      step: 0.0001,
+      slide: ( event, ui ) =>
+        $( "#powerh" ).val( ui.value );
+        @SimplePoissonGUI_submit('1','power',ui.value);
+        return
+    )           
+    $("#powerh").val($("#poweruih").slider("value"));
   SimplePoissonGUI_clk: (evt) =>
     obj=evt.currentTarget
     if obj 
@@ -902,13 +902,15 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   SimplePoissonGUI_valiad: (evt) ->
     id = evt.target.name
     data = evt.target.value
-    var r=/^\d+(\.\d+)?$/;
+    r=/^\d+(\.\d+)?$/;
     if r.test(data) 
       @SimplePoissonGUI_submit('1',id,data);
       return
     else
       return false;
-      
+  SimplePoissonGUI_opt_submit: (id, key) ->
+    @SimplePoissonGUI_submit(id, key, @SimplePoissonGUI_alt)
+    return
   SimplePoissonGUI_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value

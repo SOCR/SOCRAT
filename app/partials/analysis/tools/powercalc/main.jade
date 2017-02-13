@@ -393,3 +393,73 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         input#SimpleChi2GUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.SimpleChi2GUI_show_help();')
         div(ng-show='mainArea.SimpleChi2GUI_help == true;')
           p The prototype data should be fake data constructed to reflect the effect size of clinical or scientific importance.  Use the analysis you plan to do on these ake data to obtain the chi-square value Chi2* for the dialog.  The prototype data should include the expected frequencies (or whatever), but should not include random fluctuations
+    div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
+      h3 Power of a Simple Poisson Test
+      p <i>This dialog provides rudimentary power analysis for an exact test of a Poisson parameter.  Specifically, our data are assumed to be x_1, x_2, ..., x_n iid Poisson(lambda), so that x = sum{x_i} is Poisson with mean n*lambda serves as the test statistic.  The critical value(s) for x are obtained using quantiles of the null Poisson distribution so as to cut off tail(s) of probability less than or equal to alpha.  The power of the test is then the probability of the critical region, computed from a Poisson distribution with the specified value of lambda.</i>
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Lambda0: &nbsp
+          input#lambda0h(name='lambda0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('lambda0',$event);")
+        div(style='display:inline')
+          #lambda0uih(disabled uib-tooltip="Manipulate this bar to adjust lambda0" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        | Alternative: &nbsp
+        select#alth(name='alt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.SimplePoissonGUI_opt" ng-change="mainArea.SimplePoissonGUI_opt_submit('1','opt');")
+          option(value='0') lambda < lambda0
+          option(value='1') lambda != lambda0
+          option(value='2') lambda > lambda0
+      div
+        div(style='margin-left=40%;display:inline')
+          | Alpha: &nbsp
+          input#alphah(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='alpha', ng-mouseleave='mainArea.SimplePoissonGUI_valiad($event);')
+      h5 Boundaries of Acceptance Region:
+      div
+        div(style='margin-left=40%;display:inline')
+          | Lower: &nbsp
+          p#lowerh(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='lower')
+      div(style='margin-top:20px;')
+        div(style='margin-left=40%;display:inline')
+          | Upper: &nbsp
+          input#upperh(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='upper')
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Lambda: &nbsp
+          input#lambdah(name='lambda',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('lambda',$event);")
+        div(style='display:inline')
+          #lambdauih(disabled uib-tooltip="Manipulate this bar to adjust lambda" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | n: &nbsp
+          input#nh(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('n',$event);")
+        div(style='display:inline')
+          #nuih(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Power: &nbsp
+          input#powerh(name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('power',$event);")
+        div(style='display:inline')
+          #poweruih(disabled uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
+      div
+        input#SimplePoissonGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.SimplePoissonGUI_show_help();')
+        div(ng-show='mainArea.SimplePoissonGUI_help == true;')
+          p he GUI components are as follows:
+          <br>
+          p lambda0: The value of the Poisson parameter under the null hypothesis.
+          <br>
+          p alternative: Choose a two-tailed alternative (lambda != lambda0) or one of the one-tailed alternatives.
+          <br>
+          p Boundaries of acceptance region (output values):  These are the lower and/or upper values of x for which the null hypothesis would NOT be rejected.
+          <br>
+          p size (output value):  The actual probability of the critical region under the null hypothesis.
+          <br>
+          p lambda: The Poisson parameter at which the power is to be calculated.
+          <br>
+          p n: The sample size.
+          <br>
+          p power: The probability of the critical region, given lambda and n.</p></div>
+
+
+
+
+
+
