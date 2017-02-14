@@ -863,16 +863,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $( "#poweruih" ).slider(
       value:@SimplePoissonGUI_power,
       min: 0,
-      max: @SimplePoisson_maxpower,
+      max: @SimplePoissonGUI_maxpower,
       range: "min", 
       step: 0.0001,
       slide: ( event, ui ) =>
+        #console.log('hit1'); 
         $( "#powerh" ).val( ui.value );
         @SimplePoissonGUI_submit('1','power',ui.value);
         return
     )           
     $("#powerh").val($("#poweruih").slider("value"));
-  SimplePoissonGUI_clk: (evt) =>
+  SimplePoissonGUI_clk: (evt) ->
     obj=evt.currentTarget
     if obj 
       id=obj.id;          
@@ -914,7 +915,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   SimplePoissonGUI_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value
-    @SimplePoisson2GUI_submit '1', sliderId, key
+    @SimplePoissonGUI_submit '1', sliderId, key
     return
   SimplePoissonGUI_show_help: () ->
     #console.log(@cfap_help)
