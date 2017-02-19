@@ -13,6 +13,19 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     #algorithm type
     @selectedAlgorithm = "Select"
 
+    @dataType = ''
+    @dataPoints = null
+    @means = null
+    @assignments = null
+
+    @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
+#      @showresults = off if @showresults is on
+      # safe enforce $scope.$digest to activate directive watchers
+      @$timeout => @updateChartData(data)
+
+    @$scope.$on 'powercalc:updateDataType', (event, dataType) =>
+      @dataType = dataType
+
     #variables needed for cfap only
     @cfap_me=0.09297
     @cfap_n=101
@@ -116,14 +129,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimplePoissonGUI_click();
     @SimplePoissonGUI_submit();
 
-
-
-
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
 
   #global
+  updateChartData: (data) ->
+    if data.dataPoints?
+      @dataPoints = data.dataPoints
+    @means = data.means
+    @assignments = data.labels
+
   update_algo: (evt) ->
     console.log(@selectedAlgorithm)
     @selectedAlgorithm = evt.currentTarget.value
