@@ -46,6 +46,16 @@ module.exports = class AppModuleList
     ]
   ]
 
+  analysis: [
+    # ... already existing objects are here ...
+    require 'scripts/Database/Database.module.coffee'
+  ,
+    require 'scripts/analysis/MyModule/MyModule.module.coffee'
+  ,
+    Tools: [
+      require 'scripts/analysis/tools/My/Cluster.module.coffee'
+    ]
+
   ##### access methods #####
 
   getAll: ->
