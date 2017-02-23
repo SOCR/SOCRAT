@@ -81,18 +81,4 @@ module.exports = class AppMessageMap
   getMap: ->
     @_msgMap
     
-    module.exports = class SocratMessageMap
-  constructor: () ->
-    @_msgMap = [
-      # ... already existing objects are here ...
-    ,
-      msgFrom: 'mymodule:getData'
-      scopeFrom: ['socrat_analysis_mymodule']
-      msgTo: 'database:getData'
-      scopeTo: ['socrat_analysis_database']
-    ,
-      msgFrom: 'database:receiveData'
-      scopeFrom: ['socrat_analysis_database']
-      msgTo: 'mymodule:receiveData'
-      scopeTo: ['socrat_analysis_mymodule']
-    ]
+
