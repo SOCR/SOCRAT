@@ -3,7 +3,6 @@
 module.exports = class AppMessageMap
   constructor: () ->
     @_msgMap = [
-          ,
       msgFrom: 'mymodule:getData'
       scopeFrom: ['socrat_analysis_mymodule']
       msgTo: 'database:getData'
