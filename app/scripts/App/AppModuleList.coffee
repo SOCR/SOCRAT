@@ -39,14 +39,15 @@ module.exports = class AppModuleList
   ,
     require 'scripts/analysis/charts/Charts.module.coffee'
   ,
-
+    require 'scripts/Database/Database.module.coffee'
+  ,
     require 'scripts/analysis/MyModule/MyModule.module.coffee'
   ,
     Tools: [
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
-     ,
+      ,
       require 'scripts/analysis/tools/My/Cluster.module.coffee'
     ]
   ]
