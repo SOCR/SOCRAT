@@ -29,7 +29,16 @@ module.exports = class AppModuleList
   # if they have state in their module config file
   # named lists are included as drop-downs into main menu
   analysis: [
-
+        require 'scripts/Database/Database.module.coffee'
+  ,
+    require 'scripts/analysis/Datalib/Datalib.module.coffee'
+  ,
+    require 'scripts/analysis/GetData/GetData.module.coffee'
+  ,
+    require 'scripts/analysis/DataWrangler/DataWrangler.module.coffee'
+  ,
+    require 'scripts/analysis/charts/Charts.module.coffee'
+  ,
     require 'scripts/Database/Database.module.coffee'
   ,
     require 'scripts/analysis/MyModule/MyModule.module.coffee'
