@@ -3,6 +3,17 @@
 module.exports = class AppMessageMap
   constructor: () ->
     @_msgMap = [
+          ,
+      msgFrom: 'mymodule:getData'
+      scopeFrom: ['socrat_analysis_mymodule']
+      msgTo: 'database:getData'
+      scopeTo: ['socrat_analysis_database']
+    ,
+      msgFrom: 'database:receiveData'
+      scopeFrom: ['socrat_analysis_database']
+      msgTo: 'mymodule:receiveData'
+      scopeTo: ['socrat_analysis_mymodule']
+      ,
 
       msgFrom: 'saveData'
       scopeFrom: ['app_analysis_getData', 'app_analysis_dataWrangler']
@@ -70,3 +81,19 @@ module.exports = class AppMessageMap
 
   getMap: ->
     @_msgMap
+    
+    module.exports = class SocratMessageMap
+  constructor: () ->
+    @_msgMap = [
+      # ... already existing objects are here ...
+    ,
+      msgFrom: 'mymodule:getData'
+      scopeFrom: ['socrat_analysis_mymodule']
+      msgTo: 'database:getData'
+      scopeTo: ['socrat_analysis_database']
+    ,
+      msgFrom: 'database:receiveData'
+      scopeFrom: ['socrat_analysis_database']
+      msgTo: 'mymodule:receiveData'
+      scopeTo: ['socrat_analysis_mymodule']
+    ]
