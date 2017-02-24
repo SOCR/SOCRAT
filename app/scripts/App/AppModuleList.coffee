@@ -41,10 +41,10 @@ module.exports = class AppModuleList
   ,
     require 'scripts/Database/Database.module.coffee'
   ,
+     require 'scripts/analysis/tools/MyModule/MyModule.module.coffee'
+    ,
     Tools: [
-          require 'scripts/analysis/tools/MyModule/MyModule.module.coffee'
-  ,
-      require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
+  require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
     ]
