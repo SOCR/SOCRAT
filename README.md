@@ -2,8 +2,9 @@
 
 A scalable and highly flexible HTML5/JS platform to build and run in-browser applications for interactive data analysis and visualization.
 
-* Web site: http://socr.umich.edu
-* Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
+* [Web site](http://socr.umich.edu)
+* [Issue-tracking and project management](https://github.com/SOCR/SOCRAT-issues)
+* [Contribution guidelines](https://github.com/SOCR/SOCRAT/blob/master/CONTRIBUTE.md)
 * **Note: project is under active development, unit tests currently are not passing, bugs are possible**
 
 [![Build Status](https://travis-ci.org/SOCR/SOCRAT.svg?branch=master)](https://travis-ci.org/SOCR/SOCRAT)
