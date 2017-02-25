@@ -24,6 +24,6 @@ module.exports = myModule = new Module
       name: 'My Awesome Module'
       url: '/tools/mymodule'
       mainTemplate: require 'partials/analysis/tools/MyModule/main.jade'
-    sidebarTemplate: require 'partials/analysis/tools/MyModule/sidebar.jade'
+      sidebarTemplate: require 'partials/analysis/tools/MyModule/sidebar.jade'
 
 
