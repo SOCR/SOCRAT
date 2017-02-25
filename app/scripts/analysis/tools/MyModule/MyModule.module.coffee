@@ -26,4 +26,4 @@ module.exports = myModule = new Module
       mainTemplate: require 'partials/analysis/tools/MyModule/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/MyModule/sidebar.jade'
 
-    
+
