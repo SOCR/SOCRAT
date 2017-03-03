@@ -13,8 +13,13 @@ module.exports = class ChartsBarChart extends BaseService
 
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
-    x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-    y.domain([d3.min(data, (d)->parseFloat d.y), d3.max(data, (d)->parseFloat d.y)])
+    x_min = d3.min(data, (d)->parseFloat d.x)
+    x_max = d3.max(data, (d)->parseFloat d.x)
+    # x_padding is used to avoid drawing a bar at the edge of x-axis 
+    x_padding = (x_max - x_min) * 0.05 
+    
+    x.domain([x_min - x_padding, x_max + x_padding])
+    y.domain([0, d3.max(data, (d)->parseFloat d.y)])
     
     xAxisLabel_x = width - 80
     xAxisLabel_y = 40
@@ -49,7 +54,7 @@ module.exports = class ChartsBarChart extends BaseService
         if sameCounts
           y.domain([0, counts[0].value])
         else 
-          y.domain([d3.min(counts, (d)-> parseInt d.value), d3.max(counts, (d)-> parseInt d.value)])
+          y.domain([0, d3.max(counts, (d)-> parseInt d.value)])
         
         # create bar elements
         _graph.selectAll('rect')
@@ -154,6 +159,13 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('text-anchor', 'middle')
         .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
         .text gdata.xLab.value
+        
+        # Titles on y-axis 
+        _graph.append('text')
+        .attr('class', 'label')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(0,' + padding/2 + ')')
+        .text "Counts"
 
   #with y
     else
