@@ -51,7 +51,6 @@ module.exports = class ChartsBarChart extends BaseService
         for i in [1..counts.length-1] by 1
           if counts[i].value != counts[0].value
            sameCounts = false
-        #console.log sameCounts
         x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
         xAxis = d3.svg.axis().scale(x).orient('bottom')
         x.domain(counts.map (d) -> d.key)
@@ -90,12 +89,7 @@ module.exports = class ChartsBarChart extends BaseService
         
         y_axis.selectAll(".y.axis line").style('stroke', 'black')
         
-         # make x y axis thin
-        _graph.selectAll('.x.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        _graph.selectAll('.y.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-   
+         
         # now rotate text on x axis
         # solution based on idea here: https://groups.google.com/forum/?fromgroups#!topic/d3-js/heOBPQF3sAY
         # first move the text left so no longer centered on the tick
@@ -140,22 +134,21 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('fill', 'steelblue')
         
         # x axis
-        _graph.append('g')
+        x_axis = _graph.append('g')
         .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + (height - padding) + ')')
         .call xAxis
         
+        x_axis.selectAll(".x.axis line").style('stroke', 'black')
+        
         # y axis
-        _graph.append('g')
+        y_axis = _graph.append('g')
         .attr('class', 'y axis')
         .attr('transform', 'translate(' + padding + ',0)' )
         .call yAxis
         
-        # make x y axis thin
-        _graph.selectAll('.x.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        _graph.selectAll('.y.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        y_axis.selectAll(".y.axis line").style('stroke', 'black')
+        
         
         # rotate text on x axis
         _graph.selectAll('.x.axis text')
@@ -177,11 +170,10 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('transform', 'translate(0,' + padding/2 + ')')
         .text "Counts"
 
-  #with y
+	# with y variable
     else
-  #y is categorical
+      # y is categorical
       if isNaN data[0].y
-
         y = d3.scale.ordinal().rangeRoundBands([padding, height-padding], .1)
         y.domain(data.map (d) -> d.y)
         yAxis = d3.svg.axis().scale(y).orient('left')
@@ -199,24 +191,23 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('fill', 'steelblue')
         
         # x axis
-        _graph.append('g')
+        x_axis = _graph.append('g')
         .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + (height-padding) + ')')
         .call xAxis
         .style('font-size', '16px')
         
+        x_axis.selectAll(".x.axis line").style('stroke', 'black')
+        
         # y axis
-        _graph.append('g')
+        y_axis = _graph.append('g')
         .attr('class', 'y axis')
         .attr('transform', 'translate(' + padding + ',0)' )
         .call yAxis
         .style('font-size', '16px')
         
-        # make x y axis thin
-        _graph.selectAll('.x.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        _graph.selectAll('.y.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        y_axis.selectAll(".y.axis line").style('stroke', 'black')
+        
         
         # rotate text on x axis
         _graph.selectAll('.x.axis text')
@@ -238,7 +229,9 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('transform', 'translate(0,' + padding/2 + ')')
         .text gdata.yLab.value
 
+      # y variable is numerical
       else if !isNaN data[0].y
+        # x is categorical, y is numberical
         if isNaN data[0].x
           x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
           x.domain(data.map (d) -> d.x)
@@ -246,7 +239,6 @@ module.exports = class ChartsBarChart extends BaseService
           
           # create bar elements
           minYvalue = d3.min(data, (d)-> d.y)
-          console.log minYvalue
           _graph.selectAll('rect')
           .data(data)
           .enter().append('rect')
@@ -258,24 +250,23 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('fill', 'steelblue')
           
           # x axis
-          _graph.append('g')
+          x_axis = _graph.append('g')
           .attr('class', 'x axis')
           .attr('transform', 'translate(0,' + (height - padding) + ')')
           .call xAxis
           .style('font-size', '16px')
           
+          x_axis.selectAll(".x.axis line").style('stroke', 'black')
+          
           # y axis
-          _graph.append('g')
+          y_axis = _graph.append('g')
           .attr('class', 'y axis')
           .attr('transform', 'translate(' + padding + ',0)' )
           .call yAxis
           .style('font-size', '16px')
           
-          # make x y axis thin
-          _graph.selectAll('.x.axis path')
-          .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-          _graph.selectAll('.y.axis path')
-          .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+          y_axis.selectAll(".y.axis line").style('stroke', 'black')
+          
           
           # rotate text on x axis
           _graph.selectAll('.x.axis text')
@@ -296,10 +287,8 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('text-anchor', 'middle')
           .attr('transform', 'translate(0,' + padding/2 + ')')
           .text gdata.yLab.value
-
           
-        else
-          # both x and y are numerical
+        else # both x and y are numerical
           
           # create bar elements
           rectWidth = (width - 2*padding)/data.length
@@ -314,25 +303,23 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('fill', 'steelblue')
           
           # x axis
-          _graph.append('g')
+          x_axis = _graph.append('g')
           .attr('class', 'x axis')
           .attr('transform', 'translate(0,' + (height - padding) + ')')
           .call xAxis
           .style('font-size', '16px')
           
+          x_axis.selectAll(".x.axis line").style('stroke', 'black')
+          
           # y axis
-          _graph.append('g')
+          y_axis = _graph.append('g')
           .attr('class', 'y axis')
           .attr('transform', 'translate(' + padding + ',0)' )
           .call yAxis
           .style('font-size', '16px')
           
-          # make x y axis thin
-          _graph.selectAll('.x.axis path')
-          .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-          _graph.selectAll('.y.axis path')
-          .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-   
+          y_axis.selectAll(".y.axis line").style('stroke', 'black')
+             
           # rotate text on x axis
           _graph.selectAll('.x.axis text')
           .attr('transform', (d) ->
@@ -352,6 +339,13 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('text-anchor', 'middle')
           .attr('transform', 'translate(0,' + padding/2 + ')')
           .text gdata.yLab.value
+          
+    # make x y axis thin
+    _graph.selectAll('.x.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    _graph.selectAll('.y.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+
 
   
           
