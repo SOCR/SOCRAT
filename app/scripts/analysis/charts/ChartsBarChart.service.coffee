@@ -13,13 +13,18 @@ module.exports = class ChartsBarChart extends BaseService
 
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
+    
     x_min = d3.min(data, (d)->parseFloat d.x)
     x_max = d3.max(data, (d)->parseFloat d.x)
     # x_padding is used to avoid drawing a bar at the edge of x-axis 
-    x_padding = (x_max - x_min) * 0.05 
+    x_range = x_max - x_min
+    x_padding = x_range * 0.05
+    
+    y_max = d3.max(data, (d)->parseFloat d.y)
+    y_padding = y_max * 0.05
     
     x.domain([x_min - x_padding, x_max + x_padding])
-    y.domain([0, d3.max(data, (d)->parseFloat d.y)])
+    y.domain([0, y_max + y_padding])
     
     xAxisLabel_x = width - 80
     xAxisLabel_y = 40
@@ -29,17 +34,16 @@ module.exports = class ChartsBarChart extends BaseService
 
 
 	
-    #without y
+    # without y variable
     if !data[0].y
-  #Works
+      # x variable is categorical
       if isNaN data[0].x
         counts = {}
         for i in [0..data.length-1] by 1
           currentVar = data[i].x
           counts[currentVar] = counts[currentVar] || 0
-          counts[currentVar]++
+          ++counts[currentVar]
         counts = d3.entries counts
-        #console.log counts
 
         # check if all the counts are the same
         # if the all counts are the same, need to fix y.domain([min, max])
@@ -51,10 +55,12 @@ module.exports = class ChartsBarChart extends BaseService
         x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
         xAxis = d3.svg.axis().scale(x).orient('bottom')
         x.domain(counts.map (d) -> d.key)
+        y_max = d3.max(counts, (d)-> parseInt d.value)
+        y_padding = y_max * 0.05
         if sameCounts
           y.domain([0, counts[0].value])
         else 
-          y.domain([0, d3.max(counts, (d)-> parseInt d.value)])
+          y.domain([0, y_max + y_padding])
         
         # create bar elements
         _graph.selectAll('rect')
@@ -68,17 +74,21 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('fill', 'steelblue')
 
         # draw x axis with labels and move in from the size by the amount of padding
-        _graph.append('g')
+        x_axis = _graph.append('g')
         .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + (height - padding) + ')')
-        .call xAxis
-
+        .call(xAxis)
+        
+        x_axis.selectAll(".x.axis line").style('stroke', 'black')
+        
         # draw y axis with labels and move in from the size by the amount of padding
-        _graph.append('g')
+        y_axis = _graph.append('g')
         .attr('class', 'y axis')
         .attr('transform', 'translate(' + padding + ',0)' )
         .call yAxis
         .style('font-size', '16px')
+        
+        y_axis.selectAll(".y.axis line").style('stroke', 'black')
         
          # make x y axis thin
         _graph.selectAll('.x.axis path')
@@ -110,8 +120,8 @@ module.exports = class ChartsBarChart extends BaseService
         .text "Counts"
 
  
-      else #data is numerical and only x. height is rect width, width is x of d.x,
-  #y becomes the categorical
+      else # x variable is numerical, no y variable 
+      # height is rect width, width is x of d.x,
         y = d3.scale.ordinal().rangeRoundBands([height-padding, padding], .1)
         yAxis = d3.svg.axis().scale(y).orient('left')
         y.domain((d) -> d.x)
