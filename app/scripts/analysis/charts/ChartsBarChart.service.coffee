@@ -78,8 +78,6 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('transform', 'translate(0,' + (height - padding) + ')')
         .call(xAxis)
         
-        x_axis.selectAll(".x.axis line").style('stroke', 'black')
-        
         # draw y axis with labels and move in from the size by the amount of padding
         y_axis = _graph.append('g')
         .attr('class', 'y axis')
@@ -87,9 +85,6 @@ module.exports = class ChartsBarChart extends BaseService
         .call yAxis
         .style('font-size', '16px')
         
-        y_axis.selectAll(".y.axis line").style('stroke', 'black')
-        
-         
         # now rotate text on x axis
         # solution based on idea here: https://groups.google.com/forum/?fromgroups#!topic/d3-js/heOBPQF3sAY
         # first move the text left so no longer centered on the tick
@@ -139,16 +134,11 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('transform', 'translate(0,' + (height - padding) + ')')
         .call xAxis
         
-        x_axis.selectAll(".x.axis line").style('stroke', 'black')
-        
         # y axis
         y_axis = _graph.append('g')
         .attr('class', 'y axis')
         .attr('transform', 'translate(' + padding + ',0)' )
         .call yAxis
-        
-        y_axis.selectAll(".y.axis line").style('stroke', 'black')
-        
         
         # rotate text on x axis
         _graph.selectAll('.x.axis text')
@@ -197,17 +187,12 @@ module.exports = class ChartsBarChart extends BaseService
         .call xAxis
         .style('font-size', '16px')
         
-        x_axis.selectAll(".x.axis line").style('stroke', 'black')
-        
         # y axis
         y_axis = _graph.append('g')
         .attr('class', 'y axis')
         .attr('transform', 'translate(' + padding + ',0)' )
         .call yAxis
         .style('font-size', '16px')
-        
-        y_axis.selectAll(".y.axis line").style('stroke', 'black')
-        
         
         # rotate text on x axis
         _graph.selectAll('.x.axis text')
@@ -256,17 +241,12 @@ module.exports = class ChartsBarChart extends BaseService
           .call xAxis
           .style('font-size', '16px')
           
-          x_axis.selectAll(".x.axis line").style('stroke', 'black')
-          
           # y axis
           y_axis = _graph.append('g')
           .attr('class', 'y axis')
           .attr('transform', 'translate(' + padding + ',0)' )
           .call yAxis
           .style('font-size', '16px')
-          
-          y_axis.selectAll(".y.axis line").style('stroke', 'black')
-          
           
           # rotate text on x axis
           _graph.selectAll('.x.axis text')
@@ -309,7 +289,7 @@ module.exports = class ChartsBarChart extends BaseService
           .call xAxis
           .style('font-size', '16px')
           
-          x_axis.selectAll(".x.axis line").style('stroke', 'black')
+          
           
           # y axis
           y_axis = _graph.append('g')
@@ -318,7 +298,7 @@ module.exports = class ChartsBarChart extends BaseService
           .call yAxis
           .style('font-size', '16px')
           
-          y_axis.selectAll(".y.axis line").style('stroke', 'black')
+          
              
           # rotate text on x axis
           _graph.selectAll('.x.axis text')
@@ -340,6 +320,10 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('transform', 'translate(0,' + padding/2 + ')')
           .text gdata.yLab.value
           
+    # Show tick lines
+    x_axis.selectAll(".x.axis line").style('stroke', 'black')
+    y_axis.selectAll(".y.axis line").style('stroke', 'black')
+    
     # make x y axis thin
     _graph.selectAll('.x.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
