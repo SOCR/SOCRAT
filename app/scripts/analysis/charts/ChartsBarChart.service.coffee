@@ -31,13 +31,9 @@ module.exports = class ChartsBarChart extends BaseService
     
     yAxisLabel_x = -70
     yAxisLabel_y = -70
-
-
 	
     # without y variable
     if !data[0].y
-      # x variable is categorical
-      if isNaN data[0].x
         counts = {}
         for i in [0..data.length-1] by 1
           currentVar = data[i].x
@@ -52,7 +48,7 @@ module.exports = class ChartsBarChart extends BaseService
           if counts[i].value != counts[0].value
            sameCounts = false
         x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
-        xAxis = d3.svg.axis().scale(x).orient('bottom')
+        xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(2)
         x.domain(counts.map (d) -> d.key)
         y_max = d3.max(counts, (d)-> parseInt d.value)
         y_padding = y_max * 0.05
@@ -95,58 +91,6 @@ module.exports = class ChartsBarChart extends BaseService
         ).style('font-size', '16px')
         
         # Titles on x-axis 
-        _graph.append('text')
-        .attr('class', 'label')
-        .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
-        .text gdata.xLab.value
-        
-        # Titles on y-axis 
-        _graph.append('text')
-        .attr('class', 'label')
-        .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(0,' + padding/2 + ')')
-        .text "Counts"
-
- 
-      else # x variable is numerical, no y variable 
-      # height is rect width, width is x of d.x,
-        y = d3.scale.ordinal().rangeRoundBands([height-padding, padding], .1)
-        yAxis = d3.svg.axis().scale(y).orient('left')
-        y.domain((d) -> d.x)
-        
-        # create bar elements
-        minXvalue = d3.min(data, (d)-> d.x)
-        rectWidth = (height-2*padding)/data.length
-        _graph.selectAll('rect')
-        .data(data)
-        .enter().append('rect')
-        .attr('class', 'bar')
-        .attr('x', padding  )
-        .attr('width', (d)-> (x d.x) - (x minXvalue))
-        .attr('y', (d,i)-> i*rectWidth + padding)
-        .attr('height', rectWidth)
-        .attr('fill', 'steelblue')
-        
-        # x axis
-        x_axis = _graph.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + (height - padding) + ')')
-        .call xAxis
-        
-        # y axis
-        y_axis = _graph.append('g')
-        .attr('class', 'y axis')
-        .attr('transform', 'translate(' + padding + ',0)' )
-        .call yAxis
-        
-        # rotate text on x axis
-        _graph.selectAll('.x.axis text')
-        .attr('transform', (d) ->
-         'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)'
-        ).style('font-size', '16px')
-        
-        # Title on x axis 
         _graph.append('text')
         .attr('class', 'label')
         .attr('text-anchor', 'middle')
