@@ -129,6 +129,23 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimplePoissonGUI_click();
     @SimplePoissonGUI_submit();
 
+    #variables needed for TwoTGUI only
+    @TwoTGUI_sigma1=null;
+    @TwoTGUI_sigma2=null;
+    @TwoTGUI_n1=0;
+    @TwoTGUI_n2=0;
+    @TwoTGUI_diff=0;
+    @TwoTGUI_power=0;
+    @TwoTGUI_maxsigma1=1.4;
+    @TwoTGUI_maxsigma2=1.4;
+    @TwoTGUI_maxn1=35;
+    @TwoTGUI_maxn2=35;
+    @TwoTGUI_maxdiff=1.0;
+    @TwoTGUI_maxpower=1;
+    @TwoTGUI_help=false;
+    @TwoTGUI_click();
+    @TwoTGUI_submit();
+
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
@@ -940,4 +957,156 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       $('#SimplePoissonGUI_H').val "Hide Help"
     @SimplePoissonGUI_help = !@SimplePoissonGUI_help
+    return
+
+  #functions for TwoTGUI only
+  TwoTGUI_click: () ->
+    $( "#sigma1uii" ).slider(
+      value: @TwoTGUI_sigma1,
+      min: 0,
+      max: @TwoTGUI_maxsigma1,
+      range: 'min', 
+      step: 0.01,
+      slide: ( event, ui ) =>
+        $( "#sigma1i" ).val( ui.value );
+        @TwoTGUI_submit('1','sigma1',ui.value); 
+        return  
+    )      
+    $( "#sigma1i" ).val( $( "#sigma1uii" ).slider( "value" ) );
+    $( "#sigma2uii" ).slider(
+      value:@TwoTGUI_sigma2,
+      min: 0,
+      max: @TwoTGUI_maxsigma2,
+      range: "min", 
+      step: 0.01,
+      slide: ( event, ui ) =>
+        $( "#sigma2i" ).val( ui.value );
+        @TwoTGUI_submit('1','sigma2',ui.value);
+        return
+    )          
+    $( "#sigma2i" ).val( $( "#sigma2uii" ).slider( "value" ) );
+    $( "#n1uii" ).slider(
+      value:@TwoTGUI_n1,
+      min: 0,
+      max: @TwoTGUI_maxn1,
+      range: "min", 
+      step: 0.0025,
+      slide: ( event, ui ) =>
+        $( "#n1i" ).val( ui.value );
+        @TwoTGUI_submit('1','n1',ui.value);
+        return
+    )          
+    $( "#n1i" ).val( $( "#n1uii" ).slider( "value" ) );
+    $( "#n2uii" ).slider(
+      value:@TwoTGUI_n2,
+      min: 0,
+      max: @TwoTGUI_maxn2,
+      range: "min", 
+      step: 0.0025,
+      slide: ( event, ui ) =>
+        $( "#n2i" ).val( ui.value );
+        @TwoTGUI_submit('1','n2i',ui.value);
+        return
+      )        
+    $( "#n2i" ).val( $( "#n2uii" ).slider( "value" ) );
+    $( "#diffuii" ).slider(
+      value:@TwoTGUI_diff,
+      min: 0,
+      max: @TwoTGUI_maxdiff,
+      range: "false", 
+      step: 0.005,
+      slide: ( event, ui ) =>
+        $( "#diffi" ).val( ui.value );
+        @TwoTGUI_submit('1','diff',ui.value);
+        return
+    )         
+    $( "#diffi" ).val( $( "#diffuii" ).slider( "value" ) );
+    $( "#poweruii" ).slider(
+      value:@TwoTGUI_power,
+      min: 0,
+      max: @TwoTGUI_maxpower,
+      range: "min", 
+      step: 0.0001,
+      slide:  ( event, ui ) =>
+        $( "#poweri" ).val( ui.value );
+        @TwoTGUI_submit('1','power',ui.value);
+        return
+    )         
+    $("#poweri").val($("#poweruii").slider("value"));
+  TwoTGUI_clk: (evt) ->
+    obj=evt.currentTarget
+    if obj
+      id=obj.id;          
+      cks=$(obj).prop("checked");
+      if cks
+        @TwoTGUI_submit("1",id,"1");
+      else
+        @TwoTGUI_submit("1",id,"");
+      return
+  TwoTGUI_submit: (id, key, value) ->
+    d = @powerAnalysis.TwoTGUI_handle(id, key, value);
+    $("#sigma1i").val(d.sigma1);
+    @TwoTGUI_sigma1=d.sigma1;
+    if d.eqs is 1
+      $("#eqsi").prop("checked","checked");
+      $("#sigma2i").prop("value",d.sigma1);
+      @TwoTGUI_sigma2=d.sigma1;
+    else
+      $("#eqsi").prop("checked","");
+      $("#sigma2i").prop("value",d.sigma2);
+      @TwoTGUI_sigma2=d.sigma2;
+    $("#n1i").prop("value",d.n1);
+    $("#n2i").prop("value",d.n2);
+    @TwoTGUI_n1=d.n1;
+    @TwoTGUI_n2=d.n2;
+    $("#alloci").prop("value",d.alloc);
+    if d.tt is 1
+      $("#tti").prop("checked","checked");
+    $("#alphai").prop("value",d.alpha);
+    if d.equiv is 1
+      $("#equivi").prop("checked","checked");
+      $("#threshi").val(d.thresh);
+      $("#threshShowi").show();
+    else
+      $("#equivi").prop("checked","");
+      $("#threshShowi").hide();
+    $("#dfi").prop("value",d.df);
+    $("#diffi").prop("value",d.diff);
+    $("#poweri").prop("value",d.power);
+    @TwoTGUI_diff=d.diff;
+    @TwoTGUI_power=d.power;
+    $("#opti").prop("value",d.opt);
+    @TwoTGUI_click();
+  TwoTGUI_valiad1: (evt) ->
+    id = evt.target.name
+    data = evt.target.value
+    event = evt
+    e = event || window.event || arguments.callee.caller.arguments[0]
+    r=/^\d+(\.\d+)?$/;
+    rr=/^0\.[0-9]\d*$/;
+    if rr.test(data)
+      @TwoTGUI_submit('1',id,data);
+    else
+      return false;
+  TwoTGUI_valiad: (evt) ->
+    id = evt.target.name
+    data = evt.target.value
+    event = evt
+    e = event || window.event || arguments.callee.caller.arguments[0];
+    r=/^\d+(\.\d+)?$/;
+    rr=/^0\.[0-9]\d*$/;
+    if r.test(data)
+      @TwoTGUI_submit('1',id,data);
+    else
+      return false
+  TwoTGUI_changeSlider: (sliderId, evt) ->
+    key = evt.target.value
+    @TwoTGUI_submit('1', slideId, key)
+    return
+  TwoTGUI_show_help: () ->
+    if @TwoTGUI_help is true
+      $('#TwoTGUI_H').val "Show Help"
+    else
+      $('#TwoTGUI_H').val "Hide Help"
+    @TwoTGUI_help = !@TwoTGUI_help
     return
