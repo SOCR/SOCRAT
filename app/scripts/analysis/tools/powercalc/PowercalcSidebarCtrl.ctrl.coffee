@@ -12,7 +12,16 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@algorithmsService = @app_analysis_powercalc_algorithms
 
 		# choose algorithms
-		@algorithms = ['Select', 'CI for One Proportion', 'CI for One Mean', 'Test of One Proportion', 'One-Sample (or Paired) t Test', 'Pilot Study', 'R-square (multiple correlation)', 'Generic chi-square test','Power of a Simple Poisson Test']
+		@algorithms = ['Select',
+		 'CI for One Proportion', 
+		 'CI for One Mean', 
+		 'Test of One Proportion', 
+		 'One-Sample (or Paired) t Test', 
+		 'Pilot Study', 
+		 'R-square (multiple correlation)', 
+		 'Generic chi-square test', 
+		 'Power of a Simple Poisson Test', 
+		 'Two-sample t test (general case)']
 		@powercalcRunning = off
 		@algParams = null
 		@selectedAlgorithm = @algorithms[0]
@@ -58,6 +67,8 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 		@$scope.$on 'powercalc:updateAlgorithm_back', (event, data)=>
 			@selectedAlgorithm = data
+			console.log("algorithms updated:", @selectedAlgorithm)
+
 
 
 	updateAlgControls: () ->

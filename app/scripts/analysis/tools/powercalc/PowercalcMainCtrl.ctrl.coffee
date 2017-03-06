@@ -143,6 +143,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_maxdiff=1.0;
     @TwoTGUI_maxpower=1;
     @TwoTGUI_help=false;
+    @TwoTGUI_alloc_value=0;
+    @TwoTGUI_opt_value=0;
+    @TwoTGUI_alpha=0.05;
+    @TwoTGUI_threshold=1;
+    @TwoTGUI_df=1;
     @TwoTGUI_click();
     @TwoTGUI_submit();
 
@@ -1005,7 +1010,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       step: 0.0025,
       slide: ( event, ui ) =>
         $( "#n2i" ).val( ui.value );
-        @TwoTGUI_submit('1','n2i',ui.value);
+        @TwoTGUI_submit('1','n2',ui.value);
         return
       )        
     $( "#n2i" ).val( $( "#n2uii" ).slider( "value" ) );
@@ -1013,7 +1018,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       value:@TwoTGUI_diff,
       min: 0,
       max: @TwoTGUI_maxdiff,
-      range: "false", 
+      range: "min", 
       step: 0.005,
       slide: ( event, ui ) =>
         $( "#diffi" ).val( ui.value );
@@ -1033,11 +1038,52 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         return
     )         
     $("#poweri").val($("#poweruii").slider("value"));
+    $("#alphauii").slider(
+      min: 0.005
+      max: 0.2
+      value: @TwoTGUI_alpha
+      orientation: "horizontal"
+      range: "min"
+      step: 0.01
+      slide: (event, ui) =>
+        @TwoTGUI_alpha = ui.value
+        $('#alphai').val ui.value
+        @TwoTGUI_submit '1', 'alpha', ui.value
+        return
+    )
+    $("#threshuii").slider(
+      min: 0
+      max: 100
+      value: @TwoTGUI_threshold
+      orientation: "horizontal"
+      range: "min"
+      step: 1
+      slide: (event, ui) =>
+        @TwoTGUI_alpha = ui.value
+        $('#threshi').val ui.value
+        @TwoTGUI_submit '1', 'thresh', ui.value
+        return
+    )
+    $("#dfuii").slider(
+      min: 0
+      max: 100
+      value: @TwoTGUI_df
+      orientation: "horizontal"
+      range: "min"
+      step: 1
+      slide: (event, ui) =>
+        @TwoTGUI_df = ui.value
+        $('#dfi').val ui.value
+        @TwoTGUI_submit '1', 'df', ui.value
+        return
+    )
   TwoTGUI_clk: (evt) ->
     obj=evt.currentTarget
     if obj
-      id=obj.id;          
+      id=obj.name;          
       cks=$(obj).prop("checked");
+      #console.log('hit');
+      #console.log(id);
       if cks
         @TwoTGUI_submit("1",id,"1");
       else
@@ -1070,7 +1116,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       $("#equivi").prop("checked","");
       $("#threshShowi").hide();
-    $("#dfi").prop("value",d.df);
+    #$("#dfi").prop("value",d.df);
     $("#diffi").prop("value",d.diff);
     $("#poweri").prop("value",d.power);
     @TwoTGUI_diff=d.diff;
@@ -1101,7 +1147,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       return false
   TwoTGUI_changeSlider: (sliderId, evt) ->
     key = evt.target.value
-    @TwoTGUI_submit('1', slideId, key)
+    @TwoTGUI_submit('1', sliderId, key)
+    return
+  TwoTGUI_alloc_submit: (id,key) ->
+    @TwoTGUI_submit(id, key, @TwoTGUI_alloc_value)
+    return
+  TwoTGUI_opt_submit: (id,key) ->
+    @TwoTGUI_submit(id, key, @TwoTGUI_opt_value)
     return
   TwoTGUI_show_help: () ->
     if @TwoTGUI_help is true
