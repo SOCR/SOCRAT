@@ -17,8 +17,6 @@ module.exports = class ChartsBubbleChart extends BaseService
     yAxis = d3.svg.axis().scale(y).orient('left')
 
     zIsNumber = !isNaN(data[0].z)
-
-    r = 0
     rValue = 0
     if(zIsNumber)
       r = d3.scale.linear()
@@ -30,6 +28,19 @@ module.exports = class ChartsBubbleChart extends BaseService
       .domain([5, 5])
       .range([3,15])
       rValue = (d) -> d.z
+      
+    # Function count.
+    # Parameter array has data structure the same as 'data' 
+    # Return a hash table. 
+    #   key: each element in the parameter array
+    #   value: the count of each element
+    count = (array) ->
+      counts = {}
+      for i in [0..array.length-1] by 1
+        currentVar = array[i].z
+        counts[currentVar] = counts[currentVar] || 0
+        ++counts[currentVar]
+      return counts
 
     tooltip = container
     .append('div')
@@ -78,6 +89,8 @@ module.exports = class ChartsBubbleChart extends BaseService
     .text gdata.yLab.value
 
     # create circle
+    counts_z = count(data) # counts the number for each z variable
+    
     _graph.selectAll('.circle')
     .data(data)
     .enter().append('circle')
@@ -95,14 +108,11 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('stroke-width', '2px')
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
-    .attr('r', (d) ->
-      if(zIsNumber) # if d.z is number, use d.z as radius
-        r d.z
-      else # else, set radius to be 8
-        8)
+    .attr('r', (d) -> counts_z[d.z])
     .on('mouseover', (d) ->
+      radius = () -> counts_z[rValue(d)]
       tooltip.transition().duration(200).style('opacity', .9)
-      tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.zLab.value+': '+ rValue(d)+'</div>')
+      tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + gdata.zLab.value + ': ' + radius +'</div>')
       .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
     .on('mouseout', () ->
       tooltip. transition().duration(500).style('opacity', 0))
