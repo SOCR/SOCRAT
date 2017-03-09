@@ -43,6 +43,8 @@ module.exports = class AppModuleList
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
+    ,
+      require 'scripts/analysis/tools/Modeler/MyModule.module.coffee'
     ]
   ]
 
