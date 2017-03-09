@@ -77,23 +77,48 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
 
+			# update data-driven sidebar controls
+	updateSidebarControls: (data) ->
+		@cols = data.header
+		@numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
+		@categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
+		# make sure number of unique labels is less than maximum number of clusters for visualization
+		if @algParams.k
+			[minK, ..., maxK] = @algParams.k
+			colData = d3.transpose(data.data)
+			@categoricalCols = @categoricalCols.filter (x, i) =>
+				@uniqueVals(colData[@cols.indexOf(x)]).length < maxK
+		[@xCol, @yCol, ..., lastCol] = @numericalCols
+		#@clusterRunning = off
+		if @labelCol
+			@uniqueLabels =
+				num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
+				labelCol: @labelCol
+		@$timeout =>
+			@updateDataPoints data
+
 	updateDataPoints: (data=null, means=null, labels=null) ->
-    if data
-      if @labelCol
-        @uniqueLabels =
-          num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
-          labelCol: @labelCol
-      xCol = data.header.indexOf @xCol
-      yCol = data.header.indexOf @yCol
-      data = ([row[xCol], row[yCol]] for row in data.data)
-    @msgService.broadcast 'powercalc:updateDataPoints',
-      dataPoints: data
-      means: means
-      labels: labels
+		if data
+			if @labelCol
+				@uniqueLabels =
+					num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
+					labelCol: @labelCol
+			xCol = data.header.indexOf @xCol
+			yCol = data.header.indexOf @yCol
+			data = ([row[xCol], row[yCol]] for row in data.data)
+		@msgService.broadcast 'powercalc:updateDataPoints',
+			dataPoints: data
+			means: means
+			labels: labels
 
-  uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
+	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
-
+	parseData: (data) ->
+		@dataService.inferDataTypes data, (resp) =>
+			if resp and resp.dataFrame
+				@updateSidebarControls(resp.dataFrame)
+				@updateDataPoints(resp.dataFrame)
+				#@ready = on
 
 	help: () ->
 		#console.log("Hit")
