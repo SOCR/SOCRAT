@@ -24,7 +24,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-options="col for col in sidebar.yCols"
       )
     div.form-horizontal(ng-show="sidebar.selectedGraph.z")
-      label(for = "z") Z (radius) &nbsp;
+      label(for = "z") Z &nbsp;
       select#z.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.zCol"

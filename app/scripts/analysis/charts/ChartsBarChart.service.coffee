@@ -5,8 +5,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class ChartsBarChart extends BaseService
 
   initialize: ->
-
+          
   drawBar: (width,height,data,_graph,gdata) ->
+          
     padding = 50
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])
@@ -16,6 +17,7 @@ module.exports = class ChartsBarChart extends BaseService
     
     x_min = d3.min(data, (d)->parseFloat d.x)
     x_max = d3.max(data, (d)->parseFloat d.x)
+    
     # x_padding is used to avoid drawing a bar at the edge of x-axis 
     x_range = x_max - x_min
     x_padding = x_range * 0.05
@@ -31,6 +33,8 @@ module.exports = class ChartsBarChart extends BaseService
     
     yAxisLabel_x = -70
     yAxisLabel_y = -70
+    
+    color = d3.scale.category10()
 	
     # without y variable
     if !data[0].y
@@ -66,7 +70,8 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('width', x.rangeBand())
         .attr('y', (d)-> y d.value )
         .attr('height', (d)-> Math.abs(height - y d.value) - padding)
-        .attr('fill', 'steelblue')
+        #.attr('fill', 'steelblue')
+        .attr('fill', (d) -> color(d.key))
 
         # draw x axis with labels and move in from the size by the amount of padding
         x_axis = _graph.append('g')
@@ -122,7 +127,7 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('width', (d) -> Math.abs((x d.x) - (x minXvalue)))
         .attr('y', (d)-> y d.y )
         .attr('height', y.rangeBand())
-        .attr('fill', 'steelblue')
+        .attr('fill', (d) -> color(d.z))
         
         # x axis
         x_axis = _graph.append('g')
@@ -176,7 +181,7 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('width', x.rangeBand())
           .attr('y', (d)-> y d.y)
           .attr('height', (d)-> Math.abs(height - y d.y) - padding)
-          .attr('fill', 'steelblue')
+          .attr('fill', (d) -> color(d.z))
           
           # x axis
           x_axis = _graph.append('g')
@@ -224,7 +229,7 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('width', rectWidth)
           .attr('y', (d)-> y d.y )
           .attr('height', (d)-> Math.abs(height - y d.y) - padding)
-          .attr('fill', 'steelblue')
+          .attr('fill', (d) -> color(d.z))
           
           # x axis
           x_axis = _graph.append('g')
@@ -232,9 +237,7 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('transform', 'translate(0,' + (height - padding) + ')')
           .call xAxis
           .style('font-size', '16px')
-          
-          
-          
+         
           # y axis
           y_axis = _graph.append('g')
           .attr('class', 'y axis')
@@ -242,8 +245,6 @@ module.exports = class ChartsBarChart extends BaseService
           .call yAxis
           .style('font-size', '16px')
           
-          
-             
           # rotate text on x axis
           _graph.selectAll('.x.axis text')
           .attr('transform', (d) ->
@@ -264,6 +265,46 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('transform', 'translate(0,' + padding/2 + ')')
           .text gdata.yLab.value
           
+          
+    # Legend
+    legendRectSize = 8
+    legendSpacing = 5
+    textSize = 11
+    horz = width - padding - 2 * legendRectSize
+    vert = textSize
+  
+    # Legend Title 
+    _graph.append('text')
+    .attr('class', 'label')
+    .attr('transform', 'translate(' + horz + ',' + vert + ')')
+    .text gdata.zLab.value
+  
+    legend = _graph.selectAll('.legend')
+    .data(color.domain())
+    .enter()
+    .append('g')
+    .attr('class', 'legend')
+    .attr('transform', (d, i) -> 
+      ht = legendRectSize + legendSpacing # height of each legend
+      h = horz
+      v = vert + legendRectSize + i * ht
+      return 'translate(' + h + ',' + v + ')'
+    )
+  
+    # Legend rect
+    legend.append('rect')
+    .attr('width', legendRectSize)
+    .attr('height', legendRectSize)
+    .style('fill', color)
+    .style('stroke', color)
+  
+    # Legend Text
+    legend.append('text')
+    .attr('x', legendRectSize + legendSpacing)
+    .attr('y', legendRectSize)
+    .text((d) -> d)
+    .style('font-size', textSize + 'px')
+        
     # Show tick lines
     x_axis.selectAll(".x.axis line").style('stroke', 'black')
     y_axis.selectAll(".y.axis line").style('stroke', 'black')
@@ -273,7 +314,9 @@ module.exports = class ChartsBarChart extends BaseService
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     _graph.selectAll('.y.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+  
 
+          
 
   
           
