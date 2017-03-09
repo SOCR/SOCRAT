@@ -33,7 +33,16 @@ First line of the git message has to be in the following format: `<type>(<scope>
 * `<scope>` is a specific module within SOCRAT you're contributing to, i.e. `Core` or `Charts` or `PowerCalc`
 * `<subject>` is a description of the change starting with a verb in imperative form, present tense, not capitalized, without period in the end; when commiting unfinished work (e.g. with known bugs), prepend `<subject>` with `WIP`.
 
-Additional details can be added on a second line of the message. 
+Second line of the message should contain reference to the corresponding issue (if such exists) in format: `SOCR/SOCRAT-issues#<issue>`
+* `<issue>` here is a number of issue from SOCR/SOCRAT-issues repository
+
+Example of commit message:
+
+```
+fix(AppMainMenu): add missing Login button
+
+SOCR/SOCRAT-issues#1
+```
 
 ## SOCR Datasets for testing
 
