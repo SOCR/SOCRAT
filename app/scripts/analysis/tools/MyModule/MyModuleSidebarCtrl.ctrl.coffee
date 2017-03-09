@@ -9,8 +9,8 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
     '$timeout'
 
   initialize: ->
-    @dataService = app_analysis_mymodule_dataService
-    @msgService = app_analysis_mymodule_msgService
+    @dataService = @app_analysis_mymodule_dataService
+    @msgService = @app_analysis_mymodule_msgService
     @DATA_TYPES = @dataService.getDataTypes()
     # set up data and algorithm-agnostic controls
 #    @useLabels = off
@@ -120,7 +120,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 #        labelCol: @labelCol
 #        num: uniqueLabels.length
 #
-### Data preparation methods
+# Data preparation methods
 #
 ## get requested columns from data
 #  prepareData: () ->
@@ -161,7 +161,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 #        @updateDataPoints(resp.dataFrame)
 #        @ready = on
 #
-### Interface method to run clustering
+## Interface method to run clustering
 #
 #  runClustering: ->
 #    clustData = @prepareData()
