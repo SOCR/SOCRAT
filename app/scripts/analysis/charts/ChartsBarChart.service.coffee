@@ -143,12 +143,6 @@ module.exports = class ChartsBarChart extends BaseService
         .call yAxis
         .style('font-size', '16px')
         
-        # rotate text on x axis
-        _graph.selectAll('.x.axis text')
-        .attr('transform', (d) ->
-          'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-        .style('font-size', '16px')
-        
         # Title on x-axis
         _graph.append('text')
         .attr('class', 'label')
@@ -196,12 +190,6 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('transform', 'translate(' + padding + ',0)' )
           .call yAxis
           .style('font-size', '16px')
-          
-          # rotate text on x axis
-          _graph.selectAll('.x.axis text')
-          .attr('transform', (d) ->
-            'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-          .style('font-size', '16px')
         
           # Title on x-axis
           _graph.append('text')
@@ -244,12 +232,6 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('transform', 'translate(' + padding + ',0)' )
           .call yAxis
           .style('font-size', '16px')
-          
-          # rotate text on x axis
-          _graph.selectAll('.x.axis text')
-          .attr('transform', (d) ->
-            'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-          .style('font-size', '16px')
         
           # Title on x-axis
           _graph.append('text')
@@ -265,6 +247,12 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('transform', 'translate(0,' + padding/2 + ')')
           .text gdata.yLab.value
           
+    # rotate text on x axis
+    _graph.selectAll('.x.axis text')
+    .attr('transform', (d) ->
+      'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+    .style('font-size', '16px')
+    .style('text-anchor', 'middle')
           
     # Legend
     legendRectSize = 8
