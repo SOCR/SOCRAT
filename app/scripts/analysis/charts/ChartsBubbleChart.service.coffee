@@ -11,8 +11,15 @@ module.exports = class ChartsBubbleChart extends BaseService
     nest = d3.nest().key (d) -> d.z
 
     padding = 50
-    x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ padding, width-padding])
-    y = d3.scale.linear().domain([ranges.yMin,ranges.yMax]).range([ height-padding, padding ])
+    
+    x_range = ranges.xMax - ranges.xMin
+    x_padding = x_range * 0.05
+    
+    y_range = ranges.yMax - ranges.yMin
+    y_padding = y_range * 0.05
+    
+    x = d3.scale.linear().domain([ranges.xMin - x_padding, ranges.xMax + x_padding]).range([ padding, width - padding])
+    y = d3.scale.linear().domain([ranges.yMin - y_padding, ranges.yMax + y_padding]).range([ height - padding, padding ])
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
 
@@ -41,10 +48,6 @@ module.exports = class ChartsBubbleChart extends BaseService
         counts[currentVar] = counts[currentVar] || 0
         ++counts[currentVar]
       return counts
-
-    tooltip = container
-    .append('div')
-    .attr('class', 'tooltip')
 
     color = d3.scale.category10()
 
@@ -91,7 +94,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     # create circle
     counts_z = count(data) # counts the number for each z variable
     
-    _graph.selectAll('.circle')
+    circles = _graph.selectAll('.circle')
     .data(data)
     .enter().append('circle')
     .attr('fill',
@@ -109,10 +112,16 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
     .attr('r', (d) -> counts_z[d.z])
-    .on('mouseover', (d) ->
-      radius = () -> counts_z[rValue(d)]
+    
+    tooltip = container
+    .append('div')
+    .attr('class', 'tooltip')
+    
+    circles.on('mouseover', (d) ->
+      radius = () -> 
+        return counts_z[rValue(d)]
       tooltip.transition().duration(200).style('opacity', .9)
-      tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + gdata.zLab.value + ': ' + radius +'</div>')
+      tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + 'Counts ' + radius +'</div>')
       .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
-    .on('mouseout', () ->
-      tooltip. transition().duration(500).style('opacity', 0))
+      .on('mouseout', () ->
+        tooltip. transition().duration(500).style('opacity', 0))
