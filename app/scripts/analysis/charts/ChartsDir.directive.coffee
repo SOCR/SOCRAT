@@ -99,7 +99,7 @@ module.exports = class ChartsDir extends BaseDirective
 
           switch scheme.name
             when 'Bar Graph'
-              @bar.drawBar(width,height,data,_graph,gdata)
+              @bar.drawBar(ranges,width,height,data,_graph,gdata,container)
             when 'Bubble Chart'
               @bubble.drawBubble(ranges,width,height,_graph,data,gdata,container)
             when 'Histogram'

@@ -24,17 +24,6 @@ module.exports = class ChartsBubbleChart extends BaseService
     yAxis = d3.svg.axis().scale(y).orient('left')
 
     zIsNumber = !isNaN(data[0].z)
-    rValue = 0
-    if(zIsNumber)
-      r = d3.scale.linear()
-      .domain([d3.min(data, (d)-> parseFloat d.z), d3.max(data, (d)-> parseFloat d.z)])
-      .range([3,15])
-      rValue = (d) -> parseFloat d.z
-    else
-      r = d3.scale.linear()
-      .domain([5, 5])
-      .range([3,15])
-      rValue = (d) -> d.z
       
     # Function count.
     # Parameter array has data structure the same as 'data' 
@@ -111,7 +100,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('stroke-width', '2px')
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
-    .attr('r', (d) -> counts_z[d.z])
+    .attr('r', (d) -> counts_z[(d.z).toString()])
     
     tooltip = container
     .append('div')
@@ -119,7 +108,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     
     circles.on('mouseover', (d) ->
       radius = () -> 
-        return counts_z[rValue(d)]
+        return counts_z[d.z]
       tooltip.transition().duration(200).style('opacity', .9)
       tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + 'Counts ' + radius +'</div>')
       .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))

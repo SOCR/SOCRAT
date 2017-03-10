@@ -6,7 +6,7 @@ module.exports = class ChartsBarChart extends BaseService
 
   initialize: ->
           
-  drawBar: (width,height,data,_graph,gdata) ->
+  drawBar: (ranges,width,height,data,_graph,gdata,container) ->
           
     padding = 50
     x = d3.scale.linear().range([ padding, width - padding ])
@@ -15,14 +15,14 @@ module.exports = class ChartsBarChart extends BaseService
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
     
-    x_min = d3.min(data, (d)->parseFloat d.x)
-    x_max = d3.max(data, (d)->parseFloat d.x)
+    x_min = ranges.xMin
+    x_max = ranges.xMax
     
     # x_padding is used to avoid drawing a bar at the edge of x-axis 
     x_range = x_max - x_min
     x_padding = x_range * 0.05
     
-    y_max = d3.max(data, (d)->parseFloat d.y)
+    y_max = ranges.yMax
     y_padding = y_max * 0.05
     
     x.domain([x_min - x_padding, x_max + x_padding])
@@ -253,7 +253,17 @@ module.exports = class ChartsBarChart extends BaseService
       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
     .style('font-size', '16px')
     .style('text-anchor', 'middle')
-          
+        
+    # Show tick lines
+    x_axis.selectAll(".x.axis line").style('stroke', 'black')
+    y_axis.selectAll(".y.axis line").style('stroke', 'black')
+    
+    # make x y axis thin
+    _graph.selectAll('.x.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    _graph.selectAll('.y.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    
     # Legend
     legendRectSize = 8
     legendSpacing = 5
@@ -262,12 +272,12 @@ module.exports = class ChartsBarChart extends BaseService
     vert = textSize
   
     # Legend Title 
-    _graph.append('text')
+    container.append('text')
     .attr('class', 'label')
     .attr('transform', 'translate(' + horz + ',' + vert + ')')
     .text gdata.zLab.value
   
-    legend = _graph.selectAll('.legend')
+    legend = container.selectAll('.legend')
     .data(color.domain())
     .enter()
     .append('g')
@@ -292,16 +302,6 @@ module.exports = class ChartsBarChart extends BaseService
     .attr('y', legendRectSize)
     .text((d) -> d)
     .style('font-size', textSize + 'px')
-        
-    # Show tick lines
-    x_axis.selectAll(".x.axis line").style('stroke', 'black')
-    y_axis.selectAll(".y.axis line").style('stroke', 'black')
-    
-    # make x y axis thin
-    _graph.selectAll('.x.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-    _graph.selectAll('.y.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
   
 
           
