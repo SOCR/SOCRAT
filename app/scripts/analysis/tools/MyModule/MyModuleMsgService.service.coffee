@@ -5,7 +5,7 @@ BaseModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService
 module.exports = class MyModuleMsgService extends BaseModuleMessageService
   # define module message list
   msgList:
-    outgoing: ['mymodule:getData']
-    incoming: ['mymodule:receiveData']
-# required to be the same as module id
+    outgoing: ['getData', 'infer data types']
+    incoming: ['takeTable', 'data types inferred']
+# currently scope is same as module id
     scope: ['socrat_analysis_mymodule']
