@@ -265,6 +265,9 @@ module.exports = class ChartsBarChart extends BaseService
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     
     # Legend
+    if not data[0].z? # if z variable is undefined
+      return
+      
     legendRectSize = 8
     legendSpacing = 5
     textSize = 11

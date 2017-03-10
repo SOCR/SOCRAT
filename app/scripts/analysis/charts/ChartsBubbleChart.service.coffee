@@ -7,7 +7,7 @@ module.exports = class ChartsBubbleChart extends BaseService
   initialize: ->
 
   drawBubble: (ranges,width,height,_graph,data,gdata,container) ->
-    if isNaN data[0].y
+    if not data[0].y? # y variable is undefined 
       return
     #testing
     nest = d3.nest().key (d) -> d.z
@@ -118,6 +118,9 @@ module.exports = class ChartsBubbleChart extends BaseService
      
       
     # Legend
+    if not data[0].c? # if c variable is undefined
+      return
+    
     legendRectSize = 8
     legendSpacing = 5
     textSize = 11
