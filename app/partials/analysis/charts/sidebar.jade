@@ -15,6 +15,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.xCol"
         ng-options="col for col in sidebar.xCols"
+        ng-init="sidebar.xCol = sidebar.xCols[0]"
       )
     div.form-horizontal(ng-show="sidebar.selectedGraph.y")
       label(for = "y") Y &nbsp;
@@ -22,6 +23,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.yCol"
         ng-options="col for col in sidebar.yCols"
+        ng-init="sidebar.yCol = sidebar.yCols[0]"
       )
     div.form-horizontal(ng-show="sidebar.selectedGraph.z")
       label(for = "z") Z &nbsp;
@@ -29,6 +31,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.zCol"
         ng-options="col for col in sidebar.zCols"
+        ng-init="sidebar.zCol = sidebar.zCols[0]"
       )
     div.form-horizontal(ng-show="sidebar.selectedGraph.c")
       label(for = "c") Color &nbsp;
@@ -36,4 +39,5 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.cCol"
         ng-options="col for col in sidebar.cCols"
+        ng-init="sidebar.cCol = sidebar.cCols[0]"
       )

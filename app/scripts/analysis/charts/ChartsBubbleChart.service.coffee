@@ -7,6 +7,8 @@ module.exports = class ChartsBubbleChart extends BaseService
   initialize: ->
 
   drawBubble: (ranges,width,height,_graph,data,gdata,container) ->
+    if isNaN data[0].y
+      return
     #testing
     nest = d3.nest().key (d) -> d.z
 
@@ -78,34 +80,43 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('transform', 'translate(0,' + padding/2 + ')')
     .text gdata.yLab.value
 
-    # create circle
-    counts_z = count(data) # counts the number for each z variable
+    # Create Circle
+    counts = count(data) # counts the number for each z variable
+    max_count = d3.max(d3.values(counts))
+    scale = d3.scale.linear().domain([0, max_count]).range([0, 30])
+    
     circles = _graph.selectAll('.circle')
     .data(data)
     .enter().append('circle')
     .attr('fill', (d) -> color(d.c))
-    .attr('opacity', '0.7')
+    .attr('opacity', '0.6')
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
-    .attr('r', (d) -> counts_z[d.z])
+    .attr('r', (d) -> scale counts[d.z])
     
     tooltip = container
     .append('div')
     .attr('class', 'tooltip')
     
-    circles.on('mouseover', (d) ->
+    circles
+    .on('mouseover', (d) ->
       radius = () -> 
-        return counts_z[d.z]
+        return counts[d.z]
+      d3.select(this).attr('opacity', '1').attr('stroke', 'white').attr('stroke-width', '2px')
       tooltip.transition().duration(200).style('opacity', .9)
       tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + 'Counts ' + radius +'</div>')
-      .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
-      .on('mouseout', () ->
-        tooltip. transition().duration(500).style('opacity', 0))
+      .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px')
+    )
+    .on('mouseout', () ->
+      tooltip.transition().duration(500).style('opacity', 0)
+      d3.select(this).attr('opacity', '0.6').attr('stroke', 'none')
+    )
     
     # Show tick lines
     x_axis.selectAll(".x.axis line").style('stroke', 'black')
     y_axis.selectAll(".y.axis line").style('stroke', 'black')
-    
+     
+      
     # Legend
     legendRectSize = 8
     legendSpacing = 5
