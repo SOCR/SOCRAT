@@ -272,12 +272,12 @@ module.exports = class ChartsBarChart extends BaseService
     vert = textSize
   
     # Legend Title 
-    container.append('text')
+    _graph.append('text')
     .attr('class', 'label')
     .attr('transform', 'translate(' + horz + ',' + vert + ')')
     .text gdata.zLab.value
   
-    legend = container.selectAll('.legend')
+    legend = _graph.selectAll('.legend')
     .data(color.domain())
     .enter()
     .append('g')

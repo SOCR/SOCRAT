@@ -22,8 +22,6 @@ module.exports = class ChartsBubbleChart extends BaseService
     y = d3.scale.linear().domain([ranges.yMin - y_padding, ranges.yMax + y_padding]).range([ height - padding, padding ])
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
-
-    zIsNumber = !isNaN(data[0].z)
       
     # Function count.
     # Parameter array has data structure the same as 'data' 
@@ -41,14 +39,14 @@ module.exports = class ChartsBubbleChart extends BaseService
     color = d3.scale.category10()
 
     # x axis
-    _graph.append("g")
+    x_axis = _graph.append("g")
     .attr("class", "x axis")
     .attr('transform', 'translate(0,' + (height-padding) + ')')
     .call xAxis
     .style('font-size', '16px')
     
     # y axis
-    _graph.append("g")
+    y_axis = _graph.append("g")
     .attr("class", "y axis")
     .attr('transform', 'translate(' + padding + ',0)' )
     .call yAxis
@@ -82,25 +80,14 @@ module.exports = class ChartsBubbleChart extends BaseService
 
     # create circle
     counts_z = count(data) # counts the number for each z variable
-    
     circles = _graph.selectAll('.circle')
     .data(data)
     .enter().append('circle')
-    .attr('fill',
-      if(zIsNumber)
-        'yellow'
-      else
-        (d) -> color(d.z))
+    .attr('fill', (d) -> color(d.c))
     .attr('opacity', '0.7')
-    .attr('stroke',
-      if(zIsNumber)
-        'orange'
-      else
-        (d) -> color(d.z))
-    .attr('stroke-width', '2px')
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
-    .attr('r', (d) -> counts_z[(d.z).toString()])
+    .attr('r', (d) -> counts_z[d.z])
     
     tooltip = container
     .append('div')
@@ -114,3 +101,47 @@ module.exports = class ChartsBubbleChart extends BaseService
       .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
       .on('mouseout', () ->
         tooltip. transition().duration(500).style('opacity', 0))
+    
+    # Show tick lines
+    x_axis.selectAll(".x.axis line").style('stroke', 'black')
+    y_axis.selectAll(".y.axis line").style('stroke', 'black')
+    
+    # Legend
+    legendRectSize = 8
+    legendSpacing = 5
+    textSize = 11
+    horz = width - padding - 2 * legendRectSize
+    vert = textSize
+  
+    # Legend Title 
+    _graph.append('text')
+    .attr('class', 'label')
+    .attr('transform', 'translate(' + horz + ',' + vert + ')')
+    .text gdata.cLab.value
+  
+    legend = _graph.selectAll('.legend')
+    .data(color.domain())
+    .enter()
+    .append('g')
+    .attr('class', 'legend')
+    .attr('transform', (d, i) -> 
+      ht = legendRectSize + legendSpacing # height of each legend
+      h = horz
+      v = vert + legendRectSize + i * ht
+      return 'translate(' + h + ',' + v + ')'
+    )
+  
+    # Legend rect
+    legend.append('rect')
+    .attr('width', legendRectSize)
+    .attr('height', legendRectSize)
+    .style('fill', color)
+    .style('stroke', color)
+  
+    # Legend Text
+    legend.append('text')
+    .attr('x', legendRectSize + legendSpacing)
+    .attr('y', legendRectSize)
+    .text((d) -> d)
+    .style('font-size', textSize + 'px')
+    
