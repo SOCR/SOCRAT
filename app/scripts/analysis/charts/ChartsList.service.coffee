@@ -39,11 +39,13 @@ module.exports = class ChartsList extends BaseService
       value: 3
       x: ['integer', 'number']
       y: ['integer', 'number']
-      z: ['integer', 'number']
+      z: ['integer', 'number', 'string']
+      c: ['integer', 'number', 'string']
       message: "Choose an x variable, a y variable and a radius variable."
       xLabel: "Add x"
       yLabel: "Add y"
       zLabel: "Add radius"
+      cLabel: "Add color"
     ,
       name: 'Pie Chart'
       value: 4

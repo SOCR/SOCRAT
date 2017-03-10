@@ -34,6 +34,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @xCol = null
     @yCol = null
     @zCol = null
+    @cCol = null
 
     @stream = false
     @streamColors = [
@@ -89,13 +90,19 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         if zCol not in [@xCol, @yCol]
           @zCol = zCol
           break
+    if @selectedGraph.c
+      @cCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.c)
+      for cCol in @cCols
+        if cCol not in [@xCol, @yCol, @zCol]
+          @cCol = cCol
+          break
     @$timeout =>
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
-    [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
-    data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
+    [xCol, yCol, zCol, cCol] = [@xCol, @yCol, @zCol, @cCol].map (x) -> data.header.indexOf x
+    [xType, yType, zType, cType] = [xCol, yCol, zCol, cCol].map (x) -> data.types[x]
+    data = ([row[xCol], row[yCol], row[zCol], row[cCol]] for row in data.data)
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data
       graph: @selectedGraph
@@ -109,6 +116,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         zLab:
           value: @zCol
           type: zType
+        cLab:
+          value: @cCol
+          type: cType
 
 #  changeGraph: () ->
 #    if @graphSelect.name is "Stream Graph"

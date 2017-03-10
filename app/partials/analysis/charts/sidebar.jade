@@ -30,3 +30,10 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-model="sidebar.zCol"
         ng-options="col for col in sidebar.zCols"
       )
+    div.form-horizontal(ng-show="sidebar.selectedGraph.c")
+      label(for = "c") Color &nbsp;
+      select#c.form-control(
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.cCol"
+        ng-options="col for col in sidebar.cCols"
+      )
