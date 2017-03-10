@@ -24,5 +24,5 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         # parse dataFrame
         @parseData obj.dataFrame
       else
-        # TODO: add processing for nested object
+        # TODO: add processing for nested object.
         console.log 'NESTED DATASET'
