@@ -12,7 +12,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
-    'app_analysis_getData_socrDatasets',
+    'app_analysis_getData_socrDataConfig',
     '$timeout'
 
   initialize: ->
@@ -23,7 +23,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @inputCache = @app_analysis_getData_inputCache
     @jsonParser = @app_analysis_getData_jsonParser
     @dataAdaptor = @app_analysis_getData_dataAdaptor
-    @socrData = @app_analysis_getData_socrDatasets
+    @socrData = @app_analysis_getData_socrDataConfig
 
     # get initial settings
     @LARGE_DATA_SIZE = 20000 # number of cells in table

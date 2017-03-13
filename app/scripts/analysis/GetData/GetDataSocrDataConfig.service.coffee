@@ -2,7 +2,7 @@
 
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class GetDataSocrDatasets extends BaseModuleDataService
+module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
 
   initialize: () ->
 
