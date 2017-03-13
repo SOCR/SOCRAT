@@ -90,6 +90,7 @@ module.exports = class ChartsNormalChart extends BaseService
       toolTipElement.innerHTML = " "
 
     console.log @extract(data, "x")
+    console.log("here")
     sample = @sort(@getRandomValueArray(@extract(data,"x")))
     sum = @getSum(sample)
     min = sample[0]

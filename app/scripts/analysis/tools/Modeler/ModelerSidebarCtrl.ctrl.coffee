@@ -11,8 +11,8 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
   initialize: ->
     @dataService = @socrat_analysis_mymodule_dataService
     @msgService = @socrat_analysis_mymodule_msgService
-
-
+    @algorithms = ['Normal', 'Binomial', 'Poisson']
+    @
 
 
 

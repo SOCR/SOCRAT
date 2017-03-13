@@ -6,7 +6,7 @@ div(ng-controller="ModelerSidebarCtrl as sidebar")
           label(
             uib-tooltip="Choose an algorithm from the list below"
             tooltip-placement="right"
-          ) Algorithm &nbsp;
+          ) Distribution Fit &nbsp;
           select.form-control(
           ng-model="sidebar.selectedAlgorithm"
           ng-options="method for method in sidebar.algorithms"
