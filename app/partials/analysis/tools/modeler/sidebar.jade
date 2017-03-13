@@ -4,6 +4,9 @@ div(ng-controller="ModelerSidebarCtrl as sidebar")
     value="Choose a Distribution"
     ng-model="sidebar.distribution"
     ng-options="g as g.name for g in sidebar.distributions"
+    ng-change="sidebar.updateSidebarControls()"
+    ng-init="sidebar.distribution = sidebar.distributions[0]"
+
     )
     legend Variables
     div.form-inline
