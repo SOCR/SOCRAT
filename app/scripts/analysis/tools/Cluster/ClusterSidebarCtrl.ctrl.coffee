@@ -44,7 +44,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       @selectedAlgorithm = @algorithms[0]
       @updateAlgControls()
 
-    @dataService.getData().then (obj) =>
+    @dataService.b().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
         if @dataType isnt obj.dataFrame.dataType
           # update local data type
