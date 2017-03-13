@@ -88,10 +88,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @$scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
 
+    # watch drag-n-drop file
     @$scope.$watch( =>
       @$scope.mainArea.file
     , (file) =>
       if file?
+        # TODO: replace d3 with datalib
         dataResults = @d3.csv.parseRows file
         data = @dataAdaptor.toDataFrame dataResults
         @passReceivedData data
@@ -146,24 +148,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         @tableData = data.data
         console.log 'ht updated'
 
-  # available SOCR Datasets
-#  socrDatasets: [
-#    id: 'IRIS'
-#    name: 'Iris Flower Dataset'
-#  ,
-#    id: 'KNEE_PAIN'
-#    name: 'Simulated SOCR Knee Pain Centroid Location Data'
-#  ,
-#    id: 'CURVEDNESS_AD'
-#    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
-#  ,
-#    id: 'PCV_SPECIES'
-#    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
-#  ,
-#    id: 'TURKIYE_STUDENT_EVAL'
-#    name: 'Turkiye Student Evaluation Data Set'
-#  ]
-
   getWB: ->
     # default value
     if @size is undefined
@@ -190,15 +174,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   getSocrData: ->
     url = @socrData.getUrlByName @socrdataset.id
-#    switch @socrdataset.id
-#      when 'IRIS' then url = 'datasets/iris.csv'
-#      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
-#      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
-#      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
-#      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
     # default option
     url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ' unless url
 
+    # TODO: replace d3 with datalib
     @d3.text url,
       (dataResults) =>
         if dataResults?.length > 0
@@ -210,6 +189,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           console.log 'GETDATA: request failed'
 
   getJsonByUrl: (type) ->
+    # TODO: replace d3 with datalib
     @d3.json @jsonUrl,
       (dataResults) =>
         # check that data object is not empty
