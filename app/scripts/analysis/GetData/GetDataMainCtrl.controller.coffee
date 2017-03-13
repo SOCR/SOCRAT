@@ -13,7 +13,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
     'app_analysis_getData_socrDataConfig',
-    '$timeout'
+    '$timeout',
+    '$window'
 
   initialize: ->
     @d3 = require 'd3'
@@ -187,6 +188,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           @passReceivedData data
         else
           console.log 'GETDATA: request failed'
+
+  openSocrDescription: ->
+    @$window.open @socrdataset.desc, '_blank'
 
   getJsonByUrl: (type) ->
     # TODO: replace d3 with datalib
