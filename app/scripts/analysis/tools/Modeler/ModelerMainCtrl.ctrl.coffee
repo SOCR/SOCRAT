@@ -12,7 +12,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @title = 'Modeler module'
     @dataType = ''
     @dataPoints = null
-    @means = null
     @assignments = null
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
@@ -21,11 +20,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @$timeout => @updateChartData(data)
 
     @$scope.$on 'modeler:updateDataType', (event, dataType) =>
+      console.log("broadcast occurered, updating datatTYPE")
       @dataType = dataType
 
 
-    updateChartData: (data) ->
-      if data.dataPoints?
-        @dataPoints = data.dataPoints
-      @means = data.means
-      @assignments = data.labels
+  updateChartData: (data) ->
+    if data.dataPoints?
+      @dataPoints = data.dataPoints
+

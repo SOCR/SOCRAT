@@ -13,6 +13,7 @@ module.exports = modeler = new Module
       'socrat_analysis_mymodule_myService': require 'scripts/analysis/tools/Modeler/MyModuleMyService.service.coffee'
       'socrat_analysis_mymodule_dataService': require 'scripts/analysis/tools/Modeler/ModelerDataService.service.coffee'
       'socrat_modeler_distribution_normal': require 'scripts/analysis/tools/Modeler/ModelerDistributionNormal.service.coffee'
+      'socrat_analysis_modeler_dist_list': require 'scripts/analysis/tools/Modeler/ModelerDistList.service.coffee'
 
 
 

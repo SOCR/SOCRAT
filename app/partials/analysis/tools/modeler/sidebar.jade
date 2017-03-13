@@ -2,27 +2,26 @@ div(ng-controller="ModelerSidebarCtrl as sidebar")
   legend Distribution
     select#chooseDistribution.form-control(
     value="Choose a Distribution"
-    ng-model="sidebar.selectedDistribution"
-    ng-options="method for method in sidebar.distributions"
-
+    ng-model="sidebar.distribution"
+    ng-options="g as g.name for g in sidebar.distributions"
     )
     legend Variables
     div.form-inline
-      div.form-horizontal(ng-show="sidebar.selectedGraph.x")
+      div.form-horizontal(ng-show="sidebar.selectedDistributions.x")
         label(for = "x") X &nbsp;
         select#x.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.xCol"
         ng-options="col for col in sidebar.xCols"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.y")
+      div.form-horizontal(ng-show="sidebar.selectedDistributions.y")
         label(for = "y") Y &nbsp;
         select#y.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.yCol"
         ng-options="col for col in sidebar.yCols"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.z")
+      div.form-horizontal(ng-show="sidebar.selectedDistributions.z")
         label(for = "z") Z (radius) &nbsp;
         select#z.form-control(
         ng-change="sidebar.updateDataPoints()"
