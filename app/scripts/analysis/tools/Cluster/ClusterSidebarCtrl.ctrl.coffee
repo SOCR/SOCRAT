@@ -131,8 +131,9 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
     if @chosenCols.length > 1
 
-      xCol = data.header.indexOf @xCol
-      yCol = data.header.indexOf @yCol
+      # get indices of feats to visualize in array of chosen
+      xCol = @chosenCols.indexOf @xCol
+      yCol = @chosenCols.indexOf @yCol
       chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
 
       # if usage of labels is on
