@@ -28,27 +28,27 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_TurkiyeStudentEvalData'
     ,
       name: 'Alzheimer Disease (AD) Case Study Data'
-      url: 'datasets/AlzheimerNeuroimagingData'
+      url: 'datasets/AlzheimerNeuroimagingData.csv'
       description: 'http://www.stat.ucla.edu/~dinov/courses_students.dir/04/Spring/Stat233.dir/HWs.dir/AD_NeuroPsychImagingData1.html'
     ,
       name: 'SOCR Heart Attack Data'
-      url: 'datasets/HeartAttacks'
+      url: 'datasets/HeartAttacks.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_AMI_NY_1993_HeartAttacks'
     ,
       name: 'Ranking, Revenues and Profits of the Top Fortune500 Companies (1955-2008)'
-      url: 'datasets/Fortune500'
+      url: 'datasets/Fortune500.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Fortune500_1955_2008'
     ,
       name: 'Neuroimaging Study of Super-resolution Image Enhancing'
-      url: 'datasets/NeuroimagingStudyofSuperResolutionImageEnhancing'
+      url: 'datasets/NeuroimagingStudyofSuperResolutionImageEnhancing.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_June2008_ID_NI'
     ,
       name: 'Normal and Schizophrenia Neuroimaging Study of Children'
-      url: 'datasets/SchizophreniaNeuroimaging'
+      url: 'datasets/SchizophreniaNeuroimaging.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Oct2009_ID_NI'
     ,
       name: 'Predictive Big Data Analytics, Modeling, Analysis and Visualization of Clinical, Genetic and Imaging Data for Parkinson’s Disease'
-      url: 'datasets/BiomedBigMetadata'
+      url: 'datasets/BiomedBigMetadata.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_PD_BiomedBigMetadata'
     ]
 
