@@ -12,7 +12,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
-    '$timeout'
+    'app_analysis_getData_socrDataConfig',
+    '$timeout',
+    '$window'
 
   initialize: ->
     @d3 = require 'd3'
@@ -22,6 +24,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @inputCache = @app_analysis_getData_inputCache
     @jsonParser = @app_analysis_getData_jsonParser
     @dataAdaptor = @app_analysis_getData_dataAdaptor
+    @socrData = @app_analysis_getData_socrDataConfig
 
     # get initial settings
     @LARGE_DATA_SIZE = 20000 # number of cells in table
@@ -32,6 +35,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
     @defaultState = @states[0]
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
+    @socrDatasets = @socrData.getNames()
     @socrdataset = @socrDatasets[0]
     @colHeaders = on
     @file = null
@@ -85,10 +89,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @$scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
 
+    # watch drag-n-drop file
     @$scope.$watch( =>
       @$scope.mainArea.file
     , (file) =>
       if file?
+        # TODO: replace d3 with datalib
         dataResults = @d3.csv.parseRows file
         data = @dataAdaptor.toDataFrame dataResults
         @passReceivedData data
@@ -143,24 +149,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         @tableData = data.data
         console.log 'ht updated'
 
-  # available SOCR Datasets
-  socrDatasets: [
-    id: 'IRIS'
-    name: 'Iris Flower Dataset'
-  ,
-    id: 'KNEE_PAIN'
-    name: 'Simulated SOCR Knee Pain Centroid Location Data'
-  ,
-    id: 'CURVEDNESS_AD'
-    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
-  ,
-    id: 'PCV_SPECIES'
-    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
-  ,
-    id: 'TURKIYE_STUDENT_EVAL'
-    name: 'Turkiye Student Evaluation Data Set'
-  ]
-
   getWB: ->
     # default value
     if @size is undefined
@@ -186,15 +174,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       )
 
   getSocrData: ->
-    switch @socrdataset.id
-      when 'IRIS' then url = 'datasets/iris.csv'
-      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
-      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
-      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
-      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
-      # default option
-      else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
+    url = @socrData.getUrlByName @socrdataset.id
+    # default option
+    url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ' unless url
 
+    # TODO: replace d3 with datalib
     @d3.text url,
       (dataResults) =>
         if dataResults?.length > 0
@@ -205,7 +189,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         else
           console.log 'GETDATA: request failed'
 
+  openSocrDescription: ->
+    @$window.open @socrdataset.desc, '_blank'
+
   getJsonByUrl: (type) ->
+    # TODO: replace d3 with datalib
     @d3.json @jsonUrl,
       (dataResults) =>
         # check that data object is not empty
