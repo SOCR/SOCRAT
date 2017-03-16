@@ -159,6 +159,24 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   ,
     id: 'TURKIYE_STUDENT_EVAL'
     name: 'Turkiye Student Evaluation Data Set'
+  ,
+    id: 'ANTARCTIC_ICE_THICKNESS'
+    name: 'Antarctic Ice Thickness'
+  ,
+    id: 'BASEBALL_PLAYERS'
+    name: 'Baseball Players'
+  ,
+    id: 'CALIFORNIA_OZONE'
+    name: 'California Ozone'
+  ,
+    id: 'CALIFORNIA_OZONE_POLLUTION'
+    name: 'California Ozone Pollution'
+  ,
+    id: 'US_OZONE_POLLUTION'
+    name: 'US Ozone Pollution'
+  ,
+    id: 'COUNTRIES_RANKINGS'
+    name: 'Countries Rankings'
   ]
 
   getWB: ->
@@ -192,6 +210,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
       when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
       when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
+      when 'ANTARCTIC_ICE_THICKNESS' then url = 'datasets/Antarctic_Ice_Thickness.csv'
+      when 'BASEBALL_PLAYERS' then url = 'datasets/Baseball_Players.csv'
+      when 'CALIFORNIA_OZONE' then url = 'datasets/California_Ozone.csv'
+      when 'CALIFORNIA_OZONE_POLLUTION' then url = 'datasets/California_Ozone_Pollution.csv'
+      when 'US_OZONE_POLLUTION' then url = 'datasets/US_Ozone_Pollution.csv'
+      when 'COUNTRIES_RANKINGS' then url = 'datasets/Countries_Rankings.csv'
       # default option
       else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 
