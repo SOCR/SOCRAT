@@ -38,7 +38,7 @@ module.exports = class ChartsDir extends BaseDirective
 
     @restrict = 'E'
     @template = "<div class='graph-container' style='height: 600px'></div>"
-
+    console.log("in dir")
     @link = (scope, elem, attr) =>
       margin = {top: 10, right: 40, bottom: 50, left:80}
       width = 750 - margin.left - margin.right
@@ -67,15 +67,18 @@ module.exports = class ChartsDir extends BaseDirective
             $(this).prepend(segment.repeat(amount - 2))
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
+        console.log("New chart  points recognized:" )
+        console.log(newChartData)
         if newChartData
           gdata = newChartData.labels
           data = newChartData.dataPoints
           scheme = newChartData.graph
-
+          console.log("chart data " + data)
           data = data.map (row) ->
             x: row[0]
             y: row[1]
             z: row[2]
+
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()

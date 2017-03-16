@@ -14,6 +14,7 @@ module.exports = modeler = new Module
       'socrat_analysis_mymodule_dataService': require 'scripts/analysis/tools/Modeler/ModelerDataService.service.coffee'
       'socrat_modeler_distribution_normal': require 'scripts/analysis/tools/Modeler/ModelerDistributionNormal.service.coffee'
       'socrat_analysis_modeler_dist_list': require 'scripts/analysis/tools/Modeler/ModelerDistList.service.coffee'
+      'socrat_analysis_modeler_hist': require 'scripts/analysis/charts/ChartsHistogram.service.coffee'
 
 
 
@@ -21,7 +22,8 @@ module.exports = modeler = new Module
       'ModelerMainCtrl': require 'scripts/analysis/tools/Modeler/ModelerMainCtrl.ctrl.coffee'
       'ModelerSidebarCtrl': require 'scripts/analysis/tools/Modeler/ModelerSidebarCtrl.ctrl.coffee'
 
-
+    directives:
+      'modelerdir': require 'scripts/analysis/tools/Modeler/ModelerDir.directive.coffee'
 
 
   state:

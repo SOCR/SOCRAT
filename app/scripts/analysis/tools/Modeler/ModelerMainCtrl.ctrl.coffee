@@ -26,5 +26,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
   updateChartData: (data) ->
     if data.dataPoints?
-      @dataPoints = data.dataPoints
+      console.log("updatating chartData" + data)
+      @chartData = data
 

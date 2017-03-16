@@ -7,26 +7,27 @@ module.exports = class ChartsHistogram extends BaseService
   initialize: ->
 
   plotHist: (bins, container, arr, _graph, gdata, x, height, width, data) ->
+    console.log("Plotting histogram")
     # slider
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
     dataHist = d3.layout.histogram().bins(bins)(arr)
-    
+
     _graph.selectAll('g').remove()
     _graph.select('.x axis').remove()
     _graph.select('.y axis').remove()
-    
+
     padding = 50
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])
-    
+
     console.log "bins"
     console.log bins
     console.log "arr"
     console.log arr
     console.log "data"
     console.log data
-    
+
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
     y.domain([0, (d3.max dataHist.map (i) -> i.length)])
 
@@ -41,40 +42,40 @@ module.exports = class ChartsHistogram extends BaseService
     .attr("transform", "translate(0," + (height - padding) + ")")
     .call xAxis
     .style('font-size', '16px')
-    
+
     # y axis
     _graph.append("g")
     .attr("class", "y axis")
     .attr('transform', 'translate(' + padding + ',0)' )
     .call(yAxis)
     .style('font-size', '16px')
-    
+
     # make x y axis thin
     _graph.selectAll('.x.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     _graph.selectAll('.y.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-   
+
     # rotate text on x axis
     _graph.selectAll('.x.axis text')
     .attr('transform', (d) ->
        'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
     .style('font-size', '16px')
-        
+
     # Title on x-axis
     _graph.append('text')
     .attr('class', 'label')
     .attr('text-anchor', 'middle')
     .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
     .text gdata.xLab.value
-    
+
     # Title on y-axis
     _graph.append("text")
     .attr('class', 'label')
     .attr('text-anchor', 'middle')
     .attr('transform', 'translate(0,' + padding/2 + ')')
     .text "Counts"
-    
+
     # bar elements
     bar = _graph.selectAll('.bar')
     .data(dataHist)
@@ -111,7 +112,7 @@ module.exports = class ChartsHistogram extends BaseService
     bins = 5
     arr = data.map (d) -> parseFloat d.x
     @plotHist bins, container, arr, _graph, gdata, x, height, width, data
-    
+
     if $slider.length > 0
       $slider.slider(
         min: 1
