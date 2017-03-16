@@ -75,7 +75,7 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
     console.log("calling update sidebar")
     console.log(data)
     @cols = data.header
-    console.log("selected dist" + @selectedDistributions)
+    console.log("selected dist" + @selectedDistributions.name)
     if @selectedDistributions.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedDistributions.x)
       @xCol = @xCols[0]
@@ -90,7 +90,8 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
       for zCol in @zCols
         if zCol not in [@xCol, @yCol]
           @zCol = zCol
-
+    @$timeout =>
+      @updateDataPoints()
   updateDataPoints: (data=@dataFrame) ->
     '''
     if data

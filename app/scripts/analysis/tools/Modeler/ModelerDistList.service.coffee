@@ -11,20 +11,20 @@ module.exports = class DistList extends BaseService
       name: 'Normal Distribution'
       value: 0
       x: ['integer', 'number', 'string']
-      y: ['integer', 'number', 'string']
+      y: false
       z: false
       message: "This class designs a simple polynomial model fitting curve"
       xLabel: "Add x"
-      yLabel: "Add y"
+
     ,
       name: 'Binomial Distribution'
       value: 1
       x: ['integer', 'number']
-      y: ['integer', 'number']
+      y: false
       z: false
       message: "Choose an x variable and a y variable."
       xLabel: "Add x"
-      yLabel: "Add y"
+
     ,
       name: 'Poisson Distribution'
       value: 2

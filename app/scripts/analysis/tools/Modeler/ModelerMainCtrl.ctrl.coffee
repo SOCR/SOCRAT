@@ -9,10 +9,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @dataService = @socrat_analysis_mymodule_dataService
     @DATA_TYPES = @dataService.getDataTypes()
 
-    @title = 'Modeler module'
+    @title = 'Modeling Module'
     @dataType = ''
     @dataPoints = null
     @assignments = null
+    @distribution = 'Normal'
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
       #@showresults = off if @showresults is on
@@ -27,5 +28,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
   updateChartData: (data) ->
     if data.dataPoints?
       console.log("updatating chartData" + data)
+
+      @distribution = data.distribution
+      console.log(@distribution)
       @chartData = data
+      console.log("distribution:" + data.distribution.name)
+
+
 

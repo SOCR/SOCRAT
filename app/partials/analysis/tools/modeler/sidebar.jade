@@ -2,10 +2,10 @@ div(ng-controller="ModelerSidebarCtrl as sidebar")
   legend Distribution
     select#chooseDistribution.form-control(
     value="Choose a Distribution"
-    ng-model="sidebar.distribution"
+    ng-model="sidebar.selectedDistributions"
     ng-options="g as g.name for g in sidebar.distributions"
     ng-change="sidebar.updateSidebarControls()"
-    ng-init="sidebar.distribution = sidebar.distributions[0]"
+    ng-init="sidebar.selectedDistributions = sidebar.distributions[0]"
 
     )
     legend Variables
