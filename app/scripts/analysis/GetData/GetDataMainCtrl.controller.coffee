@@ -159,6 +159,24 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   ,
     id: 'TURKIYE_STUDENT_EVAL'
     name: 'Turkiye Student Evaluation Data Set'
+  ,
+    id: 'ALZHEIMER_DISEASE'
+    name: 'Alzheimer Disease (AD) Case Study Data'
+  ,
+    id: 'HEART_ATTACK'
+    name: 'SOCR Heart Attack Data'
+  ,
+    id: 'FORTUNE500'
+    name: 'Ranking, Revenues and Profits of the Top Fortune500 Companies (1955-2008)'
+  ,
+    id: 'SUPER_RESOLUTION_IMAGE_NEUROIMAGING'
+    name: 'Neuroimaging Study of Super-resolution Image Enhancing'
+  ,
+    id: 'SCHIZOPHRENIA_NEUROIMAGING'
+    name: 'Normal and Schizophrenia Neuroimaging Study of Children'
+  ,
+    id: 'PAKINSON_DISEASE'
+    name: 'Predictive Big Data Analytics, Modeling, Analysis and Visualization of Clinical, Genetic and Imaging Data for Parkinson’s Disease'
   ]
 
   getWB: ->
