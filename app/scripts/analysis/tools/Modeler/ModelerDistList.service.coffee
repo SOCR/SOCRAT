@@ -8,7 +8,7 @@ module.exports = class DistList extends BaseService
 
   getFlat: () ->
     flat = [
-      name: 'Normal Distribution'
+      name: 'Normal'
       value: 0
       x: ['integer', 'number', 'string']
       y: false
@@ -17,7 +17,7 @@ module.exports = class DistList extends BaseService
       xLabel: "Add x"
 
     ,
-      name: 'Binomial Distribution'
+      name: 'Binomial'
       value: 1
       x: ['integer', 'number']
       y: false
@@ -26,7 +26,7 @@ module.exports = class DistList extends BaseService
       xLabel: "Add x"
 
     ,
-      name: 'Poisson Distribution'
+      name: 'Poisson'
       value: 2
       x: ['integer', 'number']
       y: false
@@ -34,7 +34,7 @@ module.exports = class DistList extends BaseService
       message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
       xLabel: ""
     ,
-      name: 'Polynomial Distribution'
+      name: 'Polynomial'
       value: 2
       x: ['integer', 'number']
       y: false

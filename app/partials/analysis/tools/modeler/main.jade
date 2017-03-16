@@ -1,7 +1,7 @@
 div(ng-controller="ModelerMainCtrl as mainArea")
   h4 {{mainArea.title}}
-  h4 {{mainArea.distribution.name}}
-  h5 {{mainArea.distribution.message}}
+  h6 Distribution: {{mainArea.distribution.name}}
+  p {{mainArea.distribution.message}}
   div.lead.bg-danger(ng-hide="mainArea.dataType == mainArea.DATA_TYPES.FLAT")
     | Modeling module only supports tabular data
   div(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT")
