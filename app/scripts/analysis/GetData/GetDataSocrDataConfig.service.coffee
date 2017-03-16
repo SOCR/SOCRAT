@@ -59,3 +59,4 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
 
   getUrlByName: (datasetId) ->
     (dataset.url for dataset in @socrDatasets when datasetId is dataset.name.toLowerCase()).shift()
+

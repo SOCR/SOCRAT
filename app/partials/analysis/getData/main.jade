@@ -7,7 +7,10 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       select.form-control(
         ng-model="mainArea.socrdataset",
         ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
-    button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
+    div.btn-group
+      button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
+      button.btn.btn-info(ng-click="mainArea.openSocrDescription()") Description &nbsp;
+        span.fui-export
 
   div.worldBank(uib-collapse="mainArea.showState.worldBank")
     h3 WorldBank Data
