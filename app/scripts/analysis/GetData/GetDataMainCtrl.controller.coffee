@@ -149,6 +149,42 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         @tableData = data.data
         console.log 'ht updated'
 
+  # available SOCR Datasets
+  socrDatasets: [
+    id: 'IRIS'
+    name: 'Iris Flower Dataset'
+  ,
+    id: 'KNEE_PAIN'
+    name: 'Simulated SOCR Knee Pain Centroid Location Data'
+  ,
+    id: 'CURVEDNESS_AD'
+    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
+  ,
+    id: 'PCV_SPECIES'
+    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
+  ,
+    id: 'TURKIYE_STUDENT_EVAL'
+    name: 'Turkiye Student Evaluation Data Set'
+  ,
+    id: 'ALZHEIMER_DISEASE'
+    name: 'Alzheimer Disease (AD) Case Study Data'
+  ,
+    id: 'HEART_ATTACK'
+    name: 'SOCR Heart Attack Data'
+  ,
+    id: 'FORTUNE500'
+    name: 'Ranking, Revenues and Profits of the Top Fortune500 Companies (1955-2008)'
+  ,
+    id: 'SUPER_RESOLUTION_IMAGE_NEUROIMAGING'
+    name: 'Neuroimaging Study of Super-resolution Image Enhancing'
+  ,
+    id: 'SCHIZOPHRENIA_NEUROIMAGING'
+    name: 'Normal and Schizophrenia Neuroimaging Study of Children'
+  ,
+    id: 'PAKINSON_DISEASE'
+    name: 'Predictive Big Data Analytics, Modeling, Analysis and Visualization of Clinical, Genetic and Imaging Data for Parkinson’s Disease'
+  ]
+
   getWB: ->
     # default value
     if @size is undefined
