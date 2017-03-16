@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "MyModuleInit.js",
+  "sourceRoot": "",
+  "sources": [
+    "MyModuleInit.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,0CAAA;IAAA;;;EAEA,qBAAA,GAAwB,OAAA,CAAQ,kDAAR;;EAExB,MAAM,CAAC,OAAP,GAAuB;;;;;;;IACrB,mBAAC,CAAA,MAAD,CAAQ,kCAAR;;kCAEA,UAAA,GAAY,SAAA;MACV,IAAC,CAAA,UAAD,GAAc,IAAC,CAAA;aACf,IAAC,CAAA,UAAD,CAAA;IAFU;;;;KAHqC;AAJnD"
+}
