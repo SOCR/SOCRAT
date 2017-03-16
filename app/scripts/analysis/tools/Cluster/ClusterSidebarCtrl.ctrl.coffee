@@ -49,7 +49,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         if @dataType isnt obj.dataFrame.dataType
           # update local data type
           @dataType = obj.dataFrame.dataType
-          # send update to main are actrl
+          # send update to main area ctrl
           @msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
         # make local copy of data
         @dataFrame = obj.dataFrame
