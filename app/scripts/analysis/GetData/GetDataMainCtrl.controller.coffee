@@ -14,7 +14,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_inputCache',
     'app_analysis_getData_socrDataConfig',
     '$timeout',
-    '$window'
+    '$window',
+    '$q',
+    '$rootScope'
 
   initialize: ->
     @d3 = require 'd3'
@@ -33,6 +35,16 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @maxRows = 1000
     @DATA_TYPES = @dataManager.getDataTypes()
     @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
+    @WBDatasets = [
+        "name":"Out of School Children rate",
+        "key": "2.4_OOSC.RATE",
+      ,
+        "key":"4.2_BASIC.EDU.SPENDING",
+        "name":"Education Spending"
+    ]
+    @startYear = "2010"
+    @endYear = "2017"
+
     @defaultState = @states[0]
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrDatasets = @socrData.getNames()
@@ -142,12 +154,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       # default data type is 2d 'flat' table
       data.dataType = @DATA_TYPES.FLAT
       @dataType = @DATA_TYPES.FLAT
-
       # update table
       @$timeout =>
-        @colHeaders = data.header
-        @tableData = data.data
-        console.log 'ht updated'
+        @colHeaders = data.colHeaders
+        @tableData = data.data[1]
 
   getWB: ->
     # default value
@@ -156,22 +166,35 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     # default option
     if @option is undefined
       @option = '4.2_BASIC.EDU.SPENDING'
-
-    url = 'http://api.worldbank.org/countries/indicators/' + @option +
-        '?per_page=' + @size + '&date=2011:2011&format=jsonp' +
+    url = 'http://api.worldbank.org/countries/indicators/' + @option+
+        '?per_page=' + @size+ '&date='+ @startYear+':'+@endYear+'&format=jsonp' +
         '&prefix=JSON_CALLBACK'
+
+    deferred = @$q.defer()
+    # using broadcast because msg sent from rootScope
+    @$rootScope.$broadcast 'app:push notification',
+      initial:
+        msg: 'Asking worldbank...'
+        type: 'alert-info'
+      success:
+        msg: 'Successfully loaded data.'
+        type: 'alert-success'
+      failure:
+        msg: 'Error!'
+        type: 'alert-error'
+      promise: deferred.promise
 
     @jsonParser.parse
       url: url
       type: 'worldBank'
     .then(
       (data) =>
-        console.log 'resolved'
+        deferred.resolve data
         @passReceivedData data
-      ,
-      (msg) ->
-        console.log 'rejected:' + msg
       )
+    .catch( (err) =>
+      throw err
+    )
 
   getSocrData: ->
     url = @socrData.getUrlByName @socrdataset.id

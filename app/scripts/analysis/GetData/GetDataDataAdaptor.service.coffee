@@ -25,18 +25,20 @@ module.exports = class GetDataDataAdaptor extends BaseService
       false
 
   isNumStringArray: (arr) ->
-    console.log arr
     arr.every (el) -> typeof el in ['number', 'string']
 
   # accepts handsontable row-oriented table data as input and returns dataFrame
+  ###
+    @param {Array} tableData - array of objects
+  ###
   toDataFrame: (tableData, header=false) ->
-
+    if not Array.isArray(tableData)
+      throw new Error('invalid dataFrame')
     # by default data types are not known at this step
     #  and should be defined at Clean Data step
 #    colTypes = ('symbolic' for [1...tableData.nCols])
-
     if not header
-      header = if tableData.length > 1 then tableData.shift() else []
+      throw new Error('missing header argument')
 
     dataFrame =
       header: header
@@ -51,7 +53,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
 
   # tries to convert JSON to 2d flat data table,
   #  assumes JSON object is not empty - has values,
-  #  returns coverted data or false if not possible
+  #  returns converted data or false if not possible
   jsonToFlatTable: (data) ->
     # check if JSON contains "flat data" - 2d array
     if data? and typeof data is 'object'

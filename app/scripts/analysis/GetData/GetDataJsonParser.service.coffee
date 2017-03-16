@@ -5,21 +5,17 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
   @name: GetDataJsonParser
   @desc: jsonParser parses the json url input by the user.
-  @deps : $q, $rootscope, $http
+  @depends : $http
 ###
 
 module.exports = class GetDataJsonParser extends BaseService
-  @inject '$q', '$rootScope', '$http'
+  @inject '$http'
 
   initialize: ->
 
   parse: (opts) ->
 
     return null if not opts?
-
-    # test json : https://graph.facebook.com/search?q=ucla
-    deferred = @$q.defer()
-    console.log deferred.promise
 
     switch opts.type
 
@@ -44,7 +40,7 @@ module.exports = class GetDataJsonParser extends BaseService
               return _col
             catch e
               console.log e.message
-            return true
+            return {}
 
           # generate titles and references
           count data[1][0]
@@ -52,47 +48,25 @@ module.exports = class GetDataJsonParser extends BaseService
           for c in _col
             _column.push
               data: c
-
           # return object
-          data: data
+
+          data: data[1]
           columns: _column
-          columnHeader: _col
-          # purpose is helps in pin pointing which
-          # handsontable directive to update.
+          colHeaders: _col
           purpose: 'json'
 
       else
-        #default implementation
         cb = (data, status) ->
-          console.log data
           return data
-
-    # using broadcast because msg sent from rootScope
-    @$rootScope.$broadcast 'app:push notification',
-      initial:
-        msg: 'Asking worldbank...'
-        type: 'alert-info'
-      success:
-        msg: 'Successfully loaded data.'
-        type: 'alert-success'
-      failure:
-        msg: 'Error in the call.'
-        type: 'alert-error'
-      promise: deferred.promise
 
     # make the call using the cb we just created
     @$http.jsonp(
       opts.url
     )
     .success((data, status) ->
-      console.log 'deferred.promise'
       formattedData = cb data, status
-      deferred.resolve formattedData
-      #$rootScope.$apply()
     )
-    .error((data, status) ->
-      console.log 'promise rejected'
-      deferred.reject 'promise is rejected'
+    .error((err) ->
+      throw err
     )
 
-    deferred.promise
