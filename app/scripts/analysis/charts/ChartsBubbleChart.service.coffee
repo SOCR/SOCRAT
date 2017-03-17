@@ -83,7 +83,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     # Create Circle
     counts = count(data) # counts the number for each z variable
     max_count = d3.max(d3.values(counts))
-    scale = d3.scale.linear().domain([0, max_count]).range([0, 30])
+    scale = d3.scale.linear().domain([0, max_count+10]).range([0, 40])
     
     circles = _graph.selectAll('.circle')
     .data(data)
@@ -93,6 +93,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
     .attr('r', (d) -> scale counts[d.z])
+    #.attr('r', (d) -> counts[d.z])
     
     tooltip = container
     .append('div')
