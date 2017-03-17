@@ -36,14 +36,39 @@ module.exports = class ChartsBarChart extends BaseService
     
     color = d3.scale.category10()
 	
+	# Input original data
+    # Return a mapped object 
+    # key: category 
+    # value: counts 
+    CateVar = { X:1, Y:2, Z:3, C:4 }
+    categoryToCounts = (data, variable) -> 
+      categoryHash = {}
+      for i in [0..data.length-1] by 1
+        currentCategory = 0
+        switch variable
+          when CateVar.X
+            currentCategory = data[i].x
+          when CateVar.Y
+            currentCategory = data[i].y
+          when CateVar.Z
+            currentCategory = data[i].z
+          when CateVar.C
+            currentCategory = data[i].c
+        categoryHash[currentCategory] = categoryHash[currentCategory] || 0
+        ++categoryHash[currentCategory] 
+      return d3.entries categoryHash
+                
+    # Input a mapped object with kay and value, value must be integer
+    getCategory = (object) ->
+       array = []
+       for i in [0..object.length-1] by 1
+         array.push(object[i].key)
+       return array
+    
+    
     # without y variable
     if !data[0].y
-        counts = {}
-        for i in [0..data.length-1] by 1
-          currentVar = data[i].x
-          counts[currentVar] = counts[currentVar] || 0
-          ++counts[currentVar]
-        counts = d3.entries counts
+        counts = categoryToCounts(data, CateVar.X)
 
         # check if all the counts are the same
         # if the all counts are the same, need to fix y.domain([min, max])
@@ -117,6 +142,8 @@ module.exports = class ChartsBarChart extends BaseService
         y.domain(data.map (d) -> d.y)
         yAxis = d3.svg.axis().scale(y).orient('left')
         
+        data.sort((a, b) -> b.x - a.x )
+        
         # create bar elements
         minXvalue = d3.min(data, (d)-> d.x)
         _graph.selectAll('rect')
@@ -164,7 +191,7 @@ module.exports = class ChartsBarChart extends BaseService
           x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
           x.domain(data.map (d) -> d.x)
           xAxis = d3.svg.axis().scale(x).orient('bottom')
-          
+          data.sort((a, b) -> b.y - a.y )
           # create bar elements
           minYvalue = d3.min(data, (d)-> d.y)
           _graph.selectAll('rect')
@@ -206,6 +233,8 @@ module.exports = class ChartsBarChart extends BaseService
           .text gdata.yLab.value
           
         else # both x and y are numerical
+          
+          data.sort((a, b) -> b.y - a.y )
           
           # create bar elements
           rectWidth = (width - 2*padding)/data.length
