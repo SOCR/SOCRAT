@@ -1,5 +1,4 @@
 div(ng-controller='GetDataMainCtrl as mainArea')
-  h4 Get Data
 
   form.socrData(uib-collapse="mainArea.showState.socrData")
     legend SOCR Datasets
@@ -13,7 +12,6 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         span.fui-export
 
   div.worldBank(uib-collapse="mainArea.showState.worldBank")
-    h3 WorldBank Data
     div
       div(style="display:inline-flex")
         input(type="text",class="form-control input-lg", placeholder="Rows", ng-model="mainArea.size")

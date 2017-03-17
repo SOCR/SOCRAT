@@ -166,6 +166,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     # default option
     if @option is undefined
       @option = '4.2_BASIC.EDU.SPENDING'
+
     url = 'http://api.worldbank.org/countries/indicators/' + @option+
         '?per_page=' + @size+ '&date='+ @startYear+':'+@endYear+'&format=jsonp' +
         '&prefix=JSON_CALLBACK'
