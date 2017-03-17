@@ -14,6 +14,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @dataPoints = null
     @assignments = null
     @distribution = 'Normal'
+    @stats = null
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
       #@showresults = off if @showresults is on
