@@ -93,7 +93,6 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
     .attr('r', (d) -> scale counts[d.z])
-    #.attr('r', (d) -> counts[d.z])
     
     tooltip = container
     .append('div')

@@ -75,27 +75,36 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
   updateSidebarControls: (data=@dataFrame) ->
     @cols = data.header
+    
     if @selectedGraph.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
       @xCol = @xCols[0]
+      
     if @selectedGraph.y
-      @yCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.y)
-      for yCol in @yCols
-        if yCol isnt @xCol
-          @yCol = yCol
-          break
+      @yCols = []
+      @yCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.y
+        @yCols.push(col)
+      # Initialize the y variable
+      @yCol = "None"
+      
     if @selectedGraph.z
-      @zCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.z)
-      for zCol in @zCols
-        if zCol not in [@xCol, @yCol]
-          @zCol = zCol
-          break
+      @zCols = []
+      @zCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.z
+        @zCols.push(col)
+      # Initialize the z variable
+      @zCol = "None"
+      
     if @selectedGraph.c
-      @cCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.c)
-      for cCol in @cCols
-        if cCol not in [@xCol, @yCol, @zCol]
-          @cCol = cCol
-          break
+      @cCols = []
+      @cCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.c
+        @cCols.push(col)
+        
+      # Initialize the z variable
+      @cCol = "None"
+      
     @$timeout =>
       @updateDataPoints()
 

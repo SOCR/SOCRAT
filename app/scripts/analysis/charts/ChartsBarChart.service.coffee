@@ -96,7 +96,7 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('y', (d)-> y d.value )
         .attr('height', (d)-> Math.abs(height - y d.value) - padding)
         #.attr('fill', 'steelblue')
-        .attr('fill', (d) -> color(d.key))
+        .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
 
         # draw x axis with labels and move in from the size by the amount of padding
         x_axis = _graph.append('g')
@@ -154,7 +154,7 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('width', (d) -> Math.abs((x d.x) - (x minXvalue)))
         .attr('y', (d)-> y d.y )
         .attr('height', y.rangeBand())
-        .attr('fill', (d) -> color(d.z))
+        .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.z))
         
         # x axis
         x_axis = _graph.append('g')
@@ -192,6 +192,7 @@ module.exports = class ChartsBarChart extends BaseService
           x.domain(data.map (d) -> d.x)
           xAxis = d3.svg.axis().scale(x).orient('bottom')
           data.sort((a, b) -> b.y - a.y )
+          
           # create bar elements
           minYvalue = d3.min(data, (d)-> d.y)
           _graph.selectAll('rect')
@@ -202,7 +203,7 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('width', x.rangeBand())
           .attr('y', (d)-> y d.y)
           .attr('height', (d)-> Math.abs(height - y d.y) - padding)
-          .attr('fill', (d) -> color(d.z))
+          .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.z))
           
           # x axis
           x_axis = _graph.append('g')
@@ -246,7 +247,9 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('width', rectWidth)
           .attr('y', (d)-> y d.y )
           .attr('height', (d)-> Math.abs(height - y d.y) - padding)
-          .attr('fill', (d) -> color(d.z))
+          .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.z))
+          
+          console.log data
           
           # x axis
           x_axis = _graph.append('g')
