@@ -51,6 +51,7 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             multiple
             ng-model="sidebar.chosenCols"
             ng-options="col for col in sidebar.numericalCols"
+            ng-change="sidebar.updateChosenCols()"
             )
           div.form-group
             label Labels column &nbsp;
@@ -62,20 +63,20 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             ng-init="sidebar.labelCol = null"
             )
               option(value="") No labels
-          div.form-group(ng-show="sidebar.xCol")
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.xCol")
             label X column &nbsp;
             //- show data header column names
             select.form-control(
             ng-model="sidebar.xCol"
-            ng-options="col for col in sidebar.numericalCols"
+            ng-options="col for col in sidebar.chosenCols"
             ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
-          div.form-group(ng-show="sidebar.yCol")
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.yCol")
             label Y column &nbsp;
             //- show data header column names
             select.form-control(
             ng-model="sidebar.yCol"
-            ng-options="col for col in sidebar.numericalCols"
+            ng-options="col for col in sidebar.chosenCols"
             ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
         div.form-group.btn-group(
