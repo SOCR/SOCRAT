@@ -82,11 +82,14 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       
     if @selectedGraph.y
       @yCols = []
-      @yCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.y
         @yCols.push(col)
+      @yCols.push("None")
       # Initialize the y variable
-      @yCol = "None"
+      for yCol in @yCols
+        if yCol isnt @xCol
+          @yCol = yCol
+          break
       
     if @selectedGraph.z
       @zCols = []

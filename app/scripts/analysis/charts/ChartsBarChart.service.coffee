@@ -249,8 +249,6 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('height', (d)-> Math.abs(height - y d.y) - padding)
           .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.z))
           
-          console.log data
-          
           # x axis
           x_axis = _graph.append('g')
           .attr('class', 'x axis')
