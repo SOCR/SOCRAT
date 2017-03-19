@@ -26,14 +26,15 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @inputCache = @app_analysis_getData_inputCache
     @dataAdaptor = @app_analysis_getData_dataAdaptor
     @socrData = @app_analysis_getData_socrDataConfig
-
+    
     # get initial settings
     @LARGE_DATA_SIZE = 20000 # number of cells in table
     @dataLoadedFromDb = false
     @largeData = false
     @maxRows = 1000
     @DATA_TYPES = @dataManager.getDataTypes()
-    @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
+    @states = @showStateService.getOptionKeys()
+    
     @WBDatasets = [
         "name":"Out of School Children rate",
         "key": "2.4_OOSC.RATE",
@@ -43,7 +44,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     ]
     @startYear = "2010"
     @endYear = "2017"
-
+    @jsonURL = {
+      url : "",
+      dataPath: ""
+    }
     @defaultState = @states[0]
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrDatasets = @socrData.getNames()
@@ -65,9 +69,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
     try
       @stateService = @showStateService.create @states, @
-      console.log @stateService
     catch e
-      console.log e.message
+      console.warn e.message
 
     @dataManager.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType?
@@ -228,7 +231,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   getJsonByUrl: (type) ->
     # TODO: replace d3 with datalib
-    @d3.json @jsonUrl,
+    @$http.get(@jsonURL.url)
+    .then(
       (dataResults) =>
         # check that data object is not empty
         if dataResults? and Object.keys(dataResults)?.length > 0
@@ -243,3 +247,4 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           @passReceivedData _data
         else
           console.log 'GETDATA: request failed'
+    )
