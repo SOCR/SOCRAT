@@ -9,14 +9,14 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     '$state',
     'app_analysis_getData_dataService',
     'app_analysis_getData_showState',
-    'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
     'app_analysis_getData_socrDataConfig',
     '$timeout',
     '$window',
     '$q',
-    '$rootScope'
+    '$rootScope',
+    '$http'
 
   initialize: ->
     @d3 = require 'd3'
@@ -24,7 +24,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataManager = @app_analysis_getData_dataService
     @showStateService = @app_analysis_getData_showState
     @inputCache = @app_analysis_getData_inputCache
-    @jsonParser = @app_analysis_getData_jsonParser
     @dataAdaptor = @app_analysis_getData_dataAdaptor
     @socrData = @app_analysis_getData_socrDataConfig
 
@@ -140,24 +139,31 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
+        data = @dataAdaptor.toDataFrame @tableData
         @checkDataSize data.nRows, data.nCols
         @inputCache.setData data
+  ###
+  @param {Object} - instance of DataFrame
+  @desc -
+  ###
+  passReceivedData: (dataFrame) ->
+    if not @dataAdaptor.isValidDataFrame dataFrame
+      throw Error "invalid data frame"
 
-  passReceivedData: (data) ->
-    if data.dataType is @DATA_TYPES.NESTED
+    if dataFrame.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
-      @checkDataSize data.nRows, data.nCols
+      @checkDataSize dataFrame.nRows, dataFrame.nCols
       # save to db
-      @inputCache.setData data
+      @inputCache.setData dataFrame
     else
       # default data type is 2d 'flat' table
-      data.dataType = @DATA_TYPES.FLAT
+      dataFrame.dataType = @DATA_TYPES.FLAT
       @dataType = @DATA_TYPES.FLAT
       # update table
+      @inputCache.setData dataFrame
       @$timeout =>
-        @colHeaders = data.colHeaders
-        @tableData = data.data[1]
+        @tableData = dataFrame.data
+        @colHeaders = dataFrame.header
 
   getWB: ->
     # default value
@@ -185,13 +191,17 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         type: 'alert-error'
       promise: deferred.promise
 
-    @jsonParser.parse
-      url: url
-      type: 'worldBank'
+    @$http.jsonp(
+      url
+    )
     .then(
-      (data) =>
-        deferred.resolve data
-        @passReceivedData data
+      (httpResponseObject) =>
+        if httpResponseObject.status == 200
+          deferred.resolve httpResponseObject.data
+          dataFrame = @dataAdaptor.toDataFrame httpResponseObject.data[1]
+          @passReceivedData dataFrame
+        else
+          deferred.reject "http request failed!"
       )
     .catch( (err) =>
       throw err
@@ -208,7 +218,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         if dataResults?.length > 0
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
-          data = @dataAdaptor.toDataFrame dataResults
+          data = @dataAdaptor.toDataFrame dataResults,true
           @passReceivedData data
         else
           console.log 'GETDATA: request failed'
