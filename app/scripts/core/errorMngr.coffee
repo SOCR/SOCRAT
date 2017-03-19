@@ -1,8 +1,4 @@
 'use strict'
-###
-  depends on the app.mediator for publishing messages
-###
-errorMngr = angular.module 'app_errorMngr', ['app_mediator']
 
 ####
 #  overriding the default $exceptionHandler for custom exception handling.
@@ -16,11 +12,9 @@ errorMngr = angular.module 'app_errorMngr', ['app_mediator']
 #    display: {true,false}
 #  }
 ####
-errorMngr.factory '$exceptionHandler', [
-  '$log'
-  'pubSub'
+module.exports = class ErrorMngr
 
-  ($log,pubSub) ->
+  constructor: ($log,pubSub) ->
     ###
       debugMode = 1 - switched ON
     ###
@@ -39,6 +33,9 @@ errorMngr.factory '$exceptionHandler', [
       @param err - error object
     ###
     _handle = (err) ->
+      alert "Error"
+      console.log "ERROR MANAGER"
+      console.log err
       # err has to be an object
       return false unless typeof err is "object"
 
@@ -78,4 +75,13 @@ errorMngr.factory '$exceptionHandler', [
     (exception)->
       _handle(exception)
 
+
+# inject dependencies
+ErrorMngr.$inject = [
+  '$log',
+  'pubSub'
 ]
+
+angular.module('app_errorMngr', ['app_mediator'])
+  .service 'errorMngr', ErrorMngr
+

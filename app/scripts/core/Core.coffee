@@ -15,7 +15,7 @@ module.exports = class Core
   @instanceOpts = {}
   @BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffee'
 
-  constructor: (@eventMngr, @Sandbox, @utils) ->
+  constructor: (@eventMngr, @Sandbox, @utils, @errorMngr) ->
 
   checkType: (type, val, name) ->
     # TODO: change to $exceptionHandler or return false anf throw exception in caller
@@ -234,9 +234,10 @@ Core.$inject = [
   'eventMngr'
   'Sandbox'
   'utils'
+  'errorMngr'
 ]
 
 # create module and singleton service
 angular
-  .module('app_core', ['app_eventMngr', 'app_sandbox', 'app_utils'])
+  .module('app_core', ['app_eventMngr', 'app_sandbox', 'app_utils','app_errorMngr'])
   .service('app_core_service', Core)
