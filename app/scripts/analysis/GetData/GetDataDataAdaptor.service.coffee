@@ -39,28 +39,25 @@ module.exports = class GetDataDataAdaptor extends BaseService
     @param {Array} tableData - array of objects
     @return {Object} DataFrame
   ###
-  toDataFrame: (tableData, firstRowHeader=false) ->
+  toDataFrame: (tableData, header=[]) ->
     if not Array.isArray(tableData) or tableData.length == 0
       throw new Error('invalid dataFrame passed.')
     # by default data types are not known at this step
     #  and should be defined at Clean Data step
 #    colTypes = ('symbolic' for [1...tableData.nCols])
-    header = []
-    
-    if firstRowHeader is true
-      header = tableData.shift()
-    else if Object.prototype.toString.call tableData[0] == "[object Object]"
+        
+    if Object.prototype.toString.call(tableData[0]) == "[object Object]"
       header = @getHeaders tableData[0]
       tableData = @extractData tableData
       
     if header.length is 0
-      throw new Error('cannot compute header for input.')
-      #console.warn "Missing header passed to dataFrame"
+      for i in [0...tableData[0]-1]
+        header.push(i)
 
     dataFrame =
       header: header
       nRows: tableData.length
-      nCols: if header.length > 0 then header.length else tableData[0].length
+      nCols: header.length
       data: tableData
       dataType: @DATA_TYPES.FLAT
       purpose: 'json'
