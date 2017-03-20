@@ -14,7 +14,6 @@ module.exports = getData = new Module
       'app_analysis_getData_msgService': require 'scripts/analysis/GetData/GetDataMsgService.service.coffee'
       'app_analysis_getData_dataAdaptor': require 'scripts/analysis/GetData/GetDataDataAdaptor.service.coffee'
       'app_analysis_getData_inputCache': require 'scripts/analysis/GetData/GetDataInputCache.service.coffee'
-      'app_analysis_getData_jsonParser': require 'scripts/analysis/GetData/GetDataJsonParser.service.coffee'
       'app_analysis_getData_showState': require 'scripts/analysis/GetData/GetDataShowState.service.coffee'
       'app_analysis_getData_dataService': require 'scripts/analysis/GetData/GetDataDataService.service.coffee'
       'app_analysis_getData_socrDataConfig': require 'scripts/analysis/GetData/GetDataSocrDataConfig.service.coffee'
