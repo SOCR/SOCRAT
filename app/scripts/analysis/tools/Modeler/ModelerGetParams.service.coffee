@@ -71,6 +71,38 @@ module.exports = class GetParams extends BaseService
       values.push data[Math.floor(Math.random() * data.length)]
     return values
 
+
+  getParams:(data) ->
+    data = data.dataPoints
+    data = data.map (row) ->
+      x: row[0]
+      y: row[1]
+      z: row[2]
+
+    console.log @extract(data, "x")
+    console.log("Within the modeler GetParams")
+    sample = @sort(@getRandomValueArray(@extract(data,"x")))
+    sum = @getSum(sample)
+    min = sample[0]
+    max = sample[sample.length - 1]
+    mean = @getMean(sum, sample.length)
+    average = sum / sample.length
+    console.log("Sample mean: " + mean)
+    variance = @getVariance(sample, mean)
+    standardDerivation =  Math.sqrt(variance)
+    rightBound = @getRightBound(mean, standardDerivation)
+    leftBound = @getLeftBound(mean,standardDerivation)
+    bottomBound = 0
+    topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
+    gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
+    radiusCoef = 5
+    return stats =
+      mean: mean
+      average: average
+      variance: variance
+
+
+
   drawNormalCurve: (data, width, height, _graph) ->
 
     toolTipElement = _graph.append('div')
@@ -90,7 +122,7 @@ module.exports = class GetParams extends BaseService
       toolTipElement.innerHTML = " "
 
     console.log @extract(data, "x")
-    console.log("here")
+    console.log("Within the modeler GetParams")
     sample = @sort(@getRandomValueArray(@extract(data,"x")))
     sum = @getSum(sample)
     min = sample[0]
@@ -104,7 +136,7 @@ module.exports = class GetParams extends BaseService
     topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
     gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
-
+    '''
     padding = 50
     xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
     yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
@@ -169,4 +201,4 @@ module.exports = class GetParams extends BaseService
       .attr('transform', (d) ->
       'translate(' + (this.getBBox().height*-2-5) + ',' + (this.getBBox().height-30) + ')')
       .style('font-size', '15.7px')
-
+    '''

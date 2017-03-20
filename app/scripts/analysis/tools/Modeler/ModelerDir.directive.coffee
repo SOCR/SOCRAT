@@ -6,12 +6,14 @@ require 'jquery-ui/ui/widgets/slider'
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class ModelerDir extends BaseDirective
-  @inject 'socrat_analysis_modeler_hist'
+  @inject 'socrat_analysis_modeler_hist',
+    'socrat_analysis_modeler_getParams'
 
   initialize: ->
     console.log("initalizing modeler dir")
     #@normal = @socrat_modeler_distribution_normal
     @histogram = @socrat_analysis_modeler_hist
+    @getParams = @socrat_analysis_modeler_getParams
     @restrict = 'E'
     @template = "<div class='graph-container' style='height: 600px'></div>"
     @link = (scope, elem, attr) =>
@@ -61,7 +63,7 @@ module.exports = class ModelerDir extends BaseDirective
           svg = container.append('svg')
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-          #svg.select("#remove").remove()
+          svg.select("#remove").remove()
 
           _graph = svg.append('g')
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -75,7 +77,11 @@ module.exports = class ModelerDir extends BaseDirective
             yMax: if gdata.yLab.type in numerics then d3.max(data, (d) -> parseFloat(d.y)) else null
             zMax: if gdata.zLab.type in numerics then d3.max(data, (d) -> parseFloat(d.z)) else null
 
+
+          console.log("Mean")
           console.log("Printing Histogram")
+
+
           @histogram.drawHist(_graph,data,container,gdata,width,height,ranges)
           switch scheme.name
             when 'Histogram'

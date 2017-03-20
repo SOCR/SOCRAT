@@ -21,6 +21,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
+    @getParams =
     @graphs = []
     @selectedGraph = null
 
@@ -96,6 +97,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
     [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
     data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
+
+
+
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data
       graph: @selectedGraph

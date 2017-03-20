@@ -3,7 +3,10 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ModelerMainCtrl extends BaseCtrl
-  @inject 'socrat_analysis_mymodule_dataService', '$timeout', '$scope'
+  @inject 'socrat_analysis_mymodule_dataService',
+    'socrat_analysis_modeler_getParams',
+    '$timeout',
+    '$scope'
 
   initialize: ->
     @dataService = @socrat_analysis_mymodule_dataService
@@ -15,6 +18,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @assignments = null
     @distribution = 'Normal'
     @stats = null
+    @getParams = @socrat_analysis_modeler_getParams
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
       #@showresults = off if @showresults is on
@@ -28,8 +32,9 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
   updateChartData: (data) ->
     if data.dataPoints?
-      console.log("updatating chartData" + data)
-
+      console.log("updatating chartData")
+      console.log(data)
+      @stats = @getParams.getParams(data)
       @distribution = data.distribution
       console.log(@distribution)
       @chartData = data

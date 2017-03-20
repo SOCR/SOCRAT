@@ -6,6 +6,7 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
   @inject 'socrat_analysis_mymodule_dataService',
     'socrat_analysis_mymodule_msgService',
     'socrat_analysis_modeler_dist_list',
+    'socrat_analysis_modeler_getParams',
     '$scope',
     '$timeout'
 
@@ -13,6 +14,7 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
     @dataService = @socrat_analysis_mymodule_dataService
     @msgService = @socrat_analysis_mymodule_msgService
     @list = @socrat_analysis_modeler_dist_list
+    @getParams = @socrat_analysis_modeler_getParams
     #@distributions = ['Normal', 'Binomial', 'Poisson']
 
 
@@ -23,6 +25,7 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
     # dataset-specific
     @dataFrame = null
     @dataType = null
+    @stats = null
     @cols = []
     @chosenCols = []
     @numericalCols = []
@@ -106,9 +109,13 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
 
 
      '''
+    console.log("Printing the data" + data)
+
     [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
     [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
     data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
+
+    console.log("printing stats" + @dataStats)
     @msgService.broadcast 'modeler:updateDataPoints',
       dataPoints: data
       distribution: @selectedDistributions
