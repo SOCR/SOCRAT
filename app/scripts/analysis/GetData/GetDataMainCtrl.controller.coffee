@@ -159,6 +159,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   ,
     id: 'TURKIYE_STUDENT_EVAL'
     name: 'Turkiye Student Evaluation Data Set'
+  , 
+    id: 'Fortune_500'
+    name: 'Fortune 500'
   ]
 
   getWB: ->
@@ -192,6 +195,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
       when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
       when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
+      when 'Fortune_500' then url = 'datasets/Fortune500.csv'
       # default option
       else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 

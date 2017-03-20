@@ -17,6 +17,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @dataPoints = null
     @means = null
     @assignments = null
+    @populations = {}
+    @deployed = false
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
 #      @showresults = off if @showresults is on
@@ -27,6 +29,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       @dataType = dataType
 
     #variables needed for cfap only
+    @cfap_nn = 1
     @cfap_me=0.09297
     @cfap_n=101
     @cfap_maxn=120
@@ -37,6 +40,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cfap_submit()
 
     #variables needed for cimean only
+    @cimean_nn = 1
     @cimean_me=null
     @cimean_n=null
     @cimean_signa=null
@@ -49,6 +53,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cimean_submit()
 
     #variables needed for OnePGUI only
+    @OnePGUI_nn = 1
     @OnePGUI_p0=null
     @OnePGUI_p=null
     @OnePGUI_ssize=null
@@ -65,6 +70,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OnePGUI_submit()
 
     #variables needed for OneTGUI only
+    @OneTGUI_nn = 1
     @OneTGUI_sigma=null;
     @OneTGUI_diff=null;
     @OneTGUI_n=null;
@@ -82,6 +88,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OneTGUI_submit()
 
     #variables needed for Pilot only
+    @Pilot_n = 1;
     @Pilot_pctUnder=null;
     @Pilot_risk=null;
     @Pilot_df=null;
@@ -93,6 +100,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @Pilot_submit()
 
     #variables needed for RsquareGUI only
+    @RsquareGUI_n = 1;
     @RsquareGUI_rho2=null;
     @RsquareGUI_n=null;
     @RsquareGUI_preds=null;
@@ -107,6 +115,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @RsquareGUI_submit();
 
     #variables needed for SimpleChi2GUI only
+    @SimpleChi2GUI_nn = 1
     @SimpleChi2GUI_Power=null;
     @SimpleChi2GUI_n=null;
     @SimpleChi2GUI_maxn=75;
@@ -116,6 +125,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimpleChi2GUI_submit();
 
     #variables needed for SimplePoissonGUI only
+    @SimplePoissonGUI_nn = 1;
     @SimplePoissonGUI_lambda0=null;
     @SimplePoissonGUI_lambda=null;
     @SimplePoissonGUI_n=null;
@@ -130,6 +140,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimplePoissonGUI_submit();
 
     #variables needed for TwoTGUI only
+    @TwoTGUI_nn = 2;
     @TwoTGUI_sigma1=null;
     @TwoTGUI_sigma2=null;
     @TwoTGUI_n1=0;
@@ -154,6 +165,36 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
+
+    @$scope.$on 'powercalc:deploy', (event, data)=>
+      @populations = data.populations
+      @chosenCols = data.chosen
+      @deploy()
+      #console.log(@chosenCols)
+      #console.log("pops updated:", @populations)
+
+    @$scope.$on 'powercalc:undeploy', (event, data)=>
+      @deployed = false
+      @undeploy()
+
+  deploy: () ->
+    if (@selectedAlgorithm is "Two-sample t test (general case)")
+      if (@chosenCols.length isnt 2)
+        window.alert("Must choose two samples")
+      else
+        @TwoTGUI_submit("1", "n1", @populations[@chosenCols[0]])
+        @TwoTGUI_submit("1", "n2", @populations[@chosenCols[1]])
+        @deployed = true
+    if (@selectedAlgorithm is "CI for One Proportion")
+      if (@chosenCols.length isnt 1)
+        window.alert("Must choose one sample")
+      else
+        @cfap_submit("1", "n", @populations[@chosenCols[0]])
+
+  undeploy: () ->
+    console.log "undeploy"
+    @deployed = false
+    
 
   #global
   updateChartData: (data) ->
@@ -1105,6 +1146,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $("#n2i").prop("value",d.n2);
     @TwoTGUI_n1=d.n1;
     @TwoTGUI_n2=d.n2;
+    if @TwoTGUI_n1 > @TwoTGUI_maxn1 or @TwoTGUI_n2 > @TwoTGUI_maxn2
+      if @TwoTGUI_n1 > @TwoTGUI_n2
+        @TwoTGUI_maxn2 = @TwoTGUI_n1
+        @TwoTGUI_maxn1 = @TwoTGUI_n1
+      else 
+        @TwoTGUI_maxn2 = @TwoTGUI_n2
+        @TwoTGUI_maxn1 = @TwoTGUI_n2
     $("#alloci").prop("value",d.alloc);
     if d.tt is 1
       $("#tti").prop("checked","checked");

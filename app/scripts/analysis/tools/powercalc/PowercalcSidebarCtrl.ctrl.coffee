@@ -45,6 +45,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@chosenCols = []
 		@numericalCols = []
 		@categoricalCols = []
+		@populations = {}
 		@xCol = null
 		@yCol = null
 		@labelCol = null
@@ -69,6 +70,13 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			@selectedAlgorithm = data
 			console.log("algorithms updated:", @selectedAlgorithm)
 
+	deploy: () ->
+		@msgService.broadcast 'powercalc:deploy',
+			populations:@populations
+			chosen:@chosenCols
+
+	undeploy: () ->
+		@msgService.broadcast 'powercalc:undeploy',
 
 
 	updateAlgControls: () ->
@@ -77,25 +85,29 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
 
-			# update data-driven sidebar controls
-	updateSidebarControls: (data) ->
-		@cols = data.header
-		@numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
-		@categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
-		# make sure number of unique labels is less than maximum number of clusters for visualization
-		if @algParams.k
-			[minK, ..., maxK] = @algParams.k
-			colData = d3.transpose(data.data)
-			@categoricalCols = @categoricalCols.filter (x, i) =>
-				@uniqueVals(colData[@cols.indexOf(x)]).length < maxK
-		[@xCol, @yCol, ..., lastCol] = @numericalCols
-		#@clusterRunning = off
-		if @labelCol
-			@uniqueLabels =
-				num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
-				labelCol: @labelCol
-		@$timeout =>
-			@updateDataPoints data
+
+	updateDataset: (data) ->
+		@categoricalCols = []
+		for header in data.types
+			if header is "string"
+				@categoricalCols.push(data.header[data.types.indexOf(header)])
+		######
+		@categoricalCols = data.header
+		######
+		@numericalCols = []
+		@populations = {}
+		index = data.header.indexOf(@labelCol)
+		if !(index is -1)
+			for row in data.data
+				#console.log row[index]
+				name = row[index]
+				if @populations[name] is undefined
+					@populations[name] = 1  
+				else 
+					@populations[name] = @populations[name] + 1
+			delete @populations['a']
+			@numericalCols = Object.keys(@populations)
+			console.log(@populations)
 
 	updateDataPoints: (data=null, means=null, labels=null) ->
 		if data
@@ -114,9 +126,11 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
 	parseData: (data) ->
+		# console.log(data)
 		@dataService.inferDataTypes data, (resp) =>
 			if resp and resp.dataFrame
-				@updateSidebarControls(resp.dataFrame)
+				#@updateSidebarControls(resp.dataFrame)
+				@updateDataset(resp.dataFrame)
 				@updateDataPoints(resp.dataFrame)
 				#@ready = on
 

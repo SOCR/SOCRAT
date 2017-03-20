@@ -466,7 +466,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
     h3 Two-sample t test (general case)
     p <i>This dialog provides for power analysis of a two-sample t test or a two-sample t test of equivalence.  If the "equal SDs" box is checked, then the pooled t test is used; otherwise, the calculations are based on the Satterthwaite approximation</i>
-    div(style='width:100%; border-style:solid; border-width:1px;')
+    div
       h3 Sigma
       div(style='margin-top:20px;')
         div(style='display:inline')
@@ -483,20 +483,20 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       div(style='margin-top:20px;')
         input#eqsi(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='eqs', ng-click='mainArea.TwoTGUI_clk($event);')
         | Equal Sigmas &nbsp &nbsp;
-    div(style='width:100%; border-style:solid; border-width:1px;')
-      h3 Population
+    div
+      h3 Sample Size
       div(style='margin-top:20px;')
         div(style='display:inline')
           | n1=: &nbsp
-          input#n1i(name='n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.TwoTGUI_changeSlider('n1',$event);")
+          input#n1i(ng-disabled='mainArea.deployed' name='n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.TwoTGUI_changeSlider('n1',$event);")
         div(style='display:inline')
-          #n1uii(disabled uib-tooltip="Manipulate this bar to adjust population1" tooltip-placement="top")
+          #n1uii(ng-hide="mainArea.deployed" uib-tooltip="Manipulate this bar to adjust population1" tooltip-placement="top")
       div(style='margin-top:20px;')
         div(style='display:inline')
           | n2=: &nbsp
-          input#n2i(name='n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.TwoTGUI_changeSlider('n2',$event);")
+          input#n2i(ng-disabled='mainArea.deployed' name='n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.TwoTGUI_changeSlider('n2',$event);")
         div(style='display:inline')
-          #n2uii(disabled uib-tooltip="Manipulate this bar to adjust population2" tooltip-placement="top")
+          #n2uii(ng-hide="mainArea.deployed" uib-tooltip="Manipulate this bar to adjust population2" tooltip-placement="top")
       div(style='margin-top:20px;')
         | Allocation: &nbsp
         select#alloci(name='alloc' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.TwoTGUI_alloc_value", ng-change="mainArea.TwoTGUI_alloc_submit('1','alloc');")
@@ -504,6 +504,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           option(value='1') Equal
           option(value='2') Optimal
     div(style='width:100%; border-style:solid; border-width:0px;')
+      h3 Controller
       div(style='margin-top:20px;')
         input#tti(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='tt', ng-click='mainArea.TwoTGUI_clk($event);')
         | Two-tailed &nbsp &nbsp;
