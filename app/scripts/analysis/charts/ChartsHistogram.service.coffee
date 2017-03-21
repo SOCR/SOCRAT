@@ -24,6 +24,9 @@ module.exports = class ChartsHistogram extends BaseService
 
 
   plotHist: (bins, container, arr, _graph, gdata, x, height, width, data, median, mean) ->
+
+#    tooltip
+    $('#tooltip').remove();
     # slider
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
@@ -58,6 +61,7 @@ module.exports = class ChartsHistogram extends BaseService
     tooltip = container
       .append('div')
       .attr('class', 'tooltip')
+      .attr('id', 'tooltip')
 
     # x axis
     _graph.append("g")
@@ -164,5 +168,5 @@ module.exports = class ChartsHistogram extends BaseService
       ).addSliderSegments($slider.slider("option").max)
     $slider.on "slidechange", (event, ui) =>
       bins = parseInt ui.value
-      tooltip.html()
+#      tooltip.html()
       @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean
