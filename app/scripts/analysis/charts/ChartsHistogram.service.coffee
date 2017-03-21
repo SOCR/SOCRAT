@@ -42,6 +42,7 @@ module.exports = class ChartsHistogram extends BaseService
 
     xMean = (d, i) -> stats[i].mean
     xMedian = (d, i) -> stats[i].median
+    xLength = (d, i) -> dataHist[i].length
 
     _graph.selectAll('g').remove()
     _graph.select('.x axis').remove()
@@ -135,12 +136,11 @@ module.exports = class ChartsHistogram extends BaseService
           .transition()
           .style('fill', getColor(1))
 
-        console.log stats[i].mean
 
         tooltip.transition().duration(200).style('opacity', .9)
 
 
-        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.xLab.value+'</br>'+"Median: "+ stats[i].mean'</br>'+"Mean"+ stats[i].median'</br>'+"N: "+arr.length+'</div>')
+        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.xLab.value+'</br>'+'Median: '+ xMedian(d,i)+'</br>'+'Mean: '+xMean(d,i)+'</br>'+"N: "+xLength(d, i)+'</div>')
           .attr('value', stats[i].mean)
           .style('background-color', 'dodgerblue')
           .style('opacity', .4)
