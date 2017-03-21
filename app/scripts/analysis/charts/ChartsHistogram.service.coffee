@@ -31,6 +31,17 @@ module.exports = class ChartsHistogram extends BaseService
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
     dataHist = d3.layout.histogram().bins(bins)(arr)
+    console.log dataHist #array for each bin, each array has all data points
+
+    #create array of objects that store mean and median of each set
+    stats = []
+    for a in dataHist
+      stats.push({mean: @getMean(a), median: @getMedian(a)})
+
+    console.log stats
+
+    xMean = (d, i) -> stats[i].mean
+    xMedian = (d, i) -> stats[i].median
 
     _graph.selectAll('g').remove()
     _graph.select('.x axis').remove()
@@ -40,12 +51,12 @@ module.exports = class ChartsHistogram extends BaseService
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])
 
-    console.log "bins"
-    console.log bins
-    console.log "arr"
-    console.log arr
-    console.log "data"
-    console.log data
+#    console.log "bins"
+#    console.log bins
+#    console.log "arr"
+#    console.log arr
+#    console.log "data"
+#    console.log data
 
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
     y.domain([0, (d3.max dataHist.map (i) -> i.length)])
@@ -119,14 +130,18 @@ module.exports = class ChartsHistogram extends BaseService
     .attr("stroke", "white")
     .attr("stroke-width", 1)
     .style('fill', getColor(0))
-    .on('mouseover', () ->
+    .on('mouseover', (d, i) ->
         d3.select(this)
           .transition()
           .style('fill', getColor(1))
 
+        console.log stats[i].mean
+
         tooltip.transition().duration(200).style('opacity', .9)
 
-        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.xLab.value+'</br>'+"Median"+': '+ median+'</br>'+"Mean"+': '+mean+'</br>'+"N: "+arr.length+'</div>')
+
+        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.xLab.value+'</br>'+"Median: "+ stats[i].mean'</br>'+"Mean"+ stats[i].median'</br>'+"N: "+arr.length+'</div>')
+          .attr('value', stats[i].mean)
           .style('background-color', 'dodgerblue')
           .style('opacity', .4)
           .style('padding', 2)
@@ -134,6 +149,16 @@ module.exports = class ChartsHistogram extends BaseService
           .style('border-radius', 8)
           .style('left', d3.select(this).attr('x') + 'px')
           .style('top', d3.select(this).attr('y') + 'px')
+#          .text("Mean1: "+ stats[i].mean + '</br>'+ "Median: " + stats[i].median)
+
+#        tooltip.append("p")
+#          .text("Mean: "+ stats[i].mean)
+#          .append("br")
+#          .append("p")
+#          .text("Median: "+ stats[i].median)
+
+#        tooltip.append("/br")
+
     )
     .on('mouseout', () -> d3.select(this).transition().style('fill', getColor(0)))
 
