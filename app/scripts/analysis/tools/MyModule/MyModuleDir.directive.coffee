@@ -7,7 +7,7 @@ module.exports = class ClusterVizDir extends BaseDirective
 
   initialize: ->
     @restrict = 'E'
-    @template = "<svg width='100%' height='600'></svg>"
+    @template = "<dev></dev>"
     @replace = true # replace the directive element with the output of the template
 
     # The link method does the work of setting the directive
