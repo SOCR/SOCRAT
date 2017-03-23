@@ -25,33 +25,102 @@ module.exports = class GetDataDataAdaptor extends BaseService
       false
 
   isNumStringArray: (arr) ->
-    console.log arr
     arr.every (el) -> typeof el in ['number', 'string']
 
-  # accepts handsontable row-oriented table data as input and returns dataFrame
-  toDataFrame: (tableData, header=false) ->
 
+  isValidDataFrame: (dataFrame) ->
+    if dataFrame? and dataFrame.header? and dataFrame.nRows? and dataFrame.nCols? and Array.isArray(dataFrame.data) and dataFrame.purpose?
+      true
+    else
+      false
+  
+  # accepts handsontable row-oriented table data as input and returns dataFrame
+  ###
+    @param {Array} tableData - array of objects
+    @return {Object} DataFrame
+  ###
+  toDataFrame: (tableData, header=[]) ->
+    if not Array.isArray(tableData) or tableData.length == 0
+      throw new Error('invalid dataFrame passed.')
     # by default data types are not known at this step
     #  and should be defined at Clean Data step
 #    colTypes = ('symbolic' for [1...tableData.nCols])
-
-    if not header
-      header = if tableData.length > 1 then tableData.shift() else []
+        
+    if Object.prototype.toString.call(tableData[0]) == "[object Object]"
+      header = @getHeaders tableData[0]
+      tableData = @extractData tableData
+      
+    if header.length is 0
+      for i in [0...tableData[0]-1]
+        header.push(i)
 
     dataFrame =
       header: header
       nRows: tableData.length
-      nCols: tableData[0].length
+      nCols: header.length
       data: tableData
       dataType: @DATA_TYPES.FLAT
       purpose: 'json'
 
-  toHandsontable: ->
+  getHeaders : (data)->
+    _col = []
+    tree = []
+
+    count = (obj) ->
+      try
+        if typeof obj is 'object' and obj isnt null
+          for key in Object.keys obj
+            tree.push key
+            count obj[key]
+            tree.pop()
+        else
+          _col.push tree.join('.')
+        return _col
+      catch e
+        console.warn e.message
+      return {}
+
+    # generate titles and references
+    count data
+    return _col
+  
+  # @TODO : merge this function with jsonToFlatTable.
+  extractData: (data)->
+    
+    if not Array.isArray data
+      throw new Error "not a valid array. Cannot extract data"
+
+    parsedData = []
+    headers = @getHeaders data[0]
+    
+    getValue = (path,obj) ->
+      if path.split('.').length == 1
+        if ( obj[path] == null or obj[path] == undefined ) 
+          return null 
+        else 
+          return obj[path]
+      pathTokens = path.split('.')
+      newObj = obj[pathTokens.shift()]
+      getValue pathTokens.join(), newObj
+
+    data.forEach (el) ->
+      result = []
+      headers.forEach (columnName)->
+        result.push getValue columnName, el
+      parsedData.push result
+
+    parsedData
+
+  ###
+    @param {Object} dataFrame
+  ###
+  toTableData: (dataFrame)->
+
     # TODO: implement for poping up data when coming back from analysis tabs
 
   # tries to convert JSON to 2d flat data table,
   #  assumes JSON object is not empty - has values,
-  #  returns coverted data or false if not possible
+  #  returns converted data or false if not possible
   jsonToFlatTable: (data) ->
     # check if JSON contains "flat data" - 2d array
     if data? and typeof data is 'object'
@@ -63,7 +132,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
             data
         else
           # array of arrays or objects
-          if (data.every (el) -> @typeIsArray el)
+          if (data.every (el) -> Array.isArray el)
             # array of arrays
             if (data.every (col) -> col.every (el) -> typeof el in ['number', 'string'])
               # array of arrays of (numbers or strings)
@@ -106,7 +175,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
           data = [ks, vals]
         else if (vals.every (el) -> typeof el is 'object')
           # object of arrays or objects
-          if (vals.every (row) -> @typeIsArray row) and
+          if (vals.every (row) -> Array.isArray row) and
           (vals.every (row) -> row.every (el) -> typeof el in ['number', 'string'])
             # object of arrays
             vals = (t[i] for t in vals for i of vals)  # transpose
