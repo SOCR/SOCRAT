@@ -226,6 +226,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   openSocrDescription: ->
     @$window.open @socrdataset.desc, '_blank'
+    true
 
   getJsonByUrl: (type) ->
     # TODO: replace d3 with datalib
