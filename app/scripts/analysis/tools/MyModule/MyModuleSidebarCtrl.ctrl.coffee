@@ -15,6 +15,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 
     @dataService.getData().then (obj) =>
       @msgService.broadcast 'mymodule:dataFromDb', obj
+      console.log("DONE!!!!!!!!!!!")
 
 
   getNames: -> @options.map (ops) -> ops.getName()
