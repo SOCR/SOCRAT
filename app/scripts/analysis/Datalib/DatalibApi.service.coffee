@@ -4,15 +4,17 @@ BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffe
 
 module.exports = class DatalibApi extends BaseModuleInitService
   @inject '$q',
-    '$timeout',
-    'app_analysis_datalib_dataAdaptor',
+    '$timeout'
+    'app_analysis_datalib_dataAdaptor'
     'app_analysis_datalib_msgService'
     'app_analysis_datalib_wrapper'
+    'app_analysis_datalib_apiBuilder'
 
   initialize: ->
     @eventManager = @app_analysis_datalib_msgService
     @dataAdaptor = @app_analysis_datalib_dataAdaptor
     @dl = @app_analysis_datalib_wrapper
+    @apiBuilder = @app_analysis_datalib_apiBuilder
 
     @DATA_TYPES = null
 
@@ -20,10 +22,30 @@ module.exports = class DatalibApi extends BaseModuleInitService
     @$timeout =>
       @DATA_TYPES = @eventManager.getSupportedDataTypes()
       console.log @dl
+
+      #TODO: dynamically create methods array
+#      @dlApi = @apiBuilder.createApi @dl.dl
+#      console.log @dlApi
+#      @subscribeForApiMethods @dlApi
       if @setDlListeners()
         console.log 'Datalib: ready'
       else
         console.log 'Datalib: failed to start'
+
+  subscribeForApiMethods: (api) ->
+    for method in api
+      func = @fetchPropFromObj(@dl, method)
+      @msgService.addIncomingMsg method
+      @msgService.subscribe method, func unless !func?
+
+  fetchPropFromObj: (obj, prop) =>
+    return false if !obj?
+
+    idx = prop.indexOf '.'
+    if idx > -1
+      @fetchPropFromObj(obj[prop[..idx-1]], prop[idx+1..])
+    else
+      obj[prop]
 
   inferType: (obj) =>
     if obj.dataFrame? and obj.dataFrame.dataType is @DATA_TYPES.FLAT

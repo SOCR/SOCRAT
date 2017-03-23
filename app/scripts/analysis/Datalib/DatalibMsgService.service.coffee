@@ -7,3 +7,6 @@ module.exports = class DatalibMsgService extends BaseModuleMessageService
     incoming: ['infer type', 'infer all types']
     outgoing: ['type inferred', 'all types inferred']
     scope: ['app_analysis_datalib']
+
+  addIncomingMsg: (msg) ->
+    @msgList.incoming.push msg
