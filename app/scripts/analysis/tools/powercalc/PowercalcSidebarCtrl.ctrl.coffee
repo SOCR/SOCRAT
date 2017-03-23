@@ -50,6 +50,13 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@yCol = null
 		@labelCol = null
 
+		@deployed = false
+		$("#toggle_switch").bootstrapSwitch();
+
+		$("#toggle_switch").on 'switchChange.bootstrapSwitch', () =>
+			@deployed = !@deployed
+			@change_mode()
+
 
 		@dataService.getData().then (obj) =>
 			if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
@@ -70,13 +77,15 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			@selectedAlgorithm = data
 			console.log("algorithms updated:", @selectedAlgorithm)
 
-	deploy: () ->
-		@msgService.broadcast 'powercalc:deploy',
+	drive_data: () ->
+		@msgService.broadcast 'powercalc:drive_data',
 			populations:@populations
 			chosen:@chosenCols
 
-	undeploy: () ->
-		@msgService.broadcast 'powercalc:undeploy',
+	change_mode: () -> 
+		#console.log "mode changed"
+		@msgService.broadcast 'powercalc:change_mode',
+			deploy: @deployed
 
 
 	updateAlgControls: () ->
@@ -86,28 +95,30 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			@selectedAlgorithm
 
 
-	updateDataset: (data) ->
-		@categoricalCols = []
-		for header in data.types
-			if header is "string"
-				@categoricalCols.push(data.header[data.types.indexOf(header)])
-		######
-		@categoricalCols = data.header
-		######
-		@numericalCols = []
+	calculateN: (data) ->
 		@populations = {}
-		index = data.header.indexOf(@labelCol)
-		if !(index is -1)
-			for row in data.data
-				#console.log row[index]
-				name = row[index]
-				if @populations[name] is undefined
-					@populations[name] = 1  
-				else 
-					@populations[name] = @populations[name] + 1
-			delete @populations['a']
-			@numericalCols = Object.keys(@populations)
-			console.log(@populations)
+		for col in @chosenCols
+			sum = 0
+			index = data.header.indexOf(col)
+			if !(index is -1)
+				for row in data.data
+					if @populations[col] is undefined
+						sum = sum + parseFloat(row[index])
+						@populations[col] = {"counter":0, "mean":0, "sigma":0}
+						@populations[col]["counter"] = 1
+					else 
+						sum = sum + parseFloat(row[index])
+						@populations[col]["counter"] = @populations[col]["counter"] + 1
+			mean = sum / @populations[col]["counter"]
+			@populations[col]["mean"] = mean
+			@populations[col]["sigma"] = @calculate_sigma(data, col, index)
+		console.log(@populations)
+
+	calculate_sigma: (data, col, index) ->
+		sum = 0
+		for row in data.data
+			sum = sum + Math.pow(parseFloat(row[index]) - @populations[col]["mean"], 2)
+		return Math.sqrt(sum / @populations[col]["counter"])
 
 	updateDataPoints: (data=null, means=null, labels=null) ->
 		if data
@@ -129,8 +140,13 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		# console.log(data)
 		@dataService.inferDataTypes data, (resp) =>
 			if resp and resp.dataFrame
-				#@updateSidebarControls(resp.dataFrame)
-				@updateDataset(resp.dataFrame)
+				# update columns
+				@categoricalCols = []
+				id = 0
+				for header in resp.dataFrame.types
+					if header is "number"
+						@categoricalCols.push(resp.dataFrame.header[id])
+					id += 1
 				@updateDataPoints(resp.dataFrame)
 				#@ready = on
 

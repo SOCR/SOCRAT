@@ -141,11 +141,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
     #variables needed for TwoTGUI only
     @TwoTGUI_nn = 2;
-    @TwoTGUI_sigma1=null;
-    @TwoTGUI_sigma2=null;
-    @TwoTGUI_n1=0;
-    @TwoTGUI_n2=0;
-    @TwoTGUI_diff=0;
+    @TwoTGUI_sigma1=0.1;
+    @TwoTGUI_sigma2=0.1;
+    @TwoTGUI_n1=10;
+    @TwoTGUI_n2=10;
+    @TwoTGUI_diff=0.5;
     @TwoTGUI_power=0;
     @TwoTGUI_maxsigma1=1.4;
     @TwoTGUI_maxsigma2=1.4;
@@ -153,47 +153,45 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_maxn2=35;
     @TwoTGUI_maxdiff=1.0;
     @TwoTGUI_maxpower=1;
+    @TwoTGUI_maxdf = 100;
     @TwoTGUI_help=false;
     @TwoTGUI_alloc_value=0;
     @TwoTGUI_opt_value=0;
-    @TwoTGUI_alpha=0.05;
+    @TwoTGUI_alpha=0.001;
     @TwoTGUI_threshold=1;
     @TwoTGUI_df=1;
-    @TwoTGUI_click();
-    @TwoTGUI_submit();
-
+    @TwoTGUI_update();
+    
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
 
-    @$scope.$on 'powercalc:deploy', (event, data)=>
+    @$scope.$on 'powercalc:drive_data', (event, data)=>
       @populations = data.populations
       @chosenCols = data.chosen
-      @deploy()
+      @drive_data()
       #console.log(@chosenCols)
       #console.log("pops updated:", @populations)
 
-    @$scope.$on 'powercalc:undeploy', (event, data)=>
-      @deployed = false
-      @undeploy()
+    @$scope.$on 'powercalc:change_mode', (event, data)=>
+      @deployed=data.deploy
+      @TwoTGUI_click()
 
-  deploy: () ->
+
+  drive_data: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
       if (@chosenCols.length isnt 2)
         window.alert("Must choose two samples")
       else
-        @TwoTGUI_submit("1", "n1", @populations[@chosenCols[0]])
-        @TwoTGUI_submit("1", "n2", @populations[@chosenCols[1]])
-        @deployed = true
+        @TwoTGUI_receive_data()
     if (@selectedAlgorithm is "CI for One Proportion")
       if (@chosenCols.length isnt 1)
         window.alert("Must choose one sample")
       else
         @cfap_submit("1", "n", @populations[@chosenCols[0]])
 
-  undeploy: () ->
-    console.log "undeploy"
-    @deployed = false
+
+
     
 
   #global
@@ -1006,17 +1004,36 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     return
 
   #functions for TwoTGUI only
+  TwoTGUI_receive_data: () ->
+    @TwoTGUI_sigma1 = @populations[@chosenCols[0]]["sigma"]
+    @TwoTGUI_sigma2 = @populations[@chosenCols[1]]["sigma"]
+    @TwoTGUI_n1 = @populations[@chosenCols[0]]["counter"]
+    @TwoTGUI_n2 = @populations[@chosenCols[1]]["counter"]
+    @TwoTGUI_df = @TwoTGUI_n1 + @TwoTGUI_n2 - 2
+    @TwoTGUI_diff = 0.01 * (@TwoTGUI_sigma1 + @TwoTGUI_sigma2)
+    @TwoTGUI_click()
+
   TwoTGUI_click: () ->
+    @TwoTGUI_maxsigma1 = Math.max(@TwoTGUI_sigma1, @TwoTGUI_maxsigma1)
+    @TwoTGUI_maxsigma2 = Math.max(@TwoTGUI_sigma1, @TwoTGUI_maxsigma2)
+    @TwoTGUI_maxn1 = Math.max(@TwoTGUI_n1, @TwoTGUI_maxn1)
+    @TwoTGUI_maxn2 = Math.max(@TwoTGUI_n2, @TwoTGUI_maxn2)
+    @TwoTGUI_maxdf = Math.max(@TwoTGUI_df, @TwoTGUI_maxdf)
+    @TwoTGUI_maxdiff = Math.max(@TwoTGUI_diff, @TwoTGUI_maxdiff)
+    @TwoTGUI_maxpower = Math.max(@TwoTGUI_power, @TwoTGUI_maxpower)
+
     $( "#sigma1uii" ).slider(
       value: @TwoTGUI_sigma1,
       min: 0,
       max: @TwoTGUI_maxsigma1,
       range: 'min', 
       step: 0.01,
-      slide: ( event, ui ) =>
-        $( "#sigma1i" ).val( ui.value );
-        @TwoTGUI_submit('1','sigma1',ui.value); 
-        return  
+      if !@deployed
+        slide: ( event, ui ) =>
+          $( "#sigma1i" ).val( ui.value );
+          @TwoTGUI_sigma1 = ui.value
+          @TwoTGUI_update()
+          return
     )      
     $( "#sigma1i" ).val( $( "#sigma1uii" ).slider( "value" ) );
     $( "#sigma2uii" ).slider(
@@ -1025,10 +1042,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       max: @TwoTGUI_maxsigma2,
       range: "min", 
       step: 0.01,
-      slide: ( event, ui ) =>
-        $( "#sigma2i" ).val( ui.value );
-        @TwoTGUI_submit('1','sigma2',ui.value);
-        return
+      if !@deployed
+        slide: ( event, ui ) =>
+          $( "#sigma2i" ).val( ui.value );
+          @TwoTGUI_sigma2 = ui.value
+          @TwoTGUI_update()
+          return
     )          
     $( "#sigma2i" ).val( $( "#sigma2uii" ).slider( "value" ) );
     $( "#n1uii" ).slider(
@@ -1037,10 +1056,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       max: @TwoTGUI_maxn1,
       range: "min", 
       step: 0.0025,
-      slide: ( event, ui ) =>
-        $( "#n1i" ).val( ui.value );
-        @TwoTGUI_submit('1','n1',ui.value);
-        return
+      if !@deployed
+        slide: ( event, ui ) =>
+          $( "#n1i" ).val( ui.value );
+          @TwoTGUI_n1 = ui.value
+          @TwoTGUI_update()
+          return
     )          
     $( "#n1i" ).val( $( "#n1uii" ).slider( "value" ) );
     $( "#n2uii" ).slider(
@@ -1049,10 +1070,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       max: @TwoTGUI_maxn2,
       range: "min", 
       step: 0.0025,
-      slide: ( event, ui ) =>
-        $( "#n2i" ).val( ui.value );
-        @TwoTGUI_submit('1','n2',ui.value);
-        return
+      if !@deployed
+        slide: ( event, ui ) =>
+          $( "#n2i" ).val( ui.value );
+          @TwoTGUI_n2 = ui.value
+          @TwoTGUI_update()
+          return
       )        
     $( "#n2i" ).val( $( "#n2uii" ).slider( "value" ) );
     $( "#diffuii" ).slider(
@@ -1061,10 +1084,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       max: @TwoTGUI_maxdiff,
       range: "min", 
       step: 0.005,
-      slide: ( event, ui ) =>
-        $( "#diffi" ).val( ui.value );
-        @TwoTGUI_submit('1','diff',ui.value);
-        return
+      if !@deployed
+        slide: ( event, ui ) =>
+          $( "#diffi" ).val( ui.value );
+          @TwoTGUI_diff = ui.value
+          @TwoTGUI_update()
+          return
     )         
     $( "#diffi" ).val( $( "#diffuii" ).slider( "value" ) );
     $( "#poweruii" ).slider(
@@ -1073,25 +1098,28 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       max: @TwoTGUI_maxpower,
       range: "min", 
       step: 0.0001,
-      slide:  ( event, ui ) =>
-        $( "#poweri" ).val( ui.value );
-        @TwoTGUI_submit('1','power',ui.value);
-        return
+      if !@deployed
+        slide:  ( event, ui ) =>
+          $( "#poweri" ).val( ui.value );
+          @TwoTGUI_power = ui.value
+          @TwoTGUI_update()
+          return
     )         
     $("#poweri").val($("#poweruii").slider("value"));
     $("#alphauii").slider(
-      min: 0.005
-      max: 0.2
+      min: 0.001
+      max: 0.200
       value: @TwoTGUI_alpha
       orientation: "horizontal"
       range: "min"
-      step: 0.01
+      step: 0.001
       slide: (event, ui) =>
         @TwoTGUI_alpha = ui.value
         $('#alphai').val ui.value
-        @TwoTGUI_submit '1', 'alpha', ui.value
+        @TwoTGUI_update()
         return
     )
+    $("#alphai").val($("#alphauii").slider("value"));
     $("#threshuii").slider(
       min: 0
       max: 100
@@ -1102,22 +1130,49 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       slide: (event, ui) =>
         @TwoTGUI_alpha = ui.value
         $('#threshi').val ui.value
-        @TwoTGUI_submit '1', 'thresh', ui.value
+        #@TwoTGUI_submit '1', 'thresh', ui.value
         return
     )
     $("#dfuii").slider(
       min: 0
-      max: 100
+      max: @TGUI_maxdf
       value: @TwoTGUI_df
       orientation: "horizontal"
       range: "min"
       step: 1
-      slide: (event, ui) =>
-        @TwoTGUI_df = ui.value
-        $('#dfi').val ui.value
-        @TwoTGUI_submit '1', 'df', ui.value
-        return
+      if !@deployed
+        slide: (event, ui) =>
+          @TwoTGUI_df = ui.value
+          $('#dfi').val ui.value
+          @TwoTGUI_update()
+          return
     )
+    $("#dfi").val($("#dfuii").slider("value"));
+    if @deployed is true
+      $("#sigma1uii").slider("disable")
+      $("#sigma2uii").slider("disable")
+      $("#n1uii").slider("disable")
+      $("#n2uii").slider("disable")
+      $("#dfuii").slider("disable")
+      $("#diffuii").slider("disable")
+      $("#poweruii").slider("disable")
+      $("#sigma1uii, #sigma2uii, #n1uii, #n2uii, #dfuii, #diffuii").css("background-color","#ebedef");
+      $("#poweruii").css("background-color","red");
+
+      return
+    else 
+      $("#sigma1uii").slider("enable")
+      $("#sigma2uii").slider("enable")
+      $("#n1uii").slider("enable")
+      $("#n2uii").slider("enable")
+      $("#dfuii").slider("enable")
+      $("#diffuii").slider("enable")
+      $("#poweruii").slider("enable")
+      $("#sigma1uii, #sigma2uii, #n1uii, #n2uii, #dfuii, #diffuii").css("background-color","#1abc9c");
+      $("#poweruii").css("background-color","red");
+
+
+      return
   TwoTGUI_clk: (evt) ->
     obj=evt.currentTarget
     if obj
@@ -1130,46 +1185,54 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       else
         @TwoTGUI_submit("1",id,"");
       return
-  TwoTGUI_submit: (id, key, value) ->
-    d = @powerAnalysis.TwoTGUI_handle(id, key, value);
-    $("#sigma1i").val(d.sigma1);
-    @TwoTGUI_sigma1=d.sigma1;
-    if d.eqs is 1
-      $("#eqsi").prop("checked","checked");
-      $("#sigma2i").prop("value",d.sigma1);
-      @TwoTGUI_sigma2=d.sigma1;
+  TwoTGUI_update: () ->
+    if @deployed
+      d = @powerAnalysis.TwoTGUI_dataDrivenMode_power(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff)
     else
-      $("#eqsi").prop("checked","");
-      $("#sigma2i").prop("value",d.sigma2);
-      @TwoTGUI_sigma2=d.sigma2;
-    $("#n1i").prop("value",d.n1);
-    $("#n2i").prop("value",d.n2);
+      d = @powerAnalysis.TwoTGUI_dataDrivenMode_power(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff)
+    @TwoTGUI_sigma1=d.sigma1;
+    @TwoTGUI_sigma2=d.sigma2;
+    #$("sigma1i").prop("value", d.sigma1)
+    #$("sigma2i").prop("value", d.sigma2)
+
+    # if d.eqs is 1
+    #   $("#eqsi").prop("checked","checked");
+    #   $("#sigma2i").prop("value",d.sigma1);
+    #   @TwoTGUI_sigma2=d.sigma1;
+    # else
+    #   $("#eqsi").prop("checked","");
+    #   $("#sigma2i").prop("value",d.sigma2);
+    #   @TwoTGUI_sigma2=d.sigma2;
+
+    #$("#n1i").prop("value",d.n1);
+    #$("#n2i").prop("value",d.n2);
     @TwoTGUI_n1=d.n1;
     @TwoTGUI_n2=d.n2;
-    if @TwoTGUI_n1 > @TwoTGUI_maxn1 or @TwoTGUI_n2 > @TwoTGUI_maxn2
-      if @TwoTGUI_n1 > @TwoTGUI_n2
-        @TwoTGUI_maxn2 = @TwoTGUI_n1
-        @TwoTGUI_maxn1 = @TwoTGUI_n1
-      else 
-        @TwoTGUI_maxn2 = @TwoTGUI_n2
-        @TwoTGUI_maxn1 = @TwoTGUI_n2
-    $("#alloci").prop("value",d.alloc);
-    if d.tt is 1
-      $("#tti").prop("checked","checked");
-    $("#alphai").prop("value",d.alpha);
-    if d.equiv is 1
-      $("#equivi").prop("checked","checked");
-      $("#threshi").val(d.thresh);
-      $("#threshShowi").show();
-    else
-      $("#equivi").prop("checked","");
-      $("#threshShowi").hide();
+    @TwoTGUI_df=d.df;
+
+    # $("#alloci").prop("value",d.alloc);
+    # if d.tt is 1
+    #   $("#tti").prop("checked","checked");
+
+    #$("#alphai").prop("value",d.alpha);
+
+    # if d.equiv is 1
+    #   $("#equivi").prop("checked","checked");
+    #   $("#threshi").val(d.thresh);
+    #   $("#threshShowi").show();
+    # else
+    #   $("#equivi").prop("checked","");
+    #   $("#threshShowi").hide();
     #$("#dfi").prop("value",d.df);
-    $("#diffi").prop("value",d.diff);
-    $("#poweri").prop("value",d.power);
+
+    #$("#diffi").prop("value",d.diff);
+    #$("#poweri").prop("value",d.power);
     @TwoTGUI_diff=d.diff;
+    console.log d.power
     @TwoTGUI_power=d.power;
-    $("#opti").prop("value",d.opt);
+
+    #$("#opti").prop("value",d.opt);
+
     @TwoTGUI_click();
   TwoTGUI_valiad1: (evt) ->
     id = evt.target.name
@@ -1194,14 +1257,15 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       return false
   TwoTGUI_changeSlider: (sliderId, evt) ->
-    key = evt.target.value
-    @TwoTGUI_submit('1', sliderId, key)
+    if !@deployed
+      key = evt.target.value
+      @TwoTGUI_update()
     return
   TwoTGUI_alloc_submit: (id,key) ->
-    @TwoTGUI_submit(id, key, @TwoTGUI_alloc_value)
+    #@TwoTGUI_submit(id, key, @TwoTGUI_alloc_value)
     return
   TwoTGUI_opt_submit: (id,key) ->
-    @TwoTGUI_submit(id, key, @TwoTGUI_opt_value)
+    #@TwoTGUI_submit(id, key, @TwoTGUI_opt_value)
     return
   TwoTGUI_show_help: () ->
     if @TwoTGUI_help is true

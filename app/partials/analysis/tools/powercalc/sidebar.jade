@@ -14,60 +14,35 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             ng-options="method for method in sidebar.algorithms"
             ng-change="sidebar.updateAlgControls()"
           )
-        fieldset(ng-show="sidebar.dataFrame")
+        div.bootstrap-switch-square
+          h4 Data-Driven Mode
+          input(
+            type="checkbox"
+            data-toggle="switch"
+            id="toggle_switch"
+            ng-model="sidebar.deployed"
+            ng-change="sidebar.change_mode"
+          )
+        fieldset(ng-show="sidebar.deployed")
           legend Dataset
           div(uib-tooltip="2D projection is always visualized")
             select.form-control(
             multiple
             ng-model="sidebar.chosenCols"
-            ng-options="col for col in sidebar.numericalCols"
-            )
-          div.form-group
-            label Labels column &nbsp;
-            //- show data header column names
-            select.form-control(
-            ng-model="sidebar.labelCol"
             ng-options="col for col in sidebar.categoricalCols"
-            ng-change="sidebar.updateDataset(sidebar.dataFrame)"
-            ng-init="sidebar.labelCol = null"
+            ng-change="sidebar.calculateN(sidebar.dataFrame)"
             )
-              option(value="") No labels
-          div.form-group(ng-show="false")
-            label X column &nbsp;
-            //- show data header column names
-            select.form-control(
-            ng-model="sidebar.xCol"
-            ng-options="col for col in sidebar.numericalCols"
-            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
-            )
-          div.form-group(ng-show="false")
-            label Y column &nbsp;
-            //- show data header column names
-            select.form-control(
-            ng-model="sidebar.yCol"
-            ng-options="col for col in sidebar.numericalCols"
-            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
-            )
-        div.form-group.btn-group(
-          role="group"
-          area-label="Sidebar flow controls"
-          uib-tooltip = "Choose at corresponding columns to start"
-        )
-          button.btn.btn-primary.btn-sm(
-          ng-show="true"
-          type="submit"
-          aria-label="Run"
-          ng-click="sidebar.deploy()"
-          ng-disabled="sidebar.chosenCols.length < 1")
-            | Run&nbsp;
-            span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
-            span &nbsp;
-          button.btn.btn-danger.btn-sm(
+          div.form-group.btn-group(
+            role="group"
+            area-label="Sidebar flow controls"
+            uib-tooltip = "Choose at corresponding columns to start"
+          )
+            button.btn.btn-primary.btn-sm(
             ng-show="true"
             type="submit"
-            aria-label="Reset"
-            ng-click="sidebar.undeploy()"
-            ng-disabled="sidebar.chosenCols.length < 1"
-          )
-            | Reset&nbsp;
-            span.fui-cross(aria-hidden="true")
+            aria-label="Run"
+            ng-click="sidebar.drive_data()"
+            ng-disabled="sidebar.chosenCols.length < 1")
+              | Run&nbsp;
+              span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+              span &nbsp;
