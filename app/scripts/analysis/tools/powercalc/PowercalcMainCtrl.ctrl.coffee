@@ -1031,7 +1031,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
           @TwoTGUI_sigma1 = ui.value
           @TwoTGUI_update()
           return
-    )      
+    )
     $( "#sigma1i" ).val( $( "#sigma1uii" ).slider( "value" ) );
     $( "#sigma2uii" ).slider(
       value:@TwoTGUI_sigma2,
@@ -1137,6 +1137,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       orientation: "horizontal"
       range: "min"
       step: 1
+      disabled: "false"
       if !@deployed
         slide: (event, ui) =>
           @TwoTGUI_df = ui.value
@@ -1144,7 +1145,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
           @TwoTGUI_update()
           return
     )
-    $("#dfuii").slider("disable")
     $("#dfi").val($("#dfuii").slider("value"));
     if @deployed is true
       $("#sigma1uii").slider("disable")
@@ -1161,9 +1161,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $("#n2uii").slider("enable")
       $("#diffuii").slider("enable")
       $("#poweruii").slider("enable")
-
-
-
       return
   TwoTGUI_clk: (evt) ->
     obj=evt.currentTarget
@@ -1220,7 +1217,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     #$("#diffi").prop("value",d.diff);
     #$("#poweri").prop("value",d.power);
     @TwoTGUI_diff=d.diff;
-    console.log d.power
     @TwoTGUI_power=d.power;
 
     #$("#opti").prop("value",d.opt);

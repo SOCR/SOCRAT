@@ -11,9 +11,9 @@ module.exports = statistic = new Module
   components:
     services:
       'app_analysis_statistic_msgService': require 'scripts/analysis/tools/statistic/StatisticMsgService.service.coffee'
-      'app_analysis_statistic_algorithms': require 'scripts/analysis/tools/statistic/StatisticAlgorithms.service.coffee'
       'app_analysis_statistic_initService': require 'scripts/analysis/tools/statistic/StatisticInit.service.coffee'
       'app_analysis_statistic_dataService': require 'scripts/analysis/tools/statistic/StatisticDataService.service.coffee'
+      # 'app_analysis_statistic_TwoTGUI': require 'scirpts/analysis/tools/statistic/StatisticTwoTGUI.service.coffee'
 
     controllers:
       'statisticMainCtrl': require 'scripts/analysis/tools/statistic/StatisticMainCtrl.ctrl.coffee'
