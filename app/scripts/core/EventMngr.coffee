@@ -12,7 +12,7 @@ module.exports = class EventMngr
 
     @_msgMap = {}
 
-  # supported data types
+# supported data types
   @_DATA_TYPES:
     'FLAT': 'FLAT'
     'NESTED': 'NESTED'
@@ -20,7 +20,7 @@ module.exports = class EventMngr
   setMsgMap: (msgMap) ->
     @_msgMap = msgMap
 
-  # serialized subscription for a list of events
+# serialized subscription for a list of events
   subscribeForEvents: (events, listener) ->
     for msg in events.msgList
       @pubSub.subscribe
@@ -30,11 +30,11 @@ module.exports = class EventMngr
 #        context: events.context
 
   redirectMsg: (msg, data) =>
-    # special message for Core to subscribed to newly added messages
+# special message for Core to subscribed to newly added messages
     if msg.toLowerCase().startsWith('core') and data.dataFrame.scope? and data.dataFrame.msgList.length > 0
       @subscribeForEvents data.dataFrame, @redirectMsg
       return true
-    # normal messages
+# normal messages
     else
       matches = 0
       for o in @_msgMap when o.msgFrom is msg
