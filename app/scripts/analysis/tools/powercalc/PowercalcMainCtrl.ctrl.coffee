@@ -1009,10 +1009,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_sigma2 = @populations[@chosenCols[1]]["sigma"]
     @TwoTGUI_n1 = @populations[@chosenCols[0]]["counter"]
     @TwoTGUI_n2 = @populations[@chosenCols[1]]["counter"]
-    @TwoTGUI_df = @TwoTGUI_n1 + @TwoTGUI_n2 - 2
     @TwoTGUI_diff = 0.01 * (@TwoTGUI_sigma1 + @TwoTGUI_sigma2)
     @TwoTGUI_click()
-
   TwoTGUI_click: () ->
     @TwoTGUI_maxsigma1 = Math.max(@TwoTGUI_sigma1, @TwoTGUI_maxsigma1)
     @TwoTGUI_maxsigma2 = Math.max(@TwoTGUI_sigma1, @TwoTGUI_maxsigma2)
@@ -1021,7 +1019,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_maxdf = Math.max(@TwoTGUI_df, @TwoTGUI_maxdf)
     @TwoTGUI_maxdiff = Math.max(@TwoTGUI_diff, @TwoTGUI_maxdiff)
     @TwoTGUI_maxpower = Math.max(@TwoTGUI_power, @TwoTGUI_maxpower)
-
     $( "#sigma1uii" ).slider(
       value: @TwoTGUI_sigma1,
       min: 0,
@@ -1094,15 +1091,15 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $( "#diffi" ).val( $( "#diffuii" ).slider( "value" ) );
     $( "#poweruii" ).slider(
       value:@TwoTGUI_power,
-      min: 0,
-      max: @TwoTGUI_maxpower,
+      min: 0.0001,
+      max: 0.9999,
       range: "min", 
       step: 0.0001,
       if !@deployed
         slide:  ( event, ui ) =>
           $( "#poweri" ).val( ui.value );
           @TwoTGUI_power = ui.value
-          @TwoTGUI_update()
+          @TwoTGUI_update("power")
           return
     )         
     $("#poweri").val($("#poweruii").slider("value"));
@@ -1147,29 +1144,24 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
           @TwoTGUI_update()
           return
     )
+    $("#dfuii").slider("disable")
     $("#dfi").val($("#dfuii").slider("value"));
     if @deployed is true
       $("#sigma1uii").slider("disable")
       $("#sigma2uii").slider("disable")
       $("#n1uii").slider("disable")
       $("#n2uii").slider("disable")
-      $("#dfuii").slider("disable")
       $("#diffuii").slider("disable")
       $("#poweruii").slider("disable")
-      $("#sigma1uii, #sigma2uii, #n1uii, #n2uii, #dfuii, #diffuii").css("background-color","#ebedef");
-      $("#poweruii").css("background-color","red");
-
       return
     else 
       $("#sigma1uii").slider("enable")
       $("#sigma2uii").slider("enable")
       $("#n1uii").slider("enable")
       $("#n2uii").slider("enable")
-      $("#dfuii").slider("enable")
       $("#diffuii").slider("enable")
       $("#poweruii").slider("enable")
-      $("#sigma1uii, #sigma2uii, #n1uii, #n2uii, #dfuii, #diffuii").css("background-color","#1abc9c");
-      $("#poweruii").css("background-color","red");
+
 
 
       return
@@ -1185,11 +1177,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       else
         @TwoTGUI_submit("1",id,"");
       return
-  TwoTGUI_update: () ->
-    if @deployed
-      d = @powerAnalysis.TwoTGUI_dataDrivenMode_power(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff)
+  TwoTGUI_update: (power) ->
+    if power isnt "power"
+      d = @powerAnalysis.TwoTGUI_dataDrivenMode_getpower(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff)
     else
-      d = @powerAnalysis.TwoTGUI_dataDrivenMode_power(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff)
+      d = @powerAnalysis.TwoTGUI_dataDrivenMode_changepower(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff, @TwoTGUI_power)
     @TwoTGUI_sigma1=d.sigma1;
     @TwoTGUI_sigma2=d.sigma2;
     #$("sigma1i").prop("value", d.sigma1)

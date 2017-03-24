@@ -538,7 +538,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           input#poweri(ng-disabled="mainArea.deployed" name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.1', ng-mouseleave="mainArea.TwoPGUI_changeSlider('power',$event);")
           div(style='display:inline')
             #poweruii(uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
-      div(style='margin-top:20px;')
+      div(hidden style='margin-top:20px;')
         | Solve for: &nbsp
         select#opti(name='opt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.TwoTGUI_opt_value", ng-change="mainArea.TwoTGUI_opt_submit('1','opt');")
           option(value='0') Sample Size
