@@ -3,13 +3,19 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class PowercalcSidebarCtrl extends BaseCtrl
-	@inject  'app_analysis_powercalc_dataService', 'app_analysis_powercalc_msgService', 'app_analysis_powercalc_algorithms', '$scope', '$timeout'
+	@inject  'app_analysis_powercalc_dataService', 
+	'app_analysis_powercalc_msgService', 
+	'app_analysis_powercalc_algorithms', 
+	'app_analysis_powercalc_TwoTGUI',
+	'$scope', 
+	'$timeout'
 
 	initialize: ->
 		console.log("sidebar initialized")
 		@dataService = @app_analysis_powercalc_dataService
 		@msgService = @app_analysis_powercalc_msgService
 		@algorithmsService = @app_analysis_powercalc_algorithms
+		@TwoTGUI = @app_analysis_powercalc_TwoTGUI
 
 		# choose algorithms
 		@algorithms = ['Select',
@@ -48,6 +54,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@populations = {}
 		@xCol = null
 		@yCol = null
+		@Zcol = null
 		@labelCol = null
 
 		@deployed = false
@@ -101,7 +108,9 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			sum = 0
 			index = data.header.indexOf(col)
 			if !(index is -1)
+				loc_data = []
 				for row in data.data
+					loc_data.push(parseFloat(row[index]))
 					if @populations[col] is undefined
 						sum = sum + parseFloat(row[index])
 						@populations[col] = {"counter":0, "mean":0, "sigma":0}
@@ -110,15 +119,19 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 						sum = sum + parseFloat(row[index])
 						@populations[col]["counter"] = @populations[col]["counter"] + 1
 			mean = sum / @populations[col]["counter"]
+			@populations[col]["sum"] = sum
 			@populations[col]["mean"] = mean
-			@populations[col]["sigma"] = @calculate_sigma(data, col, index)
+			@populations[col]["data"] = loc_data
+			@calculate_sigma(data, col, index)
 		console.log(@populations)
 
 	calculate_sigma: (data, col, index) ->
 		sum = 0
 		for row in data.data
 			sum = sum + Math.pow(parseFloat(row[index]) - @populations[col]["mean"], 2)
-		return Math.sqrt(sum / @populations[col]["counter"])
+		@populations[col]["variance"] = sum / @populations[col]["counter"]
+		@populations[col]["sigma"] = Math.sqrt(sum / @populations[col]["counter"])
+		return 
 
 	updateDataPoints: (data=null, means=null, labels=null) ->
 		if data
@@ -137,7 +150,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
 	parseData: (data) ->
-		# console.log(data)
 		@dataService.inferDataTypes data, (resp) =>
 			if resp and resp.dataFrame
 				# update columns
@@ -148,9 +160,5 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 						@categoricalCols.push(resp.dataFrame.header[id])
 					id += 1
 				@updateDataPoints(resp.dataFrame)
-				#@ready = on
-
-	help: () ->
-		#console.log("Hit")
-		#get help message from corresponding interface
-		@algorithmsService.get_cfap_help()
+			@msgService.broadcast 'powercalc:updateDataPoints',
+				dataPoints: resp.dataFrame

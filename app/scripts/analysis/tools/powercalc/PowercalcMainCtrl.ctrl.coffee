@@ -3,22 +3,28 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class PowercalcMainCtrl extends BaseCtrl
-  @inject 'app_analysis_powercalc_msgService','$timeout', '$scope'
+  @inject 'app_analysis_powercalc_msgService',
+  'app_analysis_powercalc_TwoTGUI',
+  '$timeout',
+  '$scope'
 
   initialize: ->
     console.log("mainArea initialized")
     @powerAnalysis = require 'powercalc'
     @msgService = @app_analysis_powercalc_msgService
+    @TwoTGUI = @app_analysis_powercalc_TwoTGUI
     @title = 'Power Calculator Module'
     #algorithm type
     @selectedAlgorithm = "Select"
 
+    @data = []
     @dataType = ''
     @dataPoints = null
     @means = null
     @assignments = null
     @populations = {}
     @deployed = false
+    @chosenCols = []
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
 #      @showresults = off if @showresults is on
@@ -175,7 +181,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
+      d3.select("#Two_TGUI_graph").select("svg").remove()
       @TwoTGUI_click()
+
+    @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
+      @data = data.dataPoints
 
 
   drive_data: () ->
@@ -184,6 +194,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         window.alert("Must choose two samples")
       else
         @TwoTGUI_receive_data()
+        @TwoTGUI_graph();
     if (@selectedAlgorithm is "CI for One Proportion")
       if (@chosenCols.length isnt 1)
         window.alert("Must choose one sample")
@@ -1005,6 +1016,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   #functions for TwoTGUI only
   TwoTGUI_receive_data: () ->
+    console.log @chosenCols
     @TwoTGUI_sigma1 = @populations[@chosenCols[0]]["sigma"]
     @TwoTGUI_sigma2 = @populations[@chosenCols[1]]["sigma"]
     @TwoTGUI_n1 = @populations[@chosenCols[0]]["counter"]
@@ -1114,6 +1126,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_alpha = ui.value
         $('#alphai').val ui.value
         @TwoTGUI_update()
+        if @deployed
+          @TwoTGUI_graph()
         return
     )
     $("#alphai").val($("#alphauii").slider("value"));
@@ -1181,47 +1195,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       d = @powerAnalysis.TwoTGUI_dataDrivenMode_changepower(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff, @TwoTGUI_power)
     @TwoTGUI_sigma1=d.sigma1;
     @TwoTGUI_sigma2=d.sigma2;
-    #$("sigma1i").prop("value", d.sigma1)
-    #$("sigma2i").prop("value", d.sigma2)
-
-    # if d.eqs is 1
-    #   $("#eqsi").prop("checked","checked");
-    #   $("#sigma2i").prop("value",d.sigma1);
-    #   @TwoTGUI_sigma2=d.sigma1;
-    # else
-    #   $("#eqsi").prop("checked","");
-    #   $("#sigma2i").prop("value",d.sigma2);
-    #   @TwoTGUI_sigma2=d.sigma2;
-
-    #$("#n1i").prop("value",d.n1);
-    #$("#n2i").prop("value",d.n2);
     @TwoTGUI_n1=d.n1;
     @TwoTGUI_n2=d.n2;
     @TwoTGUI_df=d.df;
-
-    # $("#alloci").prop("value",d.alloc);
-    # if d.tt is 1
-    #   $("#tti").prop("checked","checked");
-
-    #$("#alphai").prop("value",d.alpha);
-
-    # if d.equiv is 1
-    #   $("#equivi").prop("checked","checked");
-    #   $("#threshi").val(d.thresh);
-    #   $("#threshShowi").show();
-    # else
-    #   $("#equivi").prop("checked","");
-    #   $("#threshShowi").hide();
-    #$("#dfi").prop("value",d.df);
-
-    #$("#diffi").prop("value",d.diff);
-    #$("#poweri").prop("value",d.power);
     @TwoTGUI_diff=d.diff;
     @TwoTGUI_power=d.power;
-
-    #$("#opti").prop("value",d.opt);
-
     @TwoTGUI_click();
+  TwoTGUI_graph:() ->
+    mean = @populations[@chosenCols[0]]["mean"]
+    sigma = @populations[@chosenCols[0]]["sigma"]
+    variance = @populations[@chosenCols[0]]["variance"]
+    @TwoTGUI.drawNormalCurve(mean, variance, sigma, @TwoTGUI_alpha);
   TwoTGUI_valiad1: (evt) ->
     id = evt.target.name
     data = evt.target.value

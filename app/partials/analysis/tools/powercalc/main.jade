@@ -466,6 +466,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
     h3 Two-sample t test (general case)
     p <i>This dialog provides for power analysis of a two-sample t test or a two-sample t test of equivalence.  If the "equal SDs" box is checked, then the pooled t test is used; otherwise, the calculations are based on the Satterthwaite approximation</i>
+    div(id="Two_TGUI_graph" class="graph")
     div
       h3 Standard Deviation
       div(style='margin-top:20px;' )
