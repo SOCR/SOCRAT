@@ -42,6 +42,15 @@ module.exports = class GetParams extends BaseService
     console.log(data)
     data
 
+  getMedian = (values)=>
+    values.sort  (a,b)=> return a - b
+    half = Math.floor values.length/2
+    if values.length % 2
+      return values[half]
+    else
+      return (values[half-1] + values[half]) / 2.0
+
+
   getMean: (valueSum, numberOfOccurrences) ->
     valueSum / numberOfOccurrences
 
@@ -87,6 +96,7 @@ module.exports = class GetParams extends BaseService
     max = sample[sample.length - 1]
     mean = @getMean(sum, sample.length)
     average = sum / sample.length
+    median = getMedian(sample)
     console.log("Sample mean: " + mean)
     variance = @getVariance(sample, mean)
     standardDerivation =  Math.sqrt(variance)
@@ -100,6 +110,9 @@ module.exports = class GetParams extends BaseService
       mean: mean
       average: average
       variance: variance
+      median: median
+      standardDev: standardDerivation
+
 
 
 
@@ -136,7 +149,7 @@ module.exports = class GetParams extends BaseService
     topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
     gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
-    '''
+
     padding = 50
     xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
     yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
@@ -159,12 +172,12 @@ module.exports = class GetParams extends BaseService
       .attr('d', lineGen(gaussianCurveData))
       .data([gaussianCurveData])
       .attr('stroke', 'black')
-      .attr('stroke-width', 0)
+      .attr('stroke-width', 1.5)
       .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
       .on('mouseout', (d) -> hideToolTip())
-      .attr('fill', "aquamarine")
+      .attr('fill', "none")
 
-
+    '''
     _graph.append("svg:g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + (height - padding) + ")")
