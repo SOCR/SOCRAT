@@ -16,12 +16,13 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     '$window',
     '$q',
     '$rootScope',
-    '$http'
+    '$http',
+    'app_analysis_datalib_api'
 
   initialize: ->
     @d3 = require 'd3'
     # rename deps
-    @dataManager = @app_analysis_getData_dataService
+    @dataService = @app_analysis_getData_dataService
     @showStateService = @app_analysis_getData_showState
     @inputCache = @app_analysis_getData_inputCache
     @dataAdaptor = @app_analysis_getData_dataAdaptor
@@ -32,7 +33,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataLoadedFromDb = false
     @largeData = false
     @maxRows = 1000
-    @DATA_TYPES = @dataManager.getDataTypes()
+    @DATA_TYPES = @dataService.getDataTypes()
     @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
     @WBDatasets = [
         "name":"Out of School Children rate",
@@ -49,6 +50,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @socrDatasets = @socrData.getNames()
     @socrdataset = @socrDatasets[0]
     @colHeaders = on
+    @colStats = []
     @file = null
     @interface = {}
 
@@ -69,7 +71,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     catch e
       console.log e.message
 
-    @dataManager.getData().then (obj) =>
+    @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType?
         if obj.dataFrame.dataType is @DATA_TYPES.FLAT
           @dataLoadedFromDb = true
@@ -113,6 +115,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   ## Other instance methods
 
+  formatNumber: (i) ->
+    return Math.round(i * 100)/100; 
+    
   checkDataSize: (nRows, nCols) ->
     if nRows and nCols and nRows * nCols > @LARGE_DATA_SIZE
         @largeData = true
@@ -150,6 +155,23 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     if not @dataAdaptor.isValidDataFrame dataFrame
       throw Error "invalid data frame"
 
+    # hacking the dataFrame to return Array of Objects
+    formattedData = dataFrame.data.map (entry)->
+      obj = {}
+      dataFrame.header.forEach (h,key)->
+        # stats.js lib for a key "indicator.id" checks obj["indicator"]["id"]
+        # to fix that, replacing all "." with "_"
+        obj[h.replace('.','_')] = entry[key]
+      obj 
+
+    newDataFrame = Object.assign {}, dataFrame, {data:formattedData}
+    self = @
+    @dataService.getSummary newDataFrame          
+    .then (resp) =>
+      if resp? and resp.dataFrame? and resp.dataFrame.data?
+        console.log resp.dataFrame.data
+        self.colStats = resp.dataFrame.data
+    
     if dataFrame.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
       @checkDataSize dataFrame.nRows, dataFrame.nCols
@@ -219,8 +241,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
           headers = dataResults.shift()
-          data = @dataAdaptor.toDataFrame dataResults, headers
-          @passReceivedData data
+          dataFrame = @dataAdaptor.toDataFrame dataResults, headers
+
+          @passReceivedData dataFrame
         else
           console.log 'GETDATA: request failed'
 

@@ -32,4 +32,4 @@ module.exports = getData = new Module
     sidebarTemplate: require 'partials/analysis/getData/sidebar.jade'
 
   # 3rd-party dependencies
-  deps: ['ngHandsontable']
+  deps: ['ngHandsontable','app_analysis_datalib']

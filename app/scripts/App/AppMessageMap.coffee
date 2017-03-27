@@ -30,6 +30,28 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability'
       ]
+    ,
+      msgFrom: 'data summary'
+      scopeFrom: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts',
+        'app_analysis_reliability'
+      ]
+      msgTo: 'summary'
+      scopeTo: ['app_analysis_datalib']
+    ,
+      msgFrom: 'summary_res'
+      scopeFrom: ['app_analysis_datalib']
+      msgTo: 'data summary result'
+      scopeTo: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts',
+        'app_analysis_reliability'
+      ]
     #    ,
     #      msgFrom: 'upload csv'
     #      scopeFrom: ['getData']
