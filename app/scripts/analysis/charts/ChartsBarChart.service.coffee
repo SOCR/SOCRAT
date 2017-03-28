@@ -34,7 +34,7 @@ module.exports = class ChartsBarChart extends BaseService
     yAxisLabel_x = -70
     yAxisLabel_y = -70
     
-    color = d3.scale.category10()
+    color = d3.scale.category20()
     
     colorCategoryArray = null
 	

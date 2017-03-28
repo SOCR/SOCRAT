@@ -10,7 +10,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
   legend Variables
   div.form-inline
     div.form-horizontal(ng-show="sidebar.selectedGraph.x")
-      label(for = "x") X &nbsp;
+      label(for = "x") {{sidebar.selectedGraph.xLabel}} &nbsp;
       select#x.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.xCol"
@@ -18,7 +18,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-init="sidebar.xCol = sidebar.xCols[0]"
       )
     div.form-horizontal(ng-show="sidebar.selectedGraph.y")
-      label(for = "y") Y &nbsp;
+      label(for = "y") {{sidebar.selectedGraph.yLabel}} &nbsp;
       select#y.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.yCol"
@@ -26,7 +26,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-init="sidebar.yCol = sidebar.yCols[0]"
       )
     div.form-horizontal(ng-show="sidebar.selectedGraph.z")
-      label(for = "z") Z &nbsp;
+      label(for = "z") {{sidebar.selectedGraph.zLabel}} &nbsp;
       select#z.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.zCol"
@@ -34,7 +34,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-init="sidebar.zCol = sidebar.zCols[0]"
       )
     div.form-horizontal(ng-show="sidebar.selectedGraph.c")
-      label(for = "c") Color &nbsp;
+      label(for = "c") {{sidebar.selectedGraph.cLabel}} &nbsp;
       select#c.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.cCol"

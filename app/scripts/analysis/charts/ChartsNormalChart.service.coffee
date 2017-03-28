@@ -39,7 +39,6 @@ module.exports = class ChartsNormalChart extends BaseService
       data.push
         x: i
         y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
-    console.log(data)
     data
 
   getMean: (valueSum, numberOfOccurrences) ->
@@ -89,7 +88,6 @@ module.exports = class ChartsNormalChart extends BaseService
       toolTipElement.style('display', 'none')
       toolTipElement.innerHTML = " "
 
-    console.log @extract(data, "x")
     sample = @sort(@getRandomValueArray(@extract(data,"x")))
     sum = @getSum(sample)
     min = sample[0]
