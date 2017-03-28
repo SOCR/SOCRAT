@@ -16,8 +16,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     '$window',
     '$q',
     '$rootScope',
-    '$http',
-    'app_analysis_datalib_api'
+    '$http'
 
   initialize: ->
     @d3 = require 'd3'
@@ -165,12 +164,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       obj 
 
     newDataFrame = Object.assign {}, dataFrame, {data:formattedData}
-    self = @
     @dataService.getSummary newDataFrame          
     .then (resp) =>
       if resp? and resp.dataFrame? and resp.dataFrame.data?
-        console.log resp.dataFrame.data
-        self.colStats = resp.dataFrame.data
+        @colStats = resp.dataFrame.data
     
     if dataFrame.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
