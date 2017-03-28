@@ -48,8 +48,16 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrDatasets = @socrData.getNames()
     @socrdataset = @socrDatasets[0]
-    @colHeaders = on
+    
+    @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
+    @colHeaders = (colIndex) =>
+      if @colHeadersLabels[colIndex]?
+        '<span tooltip-placement="bottom" tooltip-enable="true" uib-tooltip="test">'+ @colHeadersLabels[colIndex]+'</span>'
+      else
+        "<span tooltip-placement='top' tooltip-enable='true' tooltip-trigger=\"'mouseover'\" uib-tooltip='test'> "+ @colHeadersLabels[colIndex]+"</span>"
+
     @colStats = []
+    
     @file = null
     @interface = {}
 
@@ -76,7 +84,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           @dataLoadedFromDb = true
           @dataType = obj.dataFrame.dataType
           @$timeout =>
-            @colHeaders = obj.dataFrame.header
+            @colHeadersLabels = obj.dataFrame.header
             @tableData = obj.dataFrame.data
         else
           # TODO: add processing for nested object
@@ -88,7 +96,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           ['Copy', 'paste', 'your', 'data', 'here']
         ]
         # manually create col header since ht doesn't bind default value to scope
-        @colHeaders = ['A', 'B', 'C', 'D', 'E']
+        @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
         @stateService.set @defaultState
 
     # adding listeners
@@ -120,7 +128,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   checkDataSize: (nRows, nCols) ->
     if nRows and nCols and nRows * nCols > @LARGE_DATA_SIZE
         @largeData = true
-        @maxRows = Math.floor(@LARGE_DATA_SIZE / @colHeaders.length) - 1
+        @maxRows = Math.floor(@LARGE_DATA_SIZE / @colHeadersLabels.length) - 1
     else
         @largeData = false
         @maxRows = 1000
@@ -143,7 +151,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
+        data = @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
         @checkDataSize data.nRows, data.nCols
         @inputCache.setData data
   ###
@@ -153,36 +161,31 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   passReceivedData: (dataFrame) ->
     if not @dataAdaptor.isValidDataFrame dataFrame
       throw Error "invalid data frame"
+    
+    newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
 
-    # hacking the dataFrame to return Array of Objects
-    formattedData = dataFrame.data.map (entry)->
-      obj = {}
-      dataFrame.header.forEach (h,key)->
-        # stats.js lib for a key "indicator.id" checks obj["indicator"]["id"]
-        # to fix that, replacing all "." with "_"
-        obj[h.replace('.','_')] = entry[key]
-      obj 
-
-    newDataFrame = Object.assign {}, dataFrame, {data:formattedData}
-    @dataService.getSummary newDataFrame          
+    @dataService.inferTypes newDataFrame
+    .then (types) =>
+      @dataService.transformTypes newDataFrame,types.dataFrame.data
+    .then (DF) =>
+      @dataService.getSummary DF          
     .then (resp) =>
       if resp? and resp.dataFrame? and resp.dataFrame.data?
         @colStats = resp.dataFrame.data
-    
-    if dataFrame.dataType is @DATA_TYPES.NESTED
-      @dataType = @DATA_TYPES.NESTED
-      @checkDataSize dataFrame.nRows, dataFrame.nCols
-      # save to db
-      @inputCache.setData dataFrame
-    else
-      # default data type is 2d 'flat' table
-      dataFrame.dataType = @DATA_TYPES.FLAT
-      @dataType = @DATA_TYPES.FLAT
-      # update table
-      @inputCache.setData dataFrame
-      @$timeout =>
-        @tableData = dataFrame.data
-        @colHeaders = dataFrame.header
+        if dataFrame.dataType is @DATA_TYPES.NESTED
+          @dataType = @DATA_TYPES.NESTED
+          @checkDataSize dataFrame.nRows, dataFrame.nCols
+          # save to db
+          @inputCache.setData dataFrame
+        else
+          # default data type is 2d 'flat' table
+          dataFrame.dataType = @DATA_TYPES.FLAT
+          @dataType = @DATA_TYPES.FLAT
+          # update table
+          @inputCache.setData dataFrame
+          @$timeout =>
+            @tableData = dataFrame.data
+            @colHeadersLabels = dataFrame.header
 
   getWB: ->
     # default value

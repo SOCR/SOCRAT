@@ -61,6 +61,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
     max-file-size="50"
   )
     legend Copy-paste data or drag-and-drop CSV file
+    //- span(uib-tooltip="See? Now click away...",tooltip-placement="top") zxasas
     div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
       hot-table(
       purpose="json"
@@ -71,14 +72,18 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       sort-indicator="true"
       manual-column-resize="true"
       )
-    table(style="width:100%")
+
+    table(style="width:100%;overflow:auto")
       tr
+        td(style="width:9px")
         td(ng-repeat="stat in mainArea.colStats")
           | Distinct : {{ stat.distinct }}
+          br
+          | Type: {{ stat.type }}
           br
           | Mean : {{ mainArea.formatNumber(stat.mean) }}
           br
           | StdDev: {{ mainArea.formatNumber(stat.stdev) }}
-  br
+
   div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.

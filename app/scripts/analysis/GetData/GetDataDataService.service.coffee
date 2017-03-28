@@ -15,3 +15,20 @@ module.exports = class GetDataDataService extends BaseModuleDataService
   getSummary: (data) ->
     @post(@msgManager.getMsgList().outgoing[2], @msgManager.getMsgList().incoming[2], data)
 
+  inferTypes: (data) ->
+    @post(@msgManager.getMsgList().outgoing[3], @msgManager.getMsgList().incoming[3], data)
+
+  transformTypes: (dataFrame, types) ->
+    if types? and dataFrame?    
+      Object.keys(types).forEach (type)=>
+        dataFrame.data.forEach (dataRow)=>
+          switch types[type]
+            when "number" then dataRow[type] = parseFloat dataRow[type]
+
+            when "boolean" then dataRow[type] = ( dataRow[type] == 'true')
+
+    dataFrame
+
+  getHistogram: (data)->
+    @post(@msgManager.getMsgList().outgoing[4], @msgManager.getMsgList().incoming[4], data) 
+
