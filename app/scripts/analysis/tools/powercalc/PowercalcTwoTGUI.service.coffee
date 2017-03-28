@@ -71,7 +71,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
       values.push data[Math.floor(Math.random() * data.length)]
     return values
 
-  drawNormalCurve: (mean_in, variance_in, sigma_in, alpha_in) ->
+  drawNormalCurve: (data_in1, mean_in1, variance_in1, sigma_in1, mean_in2, variance_in2, sigma_in2, alpha_in) ->
     margin = {top: 10, right: 40, bottom: 50, left:80}
     width = 750 - margin.left - margin.right
     height = 500 - margin.top - margin.bottom
@@ -84,19 +84,28 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
+
+    data1 = @sort(data_in1)
     alpha = alpha_in
-    mean = mean_in
-    #console.log "mean: " + mean
-    variance = variance_in
-    standardDerivation =  sigma_in
-    #console.log "sd: " + standardDerivation
-    rightBound = @getRightBound(mean, standardDerivation)
-    #console.log "rightBound: " + rightBound
-    leftBound = @getLeftBound(mean, standardDerivation)
-    #console.log "left: " + leftBound
+    index = data1.length - Math.floor (data1.length * alpha)
+    criticalVal = data1[index]
+    console.log criticalVal
+
+    mean1 = mean_in1
+    variance1 = variance_in1
+    standardDerivation1 =  sigma_in1
+
+    mean2 = mean_in2
+    variance2 = variance_in2
+    standardDerivation2 = sigma_in2
+
+    rightBound = Math.max(@getRightBound(mean1, standardDerivation1), @getRightBound(mean2, standardDerivation2))
+    leftBound = Math.min(@getLeftBound(mean1, standardDerivation1), @getLeftBound(mean2, standardDerivation2))
     bottomBound = 0
-    topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
-    gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
+    topBound = Math.max(1 / (standardDerivation1 * Math.sqrt(Math.PI * 2)), 1 / (standardDerivation2 * Math.sqrt(Math.PI * 2)))
+    gaussianCurveData1 = @getGaussianFunctionPoints(standardDerivation1,mean1,variance1,leftBound,rightBound)
+    gaussianCurveData2 = @getGaussianFunctionPoints(standardDerivation2,mean2,variance2,leftBound,rightBound)
+
     radiusCoef = 5
     
     padding = 50
@@ -118,12 +127,25 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .y (d) -> yScale(d.y)
     .interpolate("basis")
 
+
+
     _graph.append('svg:path')
-    .attr('d', lineGen(gaussianCurveData))
-    .data([gaussianCurveData])
+    .attr('d', lineGen(gaussianCurveData1))
+    .data([gaussianCurveData1])
     .attr('stroke', 'black')
-    .attr('stroke-width', 2)
+    .attr('stroke-width', 5)
     .attr('fill', "aquamarine")
+    .style("opacity", 0.5)
+
+
+    _graph.append('svg:path')
+    .attr('d', lineGen(gaussianCurveData2))
+    .data([gaussianCurveData2])
+    .attr('stroke', 'red')
+    .attr('stroke-width', 5)
+    .attr('fill', "yellow")
+    .style("opacity", 0.5)
+
 
 
     _graph.append("svg:g")
@@ -133,7 +155,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
 
     _graph.append("svg:g")
     .attr("class", "y axis")
-    .attr("transform", "translate(" + (xScale(mean)) + ",0)")
+    .attr("transform", "translate(" + (xScale(leftBound))+ ",0)")
     .call(yAxis)
     
     # make x y axis thin
@@ -150,14 +172,15 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .style("text-anchor", "middle")
     .style("fill", "white")
 
+    _graph.append("svg:g")
+    .append("line")
+    .attr('x1', criticalVal)
+    .attr('x2', criticalVal)
+    .attr('y1', 0)
+    .attr('y2', topBound)
+    .attr('stroke', 'black')
+    .attr('stroke-width', 3)
 
-    _graph.append("svg:line")
-    .attr("y1", bottomBound)
-    .attr("y2", topBound)
-    .attr("x1", alpha_in)
-    .attr("x2", alpha_in)
-    .attr('stroke', 'red')
-    .attr('stroke-width', 2)
     
     # rotate text on x axis
     _graph.selectAll('.x.axis text')

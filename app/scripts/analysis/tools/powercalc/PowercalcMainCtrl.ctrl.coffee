@@ -1162,19 +1162,32 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $("#dfi").val($("#dfuii").slider("value"));
     if @deployed is true
       $("#sigma1uii").slider("disable")
+      $('#sigma1uii').find('.ui-slider-handle').hide();
       $("#sigma2uii").slider("disable")
+      $('#sigma2uii').find('.ui-slider-handle').hide();
       $("#n1uii").slider("disable")
+      $('#n1uii').find('.ui-slider-handle').hide();
       $("#n2uii").slider("disable")
+      $('#n2uii').find('.ui-slider-handle').hide();
       $("#diffuii").slider("disable")
+      $('#diffuii').find('.ui-slider-handle').hide();
       $("#poweruii").slider("disable")
+      $('#poweruii').find('.ui-slider-handle').hide();
+      $('#dfuii').find('.ui-slider-handle').hide();
       return
     else 
       $("#sigma1uii").slider("enable")
+      $('#sigma1uii').find('.ui-slider-handle').show();
       $("#sigma2uii").slider("enable")
+      $('#sigma2uii').find('.ui-slider-handle').show();
       $("#n1uii").slider("enable")
+      $('#n1uii').find('.ui-slider-handle').show();
       $("#n2uii").slider("enable")
+      $('#n2uii').find('.ui-slider-handle').show();
       $("#diffuii").slider("enable")
+      $('#diffuii').find('.ui-slider-handle').show();
       $("#poweruii").slider("enable")
+      $('#poweruii').find('.ui-slider-handle').show();
       return
   TwoTGUI_clk: (evt) ->
     obj=evt.currentTarget
@@ -1202,10 +1215,14 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_power=d.power;
     @TwoTGUI_click();
   TwoTGUI_graph:() ->
-    mean = @populations[@chosenCols[0]]["mean"]
-    sigma = @populations[@chosenCols[0]]["sigma"]
-    variance = @populations[@chosenCols[0]]["variance"]
-    @TwoTGUI.drawNormalCurve(mean, variance, sigma, @TwoTGUI_alpha);
+    mean1 = @populations[@chosenCols[0]]["mean"]
+    sigma1 = @populations[@chosenCols[0]]["sigma"]
+    variance1 = @populations[@chosenCols[0]]["variance"]
+    mean2 = @populations[@chosenCols[1]]["mean"]
+    sigma2 = @populations[@chosenCols[1]]["sigma"]
+    variance2 = @populations[@chosenCols[1]]["variance"]
+    data1 = @populations[@chosenCols[0]]["data"]
+    @TwoTGUI.drawNormalCurve(data1, mean1, variance1, sigma1, mean2, variance2, sigma2, @TwoTGUI_alpha);
   TwoTGUI_valiad1: (evt) ->
     id = evt.target.name
     data = evt.target.value
@@ -1230,7 +1247,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       return false
   TwoTGUI_changeSlider: (sliderId, evt) ->
     if !@deployed
-      key = evt.target.value
       @TwoTGUI_update()
     return
   TwoTGUI_alloc_submit: (id,key) ->
