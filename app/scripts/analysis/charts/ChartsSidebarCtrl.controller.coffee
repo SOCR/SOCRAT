@@ -73,7 +73,30 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         @updateSidebarControls()
         @updateDataPoints()
 
-  updateSidebarControls: (data=@dataFrame) ->
+  updateSidebarControls: (data=@dataFrame) -> 
+  
+    # Determine a list of variables that has more than 20 unique values
+    # This list will be excluded from zCols if zLabel is color
+    forbiddenVarIdx = []
+    if @selectedGraph.zLabel is "Color"
+    
+      VarForChecking = []
+      # VarForChecking only includes the variable idx that has the same 
+      # data type as Color variable, which defined in ChartsList.service.coffee
+      
+      for typeIdx in [0..data.types.length-1] by 1
+        if data.types[typeIdx] == 'string' or data.types[typeIdx] == 'integer'
+          VarForChecking.push(typeIdx)
+          
+      VarForChecking.map((idx) ->
+        colorValueSet = new Set()
+        for i in [0..data.data.length-1] by 1
+          colorValueSet.add(data.data[i][idx])
+        if colorValueSet.size > 20
+          forbiddenVarIdx.push(idx)
+      )
+    # end if
+      
     @cols = data.header
     
     if @selectedGraph.x
@@ -95,7 +118,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @zCols = []
       @zCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.z
-        @zCols.push(col)
+        # if the variable idx is not in forbiddenVarIdx, put col in zCols list
+        if $.inArray(idx, forbiddenVarIdx) is -1  
+          @zCols.push(col)
       # Initialize the z variable
       @zCol = "None"
       
@@ -107,6 +132,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         
       # Initialize the z variable
       @rCol = "None"
+      
+    
       
     @$timeout =>
       @updateDataPoints()
