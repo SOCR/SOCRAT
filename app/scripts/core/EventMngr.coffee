@@ -30,11 +30,12 @@ module.exports = class EventMngr
 #        context: events.context
 
   redirectMsg: (msg, data) =>
-# special message for Core to subscribed to newly added messages
+    # special message for Core to subscribed to newly added messages
     if msg.toLowerCase().startsWith('core') and data.dataFrame.scope? and data.dataFrame.msgList.length > 0
       @subscribeForEvents data.dataFrame, @redirectMsg
       return true
-# normal messages
+    # normal messages
+
     else
       matches = 0
       for o in @_msgMap when o.msgFrom is msg
