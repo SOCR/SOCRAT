@@ -34,7 +34,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @xCol = null
     @yCol = null
     @zCol = null
-    @cCol = null
+    @rCol = null
 
     @stream = false
     @streamColors = [
@@ -99,22 +99,22 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       # Initialize the z variable
       @zCol = "None"
       
-    if @selectedGraph.c
-      @cCols = []
-      @cCols.push("None")
-      for col, idx in @cols when data.types[idx] in @selectedGraph.c
-        @cCols.push(col)
+    if @selectedGraph.r
+      @rCols = []
+      @rCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.r
+        @rCols.push(col)
         
       # Initialize the z variable
-      @cCol = "None"
+      @rCol = "None"
       
     @$timeout =>
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    [xCol, yCol, zCol, cCol] = [@xCol, @yCol, @zCol, @cCol].map (x) -> data.header.indexOf x
-    [xType, yType, zType, cType] = [xCol, yCol, zCol, cCol].map (x) -> data.types[x]
-    data = ([row[xCol], row[yCol], row[zCol], row[cCol]] for row in data.data)
+    [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
+    [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
+    data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data
       graph: @selectedGraph
@@ -128,9 +128,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         zLab:
           value: @zCol
           type: zType
-        cLab:
-          value: @cCol
-          type: cType
+        rLab:
+          value: @rCol
+          type: rType
 
 #  changeGraph: () ->
 #    if @graphSelect.name is "Stream Graph"

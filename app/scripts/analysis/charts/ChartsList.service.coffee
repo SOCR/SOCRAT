@@ -40,12 +40,12 @@ module.exports = class ChartsList extends BaseService
       x: ['integer', 'number']
       y: ['integer', 'number']
       z: ['integer', 'string']
-      c: ['integer', 'string']
+      r: ['integer', 'string']
       message: "Choose an x variable, a y variable and a radius variable."
       xLabel: "X"
       yLabel: "Y"
-      zLabel: "Radius"
-      cLabel: "Color"
+      zLabel: "Color"
+      rLabel: "Radius"
     ,
       name: 'Pie Chart'
       value: 4
@@ -168,8 +168,8 @@ module.exports = class ChartsList extends BaseService
       message: "Choose an x variable, a y variable and a radius variable."
       xLabel: "X"
       yLabel: "Y"
-      zLabel: "Radius"
-      cLabel: "Color"
+      zLabel: "Color"
+      rLabel: "Radius"
     ,
       name: 'Pie Chart'
       value: 4

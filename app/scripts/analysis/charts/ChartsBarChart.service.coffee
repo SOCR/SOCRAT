@@ -7,7 +7,7 @@ module.exports = class ChartsBarChart extends BaseService
   initialize: ->
           
   drawBar: (ranges,width,height,data,_graph,gdata,container) ->
-          
+    
     padding = 50
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])

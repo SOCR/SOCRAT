@@ -34,7 +34,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     count = (array) ->
       counts = {}
       for i in [0..array.length-1] by 1
-        currentVar = array[i].z
+        currentVar = array[i].r
         counts[currentVar] = counts[currentVar] || 0
         ++counts[currentVar]
       return counts
@@ -89,19 +89,19 @@ module.exports = class ChartsBubbleChart extends BaseService
     counts = count(data) # counts the number for each z variable
     min_count = d3.min(d3.values(counts))
     max_count = d3.max(d3.values(counts))
-    scale = d3.scale.linear().domain([min_count, max_count+10]).range([5, 40])
+    scale = d3.scale.linear().domain([min_count, max_count]).range([5, 40])
     
     circles = _graph.selectAll('.circle')
     .data(data)
     .enter().append('circle')
-    .attr('fill', (d) -> color(d.c))
+    .attr('fill', (d) -> if not data[0].z then 'steelblue' else color(d.z))
     .attr('opacity', '0.6')
     .attr('cx', (d) -> x d.x)
     .attr('cy', (d) -> y d.y)
-    .attr('r', (d) -> if not data[0].z then 10 else scale counts[d.z])
+    .attr('r', (d) -> if not data[0].r then 10 else scale counts[d.r])
     
     # Tooltip
-    if data[0].z? # Show tooltip when z variable is selected
+    if data[0].r? # Show tooltip when z variable is selected
       tooltip = container
       .append('div')
       .attr('class', 'tooltip')
@@ -109,7 +109,7 @@ module.exports = class ChartsBubbleChart extends BaseService
       circles
       .on('mouseover', (d) ->
         radius = () -> 
-          return counts[d.z]
+          return counts[d.r]
         d3.select(this).attr('opacity', '1').attr('stroke', 'white').attr('stroke-width', '2px')
         tooltip.transition().duration(200).style('opacity', .9)
         tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + 'Counts ' + radius +'</div>')
@@ -122,7 +122,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     
 
     # Legend
-    if data[0].c?  
+    if data[0].z?  
       legendRectSize = 8
       legendSpacing = 5
       textSize = 11
@@ -133,7 +133,7 @@ module.exports = class ChartsBubbleChart extends BaseService
       _graph.append('text')
       .attr('class', 'label')
       .attr('transform', 'translate(' + horz + ',' + vert + ')')
-      .text gdata.cLab.value
+      .text gdata.zLab.value
   
       legend = _graph.selectAll('.legend')
       .data(color.domain())

@@ -33,11 +33,11 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-options="col for col in sidebar.zCols"
         ng-init="sidebar.zCol = sidebar.zCols[0]"
       )
-    div.form-horizontal(ng-show="sidebar.selectedGraph.c")
-      label(for = "c") {{sidebar.selectedGraph.cLabel}} &nbsp;
-      select#c.form-control(
+    div.form-horizontal(ng-show="sidebar.selectedGraph.r")
+      label(for = "r") {{sidebar.selectedGraph.rLabel}} &nbsp;
+      select#r.form-control(
         ng-change="sidebar.updateDataPoints()"
-        ng-model="sidebar.cCol"
-        ng-options="col for col in sidebar.cCols"
-        ng-init="sidebar.cCol = sidebar.cCols[0]"
+        ng-model="sidebar.rCol"
+        ng-options="col for col in sidebar.rCols"
+        ng-init="sidebar.rCol = sidebar.rCols[0]"
       )

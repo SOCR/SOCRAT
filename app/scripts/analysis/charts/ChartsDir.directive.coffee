@@ -76,7 +76,7 @@ module.exports = class ChartsDir extends BaseDirective
             x: row[0]
             y: row[1]
             z: row[2]
-            c: row[3]
+            r: row[3]
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
