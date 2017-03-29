@@ -1,6 +1,76 @@
-div(ng-controller='getDataMainCtrl')
-    h1 Get Data
+div(ng-controller='GetDataMainCtrl as mainArea')
+
+  form.socrData(uib-collapse="mainArea.showState.socrData")
+    legend SOCR Datasets
+    div.form-group
+      select.form-control(
+        ng-model="mainArea.socrdataset",
+        ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
+    div.btn-group
+      button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
+      button.btn.btn-info(ng-click="mainArea.openSocrDescription()") Description &nbsp;
+        span.fui-export
+
+  div.worldBank(uib-collapse="mainArea.showState.worldBank")
+    div
+      div(style="display:inline-flex")
+        input(type="text",class="form-control input-lg", placeholder="Rows", ng-model="mainArea.size")
+        input(type="text",class="form-control input-lg", placeholder="Start Year", ng-model="mainArea.startYear")
+        input(type="text",class="form-control input-lg", placeholder="End Year", ng-model="mainArea.endYear")
+        select(style="height:36px", ng-model="mainArea.option")
+            option(ng-repeat="dataset in mainArea.WBDatasets", value="{{dataset.key}}") {{ dataset.name }}
+        button(style="margin-left:20px", ng-click="mainArea.getWB()").btn.btn-primary Load
+
+
+  div.generate(uib-collapse="mainArea.showState.generate")
+    ul.nav.nav-pills.nav-stacked.disabled
+      li
+        a Binomial Coin Toss
+      li
+        a Ball and Urn
+      li
+        a Card Experiment
+      li
+        a Beta Binomial Experiment
+      li
+        a The Beta Distribution Experiment
+
+  form.jsonUrl(uib-collapse="mainArea.showState.jsonParse")
+    legend Enter URL to parse JSON file
+    div.form-group
+      label(for="getDataJsonUrlInput").sr-only Enter URL
+      div.btn-group.btn-group-justified(role="group")
+        input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
+        span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
+    button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
+
+  div.form-inline(ng-hide="!mainArea.largeData")
     br
-    p To perform any analysis, you need data to begin with. Choose one of the available methods
-      |to get the data into the web-app.
-    p {{msg}}
+    p.bg-info Dataset size might be too large for some tools, e.g. Data Wrangler.
+      | Delays and screen freezes are possible. Consider deleting some columns or subsampling rows.
+    div.form-group(uib-tooltip='Suggested value based on number of columns')
+      label Random row subsampling &nbsp; &nbsp;
+      input.form-control(type="text" placeholder="1000" ng-model='mainArea.maxRows')
+      | &nbsp;
+    button.btn.btn-primary.btn-sm(type="submit" ng-click="mainArea.subsampleData()") Subsample
+
+  div.getdata-dragndrop(
+    ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}"
+    getdatadragndrop=""
+    file="mainArea.file"
+    max-file-size="50"
+  )
+    legend Copy-paste data or drag-and-drop CSV file
+    div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
+      hot-table(
+      purpose="json"
+      settings="mainArea.tableSettings"
+      col-headers="mainArea.colHeaders"
+      datarows="mainArea.tableData"
+      column-sorting="true"
+      sort-indicator="true"
+      manual-column-resize="true"
+      )
+  br
+  div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
+    | Visual representation of hierarchical data currently is not available.

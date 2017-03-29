@@ -1,95 +1,115 @@
 'use strict'
 
-# app.utils module
+###
+# @name Utils
+# @desc Class for utility functions
+###
+module.exports = class Utils
 
-utils = angular.module('app.utils', [])
+  constructor: ->
 
-  .factory 'utils', ->
-    _clone = (data) ->
-      if data instanceof Array
-        copy = (v for v in data)
-      else
-        copy = {}
-        copy[k] = v for k, v of data
-      copy
+  typeIsArray: Array.isArray || (value) -> return {}.toString.call(value) is '[object Array]'
 
-    _installFromTo = (srcObj, resObj) ->
-      if typeof resObj is 'object' and typeof srcObj is 'object'
-        resObj[k] = v for k, v of srcObj
-        true
-      else false
+  installFromTo: (srcObj, resObj) ->
+    if typeof resObj is 'object' and typeof srcObj is 'object'
+      resObj[k] = v for k, v of srcObj
+      true
+    else false
 
-    _getArgumentNames = (fn = ->) ->
-      args = fn.toString().match ///
-          function    # start with 'function'
-          [^(]*       # any character but not '('
-          \(          # open bracket = '(' character
-            ([^)]*)   # any character but not ')'
-          \)          # close bracket = ')' character
-        ///
-      return [] if not args? or (args.length < 2)
-      args = args[1]
-      args = args.split /\s*,\s*/
-      (a for a in args when a.trim() isnt '')
+  fnRgx:
+    ///
+      function    # start with 'function'
+      [^(]*       # any character but not '('
+      \(          # open bracket = '(' character
+        ([^)]*)   # any character but not ')'
+      \)          # close bracket = ')' character
+    ///
 
-    ### based on RFC 4122, section 4.4 ###
-    _getGuid = () ->
-      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
-        r = Math.random() * 16 | 0
-        v = (if c is 'x' then r else (r & 0x3 | 0x8))
-        v.toString 16
+  argRgx: /([^\s,]+)/g
 
-    _runSeries = (tasks = [], cb = (->), force) ->
-      count = tasks.length
-      results = []
+  getArgumentNames: (fn) ->
+    (fn?.toString().match(@fnRgx)?[1] or '').match(@argRgx) or []
 
-      return cb? null, results if count is 0
+  ### based on RFC 4122, section 4.4 ###
+  generateGuid: ->
+    'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
+      r = Math.random() * 16 | 0
+      v = (if c is 'x' then r else (r & 0x3 | 0x8))
+      v.toString 16
 
-      errors = []
+  # run asynchronous tasks in parallel
+  runParallel: (tasks=[], cb=(->), force) ->
+    count   = tasks.length
+    results = []
 
-      checkEnd = ->
-        count--
-        if count is 0
-          if (e for e in errors when e?).length > 0
+    return cb null, results if count is 0
+
+    errors  = []; hasErr = false
+
+    for t,i in tasks then do (t,i) ->
+      next = (err, res...) ->
+        if err
+          errors[i] = err
+          hasErr    = true
+          return cb errors, results unless force
+        else
+          results[i] = if res.length < 2 then res[0] else res
+        if --count <= 0
+          if hasErr
             cb errors, results
           else
             cb null, results
+      try
+        t next
+      catch e
+        next e
 
-      for t, i in tasks then do (t, i) ->
-        next = (err, res...) ->
-          if err?
-            errors[i] = err
-            results[i] = undefined
-          else
-            results[i] = if res.length < 2 then res[0] else res
-          checkEnd()
-        try
-          t next
-        catch e
-          next e if force
+  # run asynchronous tasks one after another
+  runSeries: (tasks=[], cb=(->), force) ->
+    i = -1
+    count   = tasks.length
+    results = []
+    return cb null, results if count is 0
 
-    _runWaterfall = (tasks, cb) ->
-      i = -1
-      return cb() if tasks.length is 0
+    errors = []; hasErr = false
 
-      next = (err, res...) ->
-        return cb err if err?
-        if ++i is tasks.length
-          cb null, res...
+    next = (err, res...) ->
+      if err
+        errors[i] = err
+        hasErr    = true
+        return cb errors, results unless force
+      else
+        if i > -1 # first run
+          results[i] = if res.length < 2 then res[0] else res
+      if ++i >= count
+        if hasErr
+          cb errors, results
         else
-          tasks[i] res..., next
-      next()
+          cb null, results
+      else
+        try
+          tasks[i] next
+        catch e
+          next e
+    next()
 
-    _doForAll = (args = [], fn, cb)->
-      tasks = for a in args then do (a) ->
-        (next) ->
-          fn a, next
-      _runSeries tasks, cb
+  # run asynchronous tasks one after another
+  # and pass the argument
+  runWaterfall: (tasks, cb) ->
+    i = -1
+    return cb() if tasks.length is 0
 
-    clone: _clone
-    installFromTo: _installFromTo
-    getArgumentNames: _getArgumentNames
-    getGuid: _getGuid
-    doForAll: _doForAll
-    runSeries: _runSeries
-    runWaterfall: _runWaterfall
+    next = (err, res...) ->
+      return cb err if err?
+      if ++i >= tasks.length
+        cb null, res...
+      else
+        tasks[i] res..., next
+    next()
+
+  doForAll: (args=[], fn, cb, force)->
+    tasks = for a in args then do (a) -> (next) -> fn a, next
+    runParallel tasks, cb, force
+
+angular.module('app_utils', [])
+  .service 'utils', Utils

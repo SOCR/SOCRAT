@@ -1,174 +1,75 @@
 'use strict'
+
+# base libraries
+$ = require 'jquery'
+require 'angular'
+require 'bootstrap/dist/css/bootstrap.css'
+require 'angular-ui-bootstrap'
+require 'imports?this=>window!bootstrap-switch'
+require 'bootstrap-tagsinput'
+require 'holderjs'
+require 'typeahead.js'
+require 'select2'
+require 'angular-bootstrap-switch'
+require 'designmodo-flat-ui/dist/css/flat-ui.min.css'
+require 'designmodo-flat-ui/dist/fonts/glyphicons/flat-ui-icons-regular.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-black.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-bold.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-bolditalic.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-italic.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-light.woff'
+require 'designmodo-flat-ui/dist/fonts/lato/lato-regular.woff'
+require 'flatui-radiocheck'
+require 'angular-ui-router'
+require 'angular-sanitize'
+require 'angular-cookies'
+require 'angular-resource'
+require 'styles/app.less'
+
+# TODO: consider relocating to Charts
+require("expose?vg!vega")
+require("expose?vl!vega-lite")
+require 'vega-embed/vega-embed.js'
+require 'compassql'
+
+# create app-level modules
+angular.module 'app_controllers', []
+angular.module 'app_directives', []
+
+# base app components
+require 'scripts/App/AppCtrl.coffee'
+require 'scripts/App/AppSidebarCtrl.coffee'
+require 'scripts/App/AppMainCtrl.coffee'
+require 'scripts/App/AppMenubarDirective.coffee'
+require 'scripts/App/AppNotification.directive.coffee'
+require 'scripts/App/filters.coffee'
+require 'scripts/App/services.coffee'
+
+bodyTemplate = require 'index.jade'
+document.body.innerHTML = bodyTemplate()
+
+# load app configs
+
+ModuleList = require 'scripts/App/AppModuleList.coffee'
+AppConfig = require 'scripts/App/AppConfig.coffee'
+# create an instance of Core
+core = require 'scripts/core/Core.coffee'
+
 ###
   NOTE: Order of the modules injected into "app" module decides
   which module gets initialized first.
-  In this case, ngCookies config block is executed first, followed by
-  ngResource and so on. Finally config block of "app" is executed.
-  Then the run block is executed in the same order.
+  Their config blocks are executed in the injection order.
+  After that config block of "app" is executed.
+  Then the run blocks are executed in the same order.
   Run block of "app" is executed in the last.
 ###
-App = angular.module('app', [
-  'ui'
-  'ui.compat'
-  'ngCookies'
-  'ngResource'
-  'app.core'
-  'app.getData'
-  'app.qualRobEstView'
-  'app.qualRobEst'
-  'app.dataModelerView'
-  'app.dataModeler'
-  'app.controllers'
-  'app.directives'
-  'app.filters'
-  'app.services'
-  'app.mediator'
-  'ngSanitize'
-  'app.db'
-])
 
-App.config([
-  '$locationProvider'
-  '$urlRouterProvider'
-  '$stateProvider'
+moduleList = new ModuleList()
+appConfig = new AppConfig moduleList
 
-( $locationProvider, $urlRouterProvider, $stateProvider) ->
-
-  console.log "config block of app module"
-  $urlRouterProvider.when('/','/')
-    .otherwise('/home')
-
-  $stateProvider
-    .state 'welcome'
-      url: '/welcome'
-      views:
-        'main':
-          templateUrl: 'partials/welcome.html'
-
-    .state 'home'
-      url:'/home'
-      views:
-        'main':
-          templateUrl: 'partials/nav/home.html'
-        'sidebar':
-          templateUrl: 'partials/projects.html'
-          controller: 'projectCtrl'
-
-    .state 'guide'
-      url: '/guide'
-      views:
-        'main':
-          templateUrl: 'partials/nav/guide-me.html'
-        'sidebar':
-          templateUrl: 'partials/projects.html'
-          controller: 'projectCtrl'
-
-    .state 'contact'
-      url: '/contact'
-      views:
-        'main':
-          templateUrl: 'partials/nav/contact.html'
-
-    .state 'getData'
-      url: '/getData'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/getData/main.html'
-          controller: 'getDataMainCtrl'
-        'sidebar':
-          templateUrl: 'partials/analysis/getData/sidebar.html'
-          controller: 'getDataSidebarCtrl'
-
-    .state 'cleanData'
-      url: '/cleanData'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/cleanData/main.html'
-        'sidebar':
-          templateUrl: 'partials/analysis/cleanData/sidebar.html'
-
-    .state 'robustEstimator'
-      url: '/tools/robustEstimator'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/tools/qualRobEstView/main.html'
-          controller: 'qualRobEstMainCtrl'
-        'sidebar':
-          templateUrl: 'partials/analysis/tools/qualRobEstView/sidebar.html'
-          controller: 'qualRobEstViewSidebarCtrl'
-
-    .state 'dataModeler'
-      url: '/tools/dataModeler'
-      views:
-        'main':
-          templateUrl: 'partials/analysis/tools/dataModelerView/main.html'
-          controller: 'dataModelerViewMainCtrl'
-        'sidebar':
-          templateUrl: 'partials/analysis/tools/dataModelerView/sidebar.html'
-          controller: 'dataModelerViewSidebarCtrl'
-
-
-
-  # Without server side support html5 must be disabled.
-  $locationProvider.html5Mode(false)
-
-])
-
-App.run([
-  'core'
-  'db'
-  'getData'
-  'qualRobEstView'
-  'qualRobEst'
-  'dataModelerView'
-  'dataModeler'
-  (core,db,getData,qualRobEstView,qualRobEst,dataModelerView,dataModeler)->
-
-    map = [
-      msgFrom: '111'
-      scopeFrom: ['qualRobEstView']
-      msgTo: '123'
-      scopeTo: ['qualRobEst']
-    ,
-      msgFrom: '234'
-      scopeFrom: ['qualRobEst']
-      msgTo: '000'
-      scopeTo: ['qualRobEstView']
-    ,
-      msgFrom:'save table'
-      scopeFrom: ['getData']
-      msgTo:'save table'
-      scopeTo:['db']
-    ,
-      msgFrom:'model data'
-      scopeFrom: ['dataModelerView']
-      msgTo:'model data'
-      scopeTo:['dataModeler']
-    ,
-      msgFrom:'data modeled'
-      scopeFrom:['dataModeler']
-      msgTo:'data modeled'
-      scopeTo:['results']
-    ]
-
-    core.setEventsMapping map
-
-    core.register 'qualRobEstView', qualRobEstView
-    core.start 'qualRobEstView'
-
-    core.register 'qualRobEst', qualRobEst
-    core.start 'qualRobEst'
-
-    core.register 'dataModelerView', dataModelerView
-    core.start 'dataModelerView'
-
-    core.register 'dataModeler', dataModeler
-    core.start 'dataModeler'
-    
-    core.register 'db', db
-    core.start 'db'
-
-    console.log 'run block of app module'
-
-])
-
+# Create app module and pass all modules as dependencies
+angular.module 'app', moduleList.listAll()
+# Config block
+.config appConfig.getConfigBlock()
+# Run block
+.run appConfig.getRunBlock()

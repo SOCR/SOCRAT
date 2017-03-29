@@ -2,20 +2,20 @@
 ###
   depends on the app.mediator for publishing messages
 ###
-errorMngr = angular.module 'app.errorMngr', ['app.mediator']
+errorMngr = angular.module 'app_errorMngr', ['app_mediator']
 
-###
-  overriding the default $exceptionHandler for custom exception handling.
-###
-###
-  What is the structure of the err object?
-  err={
-    msg: "I am a error",
-    type: "error",
-    severity,
-    display: {true,false}
-  }
-###
+####
+#  overriding the default $exceptionHandler for custom exception handling.
+####
+####
+#  What is the structure of the err object?
+#  err={
+#    msg: "I am a error",
+#    type: "error",
+#    severity,
+#    display: {true,false}
+#  }
+####
 errorMngr.factory '$exceptionHandler', [
   '$log'
   'pubSub'
@@ -53,24 +53,24 @@ errorMngr.factory '$exceptionHandler', [
         if _debugMode is 1
           switch err.type
             when 'error'
-              $log.error err.msg
+              $log.error err.message
             when 'log'
-              $log.log err.msg
+              $log.log err.message
             when 'info'
-              $log.info err.msg
+              $log.info err.message
             when 'warn'
-              $log.warn err.msg
+              $log.warn err.message
             else
-              $log.log err.msg
+              $log.log err.message
+              $log.log err.stack
 
         #if display is defined
         if err.display?
           if err.display is true
             # tell the view controller to show the error message
-            console.log "DISPLAY"
             pubSub.publish
-              message:"Display error to frontend"
-              messageScope:["error"]
+              msg:"Display error to frontend"
+              msgScope:["error"]
               data:err.message
       else
         return false

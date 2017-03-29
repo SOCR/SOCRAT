@@ -1,6 +1,30 @@
-.idea/
-node_modules/
-test/test-results.xml
+/node_modules
+/.sass-cache
+/bower_components
+/.idea
+/test/test-results.xml
 *.log
-_public/
-app/assets/
+
+# Public files (generated)#
+===============
+_build/
+/dist
+/.tmp
+/_build/*.js
+/_build/*.eot
+/_build/*.ttf
+/_build/*.svg
+/_build/*.woff
+/_build/datasets
+
+#OS generated files #
+=====================
+.DS_STORE
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+
