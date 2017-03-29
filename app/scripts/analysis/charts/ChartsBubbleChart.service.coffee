@@ -8,38 +8,73 @@ module.exports = class ChartsBubbleChart extends BaseService
 
   drawBubble: (ranges,width,height,_graph,data,gdata,container) ->
     
-    if not data[0].y? # y variable is undefined 
-      return
     #testing
-    nest = d3.nest().key (d) -> d.z
+    #nest = d3.nest().key (d) -> d.z
+    
+    # Function count.
+    # Parameter array has data structure the same as 'data' 
+    # Return a hash table. 
+    #   key: each element in the parameter array
+    #   value: the count of each element
+    CateVar = { X:1, Y:2, Z:3, C:4 }
+    count = (array, variable) ->
+      counts = {}
+      for i in [0..array.length-1] by 1
+        currentVar = 0
+        switch variable
+          when CateVar.X
+            currentVar = array[i].x
+          when CateVar.Y
+            currentVar = array[i].y
+          when CateVar.Z
+            currentVar = array[i].z
+          when CateVar.R
+            currentVar = array[i].r
+        counts[currentVar] = counts[currentVar] || 0
+        ++counts[currentVar]
+      return counts
 
     padding = 50
     
     x_range = ranges.xMax - ranges.xMin
     x_padding = x_range * 0.05
     
-    y_range = ranges.yMax - ranges.yMin
-    y_padding = y_range * 0.05
     
-    x = d3.scale.linear().domain([ranges.xMin - x_padding, ranges.xMax + x_padding]).range([ padding, width - padding])
+    y_range = ranges.yMax - ranges.yMin
+    y_padding = y_range * 0.05 
+      
+    
+    x = d3.scale.linear().domain([ranges.xMin - x_padding, ranges.xMax + x_padding]).range([ padding, width - padding ])
     y = d3.scale.linear().domain([ranges.yMin - y_padding, ranges.yMax + y_padding]).range([ height - padding, padding ])
     xAxis = d3.svg.axis().scale(x).orient('bottom')
     yAxis = d3.svg.axis().scale(y).orient('left')
+    
+    # Define utilities for creating circles
+    yCounts = null
+    rCounts = null
+    scaleYCount = null
+    scaleRCounts = null
+    color = null
+    
+    if not data[0].y
+      yCounts = count(data, CateVar.X)
+      min_yCount = d3.min(d3.values(yCounts))
+      max_yCount = d3.max(d3.values(yCounts))
+      y_countPadding = 1
+      if min_yCount == max_yCount or min_yCount == 0
+        scaleYCount = d3.scale.linear().domain([0, max_yCount + y_countPadding]).range([ height - padding, padding ])
+      else
+        scaleYCount = d3.scale.linear().domain([min_yCount - y_countPadding, max_yCount + y_countPadding]).range([ height - padding, padding ])
+      yAxis = d3.svg.axis().scale(scaleYCount).orient('left')
       
-    # Function count.
-    # Parameter array has data structure the same as 'data' 
-    # Return a hash table. 
-    #   key: each element in the parameter array
-    #   value: the count of each element
-    count = (array) ->
-      counts = {}
-      for i in [0..array.length-1] by 1
-        currentVar = array[i].r
-        counts[currentVar] = counts[currentVar] || 0
-        ++counts[currentVar]
-      return counts
-
-    color = d3.scale.category10()
+    if data[0].z
+      color = d3.scale.category20()
+    
+    if data[0].r
+      rCounts = count(data, CateVar.R) # count the number for each radius variable
+      min_rCount = d3.min(d3.values(rCounts))
+      max_rCount = d3.max(d3.values(rCounts))
+      scaleRCount = d3.scale.linear().domain([min_rCount, max_rCount]).range([5, 40])
 
     # x axis
     x_axis = _graph.append("g")
@@ -79,29 +114,24 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('class', 'label')
     .attr('text-anchor', 'middle')
     .attr('transform', 'translate(0,' + padding/2 + ')')
-    .text gdata.yLab.value
+    .text(if not data[0].y then 'Counts' else gdata.yLab.value)
     
     # Show tick lines
     x_axis.selectAll(".x.axis line").style('stroke', 'black')
     y_axis.selectAll(".y.axis line").style('stroke', 'black')
-
-    # Create Circle
-    counts = count(data) # counts the number for each z variable
-    min_count = d3.min(d3.values(counts))
-    max_count = d3.max(d3.values(counts))
-    scale = d3.scale.linear().domain([min_count, max_count]).range([5, 40])
     
+    # Create Circles
     circles = _graph.selectAll('.circle')
     .data(data)
     .enter().append('circle')
     .attr('fill', (d) -> if not data[0].z then 'steelblue' else color(d.z))
     .attr('opacity', '0.6')
     .attr('cx', (d) -> x d.x)
-    .attr('cy', (d) -> y d.y)
-    .attr('r', (d) -> if not data[0].r then 10 else scale counts[d.r])
+    .attr('cy', (d) -> if data[0].y then y d.y else scaleYCount yCounts[d.x])
+    .attr('r', (d) -> if not data[0].r then 10 else scaleRCount rCounts[d.r])
     
-    # Tooltip
-    if data[0].r? # Show tooltip when z variable is selected
+    # Tooltip for Radius
+    if data[0].r? # Show tooltip when radius variable is selected
       tooltip = container
       .append('div')
       .attr('class', 'tooltip')
@@ -109,7 +139,7 @@ module.exports = class ChartsBubbleChart extends BaseService
       circles
       .on('mouseover', (d) ->
         radius = () -> 
-          return counts[d.r]
+          return rCounts[d.r]
         d3.select(this).attr('opacity', '1').attr('stroke', 'white').attr('stroke-width', '2px')
         tooltip.transition().duration(200).style('opacity', .9)
         tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + 'Counts ' + radius +'</div>')
@@ -121,7 +151,7 @@ module.exports = class ChartsBubbleChart extends BaseService
       )
     
 
-    # Legend
+    # Legend for Color
     if data[0].z?  
       legendRectSize = 8
       legendSpacing = 5
