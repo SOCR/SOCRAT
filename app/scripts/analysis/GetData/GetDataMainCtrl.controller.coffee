@@ -9,10 +9,14 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     '$state',
     'app_analysis_getData_dataService',
     'app_analysis_getData_showState',
-    'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
-    '$timeout'
+    'app_analysis_getData_socrDataConfig',
+    '$timeout',
+    '$window',
+    '$q',
+    '$rootScope',
+    '$http'
 
   initialize: ->
     @d3 = require 'd3'
@@ -20,8 +24,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataManager = @app_analysis_getData_dataService
     @showStateService = @app_analysis_getData_showState
     @inputCache = @app_analysis_getData_inputCache
-    @jsonParser = @app_analysis_getData_jsonParser
     @dataAdaptor = @app_analysis_getData_dataAdaptor
+    @socrData = @app_analysis_getData_socrDataConfig
 
     # get initial settings
     @LARGE_DATA_SIZE = 20000 # number of cells in table
@@ -30,8 +34,19 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @maxRows = 1000
     @DATA_TYPES = @dataManager.getDataTypes()
     @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
+    @WBDatasets = [
+        "name":"Out of School Children rate",
+        "key": "2.4_OOSC.RATE",
+      ,
+        "key":"4.2_BASIC.EDU.SPENDING",
+        "name":"Education Spending"
+    ]
+    @startYear = "2010"
+    @endYear = "2017"
+
     @defaultState = @states[0]
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
+    @socrDatasets = @socrData.getNames()
     @socrdataset = @socrDatasets[0]
     @colHeaders = on
     @file = null
@@ -85,10 +100,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @$scope.$on '$viewContentLoaded', ->
       console.log 'get data main div loaded'
 
+    # watch drag-n-drop file
     @$scope.$watch( =>
       @$scope.mainArea.file
     , (file) =>
       if file?
+        # TODO: replace d3 with datalib
         dataResults = @d3.csv.parseRows file
         data = @dataAdaptor.toDataFrame dataResults
         @passReceivedData data
@@ -125,44 +142,28 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         data = @dataAdaptor.toDataFrame @tableData, @colHeaders
         @checkDataSize data.nRows, data.nCols
         @inputCache.setData data
+  ###
+  @param {Object} - instance of DataFrame
+  @desc -
+  ###
+  passReceivedData: (dataFrame) ->
+    if not @dataAdaptor.isValidDataFrame dataFrame
+      throw Error "invalid data frame"
 
-  passReceivedData: (data) ->
-    if data.dataType is @DATA_TYPES.NESTED
+    if dataFrame.dataType is @DATA_TYPES.NESTED
       @dataType = @DATA_TYPES.NESTED
-      @checkDataSize data.nRows, data.nCols
+      @checkDataSize dataFrame.nRows, dataFrame.nCols
       # save to db
-      @inputCache.setData data
+      @inputCache.setData dataFrame
     else
       # default data type is 2d 'flat' table
-      data.dataType = @DATA_TYPES.FLAT
+      dataFrame.dataType = @DATA_TYPES.FLAT
       @dataType = @DATA_TYPES.FLAT
-
       # update table
+      @inputCache.setData dataFrame
       @$timeout =>
-        @colHeaders = data.header
-        @tableData = data.data
-        console.log 'ht updated'
-
-  # available SOCR Datasets
-  socrDatasets: [
-    id: 'IRIS'
-    name: 'Iris Flower Dataset'
-  ,
-    id: 'KNEE_PAIN'
-    name: 'Simulated SOCR Knee Pain Centroid Location Data'
-  ,
-    id: 'CURVEDNESS_AD'
-    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
-  ,
-    id: 'PCV_SPECIES'
-    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
-  ,
-    id: 'TURKIYE_STUDENT_EVAL'
-    name: 'Turkiye Student Evaluation Data Set'
-  , 
-    id: 'Fortune_500'
-    name: 'Fortune 500'
-  ]
+        @tableData = dataFrame.data
+        @colHeaders = dataFrame.header
 
   getWB: ->
     # default value
@@ -172,44 +173,63 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     if @option is undefined
       @option = '4.2_BASIC.EDU.SPENDING'
 
-    url = 'http://api.worldbank.org/countries/indicators/' + @option +
-        '?per_page=' + @size + '&date=2011:2011&format=jsonp' +
+    url = 'http://api.worldbank.org/countries/indicators/' + @option+
+        '?per_page=' + @size+ '&date='+ @startYear+':'+@endYear+'&format=jsonp' +
         '&prefix=JSON_CALLBACK'
 
-    @jsonParser.parse
-      url: url
-      type: 'worldBank'
+    deferred = @$q.defer()
+    # using broadcast because msg sent from rootScope
+    @$rootScope.$broadcast 'app:push notification',
+      initial:
+        msg: 'Asking worldbank...'
+        type: 'alert-info'
+      success:
+        msg: 'Successfully loaded data.'
+        type: 'alert-success'
+      failure:
+        msg: 'Error!'
+        type: 'alert-error'
+      promise: deferred.promise
+
+    @$http.jsonp(
+      url
+    )
     .then(
-      (data) =>
-        console.log 'resolved'
-        @passReceivedData data
-      ,
-      (msg) ->
-        console.log 'rejected:' + msg
+      (httpResponseObject) =>
+        if httpResponseObject.status == 200
+          deferred.resolve httpResponseObject.data
+          dataFrame = @dataAdaptor.toDataFrame httpResponseObject.data[1]
+          @passReceivedData dataFrame
+        else
+          deferred.reject "http request failed!"
       )
+    .catch( (err) =>
+      throw err
+    )
 
   getSocrData: ->
-    switch @socrdataset.id
-      when 'IRIS' then url = 'datasets/iris.csv'
-      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
-      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
-      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
-      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
-      when 'Fortune_500' then url = 'datasets/Fortune500.csv'
-      # default option
-      else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
+    url = @socrData.getUrlByName @socrdataset.id
+    # default option
+    url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ' unless url
 
+    # TODO: replace d3 with datalib
     @d3.text url,
       (dataResults) =>
         if dataResults?.length > 0
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
-          data = @dataAdaptor.toDataFrame dataResults
+          headers = dataResults.shift()
+          data = @dataAdaptor.toDataFrame dataResults, headers
           @passReceivedData data
         else
           console.log 'GETDATA: request failed'
 
+  openSocrDescription: ->
+    @$window.open @socrdataset.desc, '_blank'
+    true
+
   getJsonByUrl: (type) ->
+    # TODO: replace d3 with datalib
     @d3.json @jsonUrl,
       (dataResults) =>
         # check that data object is not empty
