@@ -165,7 +165,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				@categoricalCols = []
 				id = 0
 				for header in df.types
-					if header is "number"
+					if header in ["number", "integer"]
 						@categoricalCols.push(df.header[id])
 					id += 1
 				@updateDataPoints(df)
