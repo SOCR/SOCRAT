@@ -39,7 +39,6 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
       data.push
         x: i
         y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
-    console.log(data)
     data
 
   getMean: (valueSum, numberOfOccurrences) ->
@@ -72,24 +71,24 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     return values
 
   drawNormalCurve: (data_in1, mean_in1, variance_in1, sigma_in1, mean_in2, variance_in2, sigma_in2, alpha_in) ->
-    margin = {top: 10, right: 40, bottom: 50, left:80}
-    width = 750 - margin.left - margin.right
+    margin = {top: 20, right: 20, bottom: 20, left:20}
+    width = 500 - margin.left - margin.right
     height = 500 - margin.top - margin.bottom
 
-    d3.select("#Two_TGUI_graph").select("svg").remove()
+    container = d3.select("#Two_TGUI_graph")
+    container.select("svg").remove()
 
-    _graph = d3.select("#Two_TGUI_graph").append("svg")
+    svg = container.append('svg')
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
+    _graph = svg.append('g')
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
     data1 = @sort(data_in1)
     alpha = alpha_in
     index = data1.length - Math.floor (data1.length * alpha)
     criticalVal = data1[index]
-    console.log criticalVal
 
     mean1 = mean_in1
     variance1 = variance_in1
@@ -105,6 +104,23 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     topBound = Math.max(1 / (standardDerivation1 * Math.sqrt(Math.PI * 2)), 1 / (standardDerivation2 * Math.sqrt(Math.PI * 2)))
     gaussianCurveData1 = @getGaussianFunctionPoints(standardDerivation1,mean1,variance1,leftBound,rightBound)
     gaussianCurveData2 = @getGaussianFunctionPoints(standardDerivation2,mean2,variance2,leftBound,rightBound)
+    gaussianMax1 = 0
+    gaussianMax2 = 0
+    for i in gaussianCurveData1
+        if i['y'] > gaussianMax1
+            gaussianMax1 = i['x']
+    for i in gaussianCurveData2
+        if i['y'] > gaussianMax2
+            gaussianMax2 = i['x']
+
+
+    # pos1 = xScale(mean1)
+    # pos2 = xScale(mean2)
+
+    # Gau
+
+
+
 
     radiusCoef = 5
     
@@ -129,24 +145,22 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
 
 
 
-    _graph.append('svg:path')
+    path1 = _graph.append('svg:path')
     .attr('d', lineGen(gaussianCurveData1))
     .data([gaussianCurveData1])
     .attr('stroke', 'black')
     .attr('stroke-width', 5)
-    .attr('fill', "aquamarine")
+    .attr('fill', "blue")
     .style("opacity", 0.5)
 
 
-    _graph.append('svg:path')
+    path2 = _graph.append('svg:path')
     .attr('d', lineGen(gaussianCurveData2))
     .data([gaussianCurveData2])
     .attr('stroke', 'red')
     .attr('stroke-width', 5)
-    .attr('fill', "yellow")
+    .attr('fill', "chocolate")
     .style("opacity", 0.5)
-
-
 
     _graph.append("svg:g")
     .attr("class", "x axis")
@@ -163,23 +177,80 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     _graph.selectAll('.y.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-        
-
-    _graph.append("svg:g")
-    .append("text")      #text label for the x axis
-    .attr("x", width/2 + width/4  )
-    .attr("y", 20)
+    
+    svg.append("text")
+    .attr("id", "display_legend1")
+    .attr("x", xScale(rightBound*0.9))
+    .attr("y", yScale(topBound*0.9))
     .style("text-anchor", "middle")
-    .style("fill", "white")
+    .attr('fill', "blue");
+
+    svg.append("text")
+    .attr("id", "display_legend2")
+    .attr("x", xScale(rightBound*0.9))
+    .attr("y", yScale(topBound*0.85))
+    .style("text-anchor", "middle")
+    .attr('fill', "chocolate");
+
+
+    # _graph.append("svg:g")
+    # .attr("class","legend")
+    # .attr("transform","translate(50,30)")
+    # .style("font-size","12px")
+    # .call(d3.legend)
+
+    # _graph.append("svg:g")
+    # .append("text")      #text label for the x axis
+    # .attr("x", xScale(width/2 + width/4))
+    # .attr("y", xScale(20))
+    # .style("text-anchor", "middle")
+    # .style("fill", "white")
 
     _graph.append("svg:g")
     .append("line")
-    .attr('x1', criticalVal)
-    .attr('x2', criticalVal)
-    .attr('y1', 0)
-    .attr('y2', topBound)
+    .attr('x1', xScale(criticalVal))
+    .attr('x2', xScale(criticalVal))
+    .attr('y1', yScale(0))
+    .attr('y2', yScale(topBound*0.85))
     .attr('stroke', 'black')
-    .attr('stroke-width', 3)
+    .attr('stroke-width', 1)
+
+    svg.append("text")
+    .attr("id", "display_critical")
+    .attr("x", xScale(criticalVal))
+    .attr("y", yScale(topBound*0.8))
+    .style("text-anchor", "middle");
+
+    _graph.append("svg:g")
+    .append("line")
+    .attr('x1', xScale(mean1))
+    .attr('x2', xScale(mean1))
+    .attr('y1', yScale(0))
+    # .attr('y1', yScale(0))
+    .attr('y2', yScale(topBound))
+    .attr('stroke', 'black')
+    .attr('stroke-width', 1)
+
+    svg.append("text")
+    .attr("id", "display1")
+    .attr("x", xScale(mean1))
+    .attr("y", yScale(topBound*0.6))
+    .style("text-anchor", "middle");
+
+    _graph.append("svg:g")
+    .append("line")
+    .attr('x1', xScale(mean2))
+    .attr('x2', xScale(mean2))
+    .attr('y1', yScale(0))
+    .attr('y2', yScale(topBound))
+    .attr('stroke', 'black')
+    .attr('stroke-width', 1)
+
+    svg.append("text")
+    .attr("id", "display2")
+    .attr("x", xScale(mean2))
+    .attr("y", yScale(topBound*0.5))
+    .style("text-anchor", "middle");
 
     
     # rotate text on x axis
@@ -187,4 +258,6 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .attr('transform', (d) ->
        'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
     .style('font-size', '16px')
+
+    return criticalVal
 

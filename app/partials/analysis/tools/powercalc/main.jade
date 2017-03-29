@@ -464,74 +464,70 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         <br>
         p power: The probability of the critical region, given lambda and n.</p>
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
-    h4 Two-sample t test (general case)
-    p <i>This dialog provides for power analysis of a two-sample t test.</i>
-    div(id="Two_TGUI_graph" class="graph")
-    div
-      h4 Standard Deviation
-      div(style='margin-top:20px;' )
-        div(style='display:inline')
-          | SD1=: &nbsp
-          input#sigma1i(ng-disabled="true" name='sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;')
-        div(style='display:inline')
-          #sigma1uii(uib-tooltip="Manipulate this bar to adjust sigma1" tooltip-placement="top")
-      div(style='margin-top:20px;')
-        div(style='display:inline')
-          | SD2=: &nbsp
-          input#sigma2i(ng-disabled="true" name='sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;')
-        div(style='display:inline')
-          #sigma2uii(uib-tooltip="Manipulate this bar to adjust sigma12" tooltip-placement="top")
-    div
-      h4 Sample Size
-      div(style='margin-top:20px;')
-        div(style='display:inline')
-          | n1=: &nbsp
-          input#n1i(ng-disabled='mainArea.deployed' name='n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n1" ng-change="mainArea.TwoTGUI_changeSlider();")
-        div(style='display:inline')
-          #n1uii(uib-tooltip="Manipulate this bar to adjust population1" tooltip-placement="top")
-      div(style='margin-top:20px;')
-        div(style='display:inline')
-          | n2=: &nbsp
-          input#n2i(ng-disabled='mainArea.deployed' name='n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n2" ng-change="mainArea.TwoTGUI_changeSlider();")
-        div(style='display:inline')
-          #n2uii(uib-tooltip="Manipulate this bar to adjust population2" tooltip-placement="top")
-    div(style='width:100%; border-style:solid; border-width:0px;')
-      h4 Controller
-      div(style='margin-top:20px;')
-        div(style='display:inline')
-          | Significance Level: &nbsp
-          input#alphai(ng-disabled="true" name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02')
+    h5 2-sample independent t-test with power analysis
+    .row
+      .col-md-7.col-xs-7
+        div(id="Two_TGUI_graph" class="graph")
+        div(style='margin-top:20px;')
           div(style='display:inline')
-            #alphauii(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
-      div(style='margin-top:20px;')
-        div(style='display:inline')
-          | Degree of Freedom: &nbsp
-          input#dfi(ng-disabled="mainArea.deployed" name='df',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='48', ng-model="mainArea.TwoTGUI_df" ng-change="mainArea.TwoTGUI_changeSlider();")
+            | Power: &nbsp
+            input#poweri(ng-disabled="true" name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.1')
           div(style='display:inline')
-            #dfuii(uib-tooltip="Manipulate this bar to adjust degree of freedom" tooltip-placement="top")
-      div(style='margin-top:20px;')
-        div(style='display:inline')
-          | True Difference of Means: &nbsp
-          input#diffi(ng-disabled="true" name='diff',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.1')
-          div(style='display:inline')
-            #diffuii(uib-tooltip="Manipulate this bar to adjust true difference of means" tooltip-placement="top")
-      div(style='margin-top:20px;')
-        div(style='display:inline')
-          | Power: &nbsp
-          input#poweri(ng-disabled="true" name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.1')
-          div(style='display:inline')
-            #poweruii(uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
+            #poweruii
+      .col-md-5.col.xs-5
+        div
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') &sigma; 
+              p#psigma1i(style='display:inline') 1:&nbsp;
+              input#sigma1i(ng-disabled="true" name='sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+            div(style='display:inline')
+              #sigma1uii
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') &sigma; 
+              p#psigma2i(style='display:inline') 2:&nbsp;
+              input#sigma2i(ng-disabled="true" name='sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;')
+            div(style='display:inline')
+              #sigma2uii
+        div
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p#pn1i(style='display:inline') N1:&nbsp;
+              input#n1i(ng-disabled='mainArea.deployed' name='n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n1" ng-change="mainArea.TwoTGUI_changeSlider();")
+            div(style='display:inline')
+              #n1uii(hidden uib-tooltip="Manipulate this bar to adjust population1" tooltip-placement="top")
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p#pn2i(style='display:inline') N2:&nbsp;
+              input#n2i(ng-disabled='mainArea.deployed' name='n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n2" ng-change="mainArea.TwoTGUI_changeSlider();")
+            div(style='display:inline')
+              #n2uii(hidden uib-tooltip="Manipulate this bar to adjust population2" tooltip-placement="top")
+        div(style='width:100%; border-style:solid; border-width:0px;')
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') Degree of Freedom: &nbsp;
+              input#dfi(ng-disabled="mainArea.deployed" name='df',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='48', ng-model="mainArea.TwoTGUI_df" ng-change="mainArea.TwoTGUI_changeSlider();")
+              div(style='display:inline')
+                #dfuii(hidden uib-tooltip="Manipulate this bar to adjust degree of freedom" tooltip-placement="top")
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') True Difference of Means: &nbsp;
+              input#diffi(ng-disabled="true" name='diff',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.1')
+              div(style='display:inline')
+                #diffuii(hidden uib-tooltip="Manipulate this bar to adjust true difference of means" tooltip-placement="top")
+          h6 &nbsp;
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') t-score: &nbsp;
+              input#tsci(ng-disabled="mainArea.deployed" name='tsc',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='1')
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') p-value: &nbsp;
+              input#pvi(ng-disabled="mainArea.deployed" name='pv',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='1')
     div
       input#TwoTGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.TwoTGUI_show_help();')
       div(ng-show='mainArea.TwoTGUI_help == true;') 
-        p You have three choices for sample-size allocation. "Independent" lets you specify n1 and n2 separately; "Equal" forces n1 = n2; and "Optimal" sets the ratio $ \frac{n1}{n2} $ equal to $ \frac{sigma1}{sigma2} $ (which minimizes the SE of the difference of the sample means).
-        p You have a choice between using power or ROC area as the criterion for deciding sample size (see the section below on ROC area for additional explanation).
-        p You may choose whether to solve for effect size or sample size when you click on the "Power" (or "ROC area") slider.  The current values are scaled upward or downward to make the power come out right, while preserving (at least approximately) the ratio of the two SDs or two ns.
-        p To study a test of equivalence, check the "Equivalence" checkbox.  A "Threshold" window will appear for entering the negligible difference of means.  An equivalence test is a test of the hypotheses H0: |mu1 - mu2| >= threshold versus H1: |mu1 - mu2| < threshold.  The test is done by performing two one-sided t tests:
-        p    H01: mu1 - mu2 <= -threshold  vs. H11: > -threshold
-        p    H02: mu1 - mu2 >= threshold   vs. H12: < threshold
-        p Then H0 is rejected only if both H01 and H02 are rejected. If both tests are of size alpha, then the size of the two tests together is at most alpha -- that's because H01 and H02 are disjoint.  Another way to look at this test is to construct a 100(1 - 2*alpha) percent CI for (mu1 - mu), and reject H0 if this interval lies entirely inside the interval [-threshold, +threshold].
-        <br>
         p Options Menu
         p "Use integrated power" is an experimental enhancement. Consider the plot of power versus alpha; integrated power is the area under that curve.  (This curve is also known as the ROC - receiver operating characteristic - curve.)  The integrated power, or area under the ROC curve, is the average power over all possible values of alpha (therefore, it does not depend on alpha).
         p Integrated power has the following useful interpretation: Consider two hypothetical studies of identical size and design.  Suppose that in one of them, there is no difference between the means, and in the other, the difference is the value specified in the dialog.  We compute the t statistic in each study.  Then the integrated power is the probability that the t statistic for the second (non-null) study is "more significant" than the one from the null study.  That is, it is the chance that we will correctly distinguish the null and non-null studies. The lowest possible integrated power is .5 except in unreasonable situations (such as using a right-tailed test when the difference is negative).

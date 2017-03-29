@@ -30,7 +30,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		 'Two-sample t test (general case)']
 		@powercalcRunning = off
 		@algParams = null
-		@selectedAlgorithm = @algorithms[0]
+		@selectedAlgorithm = @algorithms[9]
 		@DATA_TYPES = @dataService.getDataTypes()
 
 		# set up data and algorithm-agnostic controls
@@ -57,12 +57,15 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@Zcol = null
 		@labelCol = null
 
+		@TwoTGUI_alpha=0.010
 		@deployed = false
 		$("#toggle_switch").bootstrapSwitch();
 
 		$("#toggle_switch").on 'switchChange.bootstrapSwitch', () =>
 			@deployed = !@deployed
 			@change_mode()
+
+		@prepare()
 
 
 		@dataService.getData().then (obj) =>
@@ -83,6 +86,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@$scope.$on 'powercalc:updateAlgorithm_back', (event, data)=>
 			@selectedAlgorithm = data
 			console.log("algorithms updated:", @selectedAlgorithm)
+
 
 	drive_data: () ->
 		@msgService.broadcast 'powercalc:drive_data',
@@ -124,6 +128,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			@populations[col]["data"] = loc_data
 			@calculate_sigma(data, col, index)
 		console.log(@populations)
+		@drive_data()
 
 	calculate_sigma: (data, col, index) ->
 		sum = 0
@@ -162,3 +167,24 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				@updateDataPoints(resp.dataFrame)
 			@msgService.broadcast 'powercalc:updateDataPoints',
 				dataPoints: resp.dataFrame
+
+	prepare: () ->
+		$("#alphauii").slider(
+			min: 0.001
+			max: 0.200
+			value: @TwoTGUI_alpha
+			orientation: "horizontal"
+			range: "min"
+			step: 0.001
+			slide: (event, ui) =>
+				@TwoTGUI_alpha = ui.value
+				$('#alphai').val ui.value
+				@msgService.broadcast 'powercalc:alpha',
+					alpha_in: @TwoTGUI_alpha
+				return
+				# @TwoTGUI_update()
+				# if @deployed
+				#   @TwoTGUI_graph()
+				# return
+		)
+		$("#alphai").val($("#alphauii").slider("value"));

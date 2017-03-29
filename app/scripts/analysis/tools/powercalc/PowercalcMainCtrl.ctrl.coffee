@@ -15,8 +15,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI = @app_analysis_powercalc_TwoTGUI
     @title = 'Power Calculator Module'
     #algorithm type
-    @selectedAlgorithm = "Select"
-
+    @selectedAlgorithm = "Two-sample t test (general case)"
+    @SIGNIFICANT = 5
     @data = []
     @dataType = ''
     @dataPoints = null
@@ -163,14 +163,23 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_help=false;
     @TwoTGUI_alloc_value=0;
     @TwoTGUI_opt_value=0;
-    @TwoTGUI_alpha=0.001;
+    @TwoTGUI_alpha=0.010;
     @TwoTGUI_threshold=1;
     @TwoTGUI_df=1;
+    @TwoTGUI_tscore = 0;
+    @TwoTGUI_pvalue = 0;
     @TwoTGUI_update();
     
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
+
+    @$scope.$on 'powercalc:alpha', (event, data)=>
+      @TwoTGUI_alpha = data.alpha_in
+      @TwoTGUI_update()
+      if @deployed
+        @TwoTGUI_graph()
+      return
 
     @$scope.$on 'powercalc:drive_data', (event, data)=>
       @populations = data.populations
@@ -190,9 +199,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   drive_data: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
-      if (@chosenCols.length isnt 2)
-        window.alert("Must choose two samples")
-      else
+      if (@chosenCols.length is 2)
         @TwoTGUI_receive_data()
         @TwoTGUI_graph();
     if (@selectedAlgorithm is "CI for One Proportion")
@@ -1022,6 +1029,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_n1 = @populations[@chosenCols[0]]["counter"]
     @TwoTGUI_n2 = @populations[@chosenCols[1]]["counter"]
     @TwoTGUI_diff = 0.01 * (@TwoTGUI_sigma1 + @TwoTGUI_sigma2)
+    $("#psigma1i").text("(" + @chosenCols[0] + "): ")
+    $("#psigma2i").text("(" + @chosenCols[1] + "): ")
+    $("#pn1i").text("N(" + @chosenCols[0] + "): ")
+    $("#pn2i").text("N(" + @chosenCols[1] + "): ")
     @TwoTGUI_click()
   TwoTGUI_click: () ->
     @TwoTGUI_maxsigma1 = Math.max(@TwoTGUI_sigma1, @TwoTGUI_maxsigma1)
@@ -1160,6 +1171,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
           return
     )
     $("#dfi").val($("#dfuii").slider("value"));
+    $("#tsci").val(@TwoTGUI_tscore.toFixed(2))
+    $("#pvi").val(@TwoTGUI_pvalue.toFixed(2))
     if @deployed is true
       $("#sigma1uii").slider("disable")
       $('#sigma1uii').find('.ui-slider-handle').hide();
@@ -1206,13 +1219,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       d = @powerAnalysis.TwoTGUI_dataDrivenMode_getpower(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff)
     else
       d = @powerAnalysis.TwoTGUI_dataDrivenMode_changepower(@TwoTGUI_sigma1, @TwoTGUI_sigma2, @TwoTGUI_n1, @TwoTGUI_n2, @TwoTGUI_alpha, @TwoTGUI_df, @TwoTGUI_diff, @TwoTGUI_power)
-    @TwoTGUI_sigma1=d.sigma1;
-    @TwoTGUI_sigma2=d.sigma2;
-    @TwoTGUI_n1=d.n1;
-    @TwoTGUI_n2=d.n2;
-    @TwoTGUI_df=d.df;
-    @TwoTGUI_diff=d.diff;
-    @TwoTGUI_power=d.power;
+    @TwoTGUI_sigma1=d.sigma1.toFixed(3);
+    @TwoTGUI_sigma2=d.sigma2.toFixed(3);
+    @TwoTGUI_n1=d.n1.toFixed(0);
+    @TwoTGUI_n2=d.n2.toFixed(0);
+    @TwoTGUI_df=d.df.toFixed(0);
+    @TwoTGUI_diff=d.diff.toFixed(3);
+    @TwoTGUI_power=d.power.toFixed(3);
     @TwoTGUI_click();
   TwoTGUI_graph:() ->
     mean1 = @populations[@chosenCols[0]]["mean"]
@@ -1222,7 +1235,23 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     sigma2 = @populations[@chosenCols[1]]["sigma"]
     variance2 = @populations[@chosenCols[1]]["variance"]
     data1 = @populations[@chosenCols[0]]["data"]
-    @TwoTGUI.drawNormalCurve(data1, mean1, variance1, sigma1, mean2, variance2, sigma2, @TwoTGUI_alpha);
+    data2 = @populations[@chosenCols[1]]["data"]
+    crit = @TwoTGUI.drawNormalCurve(data1, mean1, variance1, sigma1, mean2, variance2, sigma2, @TwoTGUI_alpha);
+    $("#display1").text("("+mean1.toFixed(1)+", "+sigma1.toFixed(2)+")")
+    $("#display2").text("("+mean2.toFixed(1)+", "+sigma2.toFixed(2)+")")
+    $("#display_critical").text("Critical t: "+crit.toFixed(1))
+    $("#display_legend1").text(@chosenCols[0])
+    $("#display_legend2").text(@chosenCols[1])
+    $("#display_legend1").css("background-color","aquamarine")
+    $("#display_legend2").css("background-color","chocolate")
+    @TwoTGUI_tscore = (mean1 - mean2)/Math.sqrt(
+          Math.pow(sigma1,2)/data1.length
+          +
+          Math.pow(sigma2,2)/data2.length
+        )
+    @TwoTGUI_pvalue = @tprob(@TwoTGUI_df.toFixed(0), @TwoTGUI_tscore)
+    @TwoTGUI_click();
+
   TwoTGUI_valiad1: (evt) ->
     id = evt.target.name
     data = evt.target.value
@@ -1262,3 +1291,62 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#TwoTGUI_H').val "Hide Help"
     @TwoTGUI_help = !@TwoTGUI_help
     return
+
+  tprob: ($n, $x) ->
+    if $n <= 0 or Math.abs($n) - Math.abs(@integer($n)) != 0
+      throw 'Invalid n: $n\n'
+      ### degree of freedom ###
+    @precision_string @_subtprob($n - 0, $x - 0)
+
+  integer: ($i) ->
+    if $i > 0
+      Math.floor $i
+    else
+      Math.ceil $i
+
+  precision_string: ($x) ->
+    if $x
+      @round_to_precision $x, @precision($x)
+    else
+      '0'
+
+  round_to_precision: ($x, $p) ->
+    $x = $x * 10 ** $p
+    $x = Math.round($x)
+    $x / 10 ** $p
+
+  precision: ($x) ->
+    Math.abs @integer(@log10(Math.abs($x)) - @SIGNIFICANT)
+
+  _subtprob: ($n, $x) ->
+    $a = undefined
+    $b = undefined
+    $w = Math.atan2($x / Math.sqrt($n), 1)
+    $z = Math.cos($w) ** 2
+    $y = 1
+    $i = $n - 2
+    while $i >= 2
+      $y = 1 + ($i - 1) / $i * $z * $y
+      $i -= 2
+    if $n % 2 == 0
+      $a = Math.sin($w) / 2
+      $b = .5
+    else
+      $a = if $n == 1 then 0 else Math.sin($w) * Math.cos($w) / Math.PI
+      $b = .5 + $w / Math.PI
+    @max 0, 1 - $b - ($a * $y)
+
+  log10: ($n) ->
+    Math.log($n) / Math.log(10)
+
+  max: () ->
+    $max = arguments[0]
+    $i = 0
+    while $i < arguments.length
+      if $max < arguments[$i]
+        $max = arguments[$i]
+      $i++
+    $max
+
+  # ---
+  # generated by js2coffee 2.2.0

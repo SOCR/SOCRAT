@@ -15,7 +15,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             ng-change="sidebar.updateAlgControls()"
           )
         div.bootstrap-switch-square
-          h4 Data-Driven Mode
+          h7 Data-Driven Mode &nbsp;&nbsp;
           input(
             type="checkbox"
             data-toggle="switch"
@@ -32,17 +32,9 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             ng-options="col for col in sidebar.categoricalCols"
             ng-change="sidebar.calculateN(sidebar.dataFrame)"
             )
-          div.form-group.btn-group(
-            role="group"
-            area-label="Sidebar flow controls"
-            uib-tooltip = "Choose at corresponding columns to start"
-          )
-            button.btn.btn-primary.btn-sm(
-            ng-show="true"
-            type="submit"
-            aria-label="Run"
-            ng-click="sidebar.drive_data()"
-            ng-disabled="sidebar.chosenCols.length < 1")
-              | Run&nbsp;
-              span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
-              span &nbsp;
+        div(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)'" style='margin-top:20px;')
+          div(style='display:inline')
+            h9 Significance Level: &nbsp
+            input#alphai(ng-disabled="true" name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02')
+        div(style='display:inline')
+          #alphauii(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
