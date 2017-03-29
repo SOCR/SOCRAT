@@ -17,10 +17,10 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability'
       ]
-      msgTo: 'infer all types'
+      msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
     ,
-      msgFrom: 'all types inferred'
+      msgFrom: 'type.inferAll_res'
       scopeFrom: ['app_analysis_datalib']
       msgTo: 'data types inferred'
       scopeTo: [

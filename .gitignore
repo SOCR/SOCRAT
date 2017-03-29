@@ -7,6 +7,7 @@
 
 # Public files (generated)#
 ===============
+_build/
 /dist
 /.tmp
 /_build/*.js
