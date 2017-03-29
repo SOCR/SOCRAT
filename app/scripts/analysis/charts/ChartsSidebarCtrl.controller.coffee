@@ -66,11 +66,15 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @header = {key: 0, value: "initiate"}
 
   parseData: (data) ->
+    df = data
     @dataService.inferDataTypes data, (resp) =>
-      if resp and resp.dataFrame and resp.dataFrame.data
-        @dataFrame = resp.dataFrame
-        @updateSidebarControls()
-        @updateDataPoints()
+      if resp? and resp.dataFrame? and resp.dataFrame.data?
+        # update data types with inferred
+        for type, idx in df.types
+          df.types[idx] = resp.dataFrame.data[idx]
+        @dataFrame = df
+        @updateSidebarControls(df)
+        @updateDataPoints(df)
 
   updateSidebarControls: (data=@dataFrame) ->
     @cols = data.header
