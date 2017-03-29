@@ -7,7 +7,7 @@ module.exports = class ChartsBarChart extends BaseService
   initialize: ->
           
   drawBar: (ranges,width,height,data,_graph,gdata,container) ->
-    
+          
     padding = 50
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])
@@ -35,8 +35,6 @@ module.exports = class ChartsBarChart extends BaseService
     yAxisLabel_y = -70
     
     color = d3.scale.category20()
-    
-    colorCategoryArray = null
 	
 	# Input original data
     # Return a mapped object 
@@ -60,106 +58,38 @@ module.exports = class ChartsBarChart extends BaseService
         ++categoryHash[currentCategory] 
       return d3.entries categoryHash
                 
-    # Input a mapped object with key and value, value must be integer
-    # Return an array of key
-    getCategoryArray = (object) ->
+    # Input a mapped object with kay and value, value must be integer
+    getCategory = (object) ->
        array = []
        for i in [0..object.length-1] by 1
          array.push(object[i].key)
        return array
-      
-    # Return data in the following structure:
-    # [ {x:'x-variable', cat1: count, cat2,: count}, {...} ]
-    stackRawData = (data) ->
-      xSet = {}
-      # Determine x-variable set 
-      catToCount = categoryToCounts(data, CateVar.X)
-      for i in [0..catToCount.length-1] by 1
-        xSet[catToCount[i].key] = {total: catToCount[i].value}
-
-      # Determine counts of color variables (z-variable) for each x-variable
-      for i in [0..data.length-1] by 1
-        object = xSet[data[i].x]
-        object[data[i].z] = object[data[i].z] || 0
-        ++object[data[i].z]
-      
-      # Convert xSet to flat array
-      # Data structure: [{ x: 'x-var', cat1: count, cat2: count, total: count}, {...} ]
-      array = []
-      Object.keys(xSet).forEach((key) -> 
-        object = {}
-        setObject = xSet[key]
-        object['x'] = key
-        Object.keys(setObject).forEach((objKey) -> object[objKey] = setObject[objKey])
-        array.push(object)
-      )
-      return array
-
-         
+    
+    
     # without y variable
-    if !data[0].y
-        Xcounts = categoryToCounts(data, CateVar.X)
+    if not data[0].y
+        yCounts = categoryToCounts(data, CateVar.X)
+        yMax = 0
+        for variable in yCounts
+          if variable.value > yMax
+            yMax = variable.value
+        yPadding = 1
+        y.domain([0, yMax + yPadding])
+           
         x = d3.scale.ordinal().rangeRoundBands([padding, width-padding], .1)
         xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(2)
-        if !data[0].z # without color variable (z variable)
-          
-          # check if all the counts are the same
-          # if the all counts are the same, need to fix y.domain([min, max])
-          sameCounts = true 
-          for i in [1..Xcounts.length-1] by 1
-            if Xcounts[i].value != Xcounts[0].value
-             sameCounts = false
-          
-          x.domain(Xcounts.map (d) -> d.key)
-          y_max = d3.max(Xcounts, (d)-> parseInt d.value)
-          y_padding = y_max * 0.05
-          if sameCounts
-            y.domain([0, Xcounts[0].value])
-          else 
-            y.domain([0, y_max + y_padding])
+        x.domain(yCounts.map (d) -> d.key)
         
-          # create bar elements
-          _graph.selectAll('rect')
-          .data(Xcounts)
-          .enter().append('rect')
-          .attr('class', 'bar')
-          .attr('x',(d)-> x d.key  )
-          .attr('width', x.rangeBand())
-          .attr('y', (d)-> y d.value )
-          .attr('height', (d)-> Math.abs(height - y d.value) - padding)
-          .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
-        
-        else # with color variable (z vairbale)
-          stackRawData = stackRawData(data)
-          colorCategoryArray = getCategoryArray(categoryToCounts(data, CateVar.Z))
-          
-          dataIntermediate = colorCategoryArray.map((c) ->
-            return stackRawData.map((d) ->
-              return {x: d.x, y: d[c], key: c}
-            )
-          )
-          
-          layers = d3.layout.stack()(dataIntermediate)
-          console.log layers
-          x.domain(layers[0].map((d) -> d.x)).rangeRoundBands([padding, width-padding], .1)
-          y.domain([0, d3.max(layers[layers.length-1], (d) -> d.y0 + d.y)]).nice()
-          color.domain(colorCategoryArray)
-          
-          layer = _graph.selectAll('.layer')
-            .data(layers)
-            .enter()
-            .append('g')
-            .attr('class', 'layer')
-            .style('fill', (d, i) -> color(d[i].key))
-            
-          layer.selectAll('rect')
-          .data((d) -> d)
-          .enter()
-          .append('rect')
-          .attr('x', (d) -> x d.x)
-          .attr('y', (d) -> y (d.y + d.y0))
-          .attr('height', (d) -> (y d.y0) - (y (d.y + d.y0)))
-          .attr('width', x.rangeBand())   
+        # create bar elements
+        _graph.selectAll('rect')
+        .data(yCounts)
+        .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x',(d)-> x d.key  )
+        .attr('width', x.rangeBand())
+        .attr('y', (d)-> y d.value )
+        .attr('height', (d)-> Math.abs(height - y d.value) - padding)
+        .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
 
         # draw x axis with labels and move in from the size by the amount of padding
         x_axis = _graph.append('g')
@@ -372,12 +302,9 @@ module.exports = class ChartsBarChart extends BaseService
     .attr('class', 'label')
     .attr('transform', 'translate(' + horz + ',' + vert + ')')
     .text gdata.zLab.value
-    
-    #colorArray = getColorArray(data) # Set legend labels to be color variables
-    #color.domain(colorArray)
-
+  
     legend = _graph.selectAll('.legend')
-    .data(if !data[0].z then colorCategoryArray else color.domain() )
+    .data(color.domain())
     .enter()
     .append('g')
     .attr('class', 'legend')
