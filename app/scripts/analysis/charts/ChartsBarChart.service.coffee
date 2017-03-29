@@ -65,6 +65,32 @@ module.exports = class ChartsBarChart extends BaseService
          array.push(object[i].key)
        return array
     
+    # Return data in the following structure:
+    # [ {x:'x-variable', cat1: count, cat2,: count}, {...} ]
+    stackRawData = (data) ->
+      xSet = {}
+      # Determine x-variable set 
+      catToCount = categoryToCounts(data, CateVar.X)
+      for i in [0..catToCount.length-1] by 1
+        xSet[catToCount[i].key] = {total: catToCount[i].value}
+
+      # Determine counts of color variables (z-variable) for each x-variable
+      for i in [0..data.length-1] by 1
+        object = xSet[data[i].x]
+        object[data[i].z] = object[data[i].z] || 0
+        ++object[data[i].z]
+      
+      # Convert xSet to flat array
+      # Data structure: [{ x: 'x-var', cat1: count, cat2: count, total: count}, {...} ]
+      array = []
+      Object.keys(xSet).forEach((key) -> 
+        object = {}
+        setObject = xSet[key]
+        object['x'] = key
+        Object.keys(setObject).forEach((objKey) -> object[objKey] = setObject[objKey])
+        array.push(object)
+      )
+      return array
     
     # without y variable
     if not data[0].y
@@ -80,23 +106,15 @@ module.exports = class ChartsBarChart extends BaseService
         xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(2)
         x.domain(yCounts.map (d) -> d.key)
         
-        # create bar elements
-        _graph.selectAll('rect')
-        .data(yCounts)
-        .enter().append('rect')
-        .attr('class', 'bar')
-        .attr('x',(d)-> x d.key  )
-        .attr('width', x.rangeBand())
-        .attr('y', (d)-> y d.value )
-        .attr('height', (d)-> Math.abs(height - y d.value) - padding)
-        .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
-
+        
+        # x axis
         # draw x axis with labels and move in from the size by the amount of padding
         x_axis = _graph.append('g')
         .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + (height - padding) + ')')
         .call(xAxis)
         
+        # y axis
         # draw y axis with labels and move in from the size by the amount of padding
         y_axis = _graph.append('g')
         .attr('class', 'y axis')
@@ -126,6 +144,18 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('text-anchor', 'middle')
         .attr('transform', 'translate(0,' + padding/2 + ')')
         .text "Counts"
+        
+        # create bar elements
+        _graph.selectAll('rect')
+        .data(yCounts)
+        .enter().append('rect')
+        .attr('class', 'bar')
+        .attr('x',(d)-> x d.key  )
+        .attr('width', x.rangeBand())
+        .attr('y', (d)-> y d.value )
+        .attr('height', (d)-> Math.abs(height - y d.value) - padding)
+        .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
+
 
 	# with y variable
     else
