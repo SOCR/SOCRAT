@@ -155,18 +155,22 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
 	parseData: (data) ->
+		df = data
 		@dataService.inferDataTypes data, (resp) =>
-			if resp and resp.dataFrame
+			if resp? and resp.dataFrame? and resp.dataFrame.data?
+				#update data types
+				for type, idx in df.types
+					df.types[idx] = resp.dataFrame.data[idx]
 				# update columns
 				@categoricalCols = []
 				id = 0
-				for header in resp.dataFrame.types
+				for header in df.types
 					if header is "number"
-						@categoricalCols.push(resp.dataFrame.header[id])
+						@categoricalCols.push(df.header[id])
 					id += 1
-				@updateDataPoints(resp.dataFrame)
+				@updateDataPoints(df)
 			@msgService.broadcast 'powercalc:updateDataPoints',
-				dataPoints: resp.dataFrame
+				dataPoints: df
 
 	prepare: () ->
 		$("#alphauii").slider(
