@@ -106,6 +106,30 @@ module.exports = class ChartsBarChart extends BaseService
         xAxis = d3.svg.axis().scale(x).orient('bottom').ticks(2)
         x.domain(yCounts.map (d) -> d.key)
         
+        # create bar elements
+        
+        if not data[0].z # without color variable (z variable)
+          _graph.selectAll('rect')
+          .data(yCounts)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x',(d)-> x d.key  )
+          .attr('width', x.rangeBand())
+          .attr('y', (d)-> y d.value )
+          .attr('height', (d)-> Math.abs(height - y d.value) - padding)
+          .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
+        
+        else # with color variable
+          _graph.selectAll('rect')
+          .data(yCounts)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x',(d)-> x d.key  )
+          .attr('width', x.rangeBand())
+          .attr('y', (d)-> y d.value )
+          .attr('height', (d)-> Math.abs(height - y d.value) - padding)
+          .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
+        
         
         # x axis
         # draw x axis with labels and move in from the size by the amount of padding
@@ -145,16 +169,7 @@ module.exports = class ChartsBarChart extends BaseService
         .attr('transform', 'translate(0,' + padding/2 + ')')
         .text "Counts"
         
-        # create bar elements
-        _graph.selectAll('rect')
-        .data(yCounts)
-        .enter().append('rect')
-        .attr('class', 'bar')
-        .attr('x',(d)-> x d.key  )
-        .attr('width', x.rangeBand())
-        .attr('y', (d)-> y d.value )
-        .attr('height', (d)-> Math.abs(height - y d.value) - padding)
-        .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
+        
 
 
 	# with y variable
@@ -333,8 +348,13 @@ module.exports = class ChartsBarChart extends BaseService
     .attr('transform', 'translate(' + horz + ',' + vert + ')')
     .text gdata.zLab.value
   
+    
+    
+    # Legend list data
+    colorCategoryArray = getCategory(categoryToCounts(data, CateVar.Z))
+    
     legend = _graph.selectAll('.legend')
-    .data(color.domain())
+    .data(if data[0].y then color.domain() else colorCategoryArray)
     .enter()
     .append('g')
     .attr('class', 'legend')
