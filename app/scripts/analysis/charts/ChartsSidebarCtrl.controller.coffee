@@ -35,6 +35,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @yCol = null
     @zCol = null
     @rCol = null
+    @originalXCols = null
+    @originalYCols = null
+    @originalZCols = null
+    @originalRCols = null
 
     @stream = false
     @streamColors = [
@@ -102,6 +106,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
       @xCol = @xCols[0]
+    @originalXCols = @xCols
       
     if @selectedGraph.y
       @yCols = []
@@ -113,6 +118,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         if yCol isnt @xCol
           @yCol = yCol
           break
+    @originalYCols = @yCols
       
     if @selectedGraph.z
       @zCols = []
@@ -123,15 +129,16 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           @zCols.push(col)
       # Initialize the z variable
       @zCol = "None"
+    @originalZCols = @zCols
       
     if @selectedGraph.r
       @rCols = []
       @rCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.r
-        @rCols.push(col)
-        
+        @rCols.push(col)    
       # Initialize the z variable
       @rCol = "None"
+    @originalRCols = @rCols
       
     
       
@@ -142,6 +149,22 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
     [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
     data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
+    
+    # Remove the variables that are already chosen for one field  
+    # isX is a boolean. This is used to determine if to include 'None' or not
+    removeFromList = (variables, list) ->
+      newList = []
+      if list
+        for e in list
+          if e == 'None' or $.inArray(e, variables) is -1 # e is not in the chosen variables
+            newList.push(e)
+      return newList
+    
+    @xCols = removeFromList([@yCol, @zCol, @rCol], @originalXCols)
+    @yCols = removeFromList([@xCol, @zCol, @rCol], @originalYCols)
+    @zCols = removeFromList([@xCol, @yCol, @rCol], @originalZCols)
+    @rCols = removeFromList([@xCol, @yCol, @zCol], @originalRCols)
+    
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data
       graph: @selectedGraph
@@ -158,6 +181,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         rLab:
           value: @rCol
           type: rType
+          
 
 #  changeGraph: () ->
 #    if @graphSelect.name is "Stream Graph"

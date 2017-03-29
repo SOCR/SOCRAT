@@ -35,7 +35,7 @@ module.exports = class ChartsDir extends BaseDirective
     @bivariate = @app_analysis_charts_bivariateLineChart
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
-
+    
     @restrict = 'E'
     @template = "<div class='graph-container' style='height: 600px'></div>"
 
@@ -77,7 +77,8 @@ module.exports = class ChartsDir extends BaseDirective
             y: row[1]
             z: row[2]
             r: row[3]
-
+          
+          
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
 
