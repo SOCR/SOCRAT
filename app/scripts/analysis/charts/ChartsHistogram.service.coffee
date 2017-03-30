@@ -142,7 +142,7 @@ module.exports = class ChartsHistogram extends BaseService
 
         tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.xLab.value+'</br>'+'Median: '+ xMedian(d,i)+'</br>'+'Mean: '+xMean(d,i)+'</br>'+"N: "+xLength(d, i)+'</div>')
           .attr('value', stats[i].mean)
-          .style('background-color', 'dodgerblue')
+          .style('display', 'block')
           .style('opacity', .4)
           .style('padding', 2)
           .style('border', 0)
@@ -160,7 +160,10 @@ module.exports = class ChartsHistogram extends BaseService
 #        tooltip.append("/br")
 
     )
-    .on('mouseout', () -> d3.select(this).transition().style('fill', getColor(0)))
+    .on('mouseout', () -> 
+      d3.select(this).transition().style('fill', getColor(0))
+      tooltip.style('display', 'none')
+    )
 
     bar.append('text')
     .attr('x', (d) -> x d.x)
