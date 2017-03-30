@@ -52,10 +52,14 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@numericalCols = []
 		@categoricalCols = []
 		@populations = {}
+		@container = {}
 		@xCol = null
 		@yCol = null
 		@Zcol = null
-		@labelCol = null
+		@labelCol = []
+		@vars = []
+		@chosenLabel = null
+		@df = null
 
 		@TwoTGUI_alpha=0.010
 		@deployed = false
@@ -91,7 +95,9 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	drive_data: () ->
 		@msgService.broadcast 'powercalc:drive_data',
 			populations:@populations
-			chosen:@chosenCols
+			chosenCol:@chosenCols
+			chosenVar:@chosenVars
+			chosenlab:@chosenlab
 
 	change_mode: () -> 
 		#console.log "mode changed"
@@ -105,8 +111,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
 
-
-	calculateN: (data) ->
+	calculateN2: (data) ->
 		@populations = {}
 		for col in @chosenCols
 			sum = 0
@@ -126,17 +131,67 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			@populations[col]["sum"] = sum
 			@populations[col]["mean"] = mean
 			@populations[col]["data"] = loc_data
-			@calculate_sigma(data, col, index)
+			@calculate_sigma(loc_data, col, index)
 		console.log(@populations)
 		@drive_data()
 
+	calculateN: (data) ->
+		@populations = {}
+		if (@chosenLabel is "none") or (@chosenLabel is null)
+			return @calculateN2(data)
+		for col in @chosenCols
+			sum = 0
+			index = data.header.indexOf(col)
+			if !(index is -1)
+				# console.log @container[0]
+				for item in Object.keys(@container)
+					loc_data = []
+					@populations[item]={"counter":0, "data":[], "sum":0, "mean":0, "variance":0, "sigma":0}
+					@populations[item]["counter"] = @container[item]['counter']
+					for row in @container[item]["data"]
+						loc_data.push(parseFloat(row[index]))
+						if @populations[item] is undefined
+							sum = sum + parseFloat(row[index])
+						else 
+							sum = sum + parseFloat(row[index])
+					mean = sum / @populations[item]["counter"]
+					@populations[item]["sum"] = sum
+					@populations[item]["mean"] = mean
+					@populations[item]["data"] = loc_data
+					@calculate_sigma(loc_data, item, index)
+		console.log(@populations)
+		@drive_data()
+
+	calculate: (data) ->
+		@container = {}
+		for col in @chosenVars
+			index = data.header.indexOf(@chosenLabel)
+			@container[col] = {"counter":0}
+			if !(index is -1)
+				loc_data = []
+				for row in data.data
+					loc_data.push(row)
+					if (row[index] is col)
+						@container[col]["counter"] += 1
+			@container[col]["data"] = loc_data
+		# console.log(@container)
+
 	calculate_sigma: (data, col, index) ->
 		sum = 0
-		for row in data.data
-			sum = sum + Math.pow(parseFloat(row[index]) - @populations[col]["mean"], 2)
+		for row in data
+			sum = sum + Math.pow(parseFloat(row) - @populations[col]["mean"], 2)
 		@populations[col]["variance"] = sum / @populations[col]["counter"]
 		@populations[col]["sigma"] = Math.sqrt(sum / @populations[col]["counter"])
 		return 
+
+	updateVar: (data) ->
+		index = data.header.indexOf(@chosenLabel)
+		@vars = []
+		for row in data.data
+			if row[index] not in @vars
+				@vars.push(row[index])
+		return
+			
 
 	updateDataPoints: (data=null, means=null, labels=null) ->
 		if data
@@ -155,22 +210,25 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
 	parseData: (data) ->
-		df = data
+		@df = data
 		@dataService.inferDataTypes data, (resp) =>
 			if resp? and resp.dataFrame? and resp.dataFrame.data?
 				#update data types
-				for type, idx in df.types
-					df.types[idx] = resp.dataFrame.data[idx]
+				for type, idx in @df.types
+					@df.types[idx] = resp.dataFrame.data[idx]
 				# update columns
 				@categoricalCols = []
+				@labelCol = ["none"]
 				id = 0
-				for header in df.types
+				for header in @df.types
 					if header in ["number", "integer"]
-						@categoricalCols.push(df.header[id])
+						@categoricalCols.push(@df.header[id])
+					else if header in ["string"]
+						@labelCol.push(@df.header[id])
 					id += 1
-				@updateDataPoints(df)
+				@updateDataPoints(@df)
 			@msgService.broadcast 'powercalc:updateDataPoints',
-				dataPoints: df
+				dataPoints: @df
 
 	prepare: () ->
 		$("#alphauii").slider(

@@ -30,7 +30,23 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             multiple
             ng-model="sidebar.chosenCols"
             ng-options="col for col in sidebar.categoricalCols"
-            ng-change="sidebar.calculateN(sidebar.dataFrame)"
+            ng-change="sidebar.calculateN(sidebar.df)"
+            )
+          div.form-group
+            label Labels &nbsp;
+            //- show data header column names
+            select.form-control(
+              ng-model="sidebar.chosenLabel"
+              ng-options="col for col in sidebar.labelCol"
+              ng-change="sidebar.updateVar(sidebar.df)"
+            )
+          div.form-group
+            label Variables
+            select.form-control(
+            multiple
+            ng-model="sidebar.chosenVars"
+            ng-options="col for col in sidebar.vars"
+            ng-change="sidebar.calculate(sidebar.df)"
             )
         div(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)'" style='margin-top:20px;')
           div(style='display:inline')

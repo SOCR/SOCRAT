@@ -183,7 +183,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
     @$scope.$on 'powercalc:drive_data', (event, data)=>
       @populations = data.populations
-      @chosenCols = data.chosen
+      if (data.chosenCol.length is 2)
+        @chosenCols = data.chosenCol
+      else 
+        @chosenCols = data.chosenVar
       @drive_data()
       #console.log(@chosenCols)
       #console.log("pops updated:", @populations)
@@ -199,7 +202,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   drive_data: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
-      if (@chosenCols.length is 2)
+      if (Object.keys(@populations).length is 2)
         @TwoTGUI_receive_data()
         @TwoTGUI_graph();
     if (@selectedAlgorithm is "CI for One Proportion")
@@ -1055,7 +1058,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
           @TwoTGUI_update()
           return
     )
-    $( "#sigma1i" ).val( $( "#sigma1uii" ).slider( "value" ) );
+    $( "#sigma1i" ).val(@TwoTGUI_sigma1);
     $( "#sigma2uii" ).slider(
       value:@TwoTGUI_sigma2,
       min: 0,
@@ -1069,7 +1072,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
           @TwoTGUI_update()
           return
     )          
-    $( "#sigma2i" ).val( $( "#sigma2uii" ).slider( "value" ) );
+    $( "#sigma2i" ).val(@TwoTGUI_sigma2);
     $( "#n1uii" ).slider(
       value:@TwoTGUI_n1,
       min: 0,
@@ -1249,7 +1252,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
           +
           Math.pow(sigma2,2)/data2.length
         )
-    @TwoTGUI_pvalue = @tprob(@TwoTGUI_df.toFixed(0), @TwoTGUI_tscore)
+    @TwoTGUI_pvalue = @tprob(Math.floor(@TwoTGUI_df), @TwoTGUI_tscore)
     @TwoTGUI_click();
 
   TwoTGUI_valiad1: (evt) ->
