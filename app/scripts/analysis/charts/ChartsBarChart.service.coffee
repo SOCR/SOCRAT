@@ -67,17 +67,28 @@ module.exports = class ChartsBarChart extends BaseService
     
     # Return data in the following structure:
     # [ {x:'x-variable', cat1: count, cat2,: count}, {...} ]
-    stackRawData = (data) ->
+    getStackRawDataArray = (data) ->
       xSet = {}
+      
       # Determine x-variable set 
+      # each object in set is in this data structure
+      # { category: { total: #} }
       catToCount = categoryToCounts(data, CateVar.X)
-      for i in [0..catToCount.length-1] by 1
-        xSet[catToCount[i].key] = {total: catToCount[i].value}
-
+      
+      for category in catToCount
+        xSet[category.key] = { total: category.value }
+       
+      # Initialize each category to be 0 count
+      xSetD3entry = d3.entries xSet
+      colorCategoryArray = getCategory(categoryToCounts(data, CateVar.Z))
+      
+      for xObj in xSetD3entry
+        for category in colorCategoryArray
+          xSet[xObj.key][category] = 0
+      
       # Determine counts of color variables (z-variable) for each x-variable
       for i in [0..data.length-1] by 1
         object = xSet[data[i].x]
-        object[data[i].z] = object[data[i].z] || 0
         ++object[data[i].z]
       
       # Convert xSet to flat array
@@ -120,16 +131,37 @@ module.exports = class ChartsBarChart extends BaseService
           .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
         
         else # with color variable
-          _graph.selectAll('rect')
-          .data(yCounts)
-          .enter().append('rect')
-          .attr('class', 'bar')
-          .attr('x',(d)-> x d.key  )
-          .attr('width', x.rangeBand())
-          .attr('y', (d)-> y d.value )
-          .attr('height', (d)-> Math.abs(height - y d.value) - padding)
-          .attr('fill', (d) -> if not data[0].z? then 'steelblue' else color(d.key))
-        
+          stackRawData = getStackRawDataArray(data)
+          colorCategoryArray = getCategory(categoryToCounts(data, CateVar.Z))
+          
+          dataIntermediate = colorCategoryArray.map((c) ->
+            return stackRawData.map((d) ->
+              return {x: d.x, y: d[c], key: c}
+            )
+          )
+          
+          layers = d3.layout.stack()(dataIntermediate)
+  
+          x.domain(layers[0].map((d) -> d.x)).rangeRoundBands([padding, width-padding], .1)
+          y.domain([0, d3.max(layers[layers.length-1], (d) -> d.y0 + d.y)]).nice()
+          
+          color.domain(colorCategoryArray)
+          
+          layer = _graph.selectAll('.layer')
+            .data(layers)
+            .enter()
+            .append('g')
+            .attr('class', 'layer')
+            .style('fill', (d, i) -> color(i))
+            
+          layer.selectAll('rect')
+          .data((d) -> d)
+          .enter()
+          .append('rect')
+          .attr('x', (d) -> x d.x)
+          .attr('y', (d) -> y (d.y + d.y0))
+          .attr('height', (d) -> (y d.y0) - (y (d.y + d.y0)))
+          .attr('width', x.rangeBand())  
         
         # x axis
         # draw x axis with labels and move in from the size by the amount of padding
@@ -369,8 +401,8 @@ module.exports = class ChartsBarChart extends BaseService
     legend.append('rect')
     .attr('width', legendRectSize)
     .attr('height', legendRectSize)
-    .style('fill', color)
-    .style('stroke', color)
+    .style('fill', (d, i) -> if data[0].y then color(d) else color(i))
+    .style('stroke', (d, i) -> if data[0].y then color(d) else color(i))
   
     # Legend Text
     legend.append('text')
