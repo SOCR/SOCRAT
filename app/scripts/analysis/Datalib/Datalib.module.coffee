@@ -14,6 +14,5 @@ module.exports = db = new Module
       'app_analysis_datalib_msgService': require 'scripts/analysis/Datalib/DatalibMsgService.service.coffee'
       'app_analysis_datalib_dataAdaptor': require 'scripts/analysis/Datalib/DatalibDataAdaptor.service.coffee'
       'app_analysis_datalib_api': require 'scripts/analysis/Datalib/DatalibApi.service.coffee'
-      'app_analysis_datalib_wrapper': require 'scripts/analysis/Datalib/DatalibWrapper.service.coffee'
 
     runBlock: require 'scripts/analysis/Datalib/DatalibRunBlock.run.coffee'

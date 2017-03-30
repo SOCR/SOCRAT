@@ -174,9 +174,13 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   parseData: (data) ->
     @dataService.inferDataTypes data, (resp) =>
-      if resp and resp.dataFrame
-        @updateSidebarControls(resp.dataFrame)
-        @updateDataPoints(resp.dataFrame)
+      if resp? and resp.dataFrame? and resp.dataFrame.data?
+        df = @dataFrame
+        # update data types with inferred
+        for type, idx in df.types
+         df.types[idx] = resp.dataFrame.data[idx]
+        @updateSidebarControls(df)
+        @updateDataPoints(df)
         @ready = on
 
   ## Interface method to run clustering
