@@ -7,7 +7,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         ng-model="mainArea.socrdataset",
         ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
     div.btn-group
-      button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
+      button.btn.btn-primary(ng-click="mainArea.getSocrDataset()") Load
       button.btn.btn-info(ng-click="mainArea.openSocrDescription()") Description &nbsp;
         span.fui-export
 
@@ -19,7 +19,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         input(type="text",class="form-control input-lg", placeholder="End Year", ng-model="mainArea.endYear")
         select(style="height:36px", ng-model="mainArea.option")
             option(ng-repeat="dataset in mainArea.WBDatasets", value="{{dataset.key}}") {{ dataset.name }}
-        button(style="margin-left:20px", ng-click="mainArea.getWB()").btn.btn-primary Load
+        button(style="margin-left:20px", ng-click="mainArea.getWBDataset()").btn.btn-primary Load
 
 
   div.generate(uib-collapse="mainArea.showState.generate")
@@ -42,7 +42,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       div.btn-group.btn-group-justified(role="group")
         input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
         span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
-    button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
+    button.btn.btn-primary(ng-click="mainArea.getJsonURLDataset()") Parse
 
   div.form-inline(ng-hide="!mainArea.largeData")
     br

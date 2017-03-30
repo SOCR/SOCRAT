@@ -183,9 +183,22 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-        data = @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
-        @checkDataSize data.nRows, data.nCols
-        @inputCache.setData data
+        dataFrame = @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
+        @checkDataSize dataFrame.nRows, dataFrame.nCols
+        @inputCache.setData dataFrame
+
+        newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
+        # This transformation should be happening in dataAdaptor.toDataFrame
+        @dataService.inferTypes newDataFrame
+        .then (types) =>
+          @dataService.enforceTypes newDataFrame,types.dataFrame.data
+        .then (DF) =>
+          @dataService.getSummary DF
+        .then (resp)=>
+          if resp? and resp.dataFrame? and resp.dataFrame.data?
+            @colStats = resp.dataFrame.data
+        
+        
   ###
   @param {Object} - instance of DataFrame
   @desc -
@@ -196,11 +209,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     
     newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
 
+    # This transformation should be happening in dataAdaptor.toDataFrame
     @dataService.inferTypes newDataFrame
     .then (types) =>
-      @dataService.transformTypes newDataFrame,types.dataFrame.data
+      @dataService.enforceTypes newDataFrame,types.dataFrame.data
     .then (DF) =>
-      @dataService.getSummary DF          
+      @dataService.getSummary DF
     .then (resp) =>
       if resp? and resp.dataFrame? and resp.dataFrame.data?
         @colStats = resp.dataFrame.data
@@ -219,7 +233,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
             @tableData = dataFrame.data
             @colHeadersLabels = dataFrame.header
 
-  getWB: ->
+  getWBDataset: ->
     # default value
     if @size is undefined
       @size = 100
@@ -261,7 +275,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       throw err
     )
 
-  getSocrData: ->
+  getSocrDataset: ->
     url = @socrData.getUrlByName @socrdataset.id
     # default option
     url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ' unless url
@@ -283,7 +297,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @$window.open @socrdataset.desc, '_blank'
     true
 
-  getJsonByUrl: (type) ->
+  getJsonURLDataset: (type) ->
     # TODO: replace d3 with datalib
     @d3.json @jsonUrl,
       (dataResults) =>

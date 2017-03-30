@@ -18,7 +18,7 @@ module.exports = class GetDataDataService extends BaseModuleDataService
   inferTypes: (data) ->
     @post(@msgManager.getMsgList().outgoing[3], @msgManager.getMsgList().incoming[3], data)
 
-  transformTypes: (dataFrame, types) ->
+  enforceTypes: (dataFrame, types) ->
     if types? and dataFrame?    
       Object.keys(types).forEach (type)=>
         dataFrame.data.forEach (dataRow)=>
