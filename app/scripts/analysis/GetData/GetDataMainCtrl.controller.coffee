@@ -65,19 +65,26 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
     @customHeaderRenderer = (colIndex, th) =>
       if @colHeadersLabels[colIndex]? && colIndex!=false
+        
+        @colStatsHTML[colIndex] = @colStatsRenderer colIndex
+
+        # Tooltip position "right" for the first 2 columns
+        tooltipPos = if colIndex < 2 then "right" else "left"
+
+        # Code to place tooltip on <div> inside <th>
         elem = th.querySelector('div')
         elem.parentNode.removeChild(elem)
-        @colStatsHTML[colIndex] = @colStatsRenderer colIndex
         angular.element(th).append @$compile(
-          "<div class='relative' uib-tooltip-html='mainArea.colStatsHTML["+colIndex+"]' tooltip-trigger='mouseenter' tooltip-placement='right'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"\n\n</span></div>"
+          "<div class='relative' uib-tooltip-html='mainArea.colStatsHTML["+colIndex+"]' tooltip-trigger='mouseenter' tooltip-placement='"+tooltipPos+"'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"\n\n</span></div>"
         )(@$scope)
+        ## Code to place tooltip on <span> inside <th>
         # angular.element(th.querySelector('span')).append @$compile('<span uib-tooltip="Tesasdajkdasjkdbasjkdbasjkbdaskjdbt" tooltip-trigger="mouseenter" tooltip-placement="right">'+ @colHeadersLabels[colIndex]+'</span>')(@$rootScope)
+        
+        ## Code to place tooltip on <th> by replacing a new <th>
         # angular.element(th).replaceWith @$compile(
         #   "<th uib-tooltip-html='mainArea.tooltip' tooltip-trigger='mouseenter' tooltip-placement='right'><div class='relative'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"</span></div></th>"
         # )(@$scope)
       else
-        console.log("SELVAM",colIndex,@colHeadersLabels[colIndex])
-        #th.querySelector('div').innerHTML = @$compile('<span class="colHeader columnSorting" uib-popover="Test" popover-trigger="mouseenter">'+ @colHeadersLabels[colIndex]+'</span>')(@$rootScope)
         # "<span uib-popover='Test' popover-trigger='focus'> "+ @colHeadersLabels[colIndex]+"</span>"
         ""
     
