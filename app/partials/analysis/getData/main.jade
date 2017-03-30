@@ -75,14 +75,14 @@ div(ng-controller='GetDataMainCtrl as mainArea')
     table(style="width:100%;overflow:auto")
       tr
         td(style="width:9px")
-        td(ng-repeat="stat in mainArea.colStats")
-          | Distinct : {{ stat.distinct }}
+        td(ng-repeat="stat in mainArea.colStats",style="font-size:11px")
+          span Type:{{ stat.type }}, Distinct:{{ stat.distinct }} 
           br
-          | Type: {{ stat.type }}
+          span Mean:{{ mainArea.formatNumber(stat.mean) }}, SD:{{ mainArea.formatNumber(stat.stdev) }}
           br
-          | Mean : {{ mainArea.formatNumber(stat.mean) }}
+          span Min:{{ mainArea.formatNumber(stat.min) }}, Max:{{ mainArea.formatNumber(stat.max) }}
           br
-          | StdDev: {{ mainArea.formatNumber(stat.stdev) }}
+          span Median: {{ mainArea.formatNumber(stat.median) }}
 
   div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.
