@@ -44,7 +44,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
       throw new Error('invalid dataFrame passed.')
     # by default data types are not known at this step
     #  and should be defined at Clean Data step
-#    colTypes = ('symbolic' for [1...tableData.nCols])
+    #colTypes = ('symbolic' for [1...tableData.nCols])
         
     if Object.prototype.toString.call(tableData[0]) == "[object Object]"
       header = @getHeaders tableData[0]
@@ -203,3 +203,15 @@ module.exports = class GetDataDataAdaptor extends BaseService
             data.splice 0, 0, [""].concat ks
             data
         else false
+
+
+  transformArraysToObject: (dataFrame) ->
+    # hacking the dataFrame to return Array of Objects
+    formattedData = dataFrame.data.map (entry)->
+      obj = {}
+      dataFrame.header.forEach (h,key)->
+        # stats.js lib for a key "indicator.id" checks obj["indicator"]["id"]
+        # to fix that, replacing all "." with "_"
+        obj[h.replace('.','_')] = entry[key]
+      obj 
+    return Object.assign {}, dataFrame, {data:formattedData}
