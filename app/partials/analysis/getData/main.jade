@@ -16,7 +16,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       input(type="text",class="form-control input-md", placeholder="End Year", ng-model="mainArea.endYear")
       select(style="height:36px", ng-model="mainArea.option")
           option(ng-repeat="dataset in mainArea.WBDatasets", value="{{dataset.key}}") {{ dataset.name }}
-      button(style="margin-left:20px").btn.btn-primary(ng-click="mainArea.getWBDataset()") Load
+      button(style="margin-left:20px", ng-click="mainArea.getWBDataset()").btn.btn-primary Load
 
 
   div.generate(uib-collapse="mainArea.showState.generate")
