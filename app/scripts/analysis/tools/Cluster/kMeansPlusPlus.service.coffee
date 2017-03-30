@@ -12,3 +12,8 @@ initCentroids: (data, k) ->
         val: data[ctrIdx]
         idx: ctrIdx
     centroids
+    # For each data point x, compute D(x)
+  for row in data
+    distances = (@metrics.distance(row, centroids.val, distanceType))
+  
+  
