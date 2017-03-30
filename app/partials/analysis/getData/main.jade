@@ -61,7 +61,6 @@ div(ng-controller='GetDataMainCtrl as mainArea')
     max-file-size="50"
   )
     legend Copy-paste data or drag-and-drop CSV file
-    //- span(uib-tooltip="See? Now click away...",tooltip-placement="top") zxasas
     div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
       hot-table(
       purpose="json"
@@ -70,7 +69,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       datarows="mainArea.tableData"
       column-sorting="true"
       sort-indicator="true"
-      manual-column-resize="true"
+      manual-column-resize="true" 
       )
 
     table(style="width:100%;overflow:auto")

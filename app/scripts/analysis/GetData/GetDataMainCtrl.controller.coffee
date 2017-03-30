@@ -13,8 +13,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_inputCache',
     'app_analysis_getData_socrDataConfig',
     '$timeout',
+    '$compile',
     '$window',
     '$q',
+    '$sce',
     '$rootScope',
     '$http'
 
@@ -26,7 +28,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @inputCache = @app_analysis_getData_inputCache
     @dataAdaptor = @app_analysis_getData_dataAdaptor
     @socrData = @app_analysis_getData_socrDataConfig
-
     # get initial settings
     @LARGE_DATA_SIZE = 20000 # number of cells in table
     @dataLoadedFromDb = false
@@ -50,13 +51,35 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @socrdataset = @socrDatasets[0]
     
     @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
-    @colHeaders = (colIndex) =>
-      if @colHeadersLabels[colIndex]?
-        '<span tooltip-placement="bottom" tooltip-enable="true" uib-tooltip="test">'+ @colHeadersLabels[colIndex]+'</span>'
-      else
-        "<span tooltip-placement='top' tooltip-enable='true' tooltip-trigger=\"'mouseover'\" uib-tooltip='test'> "+ @colHeadersLabels[colIndex]+"</span>"
-
     @colStats = []
+    @colStatsHTML = []
+
+    @colStatsRenderer = (index) =>
+
+      stats = @colStats[index] || {min:0,max:0,mean:0,sd:0}
+      mean = if stats.mean? then stats.mean.toFixed(2) else 0
+      sd = if stats.sd? then stats.sd.toFixed(2) else 0
+      markup = """<span>Min:#{stats.min},Max:#{stats.max},Mean:#{mean},SD:#{sd}</span>"""
+      @$sce.trustAsHtml markup
+
+
+    @customHeaderRenderer = (colIndex, th) =>
+      if @colHeadersLabels[colIndex]? && colIndex!=false
+        elem = th.querySelector('div')
+        elem.parentNode.removeChild(elem)
+        @colStatsHTML[colIndex] = @colStatsRenderer colIndex
+        angular.element(th).append @$compile(
+          "<div class='relative' uib-tooltip-html='mainArea.colStatsHTML["+colIndex+"]' tooltip-trigger='mouseenter' tooltip-placement='right'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"\n\n</span></div>"
+        )(@$scope)
+        # angular.element(th.querySelector('span')).append @$compile('<span uib-tooltip="Tesasdajkdasjkdbasjkdbasjkbdaskjdbt" tooltip-trigger="mouseenter" tooltip-placement="right">'+ @colHeadersLabels[colIndex]+'</span>')(@$rootScope)
+        # angular.element(th).replaceWith @$compile(
+        #   "<th uib-tooltip-html='mainArea.tooltip' tooltip-trigger='mouseenter' tooltip-placement='right'><div class='relative'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"</span></div></th>"
+        # )(@$scope)
+      else
+        console.log("SELVAM",colIndex,@colHeadersLabels[colIndex])
+        #th.querySelector('div').innerHTML = @$compile('<span class="colHeader columnSorting" uib-popover="Test" popover-trigger="mouseenter">'+ @colHeadersLabels[colIndex]+'</span>')(@$rootScope)
+        # "<span uib-popover='Test' popover-trigger='focus'> "+ @colHeadersLabels[colIndex]+"</span>"
+        ""
     
     @file = null
     @interface = {}
@@ -64,6 +87,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     # init table
     @tableSettings =
       rowHeaders: on
+      colHeaders: true
       stretchH: "all"
       contextMenu: on
       onAfterChange: @saveTableData
@@ -71,6 +95,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       onAfterCreateRow: @saveTableData
       onAfterRemoveCol: @saveTableData
       onAfterRemoveRow: @saveTableData
+      afterGetColHeader: @customHeaderRenderer
 
     try
       @stateService = @showStateService.create @states, @
