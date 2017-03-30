@@ -142,7 +142,7 @@ module.exports = class ChartsBubbleChart extends BaseService
           return rCounts[d.r]
         d3.select(this).attr('opacity', '1').attr('stroke', 'white').attr('stroke-width', '2px')
         tooltip.transition().duration(200).style('opacity', .9)
-        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + 'Counts ' + radius +'</div>')
+        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">' + gdata.rLab.value + ': ' + d.r + ' Counts: ' + radius +'</div>')
         .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px')
       )
       .on('mouseout', () ->

@@ -160,10 +160,13 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             newList.push(e)
       return newList
     
-    @xCols = removeFromList([@yCol, @zCol, @rCol], @originalXCols)
-    @yCols = removeFromList([@xCol, @zCol, @rCol], @originalYCols)
-    @zCols = removeFromList([@xCol, @yCol, @rCol], @originalZCols)
-    @rCols = removeFromList([@xCol, @yCol, @zCol], @originalRCols)
+    #@xCols = removeFromList([@yCol, @zCol, @rCol], @originalXCols)
+    #@yCols = removeFromList([@xCol, @zCol, @rCol], @originalYCols)
+    #@zCols = removeFromList([@xCol, @yCol, @rCol], @originalZCols)
+    #@rCols = removeFromList([@xCol, @yCol, @zCol], @originalRCols)
+    
+    @xCols = removeFromList([@yCol], @originalXCols)
+    @yCols = removeFromList([@xCol], @originalYCols)
     
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data
