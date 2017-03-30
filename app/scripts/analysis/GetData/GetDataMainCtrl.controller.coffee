@@ -142,7 +142,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-        data = @dataAdaptor.toDataFrame @tableData
+        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
         @checkDataSize data.nRows, data.nCols
         @inputCache.setData data
   ###
@@ -221,13 +221,15 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         if dataResults?.length > 0
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
-          data = @dataAdaptor.toDataFrame dataResults,true
+          headers = dataResults.shift()
+          data = @dataAdaptor.toDataFrame dataResults, headers
           @passReceivedData data
         else
           console.log 'GETDATA: request failed'
 
   openSocrDescription: ->
     @$window.open @socrdataset.desc, '_blank'
+    true
 
   getJsonByUrl: (type) ->
     # TODO: replace d3 with datalib

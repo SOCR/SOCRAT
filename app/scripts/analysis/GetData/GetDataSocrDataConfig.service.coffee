@@ -26,6 +26,30 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
       name: 'Turkiye Student Evaluation Data Set'
       url: 'datasets/Turkiye_Student_Evaluation_Data_Set.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_TurkiyeStudentEvalData'
+    ,
+      name: 'Antarctic Ice Thickness'
+      url: 'datasets/Antarctic_Ice_Thickness.csv'
+      description: 'http://wiki.stat.ucla.edu/socr/index.php/SOCR_Data_Dinov_042108_Antarctic_IceThicknessMawson'
+    ,
+      name: 'Baseball Players'
+      url: 'datasets/Baseball_Players.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_MLB_HeightsWeights'
+    ,
+      name: 'California Ozone'
+      url: 'datasets/California_Ozone.csv'
+      description: 'http://wiki.stat.ucla.edu/socr/index.php/SOCR_Data_121608_OzoneData'
+    ,
+      name: 'California Ozone Pollution'
+      url: 'datasets/California_Ozone_Pollution.csv'
+      description: 'http://wiki.stat.ucla.edu/socr/index.php/SOCR_Data_121608_CA_US_OzoneData'
+    ,
+      name: 'US Ozone Pollution'
+      url: 'datasets/US_Ozone_Pollution.csv'
+      description: 'http://wiki.stat.ucla.edu/socr/index.php/SOCR_Data_121608_CA_US_OzoneData'
+    ,
+      name: 'Countries Rankings'
+      url: 'datasets/Countries_Rankings.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_2008_World_CountriesRankings'
     ]
 
   getNames: -> @socrDatasets.map (dataset) ->

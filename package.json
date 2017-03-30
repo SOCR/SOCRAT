@@ -91,6 +91,7 @@
     "build": "node_modules/webpack/bin/webpack.js",
     "watch": "node_modules/webpack/bin/webpack.js --watch",
     "serve": "node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot -d --colors --content-base _build/",
+    "servewindows": "node node_modules\\webpack-dev-server\\bin\\webpack-dev-server.js --inline --hot -d --colors --content-base _build/",
     "prod": "node_modules/webpack/bin/webpack.js -p --config ./webpack.production.config.coffee"
   },
   "license": "LGPL-3.0"
