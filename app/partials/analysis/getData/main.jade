@@ -68,15 +68,12 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       sort-indicator="true"
       manual-column-resize="true" 
       )
-    table(style="width:100%;overflow:auto")
+    table(style="width:calc(100% - 50px);overflow:auto;margin-left:50px")
       tr
-        td(style="width:9px")
         td(ng-repeat="(colName,data) in mainArea.colHistograms")
           colhistogram(col-name="{{colName}}") 
-
-    table(style="width:100%;overflow:auto")
-      tr
-        td(style="width:9px")
+    table(style="width:calc(100% - 50px);overflow:auto;margin-left:50px")
+      tr        
         td(ng-repeat="stat in mainArea.colStats",style="font-size:11px")
           span Type:{{ stat.type }}, Distinct:{{ stat.distinct }} 
           br
