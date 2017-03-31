@@ -22,6 +22,7 @@ module.exports = getData = new Module
       'GetDataMainCtrl': require 'scripts/analysis/GetData/GetDataMainCtrl.controller.coffee'
     directives:
       'getdatadragndrop': require 'scripts/analysis/GetData/GetDataDragNDropDir.directive.coffee'
+      'colhistogram' : require 'scripts/analysis/GetData/GetDataHistogramDir.directive.coffee'
 
   # module state config
   state:

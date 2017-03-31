@@ -71,6 +71,11 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       sort-indicator="true"
       manual-column-resize="true" 
       )
+    table(style="width:100%;overflow:auto")
+      tr
+        td(style="width:9px")
+        td(ng-repeat="(colName,data) in mainArea.colHistograms")
+          colhistogram(col-name="{{colName}}") 
 
     table(style="width:100%;overflow:auto")
       tr

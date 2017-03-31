@@ -80,7 +80,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
   ###
     @param dataFrame {Object}
     @param colName {String}
-    @return {Array}
+    @return dataFrame {Object}
   ###
   getColValues : (dataFrame, colName) ->
     result = []

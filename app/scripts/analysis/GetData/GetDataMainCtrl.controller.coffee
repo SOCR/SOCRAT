@@ -53,7 +53,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
     
     @colStats     = []
-    @colHistogram = []
+    @colHistograms = []
     @colStatsTooltipHTML = []
 
     @colStatsToolTipHTMLGenerator = (index) =>
@@ -63,9 +63,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       sd = if stats.sd? then stats.sd.toFixed(2) else 0
       markup = """<span>Min:#{stats.min},Max:#{stats.max},Mean:#{mean},SD:#{sd}</span>"""
       @$sce.trustAsHtml markup
-
-    @colHistogramGenerator = (index) =>
-      @dataService.getHistogram 
 
     @customHeaderRenderer = (colIndex, th) =>
       if @colHeadersLabels[colIndex]? && colIndex!=false
@@ -206,13 +203,16 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
           for k,v of newDataFrame.types
             colValues = @dataAdaptor.getColValues newDataFrame,k
-            ((newDataFrame,k)=>
-              @dataService.getHistogram @dataAdaptor.getColValues newDataFrame,k
-              .then( (res)=>
-                @colHistogram[ newDataFrame.header.indexOf(k)] = res.dataFrame.data
-                console.log "HISTOGRAM VALUES",@colHistogram
-              )
-            )(newDataFrame, k)
+            @colHistograms[ newDataFrame.header.indexOf(k) ] = colValues.data
+            
+            ## Code to get histogram values from Datalib
+            # ((newDataFrame,k)=>
+            #   @dataService.getHistogram @dataAdaptor.getColValues newDataFrame,k
+            #   .then( (res)=>
+            #     @colHistograms[ newDataFrame.header.indexOf(k)] = res.dataFrame.data
+            #     console.log "HISTOGRAM VALUES",@colHistograms
+            #   )
+            # )(newDataFrame, k)
         )
         
         
