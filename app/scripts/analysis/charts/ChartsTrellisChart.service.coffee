@@ -40,6 +40,7 @@ module.exports = class ChartsTrellisChart extends BaseService
         dataFrame = obj.dataFrame
 
         fields = []
+        field_indices = []
         ordinal = ""
         ordinalTitle = ""
         x = 0
@@ -48,6 +49,7 @@ module.exports = class ChartsTrellisChart extends BaseService
           try
             if (!isNaN(parseInt(dataFrame.data[0][x])) && fields.length < 4)
               fields.push(i)
+              field_indices.push(x)
             else
               ordinal = i
               ordinalTitle = i
@@ -71,8 +73,8 @@ module.exports = class ChartsTrellisChart extends BaseService
           d[x] = {}
           y = 0
           for j in fields
-            dataFrame.data[x][j] = parseFloat(dataFrame.data[x][y])
-            d[x][j] = parseFloat(dataFrame.data[x][y])
+            dataFrame.data[x][j] = parseFloat(dataFrame.data[x][field_indices[y]])
+            d[x][j] = parseFloat(dataFrame.data[x][field_indices[y]])
             y++
           dataFrame.data[x][ordinal] = dataFrame.data[x][ordinal_index]
           d[x][ordinal] = dataFrame.data[x][ordinal_index]
