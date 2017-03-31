@@ -112,7 +112,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
           data = newChartData[colName]
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
-          if colName > 2
-            container.datum(data).call histogramChart().bins(d3.scale.linear().ticks(10)).tickFormat(d3.format('.02f'))
-          else
-            container.datum(irwinHallDistribution(10000, 10)).call histogramChart().bins(d3.scale.linear().ticks(20)).tickFormat(d3.format('.02f'))
+          # if colName > 2
+          # container.datum(data).call histogramChart().bins(d3.scale.linear().ticks(10)).tickFormat(d3.format('.02f'))
+          # else
+          container.datum(irwinHallDistribution(10000, Math.floor(Math.random()*100))).call histogramChart().bins(d3.scale.linear().ticks(30)).tickFormat(d3.format('.02f'))
