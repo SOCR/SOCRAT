@@ -27,11 +27,11 @@ module.exports = class GetDataShowState extends BaseService
       , 
         key: "generate",
         label:"Generate datasets",
-        enabled:false
+        enabled:true
       ,
         key: "jsonParse",
         label:"JSON datasets",
-        enabled:false
+        enabled:true
     ]
   
   getOptions: ->
