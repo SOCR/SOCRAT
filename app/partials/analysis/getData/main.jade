@@ -1,25 +1,22 @@
 div(ng-controller='GetDataMainCtrl as mainArea')
 
   form.socrData(uib-collapse="mainArea.showState.socrData")
-    legend SOCR Datasets
-    div.form-group
-      select.form-control(
+    div(style="display:inline-flex")
+      select.form-control.input-md(
         ng-model="mainArea.socrdataset",
         ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
-    div.btn-group
       button.btn.btn-primary(ng-click="mainArea.getSocrDataset()") Load
       button.btn.btn-info(ng-click="mainArea.openSocrDescription()") Description &nbsp;
         span.fui-export
 
   div.worldBank(uib-collapse="mainArea.showState.worldBank")
-    div
-      div(style="display:inline-flex")
-        input(type="text",class="form-control input-lg", placeholder="Rows", ng-model="mainArea.size")
-        input(type="text",class="form-control input-lg", placeholder="Start Year", ng-model="mainArea.startYear")
-        input(type="text",class="form-control input-lg", placeholder="End Year", ng-model="mainArea.endYear")
-        select(style="height:36px", ng-model="mainArea.option")
-            option(ng-repeat="dataset in mainArea.WBDatasets", value="{{dataset.key}}") {{ dataset.name }}
-        button(style="margin-left:20px", ng-click="mainArea.getWBDataset()").btn.btn-primary Load
+    div(style="display:inline-flex")
+      input(type="text",class="form-control input-md", placeholder="Rows", ng-model="mainArea.size")
+      input(type="text",class="form-control input-md", placeholder="Start Year", ng-model="mainArea.startYear")
+      input(type="text",class="form-control input-md", placeholder="End Year", ng-model="mainArea.endYear")
+      select(style="height:36px", ng-model="mainArea.option")
+          option(ng-repeat="dataset in mainArea.WBDatasets", value="{{dataset.key}}") {{ dataset.name }}
+      button(style="margin-left:20px", ng-click="mainArea.getWBDataset()").btn.btn-primary Load
 
 
   div.generate(uib-collapse="mainArea.showState.generate")
@@ -36,12 +33,9 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         a The Beta Distribution Experiment
 
   form.jsonUrl(uib-collapse="mainArea.showState.jsonParse")
-    legend Enter URL to parse JSON file
-    div.form-group
-      label(for="getDataJsonUrlInput").sr-only Enter URL
-      div.btn-group.btn-group-justified(role="group")
-        input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
-        span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
+    div.form-group(style="display:inline-flex")
+      input(type="text",class="form-control input-lg", placeholder="URL", ng-model="mainArea.jsonURL.url")
+      input(type="text",class="form-control input-lg", placeholder="JSON dataset array path", ng-model="mainArea.jsonURL.dataPath")
     button.btn.btn-primary(ng-click="mainArea.getJsonURLDataset()") Parse
 
   div.form-inline(ng-hide="!mainArea.largeData")
@@ -54,13 +48,16 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       | &nbsp;
     button.btn.btn-primary.btn-sm(type="submit" ng-click="mainArea.subsampleData()") Subsample
 
+  hr
+
   div.getdata-dragndrop(
     ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}"
     getdatadragndrop=""
     file="mainArea.file"
     max-file-size="50"
   )
-    legend Copy-paste data or drag-and-drop CSV file
+    p(style="text-align:center") 
+      i *Copy-paste data or drag-and-drop CSV file.
     div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
       hot-table(
       purpose="json"

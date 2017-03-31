@@ -27,7 +27,7 @@ module.exports = getData = new Module
   # module state config
   state:
     # module name to show in UI
-    name: 'Raw Data'
+    name: 'Data Input'
     url: '/getData'
     mainTemplate: require 'partials/analysis/getData/main.jade'
     sidebarTemplate: require 'partials/analysis/getData/sidebar.jade'
