@@ -66,7 +66,9 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   updateDataPoints: (data=null, means=null, labels=null) ->
     if data
+      trueLabels = null
       if @labelCol
+        trueLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
         @uniqueLabels =
           num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
           labelCol: @labelCol
@@ -77,6 +79,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       dataPoints: data
       means: means
       labels: labels
+      trueLabels: trueLabels
 
   # update data-driven sidebar controls
   updateSidebarControls: (data) ->
@@ -174,9 +177,13 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   parseData: (data) ->
     @dataService.inferDataTypes data, (resp) =>
-      if resp and resp.dataFrame
-        @updateSidebarControls(resp.dataFrame)
-        @updateDataPoints(resp.dataFrame)
+      if resp? and resp.dataFrame? and resp.dataFrame.data?
+        df = @dataFrame
+        # update data types with inferred
+        for type, idx in df.types
+         df.types[idx] = resp.dataFrame.data[idx]
+        @updateSidebarControls(df)
+        @updateDataPoints(df)
         @ready = on
 
   ## Interface method to run clustering
@@ -185,6 +192,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     clustData = @prepareData()
     @kmeanson = on
     @running = 'spinning'
+    console.log clustData.labels
     res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
       xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
       @updateDataPoints null, xyMeans, res.labels

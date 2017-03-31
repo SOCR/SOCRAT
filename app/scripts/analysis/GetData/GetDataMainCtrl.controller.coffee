@@ -9,41 +9,92 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     '$state',
     'app_analysis_getData_dataService',
     'app_analysis_getData_showState',
-    'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
     'app_analysis_getData_socrDataConfig',
     '$timeout',
-    '$window'
+    '$compile',
+    '$window',
+    '$q',
+    '$sce',
+    '$rootScope',
+    '$http'
 
   initialize: ->
     @d3 = require 'd3'
     # rename deps
-    @dataManager = @app_analysis_getData_dataService
+    @dataService = @app_analysis_getData_dataService
     @showStateService = @app_analysis_getData_showState
     @inputCache = @app_analysis_getData_inputCache
-    @jsonParser = @app_analysis_getData_jsonParser
     @dataAdaptor = @app_analysis_getData_dataAdaptor
     @socrData = @app_analysis_getData_socrDataConfig
-
     # get initial settings
     @LARGE_DATA_SIZE = 20000 # number of cells in table
     @dataLoadedFromDb = false
     @largeData = false
     @maxRows = 1000
-    @DATA_TYPES = @dataManager.getDataTypes()
+    @DATA_TYPES = @dataService.getDataTypes()
     @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
+    @WBDatasets = [
+        "name":"Out of School Children rate",
+        "key": "2.4_OOSC.RATE",
+      ,
+        "key":"4.2_BASIC.EDU.SPENDING",
+        "name":"Education Spending"
+    ]
+    @startYear = "2010"
+    @endYear = "2017"
+
     @defaultState = @states[0]
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrDatasets = @socrData.getNames()
     @socrdataset = @socrDatasets[0]
-    @colHeaders = on
+    
+    @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
+    @colStats = []
+    @colStatsHTML = []
+
+    @colStatsRenderer = (index) =>
+
+      stats = @colStats[index] || {min:0,max:0,mean:0,sd:0}
+      mean = if stats.mean? then stats.mean.toFixed(2) else 0
+      sd = if stats.sd? then stats.sd.toFixed(2) else 0
+      markup = """<span>Min:#{stats.min},Max:#{stats.max},Mean:#{mean},SD:#{sd}</span>"""
+      @$sce.trustAsHtml markup
+
+
+    @customHeaderRenderer = (colIndex, th) =>
+      if @colHeadersLabels[colIndex]? && colIndex!=false
+        
+        @colStatsHTML[colIndex] = @colStatsRenderer colIndex
+
+        # Tooltip position "right" for the first 2 columns
+        tooltipPos = if colIndex < 2 then "right" else "left"
+
+        # Code to place tooltip on <div> inside <th>
+        elem = th.querySelector('div')
+        elem.parentNode.removeChild(elem)
+        angular.element(th).append @$compile(
+          "<div class='relative' uib-tooltip-html='mainArea.colStatsHTML["+colIndex+"]' tooltip-trigger='mouseenter' tooltip-placement='"+tooltipPos+"'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"\n\n</span></div>"
+        )(@$scope)
+        ## Code to place tooltip on <span> inside <th>
+        # angular.element(th.querySelector('span')).append @$compile('<span uib-tooltip="Tesasdajkdasjkdbasjkdbasjkbdaskjdbt" tooltip-trigger="mouseenter" tooltip-placement="right">'+ @colHeadersLabels[colIndex]+'</span>')(@$rootScope)
+        
+        ## Code to place tooltip on <th> by replacing a new <th>
+        # angular.element(th).replaceWith @$compile(
+        #   "<th uib-tooltip-html='mainArea.tooltip' tooltip-trigger='mouseenter' tooltip-placement='right'><div class='relative'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"</span></div></th>"
+        # )(@$scope)
+      else
+        # "<span uib-popover='Test' popover-trigger='focus'> "+ @colHeadersLabels[colIndex]+"</span>"
+        ""
+    
     @file = null
     @interface = {}
 
     # init table
     @tableSettings =
       rowHeaders: on
+      colHeaders: true
       stretchH: "all"
       contextMenu: on
       onAfterChange: @saveTableData
@@ -51,6 +102,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       onAfterCreateRow: @saveTableData
       onAfterRemoveCol: @saveTableData
       onAfterRemoveRow: @saveTableData
+      afterGetColHeader: @customHeaderRenderer
 
     try
       @stateService = @showStateService.create @states, @
@@ -58,13 +110,13 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     catch e
       console.log e.message
 
-    @dataManager.getData().then (obj) =>
+    @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType?
         if obj.dataFrame.dataType is @DATA_TYPES.FLAT
           @dataLoadedFromDb = true
           @dataType = obj.dataFrame.dataType
           @$timeout =>
-            @colHeaders = obj.dataFrame.header
+            @colHeadersLabels = obj.dataFrame.header
             @tableData = obj.dataFrame.data
         else
           # TODO: add processing for nested object
@@ -76,7 +128,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           ['Copy', 'paste', 'your', 'data', 'here']
         ]
         # manually create col header since ht doesn't bind default value to scope
-        @colHeaders = ['A', 'B', 'C', 'D', 'E']
+        @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
         @stateService.set @defaultState
 
     # adding listeners
@@ -102,10 +154,13 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   ## Other instance methods
 
+  formatNumber: (i) ->
+    return Math.round(i * 100)/100; 
+    
   checkDataSize: (nRows, nCols) ->
     if nRows and nCols and nRows * nCols > @LARGE_DATA_SIZE
         @largeData = true
-        @maxRows = Math.floor(@LARGE_DATA_SIZE / @colHeaders.length) - 1
+        @maxRows = Math.floor(@LARGE_DATA_SIZE / @colHeadersLabels.length) - 1
     else
         @largeData = false
         @maxRows = 1000
@@ -128,28 +183,57 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
-        @checkDataSize data.nRows, data.nCols
-        @inputCache.setData data
+        dataFrame = @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
+        @checkDataSize dataFrame.nRows, dataFrame.nCols
+        @inputCache.setData dataFrame
 
-  passReceivedData: (data) ->
-    if data.dataType is @DATA_TYPES.NESTED
-      @dataType = @DATA_TYPES.NESTED
-      @checkDataSize data.nRows, data.nCols
-      # save to db
-      @inputCache.setData data
-    else
-      # default data type is 2d 'flat' table
-      data.dataType = @DATA_TYPES.FLAT
-      @dataType = @DATA_TYPES.FLAT
+        newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
+        # This transformation should be happening in dataAdaptor.toDataFrame
+        @dataService.inferTypes newDataFrame
+        .then (types) =>
+          @dataService.enforceTypes newDataFrame,types.dataFrame.data
+        .then (DF) =>
+          @dataService.getSummary DF
+        .then (resp)=>
+          if resp? and resp.dataFrame? and resp.dataFrame.data?
+            @colStats = resp.dataFrame.data
+        
+        
+  ###
+  @param {Object} - instance of DataFrame
+  @desc -
+  ###
+  passReceivedData: (dataFrame) ->
+    if not @dataAdaptor.isValidDataFrame dataFrame
+      throw Error "invalid data frame"
+    
+    newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
 
-      # update table
-      @$timeout =>
-        @colHeaders = data.header
-        @tableData = data.data
-        console.log 'ht updated'
+    # This transformation should be happening in dataAdaptor.toDataFrame
+    @dataService.inferTypes newDataFrame
+    .then (types) =>
+      @dataService.enforceTypes newDataFrame,types.dataFrame.data
+    .then (DF) =>
+      @dataService.getSummary DF
+    .then (resp) =>
+      if resp? and resp.dataFrame? and resp.dataFrame.data?
+        @colStats = resp.dataFrame.data
+        if dataFrame.dataType is @DATA_TYPES.NESTED
+          @dataType = @DATA_TYPES.NESTED
+          @checkDataSize dataFrame.nRows, dataFrame.nCols
+          # save to db
+          @inputCache.setData dataFrame
+        else
+          # default data type is 2d 'flat' table
+          dataFrame.dataType = @DATA_TYPES.FLAT
+          @dataType = @DATA_TYPES.FLAT
+          # update table
+          @inputCache.setData dataFrame
+          @$timeout =>
+            @tableData = dataFrame.data
+            @colHeadersLabels = dataFrame.header
 
-  getWB: ->
+  getWBDataset: ->
     # default value
     if @size is undefined
       @size = 100
@@ -157,23 +241,41 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     if @option is undefined
       @option = '4.2_BASIC.EDU.SPENDING'
 
-    url = 'http://api.worldbank.org/countries/indicators/' + @option +
-        '?per_page=' + @size + '&date=2011:2011&format=jsonp' +
+    url = 'http://api.worldbank.org/countries/indicators/' + @option+
+        '?per_page=' + @size+ '&date='+ @startYear+':'+@endYear+'&format=jsonp' +
         '&prefix=JSON_CALLBACK'
 
-    @jsonParser.parse
-      url: url
-      type: 'worldBank'
-    .then(
-      (data) =>
-        console.log 'resolved'
-        @passReceivedData data
-      ,
-      (msg) ->
-        console.log 'rejected:' + msg
-      )
+    deferred = @$q.defer()
+    # using broadcast because msg sent from rootScope
+    @$rootScope.$broadcast 'app:push notification',
+      initial:
+        msg: 'Asking worldbank...'
+        type: 'alert-info'
+      success:
+        msg: 'Successfully loaded data.'
+        type: 'alert-success'
+      failure:
+        msg: 'Error!'
+        type: 'alert-error'
+      promise: deferred.promise
 
-  getSocrData: ->
+    @$http.jsonp(
+      url
+    )
+    .then(
+      (httpResponseObject) =>
+        if httpResponseObject.status == 200
+          deferred.resolve httpResponseObject.data
+          dataFrame = @dataAdaptor.toDataFrame httpResponseObject.data[1]
+          @passReceivedData dataFrame
+        else
+          deferred.reject "http request failed!"
+      )
+    .catch( (err) =>
+      throw err
+    )
+
+  getSocrDataset: ->
     url = @socrData.getUrlByName @socrdataset.id
     # default option
     url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ' unless url
@@ -184,15 +286,18 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         if dataResults?.length > 0
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
-          data = @dataAdaptor.toDataFrame dataResults
-          @passReceivedData data
+          headers = dataResults.shift()
+          dataFrame = @dataAdaptor.toDataFrame dataResults, headers
+
+          @passReceivedData dataFrame
         else
           console.log 'GETDATA: request failed'
 
   openSocrDescription: ->
     @$window.open @socrdataset.desc, '_blank'
+    true
 
-  getJsonByUrl: (type) ->
+  getJsonURLDataset: (type) ->
     # TODO: replace d3 with datalib
     @d3.json @jsonUrl,
       (dataResults) =>
