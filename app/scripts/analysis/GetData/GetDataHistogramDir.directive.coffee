@@ -8,13 +8,13 @@ module.exports = class GetDataHistogramDir extends BaseDirective
 
   initialize: ->
     @restrict = 'E'
-    @template = "<div class='graph-container' style='height:50px;width:50px'></div>"
+    @template = "<div class='graph-container'></div>"
 
     @link = (scope, elem, attr) =>
-      console.log "UPDATING CHARTS"  
+
       margin = {top: 5, right: 5, bottom: 5, left:5}
-      width = 160 - margin.left - margin.right
-      height = 70 - margin.top - margin.bottom
+      width = 100 - margin.left - margin.right
+      height = 60 - margin.top - margin.bottom
       colName = attr.colName
           
       scope.$watch 'mainArea.colHistograms', (newChartData) =>
@@ -27,6 +27,10 @@ module.exports = class GetDataHistogramDir extends BaseDirective
           histogram = d3.layout.histogram().bins(10)
           histogramData = histogram(data)
           svg = container.append('svg')
+          .attr('width',width + margin.left +
+           margin.right)
+          .attr('height',height + margin.top + margin.bottom)
+
           xScale = d3.scale.linear().range([
             0
             width
@@ -47,6 +51,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
             )
           ])
           svg.selectAll('rect').data(histogramData).enter().append('rect')
+          .attr('fill','steelblue')
           .attr('width', (d) ->  
             # console.log(d.dx,xScale(d.dx),xScale.domain(), xScale.range())
             xScale(xScale.domain()[0]+d.dx) - 2
