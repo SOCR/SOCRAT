@@ -121,6 +121,16 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           @$timeout =>
             @colHeadersLabels = obj.dataFrame.header
             @tableData = obj.dataFrame.data
+            newDataFrame = @dataAdaptor.transformArraysToObject obj.dataFrame
+            # This transformation should be happening in dataAdaptor.toDataFrame
+            @dataService.inferTypes newDataFrame
+            .then (types) =>
+              @dataService.enforceTypes newDataFrame,types.dataFrame.data
+            .then (DF) =>
+              @dataService.getSummary DF
+            .then (resp)=>
+              if resp? and resp.dataFrame? and resp.dataFrame.data?
+                @colStats = resp.dataFrame.data
         else
           # TODO: add processing for nested object
           console.log 'NESTED DATASET'
