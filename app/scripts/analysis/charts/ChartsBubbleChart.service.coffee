@@ -3,7 +3,7 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsBubbleChart extends BaseService
-  
+
   initialize: ->
 
   drawBubble: (ranges,width,height,_graph,data,gdata,container) ->
@@ -43,33 +43,33 @@ module.exports = class ChartsBubbleChart extends BaseService
     .attr('transform', 'translate(0,' + (height-padding) + ')')
     .call xAxis
     .style('font-size', '16px')
-    
+
     # y axis
     _graph.append("g")
     .attr("class", "y axis")
     .attr('transform', 'translate(' + padding + ',0)' )
     .call yAxis
     .style('font-size', '16px')
-    
+
     # make x y axis thin
     _graph.selectAll('.x.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     _graph.selectAll('.y.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-    
+
     # rotate text on x axis
     _graph.selectAll('.x.axis text')
     .attr('transform', (d) ->
        'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
     .style('font-size', '16px')
-    
+
     # Title on x-axis
     _graph.append('text')
     .attr('class', 'label')
     .attr('text-anchor', 'middle')
     .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
     .text gdata.xLab.value
-    
+
     # Title on y-axis
     _graph.append("text")
     .attr('class', 'label')
