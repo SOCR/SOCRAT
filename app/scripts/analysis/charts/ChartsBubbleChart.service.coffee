@@ -74,8 +74,18 @@ module.exports = class ChartsBubbleChart extends BaseService
       rCounts = count(data, CateVar.R) # count the number for each radius variable
       min_rCount = d3.min(d3.values(rCounts))
       max_rCount = d3.max(d3.values(rCounts))
-      scaleRCount = d3.scale.linear().domain([min_rCount, max_rCount]).range([5, 40])
+      #scaleRCount = d3.scale.linear().domain([min_rCount, max_rCount]).range([5, 40])
+      
+      rRadii = []
+      rCountsObj = d3.entries rCounts
+      for obj in rCountsObj
+        rRadii.push(obj.value)
+        
+      rRadii.sort((a, b) -> a - b)
+      rRadii = Array.from(new Set(rRadii))
+      scaleRCount = d3.scale.ordinal().domain(rRadii).rangePoints([5, 40])
 
+      
     # x axis
     x_axis = _graph.append("g")
     .attr("class", "x axis")
