@@ -35,7 +35,7 @@ module.exports = class ChartsDir extends BaseDirective
     @bivariate = @app_analysis_charts_bivariateLineChart
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
-
+    
     @restrict = 'E'
     @template = "<div class='graph-container' style='height: 600px'></div>"
 
@@ -76,7 +76,9 @@ module.exports = class ChartsDir extends BaseDirective
             x: row[0]
             y: row[1]
             z: row[2]
-
+            r: row[3]
+          
+          
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
 
@@ -99,7 +101,7 @@ module.exports = class ChartsDir extends BaseDirective
 
           switch scheme.name
             when 'Bar Graph'
-              @bar.drawBar(width,height,data,_graph,gdata)
+              @bar.drawBar(ranges,width,height,data,_graph,gdata,container)
             when 'Bubble Chart'
               @bubble.drawBubble(ranges,width,height,_graph,data,gdata,container)
             when 'Histogram'

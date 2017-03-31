@@ -52,13 +52,6 @@ module.exports = class ChartsHistogram extends BaseService
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])
 
-#    console.log "bins"
-#    console.log bins
-#    console.log "arr"
-#    console.log arr
-#    console.log "data"
-#    console.log data
-
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
     y.domain([0, (d3.max dataHist.map (i) -> i.length)])
 
