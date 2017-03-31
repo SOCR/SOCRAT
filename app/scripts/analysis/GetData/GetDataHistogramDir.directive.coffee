@@ -31,11 +31,12 @@ module.exports = class GetDataHistogramDir extends BaseDirective
             0
             width
           ]).domain([
-            0
+            d3.min(data)
             d3.max(histogramData, (d) ->
               d.x + d.dx
             )
           ])
+          
           yScale = d3.scale.linear().range([
             0
             height
@@ -45,8 +46,10 @@ module.exports = class GetDataHistogramDir extends BaseDirective
               d.y
             )
           ])
-          svg.selectAll('rect').data(histogramData).enter().append('rect').attr('width', (d) ->
-            xScale(d.dx) - 2
+          svg.selectAll('rect').data(histogramData).enter().append('rect')
+          .attr('width', (d) ->  
+            # console.log(d.dx,xScale(d.dx),xScale.domain(), xScale.range())
+            xScale(xScale.domain()[0]+d.dx) - 2
           ).attr('height', (d) ->
             yScale d.y
           ).attr('x', (d) ->
