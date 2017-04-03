@@ -1,18 +1,22 @@
 'use strict'
 
-# app.sandbox module for wrapping modules
+#
+# app_sandbox module for wrapping modules
+#
+class Sandbox
+  constructor: (_instanceId, _options = {}) ->
+#  constructor: (_core, _instanceId, _options = {}) ->
 
-sandbox = angular.module('app_sandbox', [])
-
-.factory 'Sandbox', ->
-  (_core, _instanceId, _options = {}) ->
-
-    @core = _core
+#    @core = _core
     @instanceId = _instanceId
     @options = _options
 
     # TODO: throwing error through $exceptionHandler
-    throw new TypeError "core was not defined" unless @core?
+#    throw new TypeError "core was not defined" unless @core?
     throw new TypeError "no id was specified" unless @instanceId?
     if typeof @instanceId isnt "string"
       throw new TypeError "id is not a string"
+
+angular.module 'app_sandbox', []
+  .service 'Sandbox', -> Sandbox
+

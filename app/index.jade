@@ -1,94 +1,41 @@
-doctype html
-html(lang='en', ng-app='app')
-  head
-    meta(charset='utf-8')
-    meta(http-equiv="X-UA-Compatible", content="IE=edge,chrome=1")
-    meta(name='viewport', content='width=device-width', initial-scale='1.0')
-    meta(name='description', content='')
-    meta(name='author', content='')
-    title(ng-bind-template='{{pageTitle}}')
-    // bower:css
-    link(rel='stylesheet', href='bower_components/datatables/media/css/jquery.dataTables.css')
-    link(rel='stylesheet', href='bower_components/pikaday/css/pikaday.css')
-    link(rel='stylesheet', href='bower_components/handsontable/dist/handsontable.css')
-    link(rel='stylesheet', href='bower_components/wrangler/style/editor.css')
-    link(rel='stylesheet', href='bower_components/wrangler/style/layout.css')
-    link(rel='stylesheet', href='bower_components/wrangler/style/table.css')
-    link(rel='stylesheet', href='bower_components/wrangler/style/wrangler.css')
-    link(rel='stylesheet', href='bower_components/bootstrap/dist/css/bootstrap.css')
-    // endbower
-    // bower:js
-    script(src='bower_components/jquery/dist/jquery.js')
-    script(src='bower_components/angular/angular.js')
-    script(src='bower_components/jquery-layout/source/stable/jquery.layout.js')
-    script(src='bower_components/jquery-highlight/jquery.highlight.js')
-    script(src='bower_components/jquery-hoverintent/jquery.hoverIntent.js')
-    script(src='bower_components/datatables/media/js/jquery.dataTables.js')
-    script(src='bower_components/d3/d3.js')
-    script(src='bower_components/angular-animate/angular-animate.js')
-    script(src='bower_components/angular-cookies/angular-cookies.js')
-    script(src='bower_components/angular-messages/angular-messages.js')
-    script(src='bower_components/angular-resource/angular-resource.js')
-    script(src='bower_components/angular-route/angular-route.js')
-    script(src='bower_components/angular-sanitize/angular-sanitize.js')
-    script(src='bower_components/angular-touch/angular-touch.js')
-    script(src='bower_components/angular-ui-router/release/angular-ui-router.js')
-    script(src='bower_components/zeroclipboard/dist/ZeroClipboard.js')
-    script(src='bower_components/moment/moment.js')
-    script(src='bower_components/pikaday/pikaday.js')
-    script(src='bower_components/handsontable/dist/handsontable.js')
-    script(src='bower_components/ngHandsontable/dist/ngHandsontable.js')
-    script(src='bower_components/wrangler/lib/datavore/datavore-d0.1.js')
-    script(src='bower_components/wrangler/dw.js')
-    script(src='bower_components/bootstrap/dist/js/bootstrap.js')
-    script(src='bower_components/angular-bootstrap/ui-bootstrap-tpls.js')
-    script(src='bower_components/jstat/dist/jstat.js')
-    script(src='bower_components/jsfeat/build/jsfeat.js')
-    // endbower
-  body(ng-controller='AppCtrl')
+.container-fluid.wrap
+  nav.navbar.navbar-static-top.navbar-inverse.socrat-navbar-menu
     .container-fluid
-      nav.navbar.navbar-static-top.navbar-inverse
-        .container-fluid
-          .navbar-header
-            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-              span.icon-bar
-              span.icon-bar
-              span.icon-bar
-            a(href='/').navbar-brand SOCR
-          .navbar-collapse
-            div(ng-include="'partials/nav.html'")
-            p.navbar-text.pull-right Logged in as&nbsp;
-              a(href='#').navbar-link.
-                {{username}}
+      .navbar-header
+        button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a(href='/').navbar-brand SOCRAT
+      .navbar-collapse
+        div!= require('partials/nav.jade')()
+        p.navbar-text.pull-right Logged in as&nbsp;
+          a(href='#').navbar-link.
+            {{app.username}}
 
-      //tooblar navigation for statistical analysis
-      nav.navbar.navbar-default.navbar-static-top
-        .container
-          .navbar-header
-            button.navbar-toggle(type='button', data-toggle='collapse', data-target='.analysis-toolbar')
-              span.icon-bar
-              span.icon-bar
-              span.icon-bar
-            a(href='/').navbar-brand Analysis
-          .navbar-collapse.analysis-toolbar
-            div(ng-include="'partials/analysis-nav.html'")
-            notification
+  // tooblar navigation for statistical analysis
+  nav.navbar.navbar-default.navbar-static-top.socrat-navbar-menu
+    .container
+      .navbar-header
+        button.navbar-toggle(type='button', data-toggle='collapse', data-target='.analysis-toolbar')
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a(href='/').navbar-brand Analysis
+      .navbar-collapse.analysis-toolbar
+        menubar
+        notification
 
-      //Main content section
-      .main-content.container-fluid
-        .row
-          div(ng-controller="sidebarCtrl")
-            div(ng-class="getClass()").sub-menu.well
-              span(ng-click="toggle()", ng-class="arrowDirection")
-              div(ng-show="view()")
-                div(ui-view="sidebar",ng-animate="{enter:'fade-enter'}")
-          div(ng-controller='mainCtrl')
-            div(ui-view="main",class="{{width}}").well
-      .push
+  // main content section
+  .main-content.container-fluid.socrat-content-wrap
+    .row
+      div(ng-controller="AppSidebarCtrl as sidebar")
+        div(ng-class="sidebar.getClass()").sub-menu.well
+          span(ng-click="sidebar.toggle()", ng-class="sidebar.arrowDirection")
+          div(ng-show="sidebar.view()")
+            div(ui-view="sidebar", ng-animate="{enter:'fade-enter'}")
+      div(ng-controller='AppMainCtrl as main')
+        div(ui-view="main",class="{{main.width}}").well
+  .push
 
-    div(ng-include="'partials/footer.html'")
-
-    // Include styles and scripts
-    // include: "type": "css", "files": "styles/**/*.css"
-    script(src='app.js')
-    // include: "type": "js", "files": "scripts/**/*.js"
+div!= require('partials/footer.jade') ()

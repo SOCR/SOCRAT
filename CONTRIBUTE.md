@@ -1,5 +1,7 @@
 We are currently few developers actively contributing to the project. Feel free to reach out to us for any help.
 
+## Technology stack
+
 The technology stack used in this framework is described below.
 
 ### Bare Essentials
@@ -16,9 +18,25 @@ The technology stack used in this framework is described below.
 
 **AngularJS** - JavaScript framework that we employ. Very elegant. [Official website](https://angularjs.org/) has the best documentation.
 
-### Optional
+**[WebPack](https://webpack.github.io/)** - module bundler. 
 
-**[Brunch](http://brunch.io)** - HTML5 built tool. 
+### Optional
 
 **[D3](http://d3js.org)** - Data driven charts
   
+## Commit message format
+
+We loosely follow [AngularJs Commit Message Format](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit):
+
+First line of the git message has to be in the following format: `<type>(<scope>): <subject>`
+* `<type>` here is from [this list](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#type)
+* `<scope>` is a specific module within SOCRAT you're contributing to, i.e. `Core` or `Charts` or `PowerCalc`
+* `<subject>` is a description of the change starting with a verb in imperative form, present tense, not capitalized, without period in the end; when commiting unfinished work (e.g. with known bugs), prepend `<subject>` with `WIP`.
+
+Additional details can be added on a second line of the message. 
+
+## SOCR Datasets for testing
+
+**Iris** - famous dataset in machine learning [1]. To be able to use it locally for testing, download [CSV file](https://drive.google.com/file/d/0BzJubeARG-hsdTdRTC03RFdhRTg/view?usp=sharing) and place it under ``_build/datasets/iris.csv``
+
+[1] Lichman, M. (2013). [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml). Irvine, CA: University of California, School of Information and Computer Science.
