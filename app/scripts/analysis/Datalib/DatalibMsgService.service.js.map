@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "DatalibMsgService.service.js",
+  "sourceRoot": "",
+  "sources": [
+    "DatalibMsgService.service.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,2CAAA;IAAA;;;EAEA,wBAAA,GAA2B,OAAA,CAAQ,qDAAR;;EAE3B,MAAM,CAAC,OAAP,GAAuB;;;;;;;gCACrB,OAAA,GACE;MAAA,QAAA,EAAU,CAAC,YAAD,EAAe,iBAAf,CAAV;MACA,QAAA,EAAU,CAAC,eAAD,EAAkB,oBAAlB,CADV;MAEA,KAAA,EAAO,CAAC,sBAAD,CAFP;;;;;KAF6C;AAJjD"
+}

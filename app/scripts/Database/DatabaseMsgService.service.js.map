@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "DatabaseMsgService.service.js",
+  "sourceRoot": "",
+  "sources": [
+    "DatabaseMsgService.service.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,4CAAA;IAAA;;;EAEA,wBAAA,GAA2B,OAAA,CAAQ,qDAAR;;EAE3B,MAAM,CAAC,OAAP,GAAuB;;;;;;;iCACrB,OAAA,GACE;MAAA,QAAA,EAAU,CAAC,YAAD,EAAe,cAAf,EAA+B,WAA/B,EAA4C,cAA5C,CAAV;MACA,QAAA,EAAU,CAAC,aAAD,EAAgB,eAAhB,EAAiC,YAAjC,EAA+C,eAA/C,CADV;MAEA,KAAA,EAAO,CAAC,uBAAD,CAFP;;;;;KAF8C;AAJlD"
+}

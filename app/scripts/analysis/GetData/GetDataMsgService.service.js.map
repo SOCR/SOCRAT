@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "GetDataMsgService.service.js",
+  "sourceRoot": "",
+  "sources": [
+    "GetDataMsgService.service.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,2CAAA;IAAA;;;EAEA,wBAAA,GAA2B,OAAA,CAAQ,qDAAR;;EAE3B,MAAM,CAAC,OAAP,GAAuB;;;;;;;gCACrB,OAAA,GACE;MAAA,QAAA,EAAU,CAAC,SAAD,EAAY,UAAZ,CAAV;MACA,QAAA,EAAU,CAAC,WAAD,EAAc,SAAd,CADV;MAEA,KAAA,EAAO,CAAC,sBAAD,CAFP;;;;;KAF6C;AAJjD"
+}
