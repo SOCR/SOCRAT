@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "DataWranglerMsgService.service.js",
+  "sourceRoot": "",
+  "sources": [
+    "DataWranglerMsgService.service.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,gDAAA;IAAA;;;EAEA,wBAAA,GAA2B,OAAA,CAAQ,qDAAR;;EAE3B,MAAM,CAAC,OAAP,GAAuB;;;;;;;qCACrB,OAAA,GACE;MAAA,QAAA,EAAU,CAAC,SAAD,EAAY,UAAZ,CAAV;MACA,QAAA,EAAU,CAAC,WAAD,CADV;MAEA,KAAA,EAAO,CAAC,2BAAD,CAFP;;;;;KAFkD;AAJtD"
+}

@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "ClusterInit.service.js",
+  "sourceRoot": "",
+  "sources": [
+    "ClusterInit.service.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,yCAAA;IAAA;;;EAEA,qBAAA,GAAwB,OAAA,CAAQ,kDAAR;;EAExB,MAAM,CAAC,OAAP,GAAuB;;;;;;;IACrB,kBAAC,CAAA,MAAD,CAAQ,iCAAR;;iCAEA,UAAA,GAAY,SAAA;MACV,IAAC,CAAA,UAAD,GAAc,IAAC,CAAA;aACf,IAAC,CAAA,UAAD,CAAA;IAFU;;;;KAHoC;AAJlD"
+}
