@@ -14,7 +14,10 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
     @tests = @app_analysis_reliability_tests
     @dataType = ''
     @result = ''
+<<<<<<< HEAD
     
+=======
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
 
     @showMetric = {}
     @metrics = @tests.getMetricNames().map (metric) -> metric.toLowerCase().replace(/[^\w\s]/gi, '')

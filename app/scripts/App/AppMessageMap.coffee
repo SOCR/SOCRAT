@@ -17,10 +17,17 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability'
       ]
+<<<<<<< HEAD
       msgTo: 'infer all types'
       scopeTo: ['app_analysis_datalib']
     ,
       msgFrom: 'all types inferred'
+=======
+      msgTo: 'type.inferAll'
+      scopeTo: ['app_analysis_datalib']
+    ,
+      msgFrom: 'type.inferAll_res'
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
       scopeFrom: ['app_analysis_datalib']
       msgTo: 'data types inferred'
       scopeTo: [
@@ -52,8 +59,12 @@ module.exports = class AppMessageMap
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_charts',
+<<<<<<< HEAD
         'app_analysis_reliability',
          'socrat_analysis_module'
+=======
+        'app_analysis_reliability'
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -65,6 +76,7 @@ module.exports = class AppMessageMap
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_charts',
+<<<<<<< HEAD
         'app_analysis_reliability',
         'socrat_analysis_module'
       ]
@@ -78,6 +90,10 @@ module.exports = class AppMessageMap
       scopeFrom:['socrat_analysis_database']
       msgTo :['bastbase : receiveData']
       scopeTo : ['socrat_analysis_mymodule']
+=======
+        'app_analysis_reliability'
+      ]
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
     ]
 
   getMap: ->

@@ -8,18 +8,26 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     '$q',
     '$stateParams',
     'app_analysis_getData_msgService',
+<<<<<<< HEAD
     'app_analysis_getData_jsonParser',
+=======
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
     'app_analysis_getData_inputCache'
 
   initialize: ->
     @eventManager = @app_analysis_getData_msgService
     @inputCache = @app_analysis_getData_inputCache
+<<<<<<< HEAD
     @jsonParser = @app_analysis_getData_jsonParser
+=======
+    # @jsonParser = @app_analysis_getData_jsonParser
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
     @jsonUrl = ''
     @flag = true
     @selected = 'getDataGrid'
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
+<<<<<<< HEAD
   passReceivedData: (data) ->
     if data.dataType is @DATA_TYPES.NESTED
     else
@@ -28,6 +36,8 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
     @inputCache.setData data
 
 
+=======
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
   # showGrid
   show: (val) ->
     switch val
@@ -50,6 +60,7 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
       when 'jsonParse'
         @selected = 'getDataJson'
         @eventManager.broadcast 'getData:updateShowState', 'jsonParse'
+<<<<<<< HEAD
 
   # getJson
   getJson: ->
@@ -77,3 +88,5 @@ module.exports = class GetDataSidebarCtrl extends BaseCtrl
   getUrl: ->
 
   getGrid: ->
+=======
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe

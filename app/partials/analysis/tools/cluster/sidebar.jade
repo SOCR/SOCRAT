@@ -5,7 +5,11 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
         fieldset
           label(
             uib-tooltip="Choose an algorithm from the list below"
+<<<<<<< HEAD
             tooltip-placement="down"
+=======
+            tooltip-placement="right"
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
           ) Algorithm &nbsp;
           select.form-control(
           ng-model="sidebar.selectedAlgorithm"
@@ -51,6 +55,10 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             multiple
             ng-model="sidebar.chosenCols"
             ng-options="col for col in sidebar.numericalCols"
+<<<<<<< HEAD
+=======
+            ng-change="sidebar.updateChosenCols()"
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
             )
           div.form-group
             label Labels column &nbsp;
@@ -62,20 +70,35 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
             ng-init="sidebar.labelCol = null"
             )
               option(value="") No labels
+<<<<<<< HEAD
           div.form-group(ng-show="sidebar.xCol")
+=======
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.xCol")
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
             label X column &nbsp;
             //- show data header column names
             select.form-control(
             ng-model="sidebar.xCol"
+<<<<<<< HEAD
             ng-options="col for col in sidebar.numericalCols"
             ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
           div.form-group(ng-show="sidebar.yCol")
+=======
+            ng-options="col for col in sidebar.chosenCols"
+            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+            )
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.yCol")
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
             label Y column &nbsp;
             //- show data header column names
             select.form-control(
             ng-model="sidebar.yCol"
+<<<<<<< HEAD
             ng-options="col for col in sidebar.numericalCols"
+=======
+            ng-options="col for col in sidebar.chosenCols"
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
             ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
         div.form-group.btn-group(

@@ -35,11 +35,19 @@ Now, lets install all the dependencies:
     $> npm install
 
 This will install all the dependencies mentioned in package.json files.
+<<<<<<< HEAD
 
 Start the development server and see the application running at `localhost:8080`:
 
     $> npm run serve
+=======
 
+Start the development server and see the application running at `localhost:8080`:
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
+
+    $> npm run serve
+    
+See how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contrubition instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
 
 Motivation 
 --------------

@@ -7,8 +7,15 @@
 
 # Public files (generated)#
 ===============
+_build/
 /dist
 /.tmp
+/_build/*.js
+/_build/*.eot
+/_build/*.ttf
+/_build/*.svg
+/_build/*.woff
+/_build/datasets
 
 #OS generated files #
 =====================

@@ -13,6 +13,10 @@ module.exports = class ClusterKMeans extends BaseService
 
   initialize: () ->
     @metrics = @app_analysis_cluster_metrics
+<<<<<<< HEAD
+=======
+    @jsfeat = require 'jsfeat'
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
 
     @name = 'K-means'
     @timer = null
@@ -125,6 +129,7 @@ module.exports = class ClusterKMeans extends BaseService
     matrixT = d3.transpose(matrix)
 
     cov = (0 for e1 in [0..l - 1] for e2 in [0..l - 1])
+<<<<<<< HEAD
     cov = _matrixMultiply matrixT, matrix
     cov = cov.map((row) -> row.map((el) -> el / (n - 1)))
 
@@ -135,6 +140,18 @@ module.exports = class ClusterKMeans extends BaseService
     tCov.data = covData
     tCovInv = new jsfeat.matrix_t l, l, jsfeat.F32_t | jsfeat.C1_t
     jsfeat.linalg.svd_invert tCovInv, tCov
+=======
+    cov = @matrixMultiply matrixT, matrix
+    cov = cov.map((row) -> row.map((el) -> el / (n - 1)))
+
+    # calculate pseudo-inverse covariance matrix
+    tCov = new @jsfeat.matrix_t l, l, @jsfeat.F32_t | @jsfeat.C1_t
+    covData = []
+    (covData.push(e) for e in row for row in cov)
+    tCov.data = covData
+    tCovInv = new @jsfeat.matrix_t l, l, @jsfeat.F32_t | @jsfeat.C1_t
+    @jsfeat.linalg.svd_invert tCovInv, tCov
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
 
     invCov = (0 for e1 in [0..l - 1] for e2 in [0..l - 1])
     for row, i in invCov
@@ -172,7 +189,12 @@ module.exports = class ClusterKMeans extends BaseService
       centroids = clusters.centroids
       labels = clusters.initLabels
       # if mahalanobis distance, need to precompute covariance matrices
+<<<<<<< HEAD
       if distance in @metrics.getNames() and distance.toLowerCase() is 'mahalanobis'
+=======
+      metrics = @metrics.getNames().map Function.prototype.call, String.prototype.toLowerCase
+      if distance.toLowerCase() in metrics and distance.toLowerCase() is 'mahalanobis'
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
         labels = @assignSamples data, centroids, 'euclidean'
         centroids = @updateMeans data, centroids, labels
         covMats = []

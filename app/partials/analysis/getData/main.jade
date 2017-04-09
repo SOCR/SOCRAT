@@ -1,5 +1,8 @@
 div(ng-controller='GetDataMainCtrl as mainArea')
+<<<<<<< HEAD
   h4 Get Data
+=======
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
 
   form.socrData(uib-collapse="mainArea.showState.socrData")
     legend SOCR Datasets
@@ -7,6 +10,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       select.form-control(
         ng-model="mainArea.socrdataset",
         ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
+<<<<<<< HEAD
     button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
 
   div.worldBank(uib-collapse="mainArea.showState.worldBank")
@@ -17,6 +21,23 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         option(value='4.2_BASIC.EDU.SPENDING') Education Spending
         option(value='2.4_OOSC.RATE') Out of School Children rate
       button.btn.btn-primary(ng-click="mainArea.getWB()") Load
+=======
+    div.btn-group
+      button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
+      button.btn.btn-info(ng-click="mainArea.openSocrDescription()") Description &nbsp;
+        span.fui-export
+
+  div.worldBank(uib-collapse="mainArea.showState.worldBank")
+    div
+      div(style="display:inline-flex")
+        input(type="text",class="form-control input-lg", placeholder="Rows", ng-model="mainArea.size")
+        input(type="text",class="form-control input-lg", placeholder="Start Year", ng-model="mainArea.startYear")
+        input(type="text",class="form-control input-lg", placeholder="End Year", ng-model="mainArea.endYear")
+        select(style="height:36px", ng-model="mainArea.option")
+            option(ng-repeat="dataset in mainArea.WBDatasets", value="{{dataset.key}}") {{ dataset.name }}
+        button(style="margin-left:20px", ng-click="mainArea.getWB()").btn.btn-primary Load
+
+>>>>>>> 1ad2735a1dd1c63c6a42fd4d91449722cd07f1fe
 
   div.generate(uib-collapse="mainArea.showState.generate")
     ul.nav.nav-pills.nav-stacked.disabled
