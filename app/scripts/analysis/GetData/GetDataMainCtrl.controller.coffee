@@ -12,6 +12,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     'app_analysis_getData_jsonParser',
     'app_analysis_getData_dataAdaptor',
     'app_analysis_getData_inputCache',
+    'app_analysis_getData_socrDataConfig',
     '$timeout'
 
   initialize: ->
@@ -145,20 +146,38 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
   # available SOCR Datasets
   socrDatasets: [
-    id: 'IRIS'
-    name: 'Iris Flower Dataset'
-  ,
-    id: 'KNEE_PAIN'
-    name: 'Simulated SOCR Knee Pain Centroid Location Data'
-  ,
-    id: 'CURVEDNESS_AD'
-    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
-  ,
-    id: 'PCV_SPECIES'
-    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
-  ,
-    id: 'TURKIYE_STUDENT_EVAL'
-    name: 'Turkiye Student Evaluation Data Set'
+      id: 'IRIS'
+      name: 'Iris Flower Dataset'
+  # ,
+  #   id: 'KNEE_PAIN'
+  #   name: 'Simulated SOCR Knee Pain Centroid Location Data'
+  # ,
+  #   id: 'CURVEDNESS_AD'
+  #   name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
+  # ,
+  #   id: 'PCV_SPECIES'
+  #   name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
+  # ,
+  #   id: 'TURKIYE_STUDENT_EVAL'
+  #   name: 'Turkiye Student Evaluation Data Set'
+    , 
+      id: 'US_Comsumer_Price_Index'
+      name: 'US Consumer Price Index (1981-2006)'
+    ,
+      id: 'US_Federal_Budget'
+      name: 'US Federal Budget, Income, Expenditures and Deficit Data (1849-2016)'
+    ,
+      id: 'Google_Web-Search_Trends'
+      name: 'Google Web-Search Trends and Stock Market Data (2005-2011)'
+    ,
+      id: 'Nation_Wealth'
+      name: 'Wealth of Nations Data (1800-2009)'
+    ,
+      id: 'SP500'
+      name: 'Standard & Poor Stock Exchange (August 2007 - June 2008)'
+    ,
+      id: 'Economy2002'
+      name: 'US Economy by Sector (2002)'
   ]
 
   getWB: ->
@@ -188,10 +207,17 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   getSocrData: ->
     switch @socrdataset.id
       when 'IRIS' then url = 'datasets/iris.csv'
-      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
-      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
-      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
-      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
+      # when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
+      # when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
+      # when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
+      # when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
+      when 'US_Comsumer_Price_Index' then url = 'datasets/consumer_price_index.csv'
+      when 'US_Federal_Budget' then url='datasets/budgets_deficits.csv'
+      when 'Google_Web-Search_Trends' then url='datasets/google_trends.csv'
+      when 'Nation_Wealth' then url='datasets/wealth_of_nations.csv'
+      when 'SP500' then url='datasets/standards_poor_500.csv'
+      when 'Economy2002' then url='datasets/economy2002.csv'
+
       # default option
       else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 

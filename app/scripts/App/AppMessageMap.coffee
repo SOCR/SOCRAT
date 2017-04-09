@@ -52,7 +52,8 @@ module.exports = class AppMessageMap
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+         'socrat_analysis_module'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -64,8 +65,19 @@ module.exports = class AppMessageMap
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'socrat_analysis_module'
       ]
+    ,
+      msgFrom:'mymodule:getData'
+      scopeFrom:['socrat_analysis_module']
+      msgTo :['bastbase : getData']
+      scopeTo : ['socrat_analysis_database']
+    ,
+      msgFrom:'database:receiveData'
+      scopeFrom:['socrat_analysis_database']
+      msgTo :['bastbase : receiveData']
+      scopeTo : ['socrat_analysis_mymodule']
     ]
 
   getMap: ->

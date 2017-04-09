@@ -17,6 +17,7 @@ module.exports = getData = new Module
       'app_analysis_getData_jsonParser': require 'scripts/analysis/GetData/GetDataJsonParser.service.coffee'
       'app_analysis_getData_showState': require 'scripts/analysis/GetData/GetDataShowState.service.coffee'
       'app_analysis_getData_dataService': require 'scripts/analysis/GetData/GetDataDataService.service.coffee'
+      'app_analysis_getData_socrDataConfig' : require 'scripts/analysis/GetData/GetDataSocrDataConfig.service.coffee'
     controllers:
       'GetDataSidebarCtrl': require 'scripts/analysis/GetData/GetDataSidebarCtrl.controller.coffee'
       'GetDataMainCtrl': require 'scripts/analysis/GetData/GetDataMainCtrl.controller.coffee'
