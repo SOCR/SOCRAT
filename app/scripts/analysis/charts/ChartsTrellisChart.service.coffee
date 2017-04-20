@@ -11,10 +11,10 @@ module.exports = class ChartsTrellisChart extends BaseService
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
     'app_analysis_charts_msgService',
+    'app_analysis_charts_scatterPlot'
   # @inject 'app_analysis_cluster_dataService'
 
   initialize: ->
-    # @dataService = @app_analysis_cluster_dataService
     @msgService = @app_analysis_charts_msgService
     @dataService = @app_analysis_charts_dataService
     @dataTransform = @app_analysis_charts_dataTransform
@@ -22,6 +22,7 @@ module.exports = class ChartsTrellisChart extends BaseService
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
+    @scatterPlot = @app_analysis_charts_scatterPlot
 
   '''
   parseData: (data) ->
@@ -40,23 +41,72 @@ module.exports = class ChartsTrellisChart extends BaseService
         dataFrame = obj.dataFrame
 
         fields = []
+        all_fields = []
+        all_field_indices = []
+        ordinals = []
+        ordinal_indices = []
         field_indices = []
         ordinal = ""
         ordinalTitle = ""
-        x = 0
+        k = 0
         ordinal_index = 0
+        mark = "point"
+
+        '''
+        @check_mark() =>
+          if a.data == b.data
+            return bar
+          else
+            return "point"
+        '''
+
         for i in dataFrame.header
           try
-            if (!isNaN(parseInt(dataFrame.data[0][x])) && fields.length < 4)
+            if (!isNaN(parseInt(dataFrame.data[0][k])) && fields.length < 4)
               fields.push(i)
-              field_indices.push(x)
+              field_indices.push(k)
+              all_fields.push(i)
+              all_field_indices.push(k)
+            else if (!isNaN(parseInt(dataFrame.data[0][k])))
+              all_fields.push(i)
+              all_field_indices.push(k)
             else
+              ordinal_indices.push(k)
+              ordinals.push(i)
               ordinal = i
               ordinalTitle = i
-              ordinal_index = x
+              ordinal_index = k
           catch error
             console.log(error)
-          x++
+          k++
+
+        console.log('whattaup')
+        console.log(gdata.xLab.value)
+        fields[2] = gdata.xLab.value
+        console.log(gdata.yLab.value)
+        fields[3] = gdata.yLab.value
+        console.log(gdata.zLab.value)
+        ordinal = gdata.zLab.value
+        ordinalTitle = gdata.zLab.value
+
+        ind = 0
+        for x in dataFrame.header
+          if ordinal == x
+            ordinal_index = ind
+          ind += 1
+
+        ind = 0
+        for x in dataFrame.header
+          if fields[2] == x
+            field_indices[2] = ind
+          if fields[3] == x
+            field_indices[3] = ind
+          ind += 1
+
+        console.log('indiceessss')
+        console.log(ordinal_index)
+        console.log(field_indices)
+
 
         # fields = dataFrame.header.slice(0, 0 + 4)
         # ordinal = dataFrame.header[4]
@@ -65,26 +115,39 @@ module.exports = class ChartsTrellisChart extends BaseService
         console.log(fields)
         console.log(ordinal)
         console.log(ordinalTitle)
+        console.log('ordinals')
+        console.log(ordinals)
+        console.log('all fields')
+        console.log(all_fields)
 
-        x = 0
+        k = 0
         y = 0
         d = []
         for i in dataFrame.data
-          d[x] = {}
+          d[k] = {}
           y = 0
           for j in fields
-            dataFrame.data[x][j] = parseFloat(dataFrame.data[x][field_indices[y]])
-            d[x][j] = parseFloat(dataFrame.data[x][field_indices[y]])
+            dataFrame.data[k][j] = parseFloat(dataFrame.data[k][field_indices[y]])
+            d[k][j] = parseFloat(dataFrame.data[k][field_indices[y]])
             y++
-          dataFrame.data[x][ordinal] = dataFrame.data[x][ordinal_index]
-          d[x][ordinal] = dataFrame.data[x][ordinal_index]
-          x++
+          dataFrame.data[k][ordinal] = dataFrame.data[k][ordinal_index]
+          d[k][ordinal] = dataFrame.data[k][ordinal_index]
+          k++
 
         console.log(d)
+        console.log(x)
+        console.log(fields.length)
+        console.log(fields)
+
+        unique_fields = []
+
+        for x in fields
+          if x not in unique_fields
+            unique_fields.push(x)
 
         vSpec = {
-          "width": 600,
-          "height": 600,
+          "width": 180 * unique_fields.length,
+          "height": 180 * unique_fields.length,
           "data": [
             {
               "name": "iris",
@@ -216,12 +279,19 @@ module.exports = class ChartsTrellisChart extends BaseService
                 }
               ],
               "axes": [
-                {"type": "x", "scale": "x", "ticks": 5},
+                {
+                  "type": "x",
+                  "scale": "x",
+                  "ticks": 5,
+                  "labels": {
+                    "interactive": true,
+                  }
+                },
                 {"type": "y", "scale": "y", "ticks": 5}
               ],
               "marks": [
                 {
-                  "name": "point",
+                  "name": mark,
                   "type": "symbol",
                   "from": {"data": "iris"},
                   "properties": {

@@ -39,7 +39,7 @@ module.exports = class ChartsDir extends BaseDirective
     @pie = @app_analysis_charts_pieChart
 
     @restrict = 'E'
-    @template = "<div id='vis' class='graph-container' style='height: 600px'></div>"
+    @template = "<div id='vis' class='graph-container' style='overflow:auto;height: 600px'></div>"
 
     @link = (scope, elem, attr) =>
       margin = {top: 10, right: 40, bottom: 50, left:80}
@@ -76,9 +76,13 @@ module.exports = class ChartsDir extends BaseDirective
           scheme = newChartData.graph
 
           data = data.map (row) ->
-            x: row[0]
-            y: row[1]
-            z: row[2]
+            '''
+            v: row[0]
+            w: row[1]
+            '''
+            x: row[2]
+            y: row[3]
+            z: row[4]
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
@@ -103,7 +107,7 @@ module.exports = class ChartsDir extends BaseDirective
           switch scheme.name
             when 'Trellis Chart'
               #@trellis.updateDataPoints()
-              @trellis.drawTrellis(width,height,data,_graph,gdata)
+              @trellis.drawTrellis(width,height,data,_graph,gdata,container)
             when 'Bar Graph'
               @bar.drawBar(width,height,data,_graph,gdata)
             when 'Bubble Chart'
