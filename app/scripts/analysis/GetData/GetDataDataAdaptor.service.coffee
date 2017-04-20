@@ -76,7 +76,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
           else
             # array of arbitrary objects
             # http://stackoverflow.com/a/21266395/1237809
-            if (not not data.reduce((prev, next) ->
+            if (not not data.reduce((prev, next) =>
               # check if objects have same keys
               if @haveSameKeys prev, next
                 prevValues = Object.keys(prev).map (k) -> prev[k]
