@@ -65,7 +65,6 @@ module.exports = class GetDataDataAdaptor extends BaseService
         purpose: 'json' 
     newDataFrame = @transformArraysToObject tempDF
     @dataService.inferTypes newDataFrame
-
     .then( (typesObj) =>
       dataFrame =
         header: header
