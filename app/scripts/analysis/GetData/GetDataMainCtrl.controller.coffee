@@ -159,6 +159,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   ,
     id: 'TURKIYE_STUDENT_EVAL'
     name: 'Turkiye Student Evaluation Data Set'
+
+  ,
+    id: 'FAITHFUL'
+    name: 'Old Faithful dataset'
   ]
 
   getWB: ->
@@ -188,6 +192,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   getSocrData: ->
     switch @socrdataset.id
       when 'IRIS' then url = 'datasets/iris.csv'
+      when 'FAITHFUL' then url = 'datasets/oldfaithful.csv'
       when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
       when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
       when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'

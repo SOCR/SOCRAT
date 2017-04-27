@@ -13,7 +13,7 @@ module.exports = class DistList extends BaseService
       x: ['integer', 'number', 'string']
       y: false
       z: false
-      message: "This class designs a simple polynomial model fitting curve"
+      message: "This class models a normal distribution fitting curve to the dataset"
       xLabel: "Add x"
 
     ,

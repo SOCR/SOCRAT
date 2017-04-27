@@ -95,7 +95,8 @@ module.exports = class GetParams extends BaseService
     min = sample[0]
     max = sample[sample.length - 1]
     mean = @getMean(sum, sample.length)
-    average = sum / sample.length
+
+
     median = getMedian(sample)
     console.log("Sample mean: " + mean)
     variance = @getVariance(sample, mean)
@@ -106,9 +107,15 @@ module.exports = class GetParams extends BaseService
     topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
     gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
+
+
+    mean = mean.toFixed(2)
+    variance = variance.toFixed(2)
+    median = median.toFixed(2)
+    standardDerivation = standardDerivation.toFixed(2)
+
     return stats =
       mean: mean
-      average: average
       variance: variance
       median: median
       standardDev: standardDerivation
@@ -168,6 +175,10 @@ module.exports = class GetParams extends BaseService
       .y (d) -> yScale(d.y)
       .interpolate("basis")
 
+    console.log("printing gaussian curve data")
+    console.log(gaussianCurveData)
+
+
     _graph.append('svg:path')
       .attr('d', lineGen(gaussianCurveData))
       .data([gaussianCurveData])
@@ -215,3 +226,168 @@ module.exports = class GetParams extends BaseService
       'translate(' + (this.getBBox().height*-2-5) + ',' + (this.getBBox().height-30) + ')')
       .style('font-size', '15.7px')
     '''
+
+
+
+
+
+  '''
+  kernelDensityEstimator: (kernel, x) ->
+    (sample) ->
+      x.map (x) ->
+      {
+        x: x
+        y: d3.mean(sample, (v) ->
+          kernel x - v
+        )
+      }
+  '''
+
+  getMeanByAccessor: (array, f) ->
+    s = 0
+    n = array.length
+    a = undefined
+    i = -1
+    j = n
+    if f == null
+      while ++i < n
+        if !isNaN(a = number(array[i]))
+          s += a
+        else
+          --j
+    else
+      while ++i < n
+        if !isNaN(a = number(f(array[i], i, array)))
+          s += a
+        else
+          --j
+    if j
+      return s / j
+    return
+
+  toObject: (arr) ->
+    rv = {}
+    i = 0
+    while i < arr.length
+      if arr[i] != undefined
+        value = ''
+        if i == 0
+          value = 'x'
+        else
+          value = 'y'
+
+        rv[value] = arr[i]
+      ++i
+    rv
+
+  kernelDensityEstimator: (kernel, x) ->
+    (sample) ->
+      x.map (x) ->
+
+        mean = d3.mean(sample, (v) ->
+          kernel(x - v)
+        )
+
+        [
+          x
+          d3.mean(sample, (v) ->
+            kernel x - v
+          )
+        ]
+
+  epanechnikovKernel: (scale) ->
+    (u) ->
+      if Math.abs(u /= scale) <= 1 then .75 * (1 - (u * u)) / scale else 0
+  '''
+  epanechnikovKernel: (u) ->
+    if u <= 1 and u >= -1
+      return .75 * (1 - (u * u))
+    0
+  '''
+
+  drawKernelDensityEst: (data, width, height, _graph, xAxis, yAxis, yScale, xScale) ->
+    console.log("datafrom kde")
+    console.log(data)
+
+
+
+    bandwith = 7
+    console.log @extract(data, "x")
+    console.log("Within the modeler GetParams")
+    sample = @sort(@getRandomValueArray(@extract(data,"x")))
+    sum = @getSum(sample)
+    min = sample[0]
+    max = sample[sample.length - 1]
+    mean = @getMean(sum, sample.length)
+    variance = @getVariance(sample, mean)
+    standardDerivation =  Math.sqrt(variance)
+    rightBound = @getRightBound(mean, standardDerivation)
+    leftBound = @getLeftBound(mean,standardDerivation)
+    bottomBound = 0
+    topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
+    radiusCoef = 5
+
+    padding = 50
+
+    xScale = d3.scale.linear().domain([leftBound, rightBound]).range([0, width])
+    console.log(topBound)
+    yScale = d3.scale.linear().domain([bottomBound, topBound]).range([height-padding, padding])
+    '''
+
+    x = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
+
+    xAxis = d3.svg.axis().ticks(20)
+      .scale(xScale)
+
+    yAxis = d3.svg.axis()
+      .scale(yScale)
+      .ticks(12)
+      .tickPadding(0)
+      .orient("right")
+
+    '''
+    lineGen = d3.svg.line()
+      .x (d) -> xScale(d.x)
+      .y (d) -> yScale(d.y)
+      .interpolate("basis")
+
+
+    kde = @kernelDensityEstimator(@epanechnikovKernel(bandwith), xScale.ticks(100));
+    console.log("printing kde(data))")
+    data = @extract(data, "x")
+    #console.log(kde(data))
+    kde_data_array = kde(data)
+    kde_data_obj = []
+    for i in kde_data_array
+      pointObj = @toObject(i)
+      kde_data_obj.push(pointObj)
+
+
+
+    console.log("Kde_line_data")
+    console.log(kde_data_obj)
+
+    #console.log("appending graph")
+    '''
+    _graph.append('svg:path')
+      .datum(kde(data))
+      .attr('class', 'line')
+      .attr('d', lineGen)
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1.5)
+      .attr('fill', "none")
+    #mike bostock way
+   _graph.append('svg:path')
+      .datum(kde(data))
+      .attr("class", "line")
+      .attr("d", lineGen);
+
+  '''
+
+    #gaussian way
+    _graph.append('svg:path')
+      .attr('d', lineGen(kde_data_obj))
+      .data([kde_data_obj])
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1.5)
+      .attr('fill', "none")

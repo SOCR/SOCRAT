@@ -18,9 +18,12 @@ module.exports = class ModelerHist extends BaseService
     # slider
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
-    dataHist = d3.layout.histogram().bins(bins)(arr)
+
+    bins = 7
+    dataHist = d3.layout.histogram().frequency(false).bins(bins)(arr)
 
     _graph.selectAll('g').remove()
+    _graph.select('path').remove()
     _graph.select('.x axis').remove()
     _graph.select('.y axis').remove()
 
@@ -36,22 +39,11 @@ module.exports = class ModelerHist extends BaseService
     console.log data
 
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-    y.domain([0, (d3.max dataHist.map (i) -> i.length)])
+    y.domain([0, .5])
+    #y.domain([0, (d3.max dataHist.map (i) -> i.length)])
 
-    yAxis = d3.svg.axis().scale(y).orient("left")
+    yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(d3.format("%"))
     xAxis = d3.svg.axis().scale(x).orient("bottom")
-
-
-
-    '''
-    line = d3.svg.line()
-      .x (d) ->
-        x (d[0])
-      .y (d) ->
-        y (d[0])
-    '''
-
-
 
     getColor = d3.scale.category10()
 
@@ -96,7 +88,7 @@ module.exports = class ModelerHist extends BaseService
       .attr('class', 'label')
       .attr('text-anchor', 'middle')
       .attr('transform', 'translate(0,' + padding/2 + ')')
-      .text "Counts"
+      .text "Density"
 
     # bar elements
     bar = _graph.selectAll('.bar')
@@ -106,6 +98,9 @@ module.exports = class ModelerHist extends BaseService
       .append("g")
 
     rect_width = (width - 2*padding)/bins
+
+
+    #rect_width = 6.857143
     bar.append('rect')
       .attr('x', (d) -> x d.x)
       .attr('y', (d) -> y d.y)
@@ -127,8 +122,8 @@ module.exports = class ModelerHist extends BaseService
       .attr('z-index', 1)
       .text (d) -> d.y
 
-    @gauss.drawNormalCurve(data, width, height, _graph)
-
+    #@gauss.drawNormalCurve(data, width, height, _graph)
+    @gauss.drawKernelDensityEst(data, width, height, _graph, xAxis, yAxis, y, x)
 
   drawHist: (_graph, data, container, gdata, width, height, ranges) ->
 #pre-set value of slider
@@ -154,4 +149,75 @@ module.exports = class ModelerHist extends BaseService
 
 
 
+
+
+
+
+
+'''
+  CalculateOptimalBinWidth: (data)  ->
+      xMax = d3.max(data)
+      xMin = d3.min(data)
+      minBins = 4
+      maxBins = 50
+      results = []
+      N for N in [minBins..maxBins] ->
+        width = (xMax - xMax)/ N
+        hist = []
+        for x in data ->
+          i = x - xMin / width
+          if i >= N
+            i = N -1
+          y = xMin + width * i
+          hist[y] += 1
+
+
+        #compute mean and var
+        sum = @getSum(hist)
+        numOcc = hist.length
+        mean = @getMean(sum, numOcc) # k
+        variance = @getVariance(data,  mean) # v
+
+        C = (2 * mean - variance) / width * 2
+
+        results += [(hist, C, N, width)]
+
+
+
+      optimal = d3.min(results)
+      return optimal
+
+
+
+
+	results = []
+
+	for N in xrange(start, end):
+		width = float(_max - _min) / N
+
+		hist = defaultdict(int)
+		for x in data:
+			i = int((x - _min) / width)
+			if i >= N:       # Mimicking the behavior of matlab.histc(), and
+				i = N - 1    # matplotlib.hist() and numpy.histogram().
+			y = _min + width * i
+			hist[y] += 1
+
+		# Compute the mean and var.
+		k = fsum(hist[x] for x in hist) / N
+		v = fsum(hist[x]**2 for x in hist) / N - k**2
+
+		C = (2 * k - v) / (width**2)
+
+		results += [(hist, C, N, width)]
+
+	optimal = min(results, key=itemgetter(1))
+
+	if 0: # if true, print bin-widths and C-values, the cost function.
+		for (hist, C, N, width) in results:
+			print '%f %f' % (width, C)
+
+	return optimal
+
+  '''
 

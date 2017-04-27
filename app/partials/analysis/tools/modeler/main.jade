@@ -5,23 +5,17 @@ div(ng-controller="ModelerMainCtrl as mainArea")
   div.lead.bg-danger(ng-hide="mainArea.dataType == mainArea.DATA_TYPES.FLAT")
     | Modeling module only supports tabular data
   div(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT")
-    p.
-      A test Distribution Modeling Software
-    div.row-fluid
-      h4 Parameters
-      ul
-        li Mean:{{mainArea.stats.mean}}
-        li Average: {{mainArea.stats.average}}
-        li Median: {{mainArea.stats.median}}
-        li Variance: {{mainArea.stats.variance}}
-        li Standard Deviation: {{mainArea.stats.standardDev}}
-
-      p.
-        Left: {{mainArea.stats.left}}
-        Right: {{mainArea.stats.right}}
-
 
   div.row-fluid
       modelerdir
+
+  div.row-fluid
+    h4 Parameters
+    ul
+      li Mean: {{mainArea.stats.mean}}
+      li Median: {{mainArea.stats.median}}
+      li Variance: {{mainArea.stats.variance}}
+      li Standard Deviation: {{mainArea.stats.standardDev}}
+
 
 
