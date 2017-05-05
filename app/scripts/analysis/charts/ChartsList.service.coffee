@@ -10,12 +10,6 @@ module.exports = class ChartsList extends BaseService
     flat = [
       name: 'Trellis Chart'
       value: 0
-      v: ['integer', 'number']
-      w: ['integer', 'number']
-      x: ['integer', 'number']
-      y: ['integer', 'number']
-      z: ['string']
-      message: "oh god"
     ,
       name: 'Bar Graph'
       value: 1

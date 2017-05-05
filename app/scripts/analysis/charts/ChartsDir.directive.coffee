@@ -39,7 +39,7 @@ module.exports = class ChartsDir extends BaseDirective
     @pie = @app_analysis_charts_pieChart
 
     @restrict = 'E'
-    @template = "<div id='vis' class='graph-container' style='overflow:auto;height: 600px'></div>"
+    @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
 
     @link = (scope, elem, attr) =>
       margin = {top: 10, right: 40, bottom: 50, left:80}
@@ -49,7 +49,7 @@ module.exports = class ChartsDir extends BaseDirective
       data = null
       _graph = null
       container = null
-      gdata = null
+      labels = null
       ranges = null
 
       numerics = ['integer', 'number']
@@ -70,19 +70,10 @@ module.exports = class ChartsDir extends BaseDirective
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
 
-        if newChartData
-          gdata = newChartData.labels
+        if newChartData and newChartData.dataPoints
           data = newChartData.dataPoints
+          labels = newChartData.labels
           scheme = newChartData.graph
-
-          data = data.map (row) ->
-            '''
-            v: row[0]
-            w: row[1]
-            '''
-            x: row[2]
-            y: row[3]
-            z: row[4]
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
@@ -95,48 +86,55 @@ module.exports = class ChartsDir extends BaseDirective
           _graph = svg.append('g')
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-          ranges =
-            xMin: if gdata.xLab.type in numerics then d3.min(data, (d) -> parseFloat(d.x)) else null
-            yMin: if gdata.yLab.type in numerics then d3.min(data, (d) -> parseFloat(d.y)) else null
-            zMin: if gdata.zLab.type in numerics then d3.min(data, (d) -> parseFloat(d.z)) else null
+          # trellis chart is called differently
+          if scheme.name is 'Trellis Chart' and newChartData.labels
+            @trellis.drawTrellis(width, height, data, _graph, labels, container)
+          # standard charts
+          else
+            data = data.map (row) ->
+              x: row[0]
+              y: row[1]
+              z: row[2]
 
-            xMax: if gdata.xLab.type in numerics then d3.max(data, (d) -> parseFloat(d.x)) else null
-            yMax: if gdata.yLab.type in numerics then d3.max(data, (d) -> parseFloat(d.y)) else null
-            zMax: if gdata.zLab.type in numerics then d3.max(data, (d) -> parseFloat(d.z)) else null
+            ranges =
+              xMin: if labels? and numerics.includes(labels.xLab.type) then d3.min(data, (d) -> parseFloat(d.x)) else null
+              yMin: if labels? and numerics.includes(labels.yLab.type) then d3.min(data, (d) -> parseFloat(d.y)) else null
+              zMin: if labels? and numerics.includes(labels.zLab.type) then d3.min(data, (d) -> parseFloat(d.z)) else null
 
-          switch scheme.name
-            when 'Trellis Chart'
-              #@trellis.updateDataPoints()
-              @trellis.drawTrellis(width,height,data,_graph,gdata,container)
-            when 'Bar Graph'
-              @bar.drawBar(width,height,data,_graph,gdata)
-            when 'Bubble Chart'
-              @bubble.drawBubble(ranges,width,height,_graph,data,gdata,container)
-            when 'Histogram'
-              @histogram.drawHist(_graph,data,container,gdata,width,height,ranges)
-            when 'Ring Chart'
-              _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-              @pie.drawPie(data,width,height,_graph,false)
-            when 'Scatter Plot'
-              @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,gdata)
-            when 'Stacked Bar Chart'
-              @stackBar.stackedBar(data,ranges,width,height,_graph, gdata,container)
-            when 'Stream Graph'
-              @time.checkTimeChoice(data)
-              @streamGraph.streamGraph(data,ranges,width,height,_graph, scheme)
-            when 'Area Chart'
-              @time.checkTimeChoice(data)
-              @area.drawArea(height,width,_graph, data, gdata)
-            when 'Treemap'
-              @treemap.drawTreemap(svg, width, height, container, data)
-            when 'Line Chart'
-              @time.checkTimeChoice(data)
-              @line.lineChart(data,ranges,width,height,_graph, gdata,container)
-            when 'Bivariate Area Chart'
-              @time.checkTimeChoice(data)
-              @bivariate.bivariateChart(height,width,_graph, data, gdata)
-            when 'Normal Distribution'
-              @normal.drawNormalCurve(data, width, height, _graph)
-            when 'Pie Chart'
-              _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-              @pie.drawPie(data,width,height,_graph,true)
+              xMax: if labels? and numerics.includes(labels.xLab.type) then d3.max(data, (d) -> parseFloat(d.x)) else null
+              yMax: if labels? and numerics.includes(labels.yLab.type) then d3.max(data, (d) -> parseFloat(d.y)) else null
+              zMax: if labels? and numerics.includes(labels.zLab.type) then d3.max(data, (d) -> parseFloat(d.z)) else null
+
+            switch scheme.name
+              when 'Bar Graph'
+                @bar.drawBar(width,height,data,_graph,labels)
+              when 'Bubble Chart'
+                @bubble.drawBubble(ranges,width,height,_graph,data,labels,container)
+              when 'Histogram'
+                @histogram.drawHist(_graph,data,container,labels,width,height,ranges)
+              when 'Ring Chart'
+                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
+                @pie.drawPie(data,width,height,_graph,false)
+              when 'Scatter Plot'
+                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels)
+              when 'Stacked Bar Chart'
+                @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
+              when 'Stream Graph'
+                @time.checkTimeChoice(data)
+                @streamGraph.streamGraph(data,ranges,width,height,_graph, scheme)
+              when 'Area Chart'
+                @time.checkTimeChoice(data)
+                @area.drawArea(height,width,_graph, data, labels)
+              when 'Treemap'
+                @treemap.drawTreemap(svg, width, height, container, data)
+              when 'Line Chart'
+                @time.checkTimeChoice(data)
+                @line.lineChart(data,ranges,width,height,_graph, labels,container)
+              when 'Bivariate Area Chart'
+                @time.checkTimeChoice(data)
+                @bivariate.bivariateChart(height,width,_graph, data, labels)
+              when 'Normal Distribution'
+                @normal.drawNormalCurve(data, width, height, _graph)
+              when 'Pie Chart'
+                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
+                @pie.drawPie(data,width,height,_graph,true)
