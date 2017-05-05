@@ -77,6 +77,8 @@ module.exports = class DataWranglerWrangler extends BaseService
       -> console.log 'wrangled data saved to db',
       data,
       deferred
+      console.log 'bludglasd here be more data'
+      console.log data
 
   saveData: ->
 
