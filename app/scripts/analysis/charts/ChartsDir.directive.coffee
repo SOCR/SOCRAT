@@ -17,6 +17,7 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_streamChart',
           'app_analysis_charts_stackedBar',
           'app_analysis_charts_tilfordTree',
+          'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
           'app_analysis_charts_checkTime'
 
@@ -28,6 +29,7 @@ module.exports = class ChartsDir extends BaseDirective
     @scatterPlot = @app_analysis_charts_scatterPlot
     @stackBar = @app_analysis_charts_stackedBar
     @time = @app_analysis_charts_checkTime
+    @trellis = @app_analysis_charts_trellisChart
     @streamGraph = @app_analysis_charts_streamChart
     @area = @app_analysis_charts_areaChart
     @treemap = @app_analysis_charts_treemap
@@ -37,7 +39,7 @@ module.exports = class ChartsDir extends BaseDirective
     @pie = @app_analysis_charts_pieChart
 
     @restrict = 'E'
-    @template = "<div class='graph-container' style='height: 600px'></div>"
+    @template = "<div id='vis' class='graph-container' style='overflow:auto;height: 600px'></div>"
 
     @link = (scope, elem, attr) =>
       margin = {top: 10, right: 40, bottom: 50, left:80}
@@ -67,15 +69,20 @@ module.exports = class ChartsDir extends BaseDirective
             $(this).prepend(segment.repeat(amount - 2))
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
+
         if newChartData
           gdata = newChartData.labels
           data = newChartData.dataPoints
           scheme = newChartData.graph
 
           data = data.map (row) ->
-            x: row[0]
-            y: row[1]
-            z: row[2]
+            '''
+            v: row[0]
+            w: row[1]
+            '''
+            x: row[2]
+            y: row[3]
+            z: row[4]
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
@@ -98,6 +105,9 @@ module.exports = class ChartsDir extends BaseDirective
             zMax: if gdata.zLab.type in numerics then d3.max(data, (d) -> parseFloat(d.z)) else null
 
           switch scheme.name
+            when 'Trellis Chart'
+              #@trellis.updateDataPoints()
+              @trellis.drawTrellis(width,height,data,_graph,gdata,container)
             when 'Bar Graph'
               @bar.drawBar(width,height,data,_graph,gdata)
             when 'Bubble Chart'
