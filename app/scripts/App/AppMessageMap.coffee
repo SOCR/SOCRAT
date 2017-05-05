@@ -14,19 +14,43 @@ module.exports = class AppMessageMap
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
-        'app_analysis_charts'
+        'app_analysis_charts',
+        'app_analysis_reliability'
       ]
-      msgTo: 'infer all types'
+      msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
     ,
-      msgFrom: 'all types inferred'
+      msgFrom: 'type.inferAll_res'
       scopeFrom: ['app_analysis_datalib']
       msgTo: 'data types inferred'
       scopeTo: [
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
-        'app_analysis_charts'
+        'app_analysis_charts',
+        'app_analysis_reliability'
+      ]
+    ,
+      msgFrom: 'data summary'
+      scopeFrom: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts',
+        'app_analysis_reliability'
+      ]
+      msgTo: 'summary'
+      scopeTo: ['app_analysis_datalib']
+    ,
+      msgFrom: 'summary_res'
+      scopeFrom: ['app_analysis_datalib']
+      msgTo: 'data summary result'
+      scopeTo: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts',
+        'app_analysis_reliability'
       ]
     #    ,
     #      msgFrom: 'upload csv'
@@ -49,7 +73,8 @@ module.exports = class AppMessageMap
       scopeFrom: ['app_analysis_cluster',
         'app_analysis_getData',
         'app_analysis_dataWrangler',
-        'app_analysis_charts'
+        'app_analysis_charts',
+        'app_analysis_reliability'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -60,7 +85,8 @@ module.exports = class AppMessageMap
       scopeTo: ['app_analysis_cluster',
         'app_analysis_getData',
         'app_analysis_dataWrangler',
-        'app_analysis_charts'
+        'app_analysis_charts',
+        'app_analysis_reliability'
       ]
     ]
 

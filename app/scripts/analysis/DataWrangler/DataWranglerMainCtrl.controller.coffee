@@ -2,7 +2,7 @@
 
 require 'jquery-highlight'
 require 'datatables.net'
-require 'datatables.net-dt/css/jquery.datatables.css'
+require 'datatables.net-dt/css/jquery.dataTables.css'
 require 'data-wrangler/lib/hoverIntent/hoverIntent.js'
 require 'data-wrangler/style/layout.css'
 require 'data-wrangler/style/editor.css'

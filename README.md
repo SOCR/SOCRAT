@@ -2,41 +2,45 @@
 
 A scalable and highly flexible HTML5/JS platform to build and run in-browser applications for interactive data analysis and visualization.
 
-* Web site: http://socr.umich.edu
-* Issue-tracking and project management: https://socredu.atlassian.net/browse/SOCRFW
+* [Web site](http://socr.umich.edu)
+* [Issue-tracking and project management](https://github.com/SOCR/SOCRAT-issues)
+* [Contribution guidelines](https://github.com/SOCR/SOCRAT/blob/master/CONTRIBUTE.md)
+* **Note: project is under active development, unit tests currently are not passing, bugs are possible**
 
 [![Build Status](https://travis-ci.org/SOCR/SOCRAT.svg?branch=master)](https://travis-ci.org/SOCR/SOCRAT)
 [![Dependency Status](https://gemnasium.com/SOCR/SOCRAT.png?branch=master)](https://gemnasium.com/SOCR/SOCRAT)
 
 Installation
 ------------
-In case you wish to create your own module or contribute to the project, follow these steps to setup your enviroment.
+In case you wish to create your own module or contribute to the project, follow these steps to setup your environment.
 
-First, install [nodejs](http://nodejs.org/) if you haven't. npm is the package manager for Node.js and comes bundled with it.
+First, install [Node.js](http://nodejs.org/) if you haven't yet. `npm` is the package manager for `Node.js` and comes bundled with it.
 
-Install Webpack,
+Install Webpack:
 
-    $> npm install webpack -g
+    $> sudo npm install webpack -g
 
-Clone the repository.
+Clone the repository:
 
-    $> git clone https://github.com/SOCR/SOCRAT.git 
-
-Now, lets install all the dependencies. Go into the root folder,
-
+    $> git clone https://github.com/SOCR/SOCRAT.git
     $> cd SOCRAT
+    
+If you're interested in latest changes or want to contribute to the project, switch to the `dev` branch:
+
+    $> git checkout dev
+    $> git pull
+
+Now, lets install all the dependencies:
+
     $> npm install
 
 This will install all the dependencies mentioned in package.json files.
 
-Start the server and see the application running at localhost:8080:
+Start the development server and see the application running at `localhost:8080`:
 
     $> npm run serve
     
-To start unit-test use. Status information will appear in the new browser window. Test runner will log into console.
-
-    $> npm run test
-
+See how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contrubition instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
 
 Motivation 
 --------------
@@ -60,9 +64,9 @@ We intend to create a toolbox which will serve users on all platforms. We are pr
 --------------
  [`Bootstrap`](http://getbootstrap.com/)
  [`jQuery`](https://jquery.com/)
- [`AngularJS`](http://angularjs.org)
+ [`AngularJS`](http://angularjs.org) with [`AngularUI`](https://angular-ui.github.io/)
  [`D3.js`](http://d3js.org)
- [`Handsontable`](http://handsontable.com/)
+ [`Handsontable`](http://handsontable.com/) with [`ngHandsontable`](https://handsontable.github.io/ngHandsontable/)
  [`jStat`](https://jstat.github.io/)
  [`Wrangler`](http://vis.stanford.edu/wrangler/)
 

@@ -104,15 +104,16 @@ module.exports = class ChartsNormalChart extends BaseService
     gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
 
+    padding = 50
     xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
-    yScale = d3.scale.linear().range([height, 0]).domain([bottomBound, topBound])
+    yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
 
     xAxis = d3.svg.axis().ticks(20)
     .scale(xScale)
 
     yAxis = d3.svg.axis()
     .scale(yScale)
-    .ticks(10)
+    .ticks(12)
     .tickPadding(0)
     .orient("right")
 
@@ -125,15 +126,15 @@ module.exports = class ChartsNormalChart extends BaseService
     .attr('d', lineGen(gaussianCurveData))
     .data([gaussianCurveData])
     .attr('stroke', 'black')
-    .attr('stroke-width', 2)
+    .attr('stroke-width', 0)
     .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
     .on('mouseout', (d) -> hideToolTip())
     .attr('fill', "aquamarine")
-    #      .style("opacity", .2)
+
 
     _graph.append("svg:g")
     .attr("class", "x axis")
-    .attr("transform", "translate(0," + (height) + ")")
+    .attr("transform", "translate(0," + (height - padding) + ")")
     .call(xAxis)
 
     _graph.append("svg:g")
@@ -141,20 +142,30 @@ module.exports = class ChartsNormalChart extends BaseService
     .attr("transform", "translate(" + (xScale(mean)) + ",0)")
     .call(yAxis)
 
+    # make x y axis thin
+    _graph.selectAll('.x.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    _graph.selectAll('.y.axis path')
+    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+
+
     _graph.append("svg:g")
     .append("text")      #text label for the x axis
     .attr("x", width/2 + width/4  )
     .attr("y", 20  )
     .style("text-anchor", "middle")
     .style("fill", "white")
-  #      .text(seriesName)
 
-  # Weighted Values
-  #      _graph.selectAll("circle")
-  #      .data(getWeightedValues(sample)).enter().append("circle")
-  #      #text label for the x axis
-  #      .attr("cx", (d) -> xScale(d.value))
-  #      .attr("cy", height)
-  #      .attr("r", (d) -> radiusCoef)
-  #      .style("fill","red")
-  #      .style("opacity",.5)
+    # rotate text on x axis
+    _graph.selectAll('.x.axis text')
+    .attr('transform', (d) ->
+       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+    .style('font-size', '16px')
+
+    # make y axis ticks not intersect with x-axis, ticks on x and y axes
+    # appear to be the same size
+    _graph.selectAll('.y.axis text')
+    .attr('transform', (d) ->
+       'translate(' + (this.getBBox().height*-2-5) + ',' + (this.getBBox().height-30) + ')')
+    .style('font-size', '15.7px')
+
