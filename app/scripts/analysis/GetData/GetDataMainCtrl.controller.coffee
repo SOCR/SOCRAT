@@ -55,10 +55,12 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @socrdataset = @socrDatasets[0]
     
     @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
-    @colStats = []
-    @colStatsHTML = []
+    
+    @colStats     = []
+    @colHistograms = []
+    @colStatsTooltipHTML = []
 
-    @colStatsRenderer = (index) =>
+    @colStatsToolTipHTMLGenerator = (index) =>
 
       stats = @colStats[index] || {min:0,max:0,mean:0,sd:0}
       mean = if stats.mean? then stats.mean.toFixed(2) else 0
@@ -66,11 +68,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       markup = """<span>Min:#{stats.min},Max:#{stats.max},Mean:#{mean},SD:#{sd}</span>"""
       @$sce.trustAsHtml markup
 
-
     @customHeaderRenderer = (colIndex, th) =>
       if @colHeadersLabels[colIndex]? && colIndex!=false
         
-        @colStatsHTML[colIndex] = @colStatsRenderer colIndex
+        @colStatsTooltipHTML[colIndex] = @colStatsToolTipHTMLGenerator colIndex
 
         # Tooltip position "right" for the first 2 columns
         tooltipPos = if colIndex < 2 then "right" else "left"
@@ -79,7 +80,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         elem = th.querySelector('div')
         elem.parentNode.removeChild(elem)
         angular.element(th).append @$compile(
-          "<div class='relative' uib-tooltip-html='mainArea.colStatsHTML["+colIndex+"]' tooltip-trigger='mouseenter' tooltip-placement='"+tooltipPos+"'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"\n\n</span></div>"
+          "<div class='relative' uib-tooltip-html='mainArea.colStatsTooltipHTML["+colIndex+"]' tooltip-trigger='mouseenter' tooltip-placement='"+tooltipPos+"'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"\n\n</span></div>"
         )(@$scope)
         ## Code to place tooltip on <span> inside <th>
         # angular.element(th.querySelector('span')).append @$compile('<span uib-tooltip="Tesasdajkdasjkdbasjkdbasjkbdaskjdbt" tooltip-trigger="mouseenter" tooltip-placement="right">'+ @colHeadersLabels[colIndex]+'</span>')(@$rootScope)
@@ -121,16 +122,18 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           @$timeout =>
             @colHeadersLabels = obj.dataFrame.header
             @tableData = obj.dataFrame.data
+
             newDataFrame = @dataAdaptor.transformArraysToObject obj.dataFrame
-            # This transformation should be happening in dataAdaptor.toDataFrame
-            @dataService.inferTypes newDataFrame
-            .then (types) =>
-              @dataService.enforceTypes newDataFrame,types.dataFrame.data
-            .then (DF) =>
-              @dataService.getSummary DF
+            newDataFrame = @dataAdaptor.enforceTypes newDataFrame
+            @dataService.getSummary newDataFrame
             .then (resp)=>
               if resp? and resp.dataFrame? and resp.dataFrame.data?
                 @colStats = resp.dataFrame.data
+
+            for k,v of newDataFrame.types
+              colValues = @dataAdaptor.getColValues newDataFrame,k
+              @colHistograms[ newDataFrame.header.indexOf(k) ] = colValues.data
+
         else
           # TODO: add processing for nested object
           console.log 'NESTED DATASET'
@@ -189,6 +192,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   getRandomInt: (min, max) ->
     Math.floor(Math.random() * (max - min)) + min
 
+  ###
+    @return {Promise}
+  ###
   saveTableData: () =>
     # check if table is empty
     if @tableData?
@@ -196,20 +202,33 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-        dataFrame = @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
-        @checkDataSize dataFrame.nRows, dataFrame.nCols
-        @inputCache.setData dataFrame
+        @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
+        .then( (dataFrame)=>
+          @checkDataSize dataFrame.nRows, dataFrame.nCols
+          @inputCache.setData dataFrame
 
-        newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
-        # This transformation should be happening in dataAdaptor.toDataFrame
-        @dataService.inferTypes newDataFrame
-        .then (types) =>
-          @dataService.enforceTypes newDataFrame,types.dataFrame.data
-        .then (DF) =>
-          @dataService.getSummary DF
-        .then (resp)=>
-          if resp? and resp.dataFrame? and resp.dataFrame.data?
-            @colStats = resp.dataFrame.data
+          # @todo: This transformation should be happening in dataAdaptor.toDataFrame
+          # need to check if handsontable can render arrayOfObjects
+          newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
+          newDataFrame = @dataAdaptor.enforceTypes newDataFrame
+          @dataService.getSummary newDataFrame
+          .then (resp)=>
+            if resp? and resp.dataFrame? and resp.dataFrame.data?
+              @colStats = resp.dataFrame.data
+
+          for k,v of newDataFrame.types
+            colValues = @dataAdaptor.getColValues newDataFrame,k
+            @colHistograms[ newDataFrame.header.indexOf(k) ] = colValues.data
+            
+            ## Code to get histogram values from Datalib
+            # ((newDataFrame,k)=>
+            #   @dataService.getHistogram @dataAdaptor.getColValues newDataFrame,k
+            #   .then( (res)=>
+            #     @colHistograms[ newDataFrame.header.indexOf(k)] = res.dataFrame.data
+            #     console.log "HISTOGRAM VALUES",@colHistograms
+            #   )
+            # )(newDataFrame, k)
+        )
         
         
   ###
@@ -220,14 +239,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     if not @dataAdaptor.isValidDataFrame dataFrame
       throw Error "invalid data frame"
     
+    # @todo: This transformation should be happening in dataAdaptor.toDataFrame
+    # need to check if handsontable can render arrayOfObjects
     newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
-
-    # This transformation should be happening in dataAdaptor.toDataFrame
-    @dataService.inferTypes newDataFrame
-    .then (types) =>
-      @dataService.enforceTypes newDataFrame,types.dataFrame.data
-    .then (DF) =>
-      @dataService.getSummary DF
+    newDataFrame = @dataAdaptor.enforceTypes newDataFrame
+    @dataService.getSummary newDataFrame
     .then (resp) =>
       if resp? and resp.dataFrame? and resp.dataFrame.data?
         @colStats = resp.dataFrame.data
@@ -279,8 +295,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       (httpResponseObject) =>
         if httpResponseObject.status == 200
           deferred.resolve httpResponseObject.data
-          dataFrame = @dataAdaptor.toDataFrame httpResponseObject.data[1]
-          @passReceivedData dataFrame
+          @dataAdaptor.toDataFrame httpResponseObject.data[1]
+          .then( (dataFrame)=>
+            @passReceivedData dataFrame
+          )
         else
           deferred.reject "http request failed!"
       )
@@ -300,9 +318,11 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
           headers = dataResults.shift()
-          dataFrame = @dataAdaptor.toDataFrame dataResults, headers
-
-          @passReceivedData dataFrame
+          
+          @dataAdaptor.toDataFrame dataResults, headers
+          .then( (dataFrame)=>
+            @passReceivedData dataFrame
+          )
         else
           console.log 'GETDATA: request failed'
 
