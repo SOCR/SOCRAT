@@ -36,7 +36,7 @@ div(ng-controller='GetDataMainCtrl as mainArea')
     div.form-group
       label(for="getDataJsonUrlInput").sr-only Enter URL
       div.btn-group.btn-group-justified(role="group")
-        input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="mainArea.jsonUrl").form-control
+        input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
         span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
     button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
 

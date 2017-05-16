@@ -15,16 +15,14 @@ module.exports = class GetDataDataAdaptor extends BaseService
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
-  typeIsArray = Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'
-
+  typeIsArray: Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'
 
   haveSameKeys: (obj1, obj2) ->
     if Object.keys(obj1).length is Object.keys(obj2).length
       res = (k of obj2 for k of obj1)
-      res.every (el) -> el is true
+      res.every (e) -> e is true
     else
       false
-      
 
   isNumStringArray: (arr) ->
     console.log arr
@@ -57,7 +55,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
   jsonToFlatTable: (data) ->
     # check if JSON contains "flat data" - 2d array
     if data? and typeof data is 'object'
-      if typeIsArray data
+      if @typeIsArray data
         # non-empty array
         if not (data.every (el) -> typeof el is 'object')
           # 1d array of strings or numbers
@@ -65,7 +63,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
             data
         else
           # array of arrays or objects
-          if (data.every (el) -> typeIsArray el)
+          if (data.every (el) -> @typeIsArray el)
             # array of arrays
             if (data.every (col) -> col.every (el) -> typeof el in ['number', 'string'])
               # array of arrays of (numbers or strings)
@@ -76,7 +74,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
           else
             # array of arbitrary objects
             # http://stackoverflow.com/a/21266395/1237809
-            if (not not data.reduce((prev, next) =>
+            if (not not data.reduce((prev, next) ->
               # check if objects have same keys
               if @haveSameKeys prev, next
                 prevValues = Object.keys(prev).map (k) -> prev[k]
@@ -108,7 +106,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
           data = [ks, vals]
         else if (vals.every (el) -> typeof el is 'object')
           # object of arrays or objects
-          if (vals.every (row) -> typeIsArray row) and
+          if (vals.every (row) -> @typeIsArray row) and
           (vals.every (row) -> row.every (el) -> typeof el in ['number', 'string'])
             # object of arrays
             vals = (t[i] for t in vals for i of vals)  # transpose
@@ -116,7 +114,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
             vals
           else
             # object of arbitrary objects
-          if (not not vals.reduce((prev, next) =>
+          if (not not vals.reduce((prev, next) ->
             # check if objects have same keys
             if @haveSameKeys prev, next
               prevValues = Object.keys(prev).map (k) -> prev[k]
