@@ -206,7 +206,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           console.log 'GETDATA: request failed'
 
   getJsonByUrl: (type) ->
-    console.log 'before d3.json'
     @d3.json @jsonUrl,
       (dataResults) =>
         # check that data object is not empty
