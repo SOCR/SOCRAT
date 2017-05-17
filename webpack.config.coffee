@@ -1,7 +1,8 @@
 webpack = require 'webpack'
+path = require 'path'
 production = process.env.NODE_ENV is 'production'
 
-appRoot = "#{__dirname}/app"
+appRoot = path.resolve "#{__dirname}", "app"
 
 module.exports =
   cache: true
@@ -10,11 +11,11 @@ module.exports =
 
   # The entry point
   entry: [
-    "#{appRoot}/app.coffee"
+    path.resolve "#{appRoot}", "app.coffee"
   ]
 
   output:
-    path: './_build'
+    path: path.resolve ".", "_build"
     filename: 'socrat.js'
     chunkFilename: "[id].socrat.js"
 
