@@ -1,223 +1,255 @@
 'use strict'
 
-BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
-require 'handsontable/dist/handsontable.full.css'
-require 'imports?Handsontable=handsontable/dist/handsontable.full.js!ng-handsontable/dist/ngHandsontable.js'
+BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class GetDataMainCtrl extends BaseCtrl
-  @inject '$scope',
-    '$state',
-    'app_analysis_getData_dataService',
-    'app_analysis_getData_showState',
-    'app_analysis_getData_jsonParser',
-    'app_analysis_getData_dataAdaptor',
-    'app_analysis_getData_inputCache',
-    '$timeout'
+###
+  @name: GetDataDataAdaptor
+  @desc: Reformats data from input table format to the universal DataFrame object
+###
+
+module.exports = class GetDataDataAdaptor extends BaseService
+  @inject 'app_analysis_getData_msgService','app_analysis_getData_dataService'
 
   initialize: ->
-    @d3 = require 'd3'
-    # rename deps
-    @dataManager = @app_analysis_getData_dataService
-    @showStateService = @app_analysis_getData_showState
-    @inputCache = @app_analysis_getData_inputCache
-    @jsonParser = @app_analysis_getData_jsonParser
-    @dataAdaptor = @app_analysis_getData_dataAdaptor
+    @eventManager = @app_analysis_getData_msgService
+    @dataService = @app_analysis_getData_dataService
+    @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
-    # get initial settings
-    @LARGE_DATA_SIZE = 20000 # number of cells in table
-    @dataLoadedFromDb = false
-    @largeData = false
-    @maxRows = 1000
-    @DATA_TYPES = @dataManager.getDataTypes()
-    @states = ['grid', 'socrData', 'worldBank', 'generate', 'jsonParse']
-    @defaultState = @states[0]
-    @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
-    @socrdataset = @socrDatasets[0]
-    @colHeaders = on
-    @file = null
-    @interface = {}
+  # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+  typeIsArray: Array.isArray || ( value ) -> return {}.toString.call(value) is '[object Array]'
 
-    # init table
-    @tableSettings =
-      rowHeaders: on
-      stretchH: "all"
-      contextMenu: on
-      onAfterChange: @saveTableData
-      onAfterCreateCol: @saveTableData
-      onAfterCreateRow: @saveTableData
-      onAfterRemoveCol: @saveTableData
-      onAfterRemoveRow: @saveTableData
+  haveSameKeys: (obj1, obj2) ->
+    if Object.keys(obj1).length is Object.keys(obj2).length
+      res = (k of obj2 for k of obj1)
+      res.every (e) -> e is true
+    else
+      false
 
-    try
-      @stateService = @showStateService.create @states, @
-      console.log @stateService
-    catch e
-      console.log e.message
+  isNumStringArray: (arr) ->
+    arr.every (el) -> typeof el in ['number', 'string']
 
-    @dataManager.getData().then (obj) =>
-      if obj.dataFrame and obj.dataFrame.dataType?
-        if obj.dataFrame.dataType is @DATA_TYPES.FLAT
-          @dataLoadedFromDb = true
-          @dataType = obj.dataFrame.dataType
-          @$timeout =>
-            @colHeaders = obj.dataFrame.header
-            @tableData = obj.dataFrame.data
-        else
-          # TODO: add processing for nested object
-          console.log 'NESTED DATASET'
-      else
-        # initialize default state as spreadsheet view
-        # handsontable automatically binds to @tableData
-        @tableData = [
-          ['Copy', 'paste', 'your', 'data', 'here']
-        ]
-        # manually create col header since ht doesn't bind default value to scope
-        @colHeaders = ['A', 'B', 'C', 'D', 'E']
-        @stateService.set @defaultState
 
-    # adding listeners
-    @$scope.$on 'getData:updateShowState', (obj, data) =>
-      @stateService.set data
-      console.log @showState
-      # all data are flat, except for arbitrary JSON files
-      @dataType = @DATA_TYPES.FLAT if data in @states.filter (x) -> x isnt 'jsonParse'
+  isValidDataFrame: (dataFrame) ->
+    if dataFrame? and dataFrame.header? and dataFrame.nRows? and dataFrame.nCols? and Array.isArray(dataFrame.data) and dataFrame.purpose?
+      true
+    else
+      false
+  
+  # accepts handsontable row-oriented table data as input and returns dataFrame
+  ###
+    @param {Array} tableData - array of objects
+    @return {Object} DataFrame
+  ###
+  toDataFrame: (tableData, header=[]) ->
+    if not Array.isArray(tableData) or tableData.length == 0
+      throw new Error('invalid dataFrame passed.')
+    # by default data types are not known at this step
+    #  and should be defined at Clean Data step
+    #colTypes = ('symbolic' for [1...tableData.nCols])
+        
+    if Object.prototype.toString.call(tableData[0]) == "[object Object]"
+      header = @getHeaders tableData[0]
+      tableData = @extractData tableData
+      
+    if header.length is 0
+      for i in [0...tableData[0]-1]
+        header.push(i)
 
-    @$scope.$on '$viewContentLoaded', ->
-      console.log 'get data main div loaded'
-
-    @$scope.$watch( =>
-      @$scope.mainArea.file
-    , (file) =>
-      if file?
-        dataResults = @d3.csv.parseRows file
-        data = @dataAdaptor.toDataFrame dataResults
-        @passReceivedData data
+    #generating types for all columns
+    tempDF =
+        header: header
+        nRows: tableData.length
+        nCols: header.length
+        data: tableData
+        dataType: @DATA_TYPES.FLAT
+        purpose: 'json' 
+    newDataFrame = @transformArraysToObject tempDF
+    @dataService.inferTypes newDataFrame
+    .then( (typesObj) =>
+      dataFrame =
+        header: header
+        nRows: tableData.length
+        nCols: header.length
+        data: tableData
+        dataType: @DATA_TYPES.FLAT
+        types: typesObj.dataFrame.data
+        purpose: 'json'  
     )
 
-  ## Other instance methods
+  ###
+    @param dataFrame {Object}
+    @param colName {String}
+    @return dataFrame {Object}
+  ###
+  getColValues : (dataFrame, colName) ->
+    result = []
+    if @isValidDataFrame(dataFrame)? and colName?
+      dataFrame.data.forEach (row)->
+        result.push row[colName]
 
-  checkDataSize: (nRows, nCols) ->
-    if nRows and nCols and nRows * nCols > @LARGE_DATA_SIZE
-        @largeData = true
-        @maxRows = Math.floor(@LARGE_DATA_SIZE / @colHeaders.length) - 1
-    else
-        @largeData = false
-        @maxRows = 1000
+      result
+    return Object.assign {}, dataFrame, {data:result}
 
-  subsampleData: () ->
-    subsample = (@getRandomInt(0, @tableData.length - 1) for i in [0..@maxRows])
-    data = (@tableData[idx] for idx in subsample.sort((a, b) => (a - b)))
-    @$timeout =>
-      @tableData = data
-      @largeData = false
-      @saveTableData()
+  getHeaders : (data)->
+    _col = []
+    tree = []
 
-  getRandomInt: (min, max) ->
-    Math.floor(Math.random() * (max - min)) + min
-
-  saveTableData: () =>
-    # check if table is empty
-    if @tableData?
-      # don't save data if just loaded
-      if @dataLoadedFromDb
-        @dataLoadedFromDb = false
-      else
-        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
-        @checkDataSize data.nRows, data.nCols
-        @inputCache.setData data
-
-  passReceivedData: (data) ->
-    if data.dataType is @DATA_TYPES.NESTED
-      @dataType = @DATA_TYPES.NESTED
-      @checkDataSize data.nRows, data.nCols
-      # save to db
-      @inputCache.setData data
-    else
-      # default data type is 2d 'flat' table
-      data.dataType = @DATA_TYPES.FLAT
-      @dataType = @DATA_TYPES.FLAT
-
-      # update table
-      @$timeout =>
-        @colHeaders = data.header
-        @tableData = data.data
-        console.log 'ht updated'
-
-  # available SOCR Datasets
-  socrDatasets: [
-    id: 'IRIS'
-    name: 'Iris Flower Dataset'
-  ,
-    id: 'KNEE_PAIN'
-    name: 'Simulated SOCR Knee Pain Centroid Location Data'
-  ,
-    id: 'CURVEDNESS_AD'
-    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
-  ,
-    id: 'PCV_SPECIES'
-    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
-  ,
-    id: 'TURKIYE_STUDENT_EVAL'
-    name: 'Turkiye Student Evaluation Data Set'
-  ]
-
-  getWB: ->
-    # default value
-    if @size is undefined
-      @size = 100
-    # default option
-    if @option is undefined
-      @option = '4.2_BASIC.EDU.SPENDING'
-
-    url = 'http://api.worldbank.org/countries/indicators/' + @option +
-        '?per_page=' + @size + '&date=2011:2011&format=jsonp' +
-        '&prefix=JSON_CALLBACK'
-
-    @jsonParser.parse
-      url: url
-      type: 'worldBank'
-    .then(
-      (data) =>
-        console.log 'resolved'
-        @passReceivedData data
-      ,
-      (msg) ->
-        console.log 'rejected:' + msg
-      )
-
-  getSocrData: ->
-    switch @socrdataset.id
-      when 'IRIS' then url = 'datasets/iris.csv'
-      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
-      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
-      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
-      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
-      # default option
-      else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
-
-    @d3.text url,
-      (dataResults) =>
-        if dataResults?.length > 0
-          # parse to unnamed array
-          dataResults = @d3.csv.parseRows dataResults
-          data = @dataAdaptor.toDataFrame dataResults
-          @passReceivedData data
+    count = (obj) ->
+      try
+        if typeof obj is 'object' and obj isnt null
+          for key in Object.keys obj
+            tree.push key
+            count obj[key]
+            tree.pop()
         else
-          console.log 'GETDATA: request failed'
+          _col.push tree.join('.')
+        return _col
+      catch e
+        console.warn e.message
+      return {}
 
-  getJsonByUrl: (type) ->
-    @d3.json @jsonUrl,
-      (dataResults) =>
-        # check that data object is not empty
-        if dataResults? and Object.keys(dataResults)?.length > 0
-          res = @dataAdaptor.jsonToFlatTable dataResults
-          # check if JSON contains "flat data" - 2d array
-          if res
-            _data = @dataAdaptor.toDataFrame res
+    # generate titles and references
+    count data
+    return _col
+  
+  # @TODO : merge this function with jsonToFlatTable.
+  extractData: (data)->
+    
+    if not Array.isArray data
+      throw new Error "not a valid array. Cannot extract data"
+
+    parsedData = []
+    headers = @getHeaders data[0]
+    
+    getValue = (path,obj) ->
+      if path.split('.').length == 1
+        if ( obj[path] == null or obj[path] == undefined ) 
+          return null 
+        else 
+          return obj[path]
+      pathTokens = path.split('.')
+      newObj = obj[pathTokens.shift()]
+      getValue pathTokens.join(), newObj
+
+    data.forEach (el) ->
+      result = []
+      headers.forEach (columnName)->
+        result.push getValue columnName, el
+      parsedData.push result
+
+    parsedData
+
+  ###
+    @param {Object} dataFrame
+  ###
+  toTableData: (dataFrame)->
+
+    # TODO: implement for poping up data when coming back from analysis tabs
+
+  # tries to convert JSON to 2d flat data table,
+  #  assumes JSON object is not empty - has values,
+  #  returns converted data or false if not possible
+  jsonToFlatTable: (data) ->
+    # check if JSON contains "flat data" - 2d array
+    if data? and typeof data is 'object'
+      if @typeIsArray data
+        # non-empty array
+        if not (data.every (el) -> typeof el is 'object')
+          # 1d array of strings or numbers
+          if (data.every (el) -> typeof el in ['number', 'string'])
+            data
+        else
+          # array of arrays or objects
+          if (data.every (el) -> Array.isArray el)
+            # array of arrays
+            if (data.every (col) -> col.every (el) -> typeof el in ['number', 'string'])
+              # array of arrays of (numbers or strings)
+              data
+            else
+              # non-string values
+              false
           else
-            _data =
-              data: dataResults
-              dataType: @DATA_TYPES.NESTED
-          @passReceivedData _data
-        else
-          console.log 'GETDATA: request failed'
+            # array of arbitrary objects
+            # http://stackoverflow.com/a/21266395/1237809
+            if (not not data.reduce((prev, next) ->
+              # check if objects have same keys
+              if @haveSameKeys prev, next
+                prevValues = Object.keys(prev).map (k) -> prev[k]
+                nextValues = Object.keys(prev).map (k) -> next[k]
+                # check that values are numeric/string
+                if ((prevValues.length is nextValues.length) and
+                  (@isNumStringArray prevValues) and
+                  (@isNumStringArray nextValues)
+                )
+                  next
+                else NaN
+              else NaN
+            ))
+              # array of objects with the same keys - make them columns
+              cols = Object.keys data[0]
+              # reorder values according to keys order
+              data = (cols.map((col) -> row[col]) for row in data)
+              # insert keys as a header
+              data.splice 0, 0, cols
+              data
+            else
+              false
+      else
+        # arbitrary object
+        ks = Object.keys(data)
+        vals = ks.map (k) -> data[k]
+        if (vals.every (el) -> typeof el in ['number', 'string'])
+          # 1d object
+          data = [ks, vals]
+        else if (vals.every (el) -> typeof el is 'object')
+          # object of arrays or objects
+          if (vals.every (row) -> Array.isArray row) and
+          (vals.every (row) -> row.every (el) -> typeof el in ['number', 'string'])
+            # object of arrays
+            vals = (t[i] for t in vals for i of vals)  # transpose
+            vals.splice 0, 0, ks  # add header
+            vals
+          else
+            # object of arbitrary objects
+          if (not not vals.reduce((prev, next) ->
+            # check if objects have same keys
+            if @haveSameKeys prev, next
+              prevValues = Object.keys(prev).map (k) -> prev[k]
+              nextValues = Object.keys(prev).map (k) -> next[k]
+              # check that values are
+              if ((prevValues.length is nextValues.length) and
+                (@isNumStringArray prevValues) and
+                (@isNumStringArray nextValues)
+              )
+                next
+              else NaN
+            else NaN
+          ))
+            subKs = Object.keys vals[0]
+            data = ([sk].concat(vals.map((val)-> val[sk])) for sk in subKs)
+            # insert keys as a header
+            data.splice 0, 0, [""].concat ks
+            data
+        else false
+
+  enforceTypes: (dataFrame, types=null) ->
+    types = types || dataFrame.types
+    if types? and dataFrame?    
+      Object.keys(types).forEach (type)=>
+        dataFrame.data.forEach (dataRow)=>
+          switch types[type]
+            when "number" then dataRow[type] = parseFloat dataRow[type]
+
+            when "boolean" then dataRow[type] = ( dataRow[type] == 'true')
+    dataFrame
+
+  transformArraysToObject: (dataFrame) ->
+    # hacking the dataFrame to return Array of Objects
+    formattedData = dataFrame.data.map (entry)->
+      obj = {}
+      dataFrame.header.forEach (h,key)->
+        # stats.js lib for a key "indicator.id" checks obj["indicator"]["id"]
+        # to fix that, replacing all "." with "_"
+        obj[h.replace('.','_')] = entry[key]
+      obj 
+    return Object.assign {}, dataFrame, {data:formattedData}
