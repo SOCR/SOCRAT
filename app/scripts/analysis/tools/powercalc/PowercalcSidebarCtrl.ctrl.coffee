@@ -65,11 +65,13 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@deployed = false
 		$("#toggle_switch").bootstrapSwitch();
 
+		#if the switch is toggled, change mode
 		$("#toggle_switch").on 'switchChange.bootstrapSwitch', () =>
 			@deployed = !@deployed
-			@change_mode()
+			@msgService.broadcast 'powercalc:change_mode',
+			deploy: @deployed
 
-		@prepare()
+		@slidebar_initiate()
 
 
 		@dataService.getData().then (obj) =>
@@ -99,6 +101,67 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			chosenVar:@chosenVars
 			chosenlab:@chosenlab
 
+
+		# if data selected meets specified creteria, run the caculation
+	run: (data) ->
+		if (@selectedAlgorithm is 'Two-sample t test (general case)')
+			# if compare two different Variables, calculate sepaerately
+			if (@chosenLabel isnt "none") or (@chosenLabel isnt null)
+				# check num of chosenCol is one
+				if @chosenCols.length isnt 1
+					console.log(@chosenCols.length)
+					window.alert("Must one and only one Col")
+					return
+
+				# check num of chosenVar is two
+				if @chosenVars.length isnt 2
+					console.log(@chosenVars.length)
+					window.alert("Must two and only two Vars")
+					return
+
+				#extract index if col
+				index = data.header.indexOf(@chosenCols[0])
+
+				#check if index if -1
+				if index is -1
+					console.log -1
+					return 
+
+				#extract data from container to population 
+				@populations = {}
+				for var in @chosenVars
+					@populations[var] = []
+					for row in @container[var]
+						@populations[var].push(row[index])
+				console.log @populations
+
+			else
+
+				# check num of chosenCol is two
+				if @chosenCols.length isnt 2
+					console.log(@chosenCols.length)
+					window.alert("Must one and only two Col")
+					return
+
+				# extract data from data to population
+				index1 = data.header.indexOf(@chosenCols[0])
+				index2 = data.header.indexOf(@chosenCols[1])
+				@populations = {}
+				@populations[@chosenCols[0]] = []
+				@populations[@chosenCols[1]] = []
+				for row in data.data
+					@populations[@chosenCols[0]].push(row[index1])
+					@populations[@chosenCols[1]].push(row[index2])
+				console.log @populations
+
+			@msgService.broadcast 'powercalc: TwoTGUI_data',
+				populations:@populations
+				chosenCol:@chosenCols
+				chosenVar:@chosenVars
+				chosenlab:@chosenlab
+
+		
+
 	change_mode: () -> 
 		#console.log "mode changed"
 		@msgService.broadcast 'powercalc:change_mode',
@@ -111,101 +174,24 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
 
-	calculateN2: (data) ->
-		@populations = {}
-		for col in @chosenCols
-			sum = 0
-			index = data.header.indexOf(col)
-			if !(index is -1)
-				loc_data = []
-				for row in data.data
-					loc_data.push(parseFloat(row[index]))
-					if @populations[col] is undefined
-						sum = sum + parseFloat(row[index])
-						@populations[col] = {"counter":0, "mean":0, "sigma":0}
-						@populations[col]["counter"] = 1
-					else 
-						sum = sum + parseFloat(row[index])
-						@populations[col]["counter"] = @populations[col]["counter"] + 1
-			mean = sum / @populations[col]["counter"]
-			@populations[col]["sum"] = sum
-			@populations[col]["mean"] = mean
-			@populations[col]["data"] = loc_data
-			@calculate_sigma(loc_data, col, index)
-		console.log(@populations)
-		@drive_data()
-
-	calculateN: (data) ->
-		@populations = {}
-		if (@chosenLabel is "none") or (@chosenLabel is null)
-			return @calculateN2(data)
-		for col in @chosenCols
-			sum = 0
-			index = data.header.indexOf(col)
-			if !(index is -1)
-				# console.log @container[0]
-				for item in Object.keys(@container)
-					loc_data = []
-					@populations[item]={"counter":0, "data":[], "sum":0, "mean":0, "variance":0, "sigma":0}
-					@populations[item]["counter"] = @container[item]['counter']
-					for row in @container[item]["data"]
-						loc_data.push(parseFloat(row[index]))
-						if @populations[item] is undefined
-							sum = sum + parseFloat(row[index])
-						else 
-							sum = sum + parseFloat(row[index])
-					mean = sum / @populations[item]["counter"]
-					@populations[item]["sum"] = sum
-					@populations[item]["mean"] = mean
-					@populations[item]["data"] = loc_data
-					@calculate_sigma(loc_data, item, index)
-		console.log(@populations)
-		@drive_data()
-
-	calculate: (data) ->
-		@container = {}
-		for col in @chosenVars
-			index = data.header.indexOf(@chosenLabel)
-			@container[col] = {"counter":0}
-			if !(index is -1)
-				loc_data = []
-				for row in data.data
-					loc_data.push(row)
-					if (row[index] is col)
-						@container[col]["counter"] += 1
-			@container[col]["data"] = loc_data
-		# console.log(@container)
-
-	calculate_sigma: (data, col, index) ->
-		sum = 0
-		for row in data
-			sum = sum + Math.pow(parseFloat(row) - @populations[col]["mean"], 2)
-		@populations[col]["variance"] = sum / @populations[col]["counter"]
-		@populations[col]["sigma"] = Math.sqrt(sum / @populations[col]["counter"])
-		return 
 
 	updateVar: (data) ->
 		index = data.header.indexOf(@chosenLabel)
 		@vars = []
-		for row in data.data
-			if row[index] not in @vars
-				@vars.push(row[index])
-		return
-			
+		@container = {}
+		if index isnt -1
+			for row in data.data
 
-	updateDataPoints: (data=null, means=null, labels=null) ->
-		if data
-			if @labelCol
-				@uniqueLabels =
-					num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
-					labelCol: @labelCol
-			xCol = data.header.indexOf @xCol
-			yCol = data.header.indexOf @yCol
-			data = ([row[xCol], row[yCol]] for row in data.data)
-		@msgService.broadcast 'powercalc:updateDataPoints',
-			dataPoints: data
-			means: means
-			labels: labels
+				if row[index] not in @container
+					@container[row[index]] = []
+
+				if row[index] not in @vars
+					@vars.push(row[index])
+
+				@container[row[index]].push(row)
+
+		console.log @container
+			
 
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
@@ -213,9 +199,11 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@df = data
 		@dataService.inferDataTypes data, (resp) =>
 			if resp? and resp.dataFrame? and resp.dataFrame.data?
+
 				#update data types
 				for type, idx in @df.types
 					@df.types[idx] = resp.dataFrame.data[idx]
+
 				# update columns
 				@categoricalCols = []
 				@labelCol = ["none"]
@@ -226,11 +214,12 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 					else if header in ["string"]
 						@labelCol.push(@df.header[id])
 					id += 1
-				@updateDataPoints(@df)
-			@msgService.broadcast 'powercalc:updateDataPoints',
-				dataPoints: @df
+			# @updateDataPoints(@df)
 
-	prepare: () ->
+			# @msgService.broadcast 'powercalc:updateDataPoints',
+			# 	dataPoints: @df
+
+	slidebar_initiate: () ->
 		$("#alphauii").slider(
 			min: 0.001
 			max: 0.200
@@ -244,9 +233,5 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				@msgService.broadcast 'powercalc:alpha',
 					alpha_in: @TwoTGUI_alpha
 				return
-				# @TwoTGUI_update()
-				# if @deployed
-				#   @TwoTGUI_graph()
-				# return
 		)
 		$("#alphai").val($("#alphauii").slider("value"));

@@ -25,6 +25,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @populations = {}
     @deployed = false
     @chosenCols = []
+    @comp_agents = []
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
 #      @showresults = off if @showresults is on
@@ -181,15 +182,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_graph()
       return
 
-    @$scope.$on 'powercalc:drive_data', (event, data)=>
+    @$scope.$on 'powercalc:TwoTGUI_data', (event, data)=>
       @populations = data.populations
       if (data.chosenCol.length is 2)
-        @chosenCols = data.chosenCol
+        @com_agents = data.chosenCol
       else 
-        @chosenCols = data.chosenVar
+        @con_agents = data.chosenVar
       @drive_data()
-      #console.log(@chosenCols)
-      #console.log("pops updated:", @populations)
 
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
@@ -204,12 +203,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     if (@selectedAlgorithm is "Two-sample t test (general case)")
       if (Object.keys(@populations).length is 2)
         @TwoTGUI_receive_data()
-        @TwoTGUI_graph();
-    if (@selectedAlgorithm is "CI for One Proportion")
-      if (@chosenCols.length isnt 1)
-        window.alert("Must choose one sample")
-      else
-        @cfap_submit("1", "n", @populations[@chosenCols[0]])
+        @TwoTGUI_graph()
 
 
 
@@ -1024,14 +1018,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimplePoissonGUI_help = !@SimplePoissonGUI_help
     return
 
-  #functions for TwoTGUI only
+  #functions for TwoTGUI only @comp_agents
   TwoTGUI_receive_data: () ->
-    console.log @chosenCols
-    @TwoTGUI_sigma1 = @populations[@chosenCols[0]]["sigma"]
-    @TwoTGUI_sigma2 = @populations[@chosenCols[1]]["sigma"]
-    @TwoTGUI_n1 = @populations[@chosenCols[0]]["counter"]
-    @TwoTGUI_n2 = @populations[@chosenCols[1]]["counter"]
-    @TwoTGUI_diff = 0.01 * (@TwoTGUI_sigma1 + @TwoTGUI_sigma2)
     $("#psigma1i").text("(" + @chosenCols[0] + "): ")
     $("#psigma2i").text("(" + @chosenCols[1] + "): ")
     $("#pn1i").text("N(" + @chosenCols[0] + "): ")
