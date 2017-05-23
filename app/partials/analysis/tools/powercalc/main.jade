@@ -464,7 +464,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         <br>
         p power: The probability of the critical region, given lambda and n.</p>
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
-    h5 2-sample independent t-test with power analysis
+    h5 Two-Sample Test with Power Analysis
     .row
       .col-md-7.col-xs-7
         div(id="Two_TGUI_graph" class="graph")
@@ -478,53 +478,46 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
+              p#pn1i(style='display:inline') N1:&nbsp;
+              input#TwoTGUI_n1_v(ng-disabled='mainArea.deployed' name='n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n1" ng-change="mainArea.TwoTGUI_changeSlider();")
+            div(style='display:inline')
+              #TwoTGUI_n1ui(hidden uib-tooltip="Manipulate this bar to adjust population1" tooltip-placement="top")
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p#pn2i(style='display:inline') N2:&nbsp;
+              input#TwoTGUI_n2_v(ng-disabled='mainArea.deployed' name='n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n2" ng-change="mainArea.TwoTGUI_changeSlider();")
+            div(style='display:inline')
+              #TwoTGUI_n2ui(hidden uib-tooltip="Manipulate this bar to adjust population2" tooltip-placement="top")
+        div
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') Mean; 
+              p#pmean1i(style='display:inline') 1:&nbsp;
+              input#TwoTGUI_sigma1_v(ng-disabled="true" name='sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+            div(style='display:inline')
+              #TwoTGUI_mean1ui
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') Mean; 
+              p#pmean2i(style='display:inline') 2:&nbsp;
+              input#TwoTGUI_sigma2_v(ng-disabled="true" name='sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;')
+            div(style='display:inline')
+              #TwoTGUI_mean2ui
+        div
+          div(style='margin-top:20px;')
+            div(style='display:inline')
               p(style='display:inline') &sigma; 
               p#psigma1i(style='display:inline') 1:&nbsp;
-              input#sigma1i(ng-disabled="true" name='sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+              input#TwoTGUI_sigma1_v(ng-disabled="true" name='sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
             div(style='display:inline')
-              #sigma1uii
+              #TwoTGUI_sigma1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
               p(style='display:inline') &sigma; 
               p#psigma2i(style='display:inline') 2:&nbsp;
-              input#sigma2i(ng-disabled="true" name='sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;')
+              input#TwoTGUI_sigma2_v(ng-disabled="true" name='sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;')
             div(style='display:inline')
-              #sigma2uii
-        div
-          div(style='margin-top:20px;')
-            div(style='display:inline')
-              p#pn1i(style='display:inline') N1:&nbsp;
-              input#n1i(ng-disabled='mainArea.deployed' name='n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n1" ng-change="mainArea.TwoTGUI_changeSlider();")
-            div(style='display:inline')
-              #n1uii(hidden uib-tooltip="Manipulate this bar to adjust population1" tooltip-placement="top")
-          div(style='margin-top:20px;')
-            div(style='display:inline')
-              p#pn2i(style='display:inline') N2:&nbsp;
-              input#n2i(ng-disabled='mainArea.deployed' name='n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-model="mainArea.TwoTGUI_n2" ng-change="mainArea.TwoTGUI_changeSlider();")
-            div(style='display:inline')
-              #n2uii(hidden uib-tooltip="Manipulate this bar to adjust population2" tooltip-placement="top")
-        div(style='width:100%; border-style:solid; border-width:0px;')
-          div(style='margin-top:20px;')
-            div(style='display:inline')
-              p(style='display:inline') Degree of Freedom: &nbsp;
-              input#dfi(ng-disabled="mainArea.deployed" name='df',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='48', ng-model="mainArea.TwoTGUI_df" ng-change="mainArea.TwoTGUI_changeSlider();")
-              div(style='display:inline')
-                #dfuii(hidden uib-tooltip="Manipulate this bar to adjust degree of freedom" tooltip-placement="top")
-          div(style='margin-top:20px;')
-            div(style='display:inline')
-              p(style='display:inline') True Difference of Means: &nbsp;
-              input#diffi(ng-disabled="true" name='diff',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.1')
-              div(style='display:inline')
-                #diffuii(hidden uib-tooltip="Manipulate this bar to adjust true difference of means" tooltip-placement="top")
-          h6 &nbsp;
-          div(style='margin-top:20px;')
-            div(style='display:inline')
-              p(style='display:inline') t-score: &nbsp;
-              input#tsci(ng-disabled="mainArea.deployed" name='tsc',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='1')
-          div(style='margin-top:20px;')
-            div(style='display:inline')
-              p(style='display:inline') p-value: &nbsp;
-              input#pvi(ng-disabled="mainArea.deployed" name='pv',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='1')
+              #TwoTGUI_sigma2ui
     div
       input#TwoTGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.TwoTGUI_show_help();')
       div(ng-show='mainArea.TwoTGUI_help == true;') 

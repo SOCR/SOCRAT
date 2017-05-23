@@ -4,8 +4,8 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class PowerCalc_TwoTGUI extends BaseService
     
-    initialize: ->
-        @distanceFromMean = 5
+  initialize: ->
+    @distanceFromMean = 5
 
 
   extract: (data, variable) ->
