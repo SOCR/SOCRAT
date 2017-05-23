@@ -69,7 +69,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		$("#toggle_switch").on 'switchChange.bootstrapSwitch', () =>
 			@deployed = !@deployed
 			@msgService.broadcast 'powercalc:change_mode',
-			deploy: @deployed
+				deploy: @deployed
 
 		@slidebar_initiate()
 
@@ -160,13 +160,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				chosenVar:@chosenVars
 				chosenlab:@chosenlab
 
-		
-
-	change_mode: () -> 
-		#console.log "mode changed"
-		@msgService.broadcast 'powercalc:change_mode',
-			deploy: @deployed
-
 
 	updateAlgControls: () ->
 		#update algorithm method in local and broadcast to main control
@@ -220,7 +213,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			# 	dataPoints: @df
 
 	slidebar_initiate: () ->
-		$("#alphauii").slider(
+		$("#TwoTGUI_alphaui").slider(
 			min: 0.001
 			max: 0.200
 			value: @TwoTGUI_alpha
@@ -229,9 +222,9 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			step: 0.001
 			slide: (event, ui) =>
 				@TwoTGUI_alpha = ui.value
-				$('#alphai').val ui.value
-				@msgService.broadcast 'powercalc:alpha',
+				$('#TwoTGUI_alpha_v').val ui.value
+				@msgService.broadcast 'powercalc:TwoTGUI_alpha',
 					alpha_in: @TwoTGUI_alpha
 				return
 		)
-		$("#alphai").val($("#alphauii").slider("value"));
+		#$("#alphai").val($("#alphauii").slider("value"));

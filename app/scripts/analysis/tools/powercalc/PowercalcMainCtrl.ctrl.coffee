@@ -183,18 +183,15 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     # @TwoTGUI_df=1;
     # @TwoTGUI_tscore = 0;
     # @TwoTGUI_pvalue = 0;
-    # @TwoTGUI_update();
+    @TwoTGUI_update()
     
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
 
-    @$scope.$on 'powercalc:alpha', (event, data)=>
+    @$scope.$on 'powercalc:TwoTGUI_alpha', (event, data)=>
       @TwoTGUI_alpha = data.alpha_in
       @TwoTGUI_update()
-      if @deployed
-        @TwoTGUI_graph()
-      return
 
     @$scope.$on 'powercalc:TwoTGUI_data', (event, data)=>
       @populations = data.populations
@@ -207,7 +204,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
       d3.select("#Two_TGUI_graph").select("svg").remove()
-      @TwoTGUI_click()
+      @TwoTGUI_update()
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
@@ -218,8 +215,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
       # check population length
       if (Object.keys(@populations).length isnt 2)
-        @TwoTGUI_receive_data()
-        @TwoTGUI_graph()
+        window.alert("main: population length")
+        return
+      @TwoTGUI_receive_data()
+      @TwoTGUI_graph()
 
 
 
@@ -1178,28 +1177,29 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       d1 = @distributome.NormalDistribution(@TwoTGUI_mean1, @TwoTGUI_sigma1)
       d2 = @distributome.NormalDistribution(@TwoTGUI_mean1, @TwoTGUI_sigma1) 
       kappa = @TwoTGUI_n1 / @TwoTGUI_n2
-      z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / (Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2)) * Math.sqrt((1+(1/kappa))/@TwoTGUI_n2))
+      z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / (Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2)) * Math.sqrt((1+(1 / kappa)) / @TwoTGUI_n2))
       @TwoTGUI_power = d.pnorm(z-d.qnorm(1-@TwoTGUI_alpha/2))+d.pnorm(-z-d.qnorm(1-@TwoTGUI_alpha/2))
       @TwoTGUI_powerMax = Math.max(@TwoTGUI_power, @TwoTGUI_powerMax)
     else
       # TODO: calculate n2 from power, or power from n2
-    @TwoTGUI_click();
+    @TwoTGUI_click()
+    @TwoTGUI_graph()
   TwoTGUI_graph:() ->
-    crit = @TwoTGUI.drawNormalCurve(data1, mean1, variance1, sigma1, mean2, variance2, sigma2, @TwoTGUI_alpha);
-    $("#display1").text("("+mean1.toFixed(1)+", "+sigma1.toFixed(2)+")")
-    $("#display2").text("("+mean2.toFixed(1)+", "+sigma2.toFixed(2)+")")
-    $("#display_critical").text("Critical t: "+crit.toFixed(1))
+    @TwoTGUI.drawNormalCurve(@TwoTGUI_mean1, Math.pow(@TwoTGUI_sigma1, 2), @TwoTGUI_sigma1, @TwoTGUI_mean2, Math.pow(@TwoTGUI_sigma2), @TwoTGUI_sigma2, @TwoTGUI_alpha);
+    # $("#display1").text("("+mean1.toFixed(1)+", "+sigma1.toFixed(2)+")")
+    # $("#display2").text("("+mean2.toFixed(1)+", "+sigma2.toFixed(2)+")")
+    # $("#display_critical").text("Critical t: "+crit.toFixed(1))
     $("#display_legend1").text(@comp_agents[0])
     $("#display_legend2").text(@comp_agents[1])
     $("#display_legend1").css("background-color","aquamarine")
     $("#display_legend2").css("background-color","chocolate")
-    @TwoTGUI_tscore = (mean1 - mean2)/Math.sqrt(
-          Math.pow(sigma1,2)/data1.length
-          +
-          Math.pow(sigma2,2)/data2.length
-        )
-    @TwoTGUI_pvalue = @tprob(Math.floor(@TwoTGUI_df), @TwoTGUI_tscore)
-    @TwoTGUI_click();
+    # @TwoTGUI_tscore = (mean1 - mean2)/Math.sqrt(
+    #       Math.pow(sigma1,2)/data1.length
+    #       +
+    #       Math.pow(sigma2,2)/data2.length
+    #     )
+    # @TwoTGUI_pvalue = @tprob(Math.floor(@TwoTGUI_df), @TwoTGUI_tscore)
+    # @TwoTGUI_click();
   TwoTGUI_show_help: () ->
     if @TwoTGUI_help is true
       $('#TwoTGUI_H').val "Show Help"
@@ -1207,9 +1207,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#TwoTGUI_H').val "Hide Help"
     @TwoTGUI_help = !@TwoTGUI_help
     return
-
-
-
 
   tprob: ($n, $x) ->
     if $n <= 0 or Math.abs($n) - Math.abs(@integer($n)) != 0
