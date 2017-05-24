@@ -32,6 +32,7 @@
     "datatables.net": "~1.10.12",
     "datatables.net-dt": "~1.10.12",
     "designmodo-flat-ui": "~2.3.0",
+    "distributome": "^1.1.0",
     "flatui-radiocheck": "~0.1.2",
     "handsontable": "~0.26.0",
     "holderjs": "~2.9.3",
