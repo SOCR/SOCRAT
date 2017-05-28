@@ -1070,6 +1070,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_sigma1 = Math.sqrt(TwoTGUI_variance1)
     @TwoTGUI_sigma2 = Math.sqrt(TwoTGUI_variance2)
 
+    @TwoTGUI_checkRange()
+    @TwoTGUI_update()
+
+  TwoTGUI_checkRange:() ->
     @TwoTGUI_maxn1 = Math.max(@TwoTGUI_n1, @TwoTGUI_maxn1)
     @TwoTGUI_maxn2 = Math.max(@TwoTGUI_n2, @TwoTGUI_maxn2)
     @TwoTGUI_maxn = Math.max(@TwoTGUI_maxn1, @TwoTGUI_maxn2)
@@ -1080,7 +1084,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_sigmaMax2 = Math.max(@TwoTGUI_sigma2, @TwoTGUI_sigmaMax2)
     @TwoTGUI_sigmaMax = Math.max(@TwoTGUI_sigmaMax1, @TwoTGUI_sigmaMax2)
 
-    @TwoTGUI_update()
   TwoTGUI_click: () ->
     $( "#TwoTGUI_sigma1ui" ).slider(
       value: @TwoTGUI_sigma1,
@@ -1211,6 +1214,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     kappa = @TwoTGUI_n1 / @TwoTGUI_n2
     z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / (Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2)) * Math.sqrt((1+(1 / kappa)) / @TwoTGUI_n2))
     @TwoTGUI_power = @distribution.pnorm(z-@distribution.qnorm(1-@TwoTGUI_alpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@TwoTGUI_alpha/2))
+    @TwoTGUI_checkRange()
     @TwoTGUI_click()
     @TwoTGUI_graph()
   TwoTGUI_powerTon: () ->
@@ -1219,6 +1223,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_n2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@TwoTGUI_alpha / 2)+@distribution.qnorm(1-(1-@TwoTGUI_power)))/(@TwoTGUI_mean1-@TwoTGUI_mean2),2)
     @TwoTGUI_n2 = Math.ceil(@TwoTGUI_n2)
     @TwoTGUI_maxn2 = Math.max(@TwoTGUI_maxn2, @TwoTGUI_n2)
+    @TwoTGUI_checkRange()
     @TwoTGUI_click()
     @TwoTGUI_graph()
   TwoTGUI_graph:() ->
@@ -1236,8 +1241,30 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $("#display_legend2").text("Sample2")
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
-
-    
+  TwoTGUI_changeValue: (evt) ->
+    name = evt.target.name
+    val = evt.target.value
+    key = evt.which or evt.keyCode
+    if name is "TwoTGUI_n1"
+      @TwoTGUI_n1 = parseFloat(val)
+    if name is "TwoTGUI_n2"
+      @TwoTGUI_n2 = parseFloat(val)
+    if name is "TwoTGUI_mean1"
+      @TwoTGUI_mean1 = parseFloat(val)
+    if name is "TwoTGUI_mean2"
+      @TwoTGUI_mean2 = parseFloat(val)
+    if name is "TwoTGUI_sigma1"
+      @TwoTGUI_sigma1 = parseFloat(val)
+    if name is "TwoTGUI_sigma2"
+      @TwoTGUI_sigma2 = parseFloat(val)
+    if name is "TwoTGUI_power"
+      @TwoTGUI_power = parseFloat(val)
+    if key is 13
+      if name is "TwoTGUI_power"
+        @TwoTGUI_powerTon()
+        return
+      @TwoTGUI_update()
+      return
   TwoTGUI_show_help: () ->
     if @TwoTGUI_help is true
       $('#TwoTGUI_H').val "Show Help"
