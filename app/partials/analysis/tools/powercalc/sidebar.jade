@@ -48,7 +48,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
           div.form-group(ng-show="sidebar.deployed")
             button.btn.btn-primary(
             type="submit"
-            ng-click="sidebar.run()"
+            ng-click="sidebar.run(sidebar.df)"
             ) Deploy
           div
             div(style='display:inline')
