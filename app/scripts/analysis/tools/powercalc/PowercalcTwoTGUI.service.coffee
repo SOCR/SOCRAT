@@ -27,12 +27,12 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     temp = 0
     numberOfValues = values.length
     while( numberOfValues--)
-      temp += Math.pow( (values[numberOfValues ] - mean), 2 )
+      temp += Math.pow( (parseInt(values[numberOfValues]) - mean), 2 )
 
     return temp / values.length
 
   getSum: (values) ->
-    values.reduce (previousValue, currentValue) -> previousValue + currentValue
+    values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
 
   getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
     data = []
@@ -86,10 +86,6 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     _graph = svg.append('g')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-    data1 = @sort(data_in1)
-    alpha = alpha_in
-    index = data1.length - Math.floor (data1.length * alpha)
-    #criticalVal = data1[index]
 
     mean1 = mean_in1
     variance1 = variance_in1

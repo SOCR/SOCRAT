@@ -11,7 +11,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   initialize: ->
     console.log("mainArea initialized")
     @powerAnalysis = require 'powercalc'
-    @distributome = require 'distributome'
+    @distribution = require 'distributome'
+    @jstat = require 'jstat'
     @msgService = @app_analysis_powercalc_msgService
     @title = 'Power Calculator Module'
     #algorithm type
@@ -150,14 +151,19 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI = @app_analysis_powercalc_TwoTGUI
     @TwoTGUI_n1 = 10
     @TwoTGUI_n2 = 10
+    @TwoTGUI_maxn1 = 20
+    @TwoTGUI_maxn2 = 20
+    @TwoTGUI_maxn = 20
     @TwoTGUI_mean1 = 10
     @TwoTGUI_mean2 = 10
     @TwoTGUI_meanMax1 = 20
     @TwoTGUI_meanMax2 = 20
+    @TwoTGUI_meanMax = 20
     @TwoTGUI_sigma1 = 0.5
     @TwoTGUI_sigma2 = 0.5
     @TwoTGUI_sigmaMax1 = 1
     @TwoTGUI_sigmaMax2 = 1
+    @TwoTGUI_sigmaMax = 1
     @TwoTGUI_alpha = 0.010
     @TwoTGUI_power = 0
     @TwoTGUI_powerMax = 1 
@@ -196,15 +202,22 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @$scope.$on 'powercalc:TwoTGUI_data', (event, data)=>
       @populations = data.populations
       if (data.chosenCol.length is 2)
-        @com_agents = data.chosenCol
+        @comp_agents = data.chosenCol
       else
-        @con_agents = data.chosenVar
+        @comp_agents = data.chosenVar
       @drive_data()
 
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
       d3.select("#Two_TGUI_graph").select("svg").remove()
       @TwoTGUI_update()
+      if !@deployed
+        $("#psigma1i").text("1: ")
+        $("#psigma2i").text("2: ")
+        $("#pn1i").text("1: ")
+        $("#pn2i").text("2: ")
+        $("#pmean1i").text("1: ")
+        $("#pmean2i").text("2: ")
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
@@ -212,11 +225,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   drive_data: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
+      console.log "hit"
 
       # check population length
       if (Object.keys(@populations).length isnt 2)
         window.alert("main: population length")
         return
+
       @TwoTGUI_receive_data()
       @TwoTGUI_graph()
 
@@ -1035,55 +1050,45 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   #functions for TwoTGUI only @comp_agents
   TwoTGUI_receive_data: () ->
+    item1 = Object.keys(@populations)[0]
+    item2 = Object.keys(@populations)[1]
     # extract name of two sample
     $("#psigma1i").text("(" + @comp_agents[0] + "): ")
     $("#psigma2i").text("(" + @comp_agents[1] + "): ")
-    $("#pn1i").text("N(" + @comp_agents[0] + "): ")
-    $("#pn2i").text("N(" + @comp_agents[1] + "): ")
+    $("#pn1i").text("(" + @comp_agents[0] + "): ")
+    $("#pn2i").text("(" + @comp_agents[1] + "): ")
     $("#pmean1i").text("(" + @comp_agents[0] + "): ")
     $("#pmean2i").text("(" + @comp_agents[1] + "): ")
 
     # update all Two_TGUI variables
-    @TwoTGUI_n1 = @populations[0].length
-    @TwoTGUI_n2 = @populations[1].length
-    @TwoTGUI_mean1 = @TwoTGUI.getMean(@TwoTGUI.getSum(@populations[0]),@populations[0].length)
-    @TwoTGUI_mean1 = @TwoTGUI.getMean(@TwoTGUI.getSum(@populations[1]),@populations[1].length)
-    TwoTGUI_variance1 = @TwoTGUI.getVariance(@populations[0], @TwoTGUI_mean1)
-    TwoTGUI_variance2 = @TwoTGUI.getVariance(@populations[1], @TwoTGUI_mean2)
+    @TwoTGUI_n1 = @populations[item1].length
+    @TwoTGUI_n2 = @populations[item2].length
+    @TwoTGUI_mean1 = @TwoTGUI.getMean(@TwoTGUI.getSum(@populations[item1]),@populations[item1].length)
+    @TwoTGUI_mean2 = @TwoTGUI.getMean(@TwoTGUI.getSum(@populations[item2]),@populations[item2].length)
+    TwoTGUI_variance1 = @TwoTGUI.getVariance(@populations[item1], @TwoTGUI_mean1)
+    TwoTGUI_variance2 = @TwoTGUI.getVariance(@populations[item2], @TwoTGUI_mean2)
     @TwoTGUI_sigma1 = Math.sqrt(TwoTGUI_variance1)
     @TwoTGUI_sigma2 = Math.sqrt(TwoTGUI_variance2)
+
+    @TwoTGUI_checkRange()
+    @TwoTGUI_update()
+
+  TwoTGUI_checkRange:() ->
+    @TwoTGUI_maxn1 = Math.max(@TwoTGUI_n1, @TwoTGUI_maxn1)
+    @TwoTGUI_maxn2 = Math.max(@TwoTGUI_n2, @TwoTGUI_maxn2)
+    @TwoTGUI_maxn = Math.max(@TwoTGUI_maxn1, @TwoTGUI_maxn2)
     @TwoTGUI_meanMax1 = Math.max(@TwoTGUI_mean1, @TwoTGUI_meanMax1)
     @TwoTGUI_meanMax2 = Math.max(@TwoTGUI_mean2, @TwoTGUI_meanMax2)
+    @TwoTGUI_meanMax = Math.max(@TwoTGUI_meanMax1, @TwoTGUI_meanMax2)
     @TwoTGUI_sigmaMax1 = Math.max(@TwoTGUI_sigma1, @TwoTGUI_sigmaMax1)
     @TwoTGUI_sigmaMax2 = Math.max(@TwoTGUI_sigma2, @TwoTGUI_sigmaMax2)
-    @TwoTGUI_update()
+    @TwoTGUI_sigmaMax = Math.max(@TwoTGUI_sigmaMax1, @TwoTGUI_sigmaMax2)
+
   TwoTGUI_click: () ->
-
-    # enable or disable slider
-    if @deployed is true
-      $("#TwoTGUI_sigma1ui").slider("disable")
-      $('#TwoTGUI_sigma1ui').find('.ui-slider-handle').hide();
-      $("#TwoTGUI_n1ui").slider("disable")
-      $('#TwoTGUI_n1ui').find('.ui-slider-handle').hide();
-      $("#TwoTGUI_powerui").slider("disable")
-      $('#TwoTGUI_powerui').find('.ui-slider-handle').hide();
-      $("#TwoTGUI_mean1ui").slider("disable")
-      $('#TwoTGUI_mean1ui').find('.ui-slider-handle').hide();
-    else 
-      $("#TwoTGUI_sigma1ui").slider("enable")
-      $('#TwoTGUI_sigma1ui').find('.ui-slider-handle').show();
-      $("#TwoTGUI_n1ui").slider("enable")
-      $('#TwoTGUI_n1ui').find('.ui-slider-handle').show();
-      $("#TwoTGUI_powerui").slider("enable")
-      $('#TwoTGUI_powerui').find('.ui-slider-handle').show();
-      $("#TwoTGUI_mean2ui").slider("enable")
-      $('#TwoTGUI_mean2ui').find('.ui-slider-handle').show();
-
-
     $( "#TwoTGUI_sigma1ui" ).slider(
       value: @TwoTGUI_sigma1,
       min: 0,
-      max: @TwoTGUI_sigmaMax1,
+      max: @TwoTGUI_sigmaMax,
       range: 'min', 
       step: 0.01,
       slide: ( event, ui ) =>
@@ -1092,11 +1097,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_update()
         return
     )
-    #$( "#TwoTGUI_sigma1_v" ).val(@TwoTGUI_sigma1);
+    $( "#TwoTGUI_sigma1_v" ).val( @TwoTGUI_sigma1.toFixed(3));
     $( "#TwoTGUI_sigma2ui" ).slider(
       value:@TwoTGUI_sigma2,
       min: 0,
-      max: @TwoTGUI_sigmaMax2,
+      max: @TwoTGUI_sigmaMax,
       range: "min", 
       step: 0.01,
       slide: ( event, ui ) =>
@@ -1105,12 +1110,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_update()
         return
     )          
-    #$( "#sigma2i" ).val(@TwoTGUI_sigma2);
+    $( "#TwoTGUI_sigma2_v" ).val(@TwoTGUI_sigma2.toFixed(3));
 
     $( "#TwoTGUI_n1ui" ).slider(
       value:@TwoTGUI_n1,
       min: 0,
-      max: @TwoTGUI_maxn1,
+      max: @TwoTGUI_maxn,
       range: "min", 
       step: 1,
       slide: ( event, ui ) =>
@@ -1119,11 +1124,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_update()
         return
     )          
-    #$( "#n1i" ).val( $( "#n1uii" ).slider( "value" ) );
+    $( "#TwoTGUI_n1_v" ).val( @TwoTGUI_n1 );
     $( "#TwoTGUI_n2ui" ).slider(
       value:@TwoTGUI_n2,
       min: 0,
-      max: @TwoTGUI_maxn2,
+      max: @TwoTGUI_maxn,
       range: "min", 
       step: 1,
       slide: ( event, ui ) =>
@@ -1132,12 +1137,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_update()
         return
     )        
-    #$( "#n2i" ).val( $( "#n2uii" ).slider( "value" ) );
+    $( "#TwoTGUI_n2_v" ).val( @TwoTGUI_n2 );
 
     $( "#TwoTGUI_mean1ui" ).slider(
       value:@TwoTGUI_mean1,
       min: 0,
-      max: @TwoTGUI_meanMax1,
+      max: @TwoTGUI_meanMax,
       range: "min", 
       step: 0.01,
       slide: ( event, ui ) =>
@@ -1145,11 +1150,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_mean1 = ui.value
         @TwoTGUI_update()
         return
-    )          
+    )   
+    $( "#TwoTGUI_mean1_v" ).val( @TwoTGUI_mean1.toFixed(3) );       
     $( "#TwoTGUI_mean2ui" ).slider(
       value:@TwoTGUI_mean2,
       min: 0,
-      max: @TwoTGUI_meanMax2,
+      max: @TwoTGUI_meanMax,
       range: "min", 
       step: 0.01,
       slide: ( event, ui ) =>
@@ -1158,7 +1164,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @TwoTGUI_update()
         return
     )        
-
+    $( "#TwoTGUI_mean2_v" ).val( @TwoTGUI_mean2.toFixed(3) );
     $( "#TwoTGUI_powerui" ).slider(
       value:@TwoTGUI_power,
       min: 0.0001,
@@ -1168,38 +1174,97 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       slide:  ( event, ui ) =>
         $( "#TwoTGUI_power_v" ).val( ui.value );
         @TwoTGUI_power = ui.value
-        @TwoTGUI_update()
+        @TwoTGUI_powerTon()
         return
     )         
-    #$("#poweri").val($("#poweruii").slider("value"));
-  TwoTGUI_update: () ->
+    $( "#TwoTGUI_power_v" ).val( @TwoTGUI_power.toFixed(3) );
+    # enable or disable slider
+    
     if @deployed is true
-      d1 = @distributome.NormalDistribution(@TwoTGUI_mean1, @TwoTGUI_sigma1)
-      d2 = @distributome.NormalDistribution(@TwoTGUI_mean1, @TwoTGUI_sigma1) 
-      kappa = @TwoTGUI_n1 / @TwoTGUI_n2
-      z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / (Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2)) * Math.sqrt((1+(1 / kappa)) / @TwoTGUI_n2))
-      @TwoTGUI_power = d.pnorm(z-d.qnorm(1-@TwoTGUI_alpha/2))+d.pnorm(-z-d.qnorm(1-@TwoTGUI_alpha/2))
-      @TwoTGUI_powerMax = Math.max(@TwoTGUI_power, @TwoTGUI_powerMax)
-    else
-      # TODO: calculate n2 from power, or power from n2
+      $("#TwoTGUI_sigma1ui").slider("disable")
+      $('#TwoTGUI_sigma1ui').find('.ui-slider-handle').hide();
+      $("#TwoTGUI_sigma2ui").slider("disable")
+      $('#TwoTGUI_sigma2ui').find('.ui-slider-handle').hide();
+      $("#TwoTGUI_n1ui").slider("disable")
+      $('#TwoTGUI_n1ui').find('.ui-slider-handle').hide();
+      $("#TwoTGUI_n2ui").slider("disable")
+      $('#TwoTGUI_n2ui').find('.ui-slider-handle').hide();
+      $("#TwoTGUI_powerui").slider("disable")
+      $('#TwoTGUI_powerui').find('.ui-slider-handle').hide();
+      $("#TwoTGUI_mean1ui").slider("disable")
+      $('#TwoTGUI_mean1ui').find('.ui-slider-handle').hide();
+      $("#TwoTGUI_mean2ui").slider("disable")
+      $('#TwoTGUI_mean2ui').find('.ui-slider-handle').hide();
+    else 
+      $("#TwoTGUI_sigma1ui").slider("enable")
+      $('#TwoTGUI_sigma1ui').find('.ui-slider-handle').show();
+      $("#TwoTGUI_sigma2ui").slider("enable")
+      $('#TwoTGUI_sigma2ui').find('.ui-slider-handle').show();
+      $("#TwoTGUI_n1ui").slider("enable")
+      $('#TwoTGUI_n1ui').find('.ui-slider-handle').show();
+      $("#TwoTGUI_n2ui").slider("enable")
+      $('#TwoTGUI_n2ui').find('.ui-slider-handle').show();
+      $("#TwoTGUI_powerui").slider("enable")
+      $('#TwoTGUI_powerui').find('.ui-slider-handle').show();
+      $("#TwoTGUI_mean1ui").slider("enable")
+      $('#TwoTGUI_mean1ui').find('.ui-slider-handle').show();
+      $("#TwoTGUI_mean2ui").slider("enable")
+      $('#TwoTGUI_mean2ui').find('.ui-slider-handle').show();
+  TwoTGUI_update: () ->
+    kappa = @TwoTGUI_n1 / @TwoTGUI_n2
+    z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / (Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2)) * Math.sqrt((1+(1 / kappa)) / @TwoTGUI_n2))
+    @TwoTGUI_power = @distribution.pnorm(z-@distribution.qnorm(1-@TwoTGUI_alpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@TwoTGUI_alpha/2))
+    @TwoTGUI_checkRange()
+    @TwoTGUI_click()
+    @TwoTGUI_graph()
+  TwoTGUI_powerTon: () ->
+    kappa = 1
+    stdv = Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2))
+    @TwoTGUI_n2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@TwoTGUI_alpha / 2)+@distribution.qnorm(1-(1-@TwoTGUI_power)))/(@TwoTGUI_mean1-@TwoTGUI_mean2),2)
+    @TwoTGUI_n2 = Math.ceil(@TwoTGUI_n2)
+    @TwoTGUI_maxn2 = Math.max(@TwoTGUI_maxn2, @TwoTGUI_n2)
+    @TwoTGUI_checkRange()
     @TwoTGUI_click()
     @TwoTGUI_graph()
   TwoTGUI_graph:() ->
-    @TwoTGUI.drawNormalCurve(@TwoTGUI_mean1, Math.pow(@TwoTGUI_sigma1, 2), @TwoTGUI_sigma1, @TwoTGUI_mean2, Math.pow(@TwoTGUI_sigma2), @TwoTGUI_sigma2, @TwoTGUI_alpha);
+    @TwoTGUI.drawNormalCurve(@TwoTGUI_mean1, Math.pow(@TwoTGUI_sigma1, 2), @TwoTGUI_sigma1, @TwoTGUI_mean2, Math.pow(@TwoTGUI_sigma2, 2), @TwoTGUI_sigma2, @TwoTGUI_alpha);
     # $("#display1").text("("+mean1.toFixed(1)+", "+sigma1.toFixed(2)+")")
     # $("#display2").text("("+mean2.toFixed(1)+", "+sigma2.toFixed(2)+")")
     # $("#display_critical").text("Critical t: "+crit.toFixed(1))
-    $("#display_legend1").text(@comp_agents[0])
-    $("#display_legend2").text(@comp_agents[1])
-    $("#display_legend1").css("background-color","aquamarine")
-    $("#display_legend2").css("background-color","chocolate")
-    # @TwoTGUI_tscore = (mean1 - mean2)/Math.sqrt(
-    #       Math.pow(sigma1,2)/data1.length
-    #       +
-    #       Math.pow(sigma2,2)/data2.length
-    #     )
-    # @TwoTGUI_pvalue = @tprob(Math.floor(@TwoTGUI_df), @TwoTGUI_tscore)
-    # @TwoTGUI_click();
+    if @deployed
+      $("#display_legend1").text(@comp_agents[0])
+      $("#display_legend2").text(@comp_agents[1])
+      $("#display_legend1").css("background-color","aquamarine")
+      $("#display_legend2").css("background-color","chocolate")
+    else
+      $("#display_legend1").text("Sample1")
+      $("#display_legend2").text("Sample2")
+      $("#display_legend1").css("background-color","aquamarine")
+      $("#display_legend2").css("background-color","chocolate")
+  TwoTGUI_changeValue: (evt) ->
+    name = evt.target.name
+    val = evt.target.value
+    key = evt.which or evt.keyCode
+    if name is "TwoTGUI_n1"
+      @TwoTGUI_n1 = parseFloat(val)
+    if name is "TwoTGUI_n2"
+      @TwoTGUI_n2 = parseFloat(val)
+    if name is "TwoTGUI_mean1"
+      @TwoTGUI_mean1 = parseFloat(val)
+    if name is "TwoTGUI_mean2"
+      @TwoTGUI_mean2 = parseFloat(val)
+    if name is "TwoTGUI_sigma1"
+      @TwoTGUI_sigma1 = parseFloat(val)
+    if name is "TwoTGUI_sigma2"
+      @TwoTGUI_sigma2 = parseFloat(val)
+    if name is "TwoTGUI_power"
+      @TwoTGUI_power = parseFloat(val)
+    if key is 13
+      if name is "TwoTGUI_power"
+        @TwoTGUI_powerTon()
+        return
+      @TwoTGUI_update()
+      return
   TwoTGUI_show_help: () ->
     if @TwoTGUI_help is true
       $('#TwoTGUI_H').val "Show Help"

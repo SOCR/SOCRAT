@@ -49,6 +49,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@dataType = null
 		@cols = []
 		@chosenCols = []
+		@chosenVars = []
 		@numericalCols = []
 		@categoricalCols = []
 		@populations = {}
@@ -56,7 +57,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@xCol = null
 		@yCol = null
 		@Zcol = null
-		@labelCol = []
+		@labelCol = ["none"]
 		@vars = []
 		@chosenLabel = null
 		@df = null
@@ -71,7 +72,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			@msgService.broadcast 'powercalc:change_mode',
 				deploy: @deployed
 
-		@slidebar_initiate()
+		@slidebar()
 
 
 		@dataService.getData().then (obj) =>
@@ -99,24 +100,24 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			populations:@populations
 			chosenCol:@chosenCols
 			chosenVar:@chosenVars
-			chosenlab:@chosenlab
+			chosenlab:@chosenLabel
 
 
 		# if data selected meets specified creteria, run the caculation
 	run: (data) ->
 		if (@selectedAlgorithm is 'Two-sample t test (general case)')
 			# if compare two different Variables, calculate sepaerately
-			if (@chosenLabel isnt "none") or (@chosenLabel isnt null)
+			if (@chosenLabel isnt "none") and (@chosenLabel isnt null)
 				# check num of chosenCol is one
 				if @chosenCols.length isnt 1
-					console.log(@chosenCols.length)
-					window.alert("Must one and only one Col")
+					#console.log(@chosenCols.length)
+					#window.alert("Must one and only one Col")
 					return
 
 				# check num of chosenVar is two
 				if @chosenVars.length isnt 2
-					console.log(@chosenVars.length)
-					window.alert("Must two and only two Vars")
+					#console.log(@chosenVars.length)
+					#window.alert("Must two and only two Vars")
 					return
 
 				#extract index if col
@@ -129,18 +130,18 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 				#extract data from container to population 
 				@populations = {}
-				for var in @chosenVars
-					@populations[var] = []
-					for row in @container[var]
-						@populations[var].push(row[index])
+				for elt in @chosenVars
+					@populations[elt] = []
+					for row in @container[elt]
+						@populations[elt].push(row[index])
 				console.log @populations
 
 			else
 
 				# check num of chosenCol is two
 				if @chosenCols.length isnt 2
-					console.log(@chosenCols.length)
-					window.alert("Must one and only two Col")
+					#console.log(@chosenCols.length)
+					#window.alert("Must two and only two Col")
 					return
 
 				# extract data from data to population
@@ -154,11 +155,12 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 					@populations[@chosenCols[1]].push(row[index2])
 				console.log @populations
 
-			@msgService.broadcast 'powercalc: TwoTGUI_data',
+			@msgService.broadcast 'powercalc:TwoTGUI_data',
 				populations:@populations
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
-				chosenlab:@chosenlab
+				chosenlab:@chosenLabel
+
 
 
 	updateAlgControls: () ->
@@ -171,19 +173,20 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	updateVar: (data) ->
 		index = data.header.indexOf(@chosenLabel)
 		@vars = []
-		@container = {}
+		@container = []
 		if index isnt -1
 			for row in data.data
-
-				if row[index] not in @container
+				if row[index] not of @container
 					@container[row[index]] = []
 
 				if row[index] not in @vars
 					@vars.push(row[index])
 
 				@container[row[index]].push(row)
+				#console.log (@container)
 
 		console.log @container
+		
 			
 
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
@@ -212,7 +215,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			# @msgService.broadcast 'powercalc:updateDataPoints',
 			# 	dataPoints: @df
 
-	slidebar_initiate: () ->
+	slidebar: () ->
 		$("#TwoTGUI_alphaui").slider(
 			min: 0.001
 			max: 0.200
@@ -227,4 +230,15 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 					alpha_in: @TwoTGUI_alpha
 				return
 		)
+		$( "#TwoTGUI_alpha_v" ).val( @TwoTGUI_alpha.toFixed(3) );  
 		#$("#alphai").val($("#alphauii").slider("value"));
+
+	changeValue: (evt) ->
+	    name = evt.target.name
+	    val = evt.target.value
+	    key = evt.which or evt.keyCode
+	    if name is "TwoTGUI_alpha"
+	      @TwoTGUI_alpha = parseFloat(val)
+	    if key is 13
+	      @slidebar()
+	      return
