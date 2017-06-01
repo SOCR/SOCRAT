@@ -29,6 +29,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             multiple
             ng-model="sidebar.chosenCols"
             ng-options="col for col in sidebar.categoricalCols"
+            ng-change="sidebar.run(sidebar.df)"
             )
           div.form-group(ng-show="sidebar.deployed")
             label Labels &nbsp;
@@ -44,15 +45,11 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             multiple
             ng-model="sidebar.chosenVars"
             ng-options="col for col in sidebar.vars"
+            ng-change="sidebar.run(sidebar.df)"
             )
-          div.form-group(ng-show="sidebar.deployed")
-            button.btn.btn-primary(
-            type="submit"
-            ng-click="sidebar.run(sidebar.df)"
-            ) Deploy
           div
             div(style='display:inline')
               h9 Significance Level: &nbsp
-              input#TwoTGUI_alpha_v(type="text" name='TwoTGUI_alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;')
+              input#TwoTGUI_alpha_v(type="text" name='TwoTGUI_alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-keypress="sidebar.changeValue($event)")
             div(style='display:inline')
               #TwoTGUI_alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
