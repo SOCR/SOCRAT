@@ -12,7 +12,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             ng-options="method for method in sidebar.algorithms"
             ng-change="sidebar.updateAlgControls()"
           )
-        div.bootstrap-switch-square
+        div.bootstrap-switch-square(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)'")
           h7 Data-Driven Mode &nbsp;&nbsp;
           input(
             type="checkbox"
@@ -22,7 +22,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             ng-change="sidebar.change_mode()"
           )
         fieldset(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)'")
-          legend Data
+          legend(ng-show="sidebar.deployed") Data
           div.form-group(ng-show="sidebar.deployed")
             label Columns
             select.form-control(
@@ -35,6 +35,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             label Labels &nbsp;
             //- show data header column names
             select.form-control(
+              ng-disabled="!sidebar.valid"
               ng-model="sidebar.chosenLabel"
               ng-options="col for col in sidebar.labelCol"
               ng-change="sidebar.updateVar(sidebar.df)"
@@ -43,6 +44,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             label Categories
             select.form-control(
             multiple
+            ng-disabled="!sidebar.valid"
             ng-model="sidebar.chosenVars"
             ng-options="col for col in sidebar.vars"
             ng-change="sidebar.run(sidebar.df)"
