@@ -23,6 +23,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @DATA_TYPES = @dataService.getDataTypes()
     @graphs = []
     @selectedGraph = null
+    @maxColors = 10
 
     # dataset-specific
     @dataFrame = null
@@ -34,6 +35,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @xCol = null
     @yCol = null
     @zCol = null
+    @labelCol = null
 
     @stream = false
     @streamColors = [
@@ -56,7 +58,6 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @selectedGraph = @graphs[0]
             @dataType = @DATA_TYPES.FLAT
             @parseData dataFrame
-#            @chartData = @dataTransform.format dataFrame.data
             if @checkTime.checkForTime dataFrame.data
               @graphs = @list.getTime()
           when @DATA_TYPES.NESTED
@@ -76,8 +77,15 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         @updateSidebarControls(df)
         @updateDataPoints(df)
 
+  uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
+
   updateSidebarControls: (data=@dataFrame) ->
     @cols = data.header
+    @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
+    @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
+    colData = d3.transpose(data.data)
+    @categoricalCols = @categoricalCols.filter (x, i) =>
+      @uniqueVals(colData[@cols.indexOf(x)]).length < @maxColors
     if @selectedGraph.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
       @xCol = @xCols[0]
@@ -97,13 +105,11 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
-    [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
-    data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
-    @msgService.broadcast 'charts:updateGraph',
-      dataPoints: data
-      graph: @selectedGraph
-      labels:
+    if @selectedGraph.x
+      [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
+      [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
+      data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
+      labels =
         xLab:
           value: @xCol
           type: xType
@@ -113,6 +119,23 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         zLab:
           value: @zCol
           type: zType
+    # if trellis plot
+    else if @chosenCols.length > 1
+      if @labelCol
+        labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+        labels.splice 0, 0, @labelCol
+      else labels = null
+
+      chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
+      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+      data.splice 0, 0, @chosenCols
+
+    else data = null
+
+    @msgService.broadcast 'charts:updateGraph',
+      dataPoints: data
+      graph: @selectedGraph
+      labels: labels
 
 #  changeGraph: () ->
 #    if @graphSelect.name is "Stream Graph"

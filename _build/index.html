@@ -9,5 +9,53 @@
 </head>
 <body ng-controller="AppCtrl as app">
   <script src="socrat.js"></script>
+   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/2.6.5/vega.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/1.3.1/vega-lite.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/2.2.0/vega-embed.js" charset="utf-8"></script>
+  <meta charset="utf-8">
+  <style media="screen">
+    /* Add space between vega-embed links  */
+    .vega-actions a {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+  <!-- Container for the visualization -->
+  <div id="vis"></div>
+<script>
+/*
+var vlSpec = {
+  "data": {"url": "datasets/iris.csv"},
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "type": "quantitative",
+      "field": "Sepal_Width"
+    },
+    "y": {
+      "type": "quantitative",
+      "field": "Petal_Length"
+    },
+    "column": {
+      "type": "ordinal",
+      "field": "Species"
+    },
+    "color": {"value": "#4693e0"}
+  }
+}
+
+var embedSpec = {
+  mode: "vega-lite",
+  spec: vlSpec
+}
+
+vg.embed('#vis', embedSpec, function(error, result) {
+  // Callback receiving the View instance and parsed Vega spec
+  // result.view is the View, which resides under the '#vis' element
+  // result.spec is the parsed spec
+});*/
+</script>
 </body>
 </html>
