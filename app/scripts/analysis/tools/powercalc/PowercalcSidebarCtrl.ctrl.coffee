@@ -64,6 +64,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@valid = false
 
 		@TwoTGUI_alpha=0.010
+		@OneTGUI_alpha=0.010
 		@deployed = false
 		$("#toggle_switch").bootstrapSwitch();
 
@@ -168,6 +169,42 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
+		else if (@selectedAlgorithm is 'One-Sample (or Paired) t Test')
+			# if compare two different Variables, calculate sepaerately
+			if (@chosenLabel isnt "none") and (@chosenLabel isnt null)
+
+				#extract index if col
+				index = data.header.indexOf(@chosenCols[0])
+
+				#check if index if -1
+				if index is -1
+					console.log -1
+					return 
+
+				#extract data from container to population 
+				@populations = {}
+				for elt in @chosenVars
+					@populations[elt] = []
+					for row in @container[elt]
+						@populations[elt].push(row[index])
+				console.log @populations
+
+			else
+
+				# extract data from data to population
+				index1 = data.header.indexOf(@chosenCols[0])
+				@populations = {}
+				@populations[@chosenCols[0]] = []
+				for row in data.data
+					@populations[@chosenCols[0]].push(row[index1])
+				console.log @populations
+
+
+			@msgService.broadcast 'powercalc:OneTGUI_data',
+				populations:@populations
+				chosenCol:@chosenCols
+				chosenVar:@chosenVars
+				chosenlab:@chosenLabel
 
 
 
@@ -224,6 +261,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			# 	dataPoints: @df
 
 	slidebar: () ->
+
 		$("#TwoTGUI_alphaui").slider(
 			min: 0.001
 			max: 0.200
@@ -239,14 +277,30 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				return
 		)
 		$( "#TwoTGUI_alpha_v" ).val( @TwoTGUI_alpha.toFixed(3) );  
-		#$("#alphai").val($("#alphauii").slider("value"));
 
+		$("#OneTGUI_alphaui").slider(
+			min: 0.001
+			max: 0.200
+			value: @OneTGUI_alpha
+			orientation: "horizontal"
+			range: "min"
+			step: 0.001
+			slide: (event, ui) =>
+				@OneTGUI_alpha = ui.value
+				$('#OneTGUI_alpha_v').val ui.value
+				@msgService.broadcast 'powercalc:OneTGUI_alpha',
+					alpha_in: @OneTGUI_alpha
+				return
+		)
+		$( "#OneTGUI_alpha_v" ).val( @OneTGUI_alpha.toFixed(3) );
 	changeValue: (evt) ->
-	    name = evt.target.name
-	    val = evt.target.value
-	    key = evt.which or evt.keyCode
-	    if name is "TwoTGUI_alpha"
-	      @TwoTGUI_alpha = parseFloat(val)
-	    if key is 13
-	      @slidebar()
-	      return
+		name = evt.target.name
+		val = evt.target.value
+		key = evt.which or evt.keyCode
+		if name is "TwoTGUI_alpha"
+			@TwoTGUI_alpha = parseFloat(val)
+		else if name is "OneTGUI_alpha"
+			@OneTGUI_alpha = parseFloat(val)
+		if key is 13
+			@slidebar()
+			return

@@ -12,7 +12,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
             ng-options="method for method in sidebar.algorithms"
             ng-change="sidebar.updateAlgControls()"
           )
-        div.bootstrap-switch-square(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)'")
+        div.bootstrap-switch-square(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' || sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'")
           h7 Data-Driven Mode &nbsp;&nbsp;
           input(
             type="checkbox"
@@ -55,3 +55,32 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
               input#TwoTGUI_alpha_v(type="text" name='TwoTGUI_alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-keypress="sidebar.changeValue($event)")
             div(style='display:inline')
               #TwoTGUI_alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
+        fieldset(ng-show="sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'")
+          legend(ng-show="sidebar.deployed") Data
+          div.form-group(ng-show="sidebar.deployed")
+            label Columns
+            select.form-control(
+            ng-model="sidebar.chosenCols"
+            ng-options="col for col in sidebar.categoricalCols"
+            ng-change="sidebar.run(sidebar.df)"
+            )
+          div.form-group(ng-show="sidebar.deployed")
+            label Labels &nbsp;
+            select.form-control(
+              ng-model="sidebar.chosenLabel"
+              ng-options="col for col in sidebar.labelCol"
+              ng-change="sidebar.updateVar(sidebar.df)"
+            )
+          div.form-group(ng-show="sidebar.deployed")
+            label Categories
+            select.form-control(
+            ng-model="sidebar.chosenVars"
+            ng-options="col for col in sidebar.vars"
+            ng-change="sidebar.run(sidebar.df)"
+            )
+          div
+            div(style='display:inline')
+              h9 Significance Level: &nbsp
+              input#OneTGUI_alpha_v(type="text" name='OneTGUI_alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-keypress="sidebar.changeValue($event)")
+            div(style='display:inline')
+              #OneTGUI_alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
