@@ -8,8 +8,13 @@ module.exports = class ChartsList extends BaseService
 
   getFlat: () ->
     flat = [
-      name: 'Bar Graph'
+      name: 'Trellis Chart'
       value: 0
+    ,
+      name: 'Bar Graph'
+      value: 1
+      v: false
+      w: false
       x: ['integer', 'number', 'string']
       y: ['integer', 'number', 'string']
       z: false
@@ -18,7 +23,9 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Add y"
     ,
       name: 'Scatter Plot'
-      value: 1
+      value: 2
+      v: false
+      w: false
       x: ['integer', 'number']
       y: ['integer', 'number']
       z: false
@@ -27,7 +34,9 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Add y"
     ,
       name: 'Histogram'
-      value: 2
+      value: 3
+      v: false
+      w: false
       x: ['integer', 'number']
       y: false
       z: false
@@ -35,7 +44,9 @@ module.exports = class ChartsList extends BaseService
       xLabel: ""
     ,
       name: 'Bubble Chart'
-      value: 3
+      value: 4
+      v: false
+      w: false
       x: ['integer', 'number']
       y: ['integer', 'number']
       z: ['integer', 'number']
@@ -45,7 +56,9 @@ module.exports = class ChartsList extends BaseService
       zLabel: "Add radius"
     ,
       name: 'Pie Chart'
-      value: 4
+      value: 5
+      v: false
+      w: false
       x: ['integer', 'number', 'string']
       y: false
       z: false
@@ -53,7 +66,9 @@ module.exports = class ChartsList extends BaseService
       xLabel: ""
     ,
       name: 'Normal Distribution'
-      value: 5
+      value: 6
+      v: false
+      w: false
       x: ['integer', 'number']
       y: false
       z: false
@@ -61,7 +76,9 @@ module.exports = class ChartsList extends BaseService
       xLabel: ""
     ,
       name: 'Ring Chart'
-      value: 4
+      value: 7
+      v: false
+      w: false
       x: ['integer', 'number', 'string']
       y: false
       z: false
@@ -73,7 +90,9 @@ module.exports = class ChartsList extends BaseService
   getNested: () ->
     nested = [
       name: 'Stream Graph'
-      value: 6
+      value: 8
+      v: false
+      w: false
       x: true
       y: true
       z: true
@@ -83,7 +102,9 @@ module.exports = class ChartsList extends BaseService
       zLabel: "Add key"
     ,
       name: 'Treemap'
-      value: 7
+      value: 9
+      v: false
+      w: false
       x: false
       y: false
       z: false
@@ -93,7 +114,9 @@ module.exports = class ChartsList extends BaseService
   getTime: () ->
     time = [
       name: 'Area Chart'
-      value: 5
+      value: 10
+      v: false
+      w: false
       x: true
       y: true
       z: false
@@ -102,7 +125,9 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Add y"
     ,
       name: 'Line Chart'
-      value: 8
+      value: 11
+      v: false
+      w: false
       x: true
       y: true
       z: false
@@ -111,7 +136,9 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Add y"
     ,
       name: 'Bivariate Area Chart'
-      value: 9
+      value: 12
+      v: false
+      w: false
       x: true
       y: true
       z: true
@@ -121,7 +148,9 @@ module.exports = class ChartsList extends BaseService
       zLabel: "Add z"
     ,
       name: 'Stream Graph'
-      value: 6
+      value: 13
+      v: false
+      w: false
       x: true
       y: true
       z: true
@@ -130,8 +159,21 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Add y"
       zLabel: "Add key"
     ,
-      name: 'Bar Graph'
+      name: 'Trellis Chart'
       value: 0
+      v: false
+      w: false
+      x: true
+      y: true
+      z: false
+      message: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
+      xLabel: "Add x"
+      yLabel: "Add y"
+    ,
+      name: 'Bar Graph'
+      value: 1
+      v: false
+      w: false
       x: true
       y: true
       z: false
@@ -140,7 +182,9 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Add y"
     ,
       name: 'Scatter Plot'
-      value: 1
+      value: 2
+      v: false
+      w: false
       x: true
       y: true
       z: false
@@ -149,7 +193,9 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Add y"
     ,
       name: 'Histogram'
-      value: 2
+      value: 3
+      v: false
+      w: false
       x: true
       y: false
       z: false
@@ -157,7 +203,9 @@ module.exports = class ChartsList extends BaseService
       xLabel: ""
     ,
       name: 'Bubble Chart'
-      value: 3
+      value: 4
+      v: false
+      w: false
       x: true
       y: true
       z: true
@@ -167,7 +215,9 @@ module.exports = class ChartsList extends BaseService
       zLabel: "Add radius"
     ,
       name: 'Pie Chart'
-      value: 4
+      value: 5
+      v: false
+      w: false
       x: true
       y: false
       z: false
@@ -175,7 +225,9 @@ module.exports = class ChartsList extends BaseService
       xLabel: ""
     ,
       name: 'Normal Distribution'
-      value: 5
+      value: 6
+      v: false
+      w: false
       x: true
       y: false
       z: false
@@ -183,7 +235,9 @@ module.exports = class ChartsList extends BaseService
       xLabel: ""
     ,
       name: 'Ring Chart'
-      value: 4
+      value: 7
+      v: false
+      w: false
       x: true
       y: false
       z: false

@@ -36,6 +36,8 @@ module.exports = class ChartsSendData extends BaseService
     send = @graphFormat chartData, graphInfo, dataType
     results =
       data: send
+      vLab: headers[graphInfo.v],
+      wLab: headers[graphInfo.w],
       xLab: headers[graphInfo.x],
       yLab: headers[graphInfo.y],
       zLab: headers[graphInfo.z],

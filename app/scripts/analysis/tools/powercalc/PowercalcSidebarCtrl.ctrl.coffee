@@ -61,6 +61,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@vars = []
 		@chosenLabel = null
 		@df = null
+		@valid = false
 
 		@TwoTGUI_alpha=0.010
 		@deployed = false
@@ -106,6 +107,12 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		# if data selected meets specified creteria, run the caculation
 	run: (data) ->
 		if (@selectedAlgorithm is 'Two-sample t test (general case)')
+			if @chosenCols.length is 1
+				@valid = true
+			else
+				@valid = false
+				@chosenLabel = "none"
+				@vars = []
 			# if compare two different Variables, calculate sepaerately
 			if (@chosenLabel isnt "none") and (@chosenLabel isnt null)
 				# check num of chosenCol is one
@@ -154,6 +161,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 					@populations[@chosenCols[0]].push(row[index1])
 					@populations[@chosenCols[1]].push(row[index2])
 				console.log @populations
+
 
 			@msgService.broadcast 'powercalc:TwoTGUI_data',
 				populations:@populations

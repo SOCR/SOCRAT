@@ -22,11 +22,12 @@ module.exports = getData = new Module
       'GetDataMainCtrl': require 'scripts/analysis/GetData/GetDataMainCtrl.controller.coffee'
     directives:
       'getdatadragndrop': require 'scripts/analysis/GetData/GetDataDragNDropDir.directive.coffee'
+      'colhistogram' : require 'scripts/analysis/GetData/GetDataHistogramDir.directive.coffee'
 
   # module state config
   state:
     # module name to show in UI
-    name: 'Raw Data'
+    name: 'Data Input'
     url: '/getData'
     mainTemplate: require 'partials/analysis/getData/main.jade'
     sidebarTemplate: require 'partials/analysis/getData/sidebar.jade'

@@ -48,6 +48,9 @@ module.exports = class GetDataInputCache extends BaseService
       -> console.log 'handsontable data updated to db',
       data,
       deferred
+      console.log('whaaattssssaaappp')
+      console.log(data)
+      fullData = data
 
   setData: (data) ->
     console.log '%c inputCache set called for the project ' + @$stateParams.projectId + ':' + @$stateParams.forkId,

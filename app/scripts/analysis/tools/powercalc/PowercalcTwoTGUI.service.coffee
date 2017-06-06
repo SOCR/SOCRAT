@@ -101,14 +101,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     topBound = Math.max(1 / (standardDerivation1 * Math.sqrt(Math.PI * 2)), 1 / (standardDerivation2 * Math.sqrt(Math.PI * 2)))
     gaussianCurveData1 = @getGaussianFunctionPoints(standardDerivation1,mean1,variance1,leftBound,rightBound)
     gaussianCurveData2 = @getGaussianFunctionPoints(standardDerivation2,mean2,variance2,leftBound,rightBound)
-    gaussianMax1 = 0
-    gaussianMax2 = 0
-    for i in gaussianCurveData1
-        if i['y'] > gaussianMax1
-            gaussianMax1 = i['x']
-    for i in gaussianCurveData2
-        if i['y'] > gaussianMax2
-            gaussianMax2 = i['x']
+    
 
 
     # pos1 = xScale(mean1)

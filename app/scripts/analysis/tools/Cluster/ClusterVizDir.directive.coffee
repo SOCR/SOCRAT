@@ -55,10 +55,12 @@ module.exports = class ClusterVizDir extends BaseDirective
         .attr('r', 3)
         .attr('cx', (d) -> xScale(d[0]))
         .attr('cy', (d) -> yScale(d[1]))
+        .attr('fill', (d) -> if d[2]? then color(d[2]) else 'black')
 
         pointDots.transition().duration(100)
         .attr('cx', (d) -> xScale(d[0]))
         .attr('cy', (d) -> yScale(d[1]))
+        .attr('fill', (d) -> if d[2]? then color(d[2]) else 'black')
         pointDots.exit().remove()
 
       reset = () ->
