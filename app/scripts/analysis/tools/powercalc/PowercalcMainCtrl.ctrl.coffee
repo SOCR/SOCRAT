@@ -5,6 +5,7 @@ BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 module.exports = class PowercalcMainCtrl extends BaseCtrl
   @inject 'app_analysis_powercalc_msgService',
   'app_analysis_powercalc_TwoTGUI',
+  'app_analysis_powercalc_OneTGUI',
   '$timeout',
   '$scope'
 
@@ -27,6 +28,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @deployed = false
     @chosenCols = []
     @comp_agents = []
+    @agent = ""
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
 #      @showresults = off if @showresults is on
@@ -78,22 +80,22 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OnePGUI_submit()
 
     #variables needed for OneTGUI only
-    @OneTGUI_nn = 1
-    @OneTGUI_sigma=null;
-    @OneTGUI_diff=null;
-    @OneTGUI_n=null;
-    @OneTGUI_power=null;
-    @OneTGUI_maxsigma=1.4;
-    @OneTGUI_maxdiff=0.7;
-    @OneTGUI_maxn=35;
-    @OneTGUI_maxpower=1;
-    @OneTGUI_first = true;
-    @OneTGUI_help = false;
-    @OneTGUI_alpha = 0.02
-    @OneTGUI_optd = 0;
-    @OneTGUI_optd_submit()
-    @OneTGUI_click()
-    @OneTGUI_submit()
+    @OneTGUI = @app_analysis_powercalc_OneTGUI
+    @OneTGUI_n = 10
+    @OneTGUI_nMax = 20
+    @OneTGUI_mean = 10
+    @OneTGUI_meanMax = 20
+    @OneTGUI_mean0 = 10
+    @OneTGUI_mean0Max = 20
+    @OneTGUI_sigma = 10
+    @OneTGUI_sigmaMax = 20
+    @OneTGUI_power = 0
+    @OneTGUI_alpha = 0.010
+    @OneTGUI_variance = 0
+    @OneTGUI_t = 0
+    @OneTGUI_pvalue = 0
+    @OneTGUI_update()
+
 
     #variables needed for Pilot only
     @Pilot_n = 1;
@@ -159,43 +161,35 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_meanMax1 = 20
     @TwoTGUI_meanMax2 = 20
     @TwoTGUI_meanMax = 20
-    @TwoTGUI_sigma1 = 0.5
-    @TwoTGUI_sigma2 = 0.5
-    @TwoTGUI_sigmaMax1 = 1
-    @TwoTGUI_sigmaMax2 = 1
-    @TwoTGUI_sigmaMax = 1
+    @TwoTGUI_sigma1 = 20
+    @TwoTGUI_sigma2 = 20
+    @TwoTGUI_sigmaMax1 = 40
+    @TwoTGUI_sigmaMax2 = 40
+    @TwoTGUI_sigmaMax = 40
     @TwoTGUI_alpha = 0.010
     @TwoTGUI_power = 0
     @TwoTGUI_powerMax = 1 
     @TwoTGUI_t = 0
     @TwoTGUI_pvalue = 0
-    # @TwoTGUI_nn = 2;
-    # @TwoTGUI_sigma1=0.1;
-    # @TwoTGUI_sigma2=0.1;
-    # @TwoTGUI_n1=10;
-    # @TwoTGUI_n2=10;
-    # @TwoTGUI_diff=0.5;
-    # @TwoTGUI_power=0;
-    # @TwoTGUI_maxsigma1=1.4;
-    # @TwoTGUI_maxsigma2=1.4;
-    # @TwoTGUI_maxn1=35;
-    # @TwoTGUI_maxn2=35;
-    # @TwoTGUI_maxdiff=1.0;
-    # @TwoTGUI_maxpower=1;
-    # @TwoTGUI_maxdf = 100;
-    # @TwoTGUI_help=false;
-    # @TwoTGUI_alloc_value=0;
-    # @TwoTGUI_opt_value=0;
-    # @TwoTGUI_alpha=0.010;
-    # @TwoTGUI_threshold=1;
-    # @TwoTGUI_df=1;
-    # @TwoTGUI_tscore = 0;
-    # @TwoTGUI_pvalue = 0;
     @TwoTGUI_update()
     
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
+
+    @$scope.$on 'powercalc:OneTGUI_alpha', (event, data)=>
+      @OneTGUI_alpha = data.alpha_in
+      @OneTGUI_update()
+
+    @$scope.$on 'powercalc:OneTGUI_data', (event, data)=>
+      @populations = data.populations
+      lab = data.chosenlab
+      if (lab is "none") or (lab is null)
+        console.log "hit"
+        @agent = data.chosenCol
+      else
+        @agent = data.chosenVar
+      @drive_data()
 
     @$scope.$on 'powercalc:TwoTGUI_alpha', (event, data)=>
       @TwoTGUI_alpha = data.alpha_in
@@ -220,6 +214,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         $("#pn2i").text("2: ")
         $("#pmean1i").text("1: ")
         $("#pmean2i").text("2: ")
+        $("#OneTGUI_N_disp").text(": ")
+        $("#OneTGUI_mean_disp").text(": ")
+        $("#OneTGUI_sigma_disp").text(": ")
+
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
@@ -227,8 +225,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   drive_data: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
-      console.log "hit"
-
       # check population length
       if (Object.keys(@populations).length isnt 2)
         window.alert("main: population length")
@@ -236,17 +232,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
       @TwoTGUI_receive_data()
       @TwoTGUI_graph()
+      return
 
-
-
-    
-
-  #global
-  updateChartData: (data) ->
-    if data.dataPoints?
-      @dataPoints = data.dataPoints
-    @means = data.means
-    @assignments = data.labels
+    else if (@selectedAlgorithm is "One-Sample (or Paired) t Test")
+      # check population length
+      if (Object.keys(@populations).length isnt 1)
+        window.alert("main: population length")
+        return
+        
+      @OneTGUI_receive_data()
+      @OneTGUI_graph()
+      return
 
   update_algo: (evt) ->
     console.log(@selectedAlgorithm)
@@ -601,119 +597,177 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     return
     
   #functions for OneTGUI only  
+  OneTGUI_receive_data: () ->
+    item = Object.keys(@populations)[0]
+    # extract name of two sample
+    $("#OneTGUI_N_disp").text("(" + @agent + "): ")
+    $("#OneTGUI_sigma_disp").text("(" + @agent + "): ")
+    $("#OneTGUI_mean_disp").text("(" + @agent + "): ")
+
+    # update all Two_TGUI variables
+    @OneTGUI_n = @populations[item].length
+    @OneTGUI_mean = @OneTGUI.getMean(@OneTGUI.getSum(@populations[item]),@populations[item].length)
+    @OneTGUI_variance = @OneTGUI.getVariance(@populations[item], @OneTGUI_mean)
+    @OneTGUI_sigma = Math.sqrt(@OneTGUI_variance)
+    @OneTGUI_checkRange()
+    @OneTGUI_update()
+  OneTGUI_checkRange:() ->
+    @OneTGUI_nMax = Math.max(@OneTGUI_n, @OneTGUI_nMax)
+    @OneTGUI_meanMax = Math.max(@OneTGUI_mean, @OneTGUI_meanMax)
+    @OneTGUI_mean0Max = Math.max(@OneTGUI_mean0, @OneTGUI_mean0Max)
+    @OneTGUI_sigmaMax = Math.max(@OneTGUI_sigma, @OneTGUI_sigmaMax)
   OneTGUI_click: () ->
-    if @OneTGUI_first
-      $( "#sigmauid" ).slider(
-        value:@OneTGUI_sigma,
-        min: 0,
-        max: @OneTGUI_maxsigma,
-        range: "min", 
-        step: 0.0001,
-        slide: ( event, ui ) =>
-          $( "#sigmad" ).val( ui.value );
-          @OneTGUI_submit('1','sigma',ui.value);
-          return
-      )           
-      $( "#diffuid" ).slider(
-        value:@OneTGUI_diff,
-        min: 0,
-        max: @OneTGUI_maxdiff,
-        range: "min", 
-        step: 0.00005,
-        slide: ( event, ui ) =>
-          $( "#diffd" ).val( ui.value );
-          @OneTGUI_submit('1','diff',ui.value);
-          return
-      )           
-      $( "#nuid" ).slider(
-        value:@OneTGUI_n,
-        min: 0,
-        max: @OneTGUI_maxn,
-        range: "min", 
-        step: 0.0025,
-        slide: ( event, ui ) =>
-          $( "#nd" ).val( ui.value );
-          @OneTGUI_submit('1','n',ui.value);
-          return
-      )
-      $( "#poweruid" ).slider(
-        value:@OneTGUI_power,
-        min: 0,
-        max: @OneTGUI_maxpower,
-        range: "min", 
-        step: 0.0001,
-        slide: ( event, ui ) =>
-          #$( "#powerd" ).val( ui.value );
-          @OneTGUI_submit('1','power',ui.value);
-          return
-      )
-      $("#alphauid").slider(
-          min: 0.005
-          max: 0.2
-          value: @OneTGUI_alpha
-          orientation: "horizontal"
-          range: "min"
-          step: 0.01
-          slide: (event, ui) =>
-            @OneTGUI_alpha = ui.value
-            $('#alphad').val ui.value
-            @OneTGUI_submit '1', 'alpha', ui.value
-            return
-          )
-      @OneTGUI_first = false;
-    $( "#sigmauid" ).slider('value', @OneTGUI_sigma);
-    $( "#diffuid" ).slider('value',@OneTGUI_diff);
-    $( "#nuid" ).slider('value',@OneTGUI_n);
-    $( "#poweruid" ).slider('value',@OneTGUI_power);  
-    $( "#sigmad" ).val( $( "#sigmauid" ).slider( "value" ) );
-    $( "#diffd" ).val( $( "#diffuid" ).slider( "value" ) );
-    $( "#nd" ).val( $( "#nuid" ).slider( "value" ) );
-    $( "#powerd" ).val( $( "#poweruid" ).slider( "value" ) );
-  OneTGUI_clk: (evt) ->
-    obj = evt.currentTarget
-    if obj
-      id=obj.id;
-      ck=$(obj).prop("checked")
-      console.log(ck)
-      if ck
-        #console.log(evt.currentTarget.value)
-        @OneTGUI_submit("1",id,"1")
-      else
-        @OneTGUI_submit("1",id,"")
-    return  
-  OneTGUI_optd_submit: (id, key) ->
-    @OneTGUI_submit(id, key, @OneTGUI_optd)
+    $( "#OneTGUI_sigmaui" ).slider(
+      value: @OneTGUI_sigma,
+      min: 0,
+      max: @OneTGUI_sigmaMax,
+      range: 'min', 
+      step: 0.01,
+      slide: ( event, ui ) =>
+        $( "#OneTGUI_sigma_v" ).val( ui.value );
+        @OneTGUI_sigma = ui.value
+        @OneTGUI_update()
+        return
+    )
+    $( "#OneTGUI_sigma_v" ).val( @OneTGUI_sigma.toFixed(3));
+
+    $( "#OneTGUI_nui" ).slider(
+      value:@OneTGUI_n,
+      min: 0,
+      max: @OneTGUI_nMax,
+      range: "min", 
+      step: 1,
+      slide: ( event, ui ) =>
+        $( "#OneTGUI_n_v" ).val( ui.value );
+        @OneTGUI_n = ui.value
+        @OneTGUI_update()
+        return
+    )          
+    $( "#OneTGUI_n_v" ).val( @OneTGUI_n );
+
+    $( "#OneTGUI_meanui" ).slider(
+      value:@OneTGUI_mean,
+      min: 0,
+      max: @OneTGUI_meanMax,
+      range: "min", 
+      step: 0.01,
+      slide: ( event, ui ) =>
+        $( "#OneTGUI_mean_v" ).val( ui.value );
+        @OneTGUI_mean = ui.value
+        @OneTGUI_update()
+        return
+    )   
+    $( "#OneTGUI_mean_v" ).val( @OneTGUI_mean.toFixed(3) );    
+
+    $( "#OneTGUI_mean0ui" ).slider(
+      value:@OneTGUI_mean0,
+      min: 0,
+      max: @OneTGUI_mean0Max,
+      range: "min", 
+      step: 0.01,
+      slide: ( event, ui ) =>
+        $( "#OneTGUI_mean0_v" ).val( ui.value );
+        @OneTGUI_mean0 = ui.value
+        @OneTGUI_update()
+        return
+    )   
+    $( "#OneTGUI_mean0_v" ).val( @OneTGUI_mean0.toFixed(3) );   
+
+    $( "#OneTGUI_powerui" ).slider(
+      value:@OneTGUI_power,
+      min: 0.0001,
+      max: 0.9999,
+      range: "min", 
+      step: 0.0001,
+      slide:  ( event, ui ) =>
+        $( "#OneTGUI_power_v" ).val( ui.value );
+        @OneTGUI_power = ui.value
+        @OneTGUI_powerTon()
+        return
+    )         
+    $( "#OneTGUI_power_v" ).val( @OneTGUI_power.toFixed(3) );
+
+    #$( "#TwoTGUI_t_v" ).val( @OneTGUI_t.toFixed(3) );
+    #$( "#TwoTGUI_pvalue_v" ).val( @OneTGUI_pvalue.toFixed(3) );
+
+    # enable or disable slider
+    if @deployed is true
+      $("#OneTGUI_sigmaui").slider("disable")
+      $('#OneTGUI_sigmaui').find('.ui-slider-handle').hide();
+      $("#OneTGUI_nui").slider("disable")
+      $('#OneTGUI_nui').find('.ui-slider-handle').hide();
+      $("#OneTGUI_powerui").slider("disable")
+      $('#OneTGUI_powerui').find('.ui-slider-handle').hide();
+      $("#OneTGUI_meanui").slider("disable")
+      $('#OneTGUI_meanui').find('.ui-slider-handle').hide();
+    else 
+      $("#OneTGUI_sigmaui").slider("enable")
+      $('#OneTGUI_sigmaui').find('.ui-slider-handle').show();
+      $("#OneTGUI_nui").slider("enable")
+      $('#OneTGUI_nui').find('.ui-slider-handle').show();
+      $("#OneTGUI_powerui").slider("enable")
+      $('#OneTGUI_powerui').find('.ui-slider-handle').show();
+      $("#OneTGUI_meanui").slider("enable")
+      $('#OneTGUI_meanui').find('.ui-slider-handle').show();
+  OneTGUI_update: () ->
+    z = (@OneTGUI_mean - @OneTGUI_mean0)/ (@OneTGUI_sigma * Math.sqrt(@OneTGUI_n))
+    @OneTGUI_power=@distribution.pnorm(z-@distribution.qnorm(1-@OneTGUI_alpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@OneTGUI_alpha/2))
+    # @TwoTGUI_t_test()
+    @OneTGUI_checkRange()
+    @OneTGUI_click()
+    @OneTGUI_graph()
     return
-  OneTGUI_submit: (id, key, value) ->
-    d = @powerAnalysis.handle(id, key, value)
-    @OneTGUI_sigma=d.sigma
-    $("#sigmad").prop("value",d.sigma)
-    @OneTGUI_diff=d.diff;
-    $("#diffd").prop("value",d.diff);
-    @OneTGUI_n=d.n;
-    $("#nd").val(d.n);
-    @OneTGUI_power=d.power;
-    #$("#powerd").prop("value",d.power);
-    $("#optd").prop("value",d.opt);
-    $("#alphad").prop("value",d.alpha);
-    if d.tt is 1
-      $("#tt").prop("checked","checked");
+  OneTGUI_powerTon: () ->
+    # TODO:
+    @OneTGUI_n = Math.pow((@OneTGUI_sigma * (@distribution.qnorm (1 - @OneTGUI_alpha / 2) + @distribution.qnorm(@OneTGUI_power))/(@OneTGUI_mean-@OneTGUI_mean0)),2)
+    Math.ceil(@OneTGUI_n)
+    @OneTGUI_checkRange()
+    @OneTGUI_click()
+    @OneTGUI_graph()
+    return
+  OneTGUI_graph:() ->
+    
+    @OneTGUI.drawNormalCurve(@OneTGUI_mean, Math.pow(@OneTGUI_sigma, 2), @OneTGUI_sigma, @OneTGUI_alpha);
+    if @deployed
+      $("#OneTGUI_display_legend1").text(@agent)
+      $("#OneTGUI_display_legend1").css("background-color","aquamarine")
     else
-      $("#tt").prop("checked","");
-    @OneTGUI_click();                    
-  OneTGUI_show_help: () ->
-    #console.log(@cfap_help)
-    if (@OneTGUI_help == true)
-      $('#OneTGUI_H').val "Show Help"
-    else
-      $('#OnePGUI_H').val "Hide Help"
-    @OneTGUI_help = !@OneTGUI_help
+      $("#OneTGUI_display_legend1").text("Sample")
+      $("#OneTGUI_display_legend1").css("background-color","aquamarine")
     return
-  OneTGUI_changeSlider: (sliderId, evt) ->
-    #console.log("changeSlider hit")
-    key = evt.target.value
-    @OneTGUI_submit '1', sliderId, key
-    return
+  OneTGUI_changeValue: (evt) ->
+    name = evt.target.name
+    val = evt.target.value
+    key = evt.which or evt.keyCode
+    if name is "OneTGUI_n"
+      @OneTGUI_n = parseFloat(val)
+    if name is "OneTGUI_mean"
+      @OneTGUI_mean = parseFloat(val)
+    if name is "OneTGUI_mean0"
+      @OneTGUI_mean0 = parseFloat(val)
+    if name is "OneTGUI_sigma"
+      @OneTGUI_sigma = parseFloat(val)
+    if name is "OneTGUI_power"
+      @OneTGUI_power = parseFloat(val)
+    if key is 13
+      if name is "OneTGUI_power"
+        @OneTGUI_powerTon()
+        return
+      @OneTGUI_update()
+      return
+  # TwoTGUI_show_help: () ->
+  #   if @TwoTGUI_help is true
+  #     $('#TwoTGUI_H').val "Show Help"
+  #   else
+  #     $('#TwoTGUI_H').val "Hide Help"
+  #   @TwoTGUI_help = !@TwoTGUI_help
+  #   return
+  # TwoTGUI_t_test: () ->
+  #   v1 = Math.pow(@TwoTGUI_sigma1,2) / @TwoTGUI_n1
+  #   v2 = Math.pow(@TwoTGUI_sigma2,2) / @TwoTGUI_n2
+  #   df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@TwoTGUI_n1 - 1.0) + Math.pow(v2,2) / (@TwoTGUI_n2 - 1.0))
+  #   @TwoTGUI_t = @tdistr(df, 1-@TwoTGUI_alpha)
+  #   @TwoTGUI_pvalue = @tprob(df, @TwoTGUI_t)
 
   #functions for Pilot only
   Pilot_click: () ->
@@ -1281,6 +1335,21 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@TwoTGUI_n1 - 1.0) + Math.pow(v2,2) / (@TwoTGUI_n2 - 1.0))
     @TwoTGUI_t = @tdistr(df, 1-@TwoTGUI_alpha)
     @TwoTGUI_pvalue = @tprob(df, @TwoTGUI_t)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   tprob: ($n, $x) ->
     if $n <= 0
       throw 'Invalid n: $n\n'

@@ -174,7 +174,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			if (@chosenLabel isnt "none") and (@chosenLabel isnt null)
 
 				#extract index if col
-				index = data.header.indexOf(@chosenCols[0])
+				index = data.header.indexOf(@chosenCols)
 
 				#check if index if -1
 				if index is -1
@@ -183,20 +183,18 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 				#extract data from container to population 
 				@populations = {}
-				for elt in @chosenVars
-					@populations[elt] = []
-					for row in @container[elt]
-						@populations[elt].push(row[index])
+				@populations[@chosenVars] = []
+				for row in @container[@chosenVars]
+					@populations[@chosenVars].push(row[index])
 				console.log @populations
 
 			else
-
 				# extract data from data to population
-				index1 = data.header.indexOf(@chosenCols[0])
+				index1 = data.header.indexOf(@chosenCols)
 				@populations = {}
-				@populations[@chosenCols[0]] = []
+				@populations[@chosenCols] = []
 				for row in data.data
-					@populations[@chosenCols[0]].push(row[index1])
+					@populations[@chosenCols].push(row[index1])
 				console.log @populations
 
 
