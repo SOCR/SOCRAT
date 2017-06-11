@@ -140,14 +140,14 @@ module.exports = class PowerCalc_OneTGUI extends BaseService
     .attr("transform", "translate(" + (xScale(leftBound))+ ",0)")
     .call(yAxis)
 
-    _graph.append("line")
-    .attr("x1", xScale(mean0))
-    .attr("y1", 0)
-    .attr("x2", xScale(mean0))
-    .attr("y2", yScale(topBound))
-    .style("stroke-width", 2)
-    .style("stroke", "red")
-    .style("fill", "none");
+    _graph.append("svg:g")       
+    .append("line")     
+    .attr('x1', xScale(mean0))        
+    .attr('x2', xScale(mean0))        
+    .attr('y1', yScale(0))      
+    .attr('y2', yScale(topBound))      
+    .attr('stroke', 'black')        
+    .attr('stroke-width', 1)
     
     # make x y axis thin
     _graph.selectAll('.x.axis path')
