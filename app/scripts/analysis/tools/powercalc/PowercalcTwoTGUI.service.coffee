@@ -109,7 +109,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     #console.log "xScale: " + xScale
     yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
 
-    xAxis = d3.svg.axis().ticks(20)
+    xAxis = d3.svg.axis().ticks(10)
     .scale(xScale)
 
     yAxis = d3.svg.axis()
@@ -153,7 +153,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .attr("class", "y axis")
     .attr("transform", "translate(" + (xScale(leftBound))+ ",0)")
     .call(yAxis)
-    
+
     # make x y axis thin
     _graph.selectAll('.x.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
@@ -177,10 +177,10 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .attr('fill', "chocolate");
     
     # rotate text on x axis
-    _graph.selectAll('.x.axis text')
-    .attr('transform', (d) ->
-       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-    .style('font-size', '16px')
+    # _graph.selectAll('.x.axis text')
+    # .attr('transform', (d) ->
+    #    'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+    # .style('font-size', '16px')
 
     return
 

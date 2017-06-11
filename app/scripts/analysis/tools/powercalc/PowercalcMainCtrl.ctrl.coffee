@@ -86,7 +86,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @OneTGUI_mean = 10
     @OneTGUI_meanMax = 20
     @OneTGUI_mean0 = 10
-    @OneTGUI_mean0Max = 20
     @OneTGUI_sigma = 10
     @OneTGUI_sigmaMax = 20
     @OneTGUI_power = 0
@@ -207,6 +206,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       @deployed=data.deploy
       d3.select("#Two_TGUI_graph").select("svg").remove()
       @TwoTGUI_update()
+      @OneTGUI_update()
       if !@deployed
         $("#psigma1i").text("1: ")
         $("#psigma2i").text("2: ")
@@ -614,7 +614,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   OneTGUI_checkRange:() ->
     @OneTGUI_nMax = Math.max(@OneTGUI_n, @OneTGUI_nMax)
     @OneTGUI_meanMax = Math.max(@OneTGUI_mean, @OneTGUI_meanMax)
-    @OneTGUI_mean0Max = Math.max(@OneTGUI_mean0, @OneTGUI_mean0Max)
     @OneTGUI_sigmaMax = Math.max(@OneTGUI_sigma, @OneTGUI_sigmaMax)
   OneTGUI_click: () ->
     $( "#OneTGUI_sigmaui" ).slider(
@@ -662,7 +661,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $( "#OneTGUI_mean0ui" ).slider(
       value:@OneTGUI_mean0,
       min: 0,
-      max: @OneTGUI_mean0Max,
+      max: @OneTGUI_meanMax,
       range: "min", 
       step: 0.01,
       slide: ( event, ui ) =>
@@ -727,12 +726,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     return
   OneTGUI_graph:() ->
     
-    @OneTGUI.drawNormalCurve(@OneTGUI_mean, Math.pow(@OneTGUI_sigma, 2), @OneTGUI_sigma, @OneTGUI_alpha);
+    @OneTGUI.drawNormalCurve(@OneTGUI_mean0, @OneTGUI_mean, Math.pow(@OneTGUI_sigma, 2), @OneTGUI_sigma, @OneTGUI_alpha);
     if @deployed
-      $("#OneTGUI_display_legend1").text(@agent)
+      $("#OneTGUI_display_legend1").text(@agent+": "+@OneTGUI_mean)
       $("#OneTGUI_display_legend1").css("background-color","aquamarine")
     else
-      $("#OneTGUI_display_legend1").text("Sample")
+      $("#OneTGUI_display_legend1").text("Sample: "+@OneTGUI_mean)
       $("#OneTGUI_display_legend1").css("background-color","aquamarine")
     return
   OneTGUI_changeValue: (evt) ->
@@ -1289,13 +1288,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   TwoTGUI_graph:() ->
     @TwoTGUI.drawNormalCurve(@TwoTGUI_mean1, Math.pow(@TwoTGUI_sigma1, 2), @TwoTGUI_sigma1, @TwoTGUI_mean2, Math.pow(@TwoTGUI_sigma2, 2), @TwoTGUI_sigma2, @TwoTGUI_alpha);
     if @deployed
-      $("#display_legend1").text(@comp_agents[0])
-      $("#display_legend2").text(@comp_agents[1])
+      $("#display_legend1").text(@comp_agents[0]+": "+@TwoTGUI_mean1)
+      $("#display_legend2").text(@comp_agents[1]+": "+@TwoTGUI_mean2)
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
     else
-      $("#display_legend1").text("Sample1")
-      $("#display_legend2").text("Sample2")
+      $("#display_legend1").text("Sample1: " + @TwoTGUI_mean1)
+      $("#display_legend2").text("Sample2: " + @TwoTGUI_mean2)
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
   TwoTGUI_changeValue: (evt) ->

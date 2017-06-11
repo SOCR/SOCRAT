@@ -71,7 +71,7 @@ module.exports = class PowerCalc_OneTGUI extends BaseService
       values.push data[Math.floor(Math.random() * data.length)]
     return values
 
-  drawNormalCurve: (mean_in1, variance_in1, sigma_in1, alpha_in) ->
+  drawNormalCurve: (mean0, mean_in1, variance_in1, sigma_in1, alpha_in) ->
     margin = {top: 20, right: 20, bottom: 20, left:20}
     width = 500 - margin.left - margin.right
     height = 500 - margin.top - margin.bottom
@@ -104,7 +104,7 @@ module.exports = class PowerCalc_OneTGUI extends BaseService
     #console.log "xScale: " + xScale
     yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
 
-    xAxis = d3.svg.axis().ticks(20)
+    xAxis = d3.svg.axis().ticks(10)
     .scale(xScale)
 
     yAxis = d3.svg.axis()
@@ -139,6 +139,15 @@ module.exports = class PowerCalc_OneTGUI extends BaseService
     .attr("class", "y axis")
     .attr("transform", "translate(" + (xScale(leftBound))+ ",0)")
     .call(yAxis)
+
+    _graph.append("line")
+    .attr("x1", xScale(mean0))
+    .attr("y1", 0)
+    .attr("x2", xScale(mean0))
+    .attr("y2", yScale(topBound))
+    .style("stroke-width", 2)
+    .style("stroke", "red")
+    .style("fill", "none");
     
     # make x y axis thin
     _graph.selectAll('.x.axis path')
@@ -156,10 +165,10 @@ module.exports = class PowerCalc_OneTGUI extends BaseService
 
     
     # rotate text on x axis
-    _graph.selectAll('.x.axis text')
-    .attr('transform', (d) ->
-       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-    .style('font-size', '16px')
+    # _graph.selectAll('.x.axis text')
+    # .attr('transform', (d) ->
+    #    'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+    # .style('font-size', '16px')
 
     return
 
