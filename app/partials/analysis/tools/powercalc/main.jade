@@ -473,7 +473,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         <br>
         p power: The probability of the critical region, given lambda and n.</p>
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
-    h5 Two-Sample Test with Power Analysis
+    h5 Two-Sample t Test with Power Analysis <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="bottom"></span>
     .row
       .col-md-7.col-xs-7
         div(id="Two_TGUI_graph" class="graph")
