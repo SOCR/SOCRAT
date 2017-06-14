@@ -170,6 +170,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_powerMax = 1 
     @TwoTGUI_t = 0
     @TwoTGUI_pvalue = 0
+    @TwoTGUI_mode = "Two Tailed"
+    @TwoTGUI_modes = ["Two Tailed", "One Tailed"]
     @TwoTGUI_update()
     
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
@@ -1269,22 +1271,43 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $("#TwoTGUI_mean2ui").slider("enable")
       $('#TwoTGUI_mean2ui').find('.ui-slider-handle').show();
   TwoTGUI_update: () ->
+    TwoTGUI_var1 = Math.pow(@TwoTGUI_sigma1,2)
+    TwoTGUI_var2 = Math.pow(@TwoTGUI_sigma2,2)
     kappa = @TwoTGUI_n1 / @TwoTGUI_n2
-    z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / (Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2)) * Math.sqrt((1+(1 / kappa)) / @TwoTGUI_n2))
-    @TwoTGUI_power = @distribution.pnorm(z-@distribution.qnorm(1-@TwoTGUI_alpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@TwoTGUI_alpha/2))
+
+    # calculate power using different modes
+    if @TwoTGUI_mode is "Two Tailed"
+      z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / (Math.sqrt(TwoTGUI_var1 + TwoTGUI_var2) * Math.sqrt((1+(1 / kappa)) / @TwoTGUI_n2))
+      @TwoTGUI_power = @distribution.pnorm(z-@distribution.qnorm(1-@TwoTGUI_alpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@TwoTGUI_alpha/2))
+    else 
+      z = (@TwoTGUI_mean1 - @TwoTGUI_mean2) / Math.sqrt(TwoTGUI_var1 + TwoTGUI_var2 / kappa) * Math.sqrt(@TwoTGUI_n1)
+      @TwoTGUI_power = @distribution.pnorm(z-@distribution.qnorm(1-@TwoTGUI_alpha))
+
     @TwoTGUI_t_test()
     @TwoTGUI_checkRange()
     @TwoTGUI_click()
     @TwoTGUI_graph()
+    return
+
   TwoTGUI_powerTon: () ->
-    kappa = 1
+    kappa = @TwoTGUI_n1 / @TwoTGUI_n2
     stdv = Math.sqrt(Math.pow(@TwoTGUI_sigma1,2) + Math.pow(@TwoTGUI_sigma2,2))
-    @TwoTGUI_n2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@TwoTGUI_alpha / 2)+@distribution.qnorm(1-(1-@TwoTGUI_power)))/(@TwoTGUI_mean1-@TwoTGUI_mean2),2)
-    @TwoTGUI_n2 = Math.ceil(@TwoTGUI_n2)
-    @TwoTGUI_maxn2 = Math.max(@TwoTGUI_maxn2, @TwoTGUI_n2)
+    TwoTGUI_var1 = Math.pow(@TwoTGUI_sigma1,2)
+    TwoTGUI_var2 = Math.pow(@TwoTGUI_sigma2,2)
+
+    # calculate n1 or n2 from power based on different mdoes
+    if @TwoTGUI_mode is "Two Tailed"
+      @TwoTGUI_n2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@TwoTGUI_alpha / 2)+@distribution.qnorm(@TwoTGUI_power))/(@TwoTGUI_mean1-@TwoTGUI_mean2),2)
+      @TwoTGUI_n2 = Math.ceil(@TwoTGUI_n2)
+      @TwoTGUI_maxn2 = Math.max(@TwoTGUI_maxn2, @TwoTGUI_n2)
+    else
+      @TwoTGUI_n1=(TwoTGUI_var1 + TwoTGUI_var2 / kappa) * Math.pow((@distribution.qnorm(1-@TwoTGUI_alpha)+@distribution.qnorm(@TwoTGUI_power))/(@TwoTGUI_mean1-@TwoTGUI_mean2),2)
+      @TwoTGUI_n1 = Math.ceil(@TwoTGUI_n1)
+      @TwoTGUI_maxn2 = Math.max(@TwoTGUI_maxn1, @TwoTGUI_n1)
     @TwoTGUI_checkRange()
     @TwoTGUI_click()
     @TwoTGUI_graph()
+    return
   TwoTGUI_graph:() ->
     @TwoTGUI.drawNormalCurve(@TwoTGUI_mean1, Math.pow(@TwoTGUI_sigma1, 2), @TwoTGUI_sigma1, @TwoTGUI_mean2, Math.pow(@TwoTGUI_sigma2, 2), @TwoTGUI_sigma2, @TwoTGUI_alpha);
     if @deployed
@@ -1334,7 +1357,29 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@TwoTGUI_n1 - 1.0) + Math.pow(v2,2) / (@TwoTGUI_n2 - 1.0))
     @TwoTGUI_t = @tdistr(df, 1-@TwoTGUI_alpha)
     @TwoTGUI_pvalue = @tprob(df, @TwoTGUI_t)
-
+  TwoTUI_reset: () ->
+    @TwoTGUI_n1 = 10
+    @TwoTGUI_n2 = 10
+    @TwoTGUI_maxn1 = 20
+    @TwoTGUI_maxn2 = 20
+    @TwoTGUI_maxn = 20
+    @TwoTGUI_mean1 = 10
+    @TwoTGUI_mean2 = 10
+    @TwoTGUI_meanMax1 = 20
+    @TwoTGUI_meanMax2 = 20
+    @TwoTGUI_meanMax = 20
+    @TwoTGUI_sigma1 = 20
+    @TwoTGUI_sigma2 = 20
+    @TwoTGUI_sigmaMax1 = 40
+    @TwoTGUI_sigmaMax2 = 40
+    @TwoTGUI_sigmaMax = 40
+    @TwoTGUI_alpha = 0.010
+    @TwoTGUI_power = 0
+    @TwoTGUI_powerMax = 1 
+    @TwoTGUI_t = 0
+    @TwoTGUI_pvalue = 0
+    @TwoTGUI_mode = "Two Tailed"
+    @TwoTGUI_update()
 
 
 
