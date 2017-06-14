@@ -1311,13 +1311,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   TwoTGUI_graph:() ->
     @TwoTGUI.drawNormalCurve(@TwoTGUI_mean1, Math.pow(@TwoTGUI_sigma1, 2), @TwoTGUI_sigma1, @TwoTGUI_mean2, Math.pow(@TwoTGUI_sigma2, 2), @TwoTGUI_sigma2, @TwoTGUI_alpha);
     if @deployed
-      $("#display_legend1").text(@comp_agents[0]+": "+@TwoTGUI_mean1)
-      $("#display_legend2").text(@comp_agents[1]+": "+@TwoTGUI_mean2)
+      $("#display_legend1").text(@comp_agents[0]+": "+@TwoTGUI_mean1.toFixed(3))
+      $("#display_legend2").text(@comp_agents[1]+": "+@TwoTGUI_mean2.toFixed(3))
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
     else
-      $("#display_legend1").text("Sample1: " + @TwoTGUI_mean1)
-      $("#display_legend2").text("Sample2: " + @TwoTGUI_mean2)
+      $("#display_legend1").text("Sample1: " + @TwoTGUI_mean1.toFixed(3))
+      $("#display_legend2").text("Sample2: " + @TwoTGUI_mean2.toFixed(3))
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
   TwoTGUI_changeValue: (evt) ->
