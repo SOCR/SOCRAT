@@ -1357,7 +1357,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@TwoTGUI_n1 - 1.0) + Math.pow(v2,2) / (@TwoTGUI_n2 - 1.0))
     @TwoTGUI_t = @tdistr(df, 1-@TwoTGUI_alpha)
     @TwoTGUI_pvalue = @tprob(df, @TwoTGUI_t)
-  TwoTUI_reset: () ->
+  TwoTGUI_reset: () ->
     @TwoTGUI_n1 = 10
     @TwoTGUI_n2 = 10
     @TwoTGUI_maxn1 = 20
