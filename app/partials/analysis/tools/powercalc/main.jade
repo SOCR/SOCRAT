@@ -240,47 +240,56 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         p This is like the exact method, except the critical values are calculated based on an adjusted Wald statistic.  This does NOT guarantee that the size of the test is less than alpha.
         p Note: This is the exact method used in the JMP statistical software.
   div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
-    h3 One-Sample (or Paired) t Test
-    p <i>This dialog provides for power analysis of a one-sample t test or a pooled t test.  The effect size is the difference between the null and the target mean (in the one-sample test), or the mean difference of the pairs (in the paired t test)</i>
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Sigma: &nbsp
-        input#sigmad(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('sigma',$event);")
-      div(style='display:inline')
-        #sigmauid(uib-tooltip="Manipulate this bar to adjust Sigma" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | True|mu-mu_0|: &nbsp
-        input#diffd(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('diff',$event);")
-      div(style='display:inline')
-        #diffuid(uib-tooltip="Manipulate this bar to adjust value" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | n: &nbsp
-        input#nd(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('n',$event);")
-      div(style='display:inline')
-        #nuid(uib-tooltip="Manipulate this bar to adjust n" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | power: &nbsp
-        input#powerd(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OneTGUI_changeSlider('power',$event);")
-      div(style='display:inline')
-        #poweruid(uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      | Solve for: &nbsp
-      select#optd(name='altt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OneTGUI_optd" ng-change="mainArea.OneTGUI_optd_submit('1','opt');")
-        option(value='0') n
-        option(value='1') Effec Size
-    div(style='margin-top:20px;')
-      |Two-Tailed
-      input#tt(type="checkbox" name="tt" ng-click="mainArea.OneTGUI_clk($event);")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Alpha: &nbsp
-        input#alphad(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OneTGUI_changeSlider('alpha',$event);")
-      div(style='display:inline')
-        #alphauid(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
-    div
+    h5 One-Sample t Test with Power Analysis
+    .row
+      .col-md-7.col-xs-7
+        div(id="One_TGUI_graph" class="graph")
+        div(style='margin-top:20px;')
+          div(style='display:inline')
+            | Power: &nbsp
+            input#OneTGUI_power_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
+            #OneTGUI_powerui
+      .col-md-5.col.xs-5
+        div
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') N
+              p#OneTGUI_N_disp(style='display:inline') :&nbsp;
+              input#OneTGUI_n_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
+            div(style='display:inline')
+              #OneTGUI_nui
+        div
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') Mean
+              p#OneTGUI_mean_disp(style='display:inline') :&nbsp;
+              input#OneTGUI_mean_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_mean',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
+              #OneTGUI_meanui
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') Mean0
+              p#OneTGUI_mean0_disp(style='display:inline'):&nbsp;
+              input#OneTGUI_mean0_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_mean0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
+              #OneTGUI_mean0ui
+        div
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') &sigma; 
+              p#OneTGUI_sigma_disp(style='display:inline') :&nbsp;
+              input#OneTGUI_sigma_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_sigma',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
+              #OneTGUI_sigmaui
+
+        <br>
+        div(hidden)
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') t-critical
+              input#OneTGUI_t_v(ng-disabled="true" type="text" name='OneTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+          div(style='margin-top:20px;')
+            div(style='display:inline')
+              p(style='display:inline') p-value
+              input#OneTGUI_pvalue_v(ng-disabled="true" type="text" name='OneTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+    div(hidden)
       input#OneTGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OneTGUI_show_help();')
       div(ng-show='mainArea.OneTGUI_help == true;')
         p You may choose whether to solve for effect size or sample size when you click on the "Power" slider.  The current values are scaled upward or downward to make the power come out right, while preserving (at least approximately) the ratio of the two SDs or two ns
@@ -464,19 +473,39 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         <br>
         p power: The probability of the critical region, given lambda and n.</p>
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
-    h5 Two-Sample Test with Power Analysis
+    h5 Two-Sample t Test with Power Analysis <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="This power analysis is for tests concerning whether the means of two groups are different." tooltip-placement="bottom"></span>
     .row
-      .col-md-7.col-xs-7
+      .col-md-7
         div(id="Two_TGUI_graph" class="graph")
         div(style='margin-top:20px;')
           div(style='display:inline')
             | Power: &nbsp
             input#TwoTGUI_power_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
             #TwoTGUI_powerui
-      .col-md-5.col.xs-5
+        button.btn.btn-primary.btn-sm(
+          ng-hide="mainArea.deployed"
+          type="submit"
+          aria-label="Reset"
+          ng-click="mainArea.TwoTGUI_reset()")
+            | Reset&nbsp;
+      .col-md-5
+        div
+          div.form-group
+            fieldset
+              label(
+                style=''
+              ) Choose an mode &nbsp;
+              select.form-control(
+                style='margin-bottom:20px;'
+                ng-model="mainArea.TwoTGUI_mode"
+                ng-init="mainArea.TowTGUI_mode = 'Two Tailed'"
+                ng-options="mode for mode in mainArea.TwoTGUI_modes"
+                ng-change="mainArea.TwoTGUI_update()"
+              )
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="size of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') N
               p#pn1i(style='display:inline') 1:&nbsp;
               input#TwoTGUI_n1_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
@@ -484,6 +513,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               #TwoTGUI_n1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="size of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') N
               p#pn2i(style='display:inline') 2:&nbsp;
               input#TwoTGUI_n2_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
@@ -492,25 +522,29 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
-              p(style='display:inline') Mean
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
+              p(style='display:inline') &mu;
               p#pmean1i(style='display:inline') 1:&nbsp;
               input#TwoTGUI_mean1_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_mean1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
               #TwoTGUI_mean1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
-              p(style='display:inline') Mean
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
+              p(style='display:inline') &mu;
               p#pmean2i(style='display:inline') 2:&nbsp;
               input#TwoTGUI_mean2_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_mean2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
               #TwoTGUI_mean2ui
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &sigma; 
               p#psigma1i(style='display:inline') 1:&nbsp;
               input#TwoTGUI_sigma1_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
               #TwoTGUI_sigma1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &sigma; 
               p#psigma2i(style='display:inline') 2:&nbsp;
               input#TwoTGUI_sigma2_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
@@ -519,23 +553,17 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="TODO" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') t-critical
               p#psigma1i(style='display:inline') :&nbsp;
               input#TwoTGUI_t_v(ng-disabled="true" type="text" name='TwoTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="TODO" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') p-value
               p#psigma1i(style='display:inline') :&nbsp;
               input#TwoTGUI_pvalue_v(ng-disabled="true" type="text" name='TwoTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
 
-    div(hidden)
-      input#TwoTGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.TwoTGUI_show_help();')
-      div(ng-show='mainArea.TwoTGUI_help == true;') 
-        p Options Menu
-        p "Use integrated power" is an experimental enhancement. Consider the plot of power versus alpha; integrated power is the area under that curve.  (This curve is also known as the ROC - receiver operating characteristic - curve.)  The integrated power, or area under the ROC curve, is the average power over all possible values of alpha (therefore, it does not depend on alpha).
-        p Integrated power has the following useful interpretation: Consider two hypothetical studies of identical size and design.  Suppose that in one of them, there is no difference between the means, and in the other, the difference is the value specified in the dialog.  We compute the t statistic in each study.  Then the integrated power is the probability that the t statistic for the second (non-null) study is "more significant" than the one from the null study.  That is, it is the chance that we will correctly distinguish the null and non-null studies. The lowest possible integrated power is .5 except in unreasonable situations (such as using a right-tailed test when the difference is negative).
-        p An advantage of using integrated power instead of power is that it doesn't require you to specify the value of alpha (so the "alpha" widget disappears when you select the integrated power method). Also, it is somewhat removed from the trappings of hypothesis testing, in that in the above description, the t statistic is only used as a measure of effect size, not as a decision rule.  This may make it more palatable to some people (please tell me what you think!)  A suggested target integrated power is 0.95 - roughly comparable to a power of .80 at alpha = .05.
-        p The above description of integrated power is for a regular t test, as opposed to an equivalence test.  In an equivalence test, the analogous definition and interpretation applies, but in cases where the threshold is too small relative to sigma1 and sigma2, the power function is severely bounded and this can make the integrated power less than .5.
 
 
 
