@@ -13,11 +13,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     console.log("mainArea initialized")
     @powerAnalysis = require 'powercalc'
     @distribution = require 'distributome'
-    require.context(
-      "mathjax",
-      true,
-      /[\/\\]*\.js$/
-      )
+    # require.context(
+    #   "mathjax",
+    #   true,
+    #   /[\/\\]*\.js$/
+    #   )
     @Mathjax = require 'mathjax/MathJax.js'
     # require 'mathjax/jax/input/Tex/config.js'
     # require 'mathjax/jax/output/HTML-CSS/config.js'
