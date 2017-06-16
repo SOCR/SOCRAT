@@ -13,7 +13,26 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     console.log("mainArea initialized")
     @powerAnalysis = require 'powercalc'
     @distribution = require 'distributome'
-    @jstat = require 'jstat'
+    require.context(
+      "mathjax",
+      true,
+      /[\/\\]*\.js$/
+      )
+    @Mathjax = require 'mathjax/MathJax.js'
+    # require 'mathjax/jax/input/Tex/config.js'
+    # require 'mathjax/jax/output/HTML-CSS/config.js'
+    # require 'mathjax/extensions/tex2jax.js'
+    # require 'mathjax/extensions/MathMenu.js'
+    # require 'mathjax/extensions/MathZoom.js'
+    # require 'mathjax/jax/element/mml/jax.js'
+    # require 'mathjax/jax/input/TeX/jax.js'
+    # require 'mathjax/jax/output/HTML-CSS/jax.js'
+    # require 'mathjax/extensions/MathEvents.js'
+    # require 'mathjax/jax/output/HTML-CSS/fonts/TeX/fontdata.js'
+    # require 'mathjax/'
+    # require 'mathjax/'
+    # require 'mathjax/'
+    # require 'mathjax/'
     @msgService = @app_analysis_powercalc_msgService
     @title = 'Power Calculator Module'
     #algorithm type
@@ -30,13 +49,14 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @comp_agents = []
     @agent = ""
 
-    @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
-#      @showresults = off if @showresults is on
-      # safe enforce $scope.$digest to activate directive watchers
-      @$timeout => @updateChartData(data)
+#     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
+# #      @showresults = off if @showresults is on
+#       # safe enforce $scope.$digest to activate directive watchers
+#       @$timeout =>
+#         @updateChartData(data)
 
-    @$scope.$on 'powercalc:updateDataType', (event, dataType) =>
-      @dataType = dataType
+    # @$scope.$on 'powercalc:updateDataType', (event, dataType) =>
+    #   @dataType = dataType
 
     #variables needed for cfap only
     @cfap_nn = 1
@@ -172,6 +192,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_pvalue = 0
     @TwoTGUI_mode = "Two Tailed"
     @TwoTGUI_modes = ["Two Tailed", "One Tailed"]
+    
+    @render_mathjax()
     @TwoTGUI_update()
     
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
@@ -209,6 +231,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       d3.select("#Two_TGUI_graph").select("svg").remove()
       @TwoTGUI_update()
       @OneTGUI_update()
+      @render_mathjax()
       if !@deployed
         $("#psigma1i").text("1: ")
         $("#psigma2i").text("2: ")
@@ -224,6 +247,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
 
+  render_mathjax: () ->
+    @Mathjax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
 
   drive_data: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
@@ -357,6 +391,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cfap_submit '1', sliderId, key
     return
   cfap_show_help: () ->
+    @render_mathjax()
     #console.log(@cfap_help)
     if (@cfap_help == true)
       $('#cfapH').val "Show Help"

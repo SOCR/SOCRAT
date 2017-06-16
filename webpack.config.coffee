@@ -69,6 +69,9 @@ module.exports =
       test: /[\/\\]dw\.js$/
       loader: 'imports?dv=datavore!imports?Highlight=highlight!exports?dw'
     ,
+      test: /[\/\\]MathJax\.js$/
+      loader: 'imports?this=>window!exports?MathJax'
+    ,
       test: /[\/\\]flat-ui\.js$/
       loader: 'imports?this=>window'
     ,
