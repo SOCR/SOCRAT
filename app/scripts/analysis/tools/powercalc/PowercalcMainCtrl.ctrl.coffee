@@ -13,7 +13,23 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     console.log("mainArea initialized")
     @powerAnalysis = require 'powercalc'
     @distribution = require 'distributome'
-    # @Mathjax = require 'mathjax'
+    # require('mathjax')
+    # require('mathjax/unpacked/jax/input/TeX/config.js')
+    # require('mathjax/unpacked/jax/output/HTML-CSS/config.js')
+    # require('mathjax/unpacked/extensions/tex2jax.js')
+    # require('mathjax/unpacked/extensions/MathMenu.js')
+    # require('mathjax/unpacked/extensions/MathZoom.js')
+    # require('mathjax/unpacked/jax/element/mml/jax.js')
+    # require('mathjax/unpacked/jax/input/TeX/jax.js')
+    # require('mathjax/unpacked/jax/output/HTML-CSS/jax.js')
+    # require('mathjax/unpacked/extensions/MathEvents.js')
+    # require('mathjax/unpacked/jax/output/HTML-CSS/fonts/TeX/fontdata.js')
+    # require('mathjax/unpacked/jax/output/HTML-CSS/jax.js')
+    # require('mathjax/unpacked/jax/output/HTML-CSS/fonts/STIX/fontdata.js')
+    # require('mathjax/')
+    # require('mathjax/')
+    # require('mathjax/')
+    # require('mathjax/')
     @msgService = @app_analysis_powercalc_msgService
     @title = 'Power Calculator Module'
     #algorithm type
@@ -165,7 +181,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @TwoTGUI_mode = "Two Tailed"
     @TwoTGUI_modes = ["Two Tailed", "One Tailed"]
     
-    # @render_mathjax()
+    #@render_mathjax()
     @TwoTGUI_update()
     
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
@@ -203,7 +219,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       d3.select("#Two_TGUI_graph").select("svg").remove()
       @TwoTGUI_update()
       @OneTGUI_update()
-      @render_mathjax()
+      #@render_mathjax()
       if !@deployed
         $("#psigma1i").text("1: ")
         $("#psigma2i").text("2: ")
@@ -219,20 +235,29 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
 
-  # render_mathjax: () ->
-  #   @Mathjax.config({
-  #     MathJax: {
-  #       extensions: ["tex2jax.js"],
-  #       jax: ["input/TeX", "output/HTML-CSS"],
-  #       tex2jax: {
-  #         inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-  #         displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
-  #         processEscapes: true
-  #       },
-  #       "HTML-CSS": { availableFonts: ["TeX"] }
-  #     }
-  #   });
-  #   @Mathjax.start()
+  render_mathjax: () ->
+    # window.MathJax.Ajax.config.root="../node_modules/mathjax"
+    window.MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    })
+
+    # @MathJax.Hub.Config({
+    #   extensions: ["tex2jax.js"],
+    #   jax: ["input/TeX", "output/HTML-CSS"],
+    #   tex2jax: {
+    #     inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    #     displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    #     processEscapes: true
+    #   },
+    #   "HTML-CSS": { availableFonts: ["TeX"] }
+    # });
     
   drive_data: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
