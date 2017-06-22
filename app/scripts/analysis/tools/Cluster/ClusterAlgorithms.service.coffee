@@ -38,7 +38,7 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
         res = @clusterStep algName
         cb(res) if cb?
       else @$interval.cancel interval
-    , iterDelayt
+    , iterDelay
 
   evaluateAccuracy: (labels, trueLabels) ->
     accuracy = {}

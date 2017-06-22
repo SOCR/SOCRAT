@@ -468,7 +468,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div(style='margin-top:20px;')
           div(style='display:inline')
             | Power: &nbsp
-            input#TwoTGUI_power_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
+            input#TwoTGUI_power_v(ng-disabled="mainArea.deployed" type="number" step="any" name='TwoTGUI_power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.TwoTGUI_power" ng-keypress="mainArea.TwoTGUI_changeValue($event)")
             #TwoTGUI_powerui
         button.btn.btn-primary.btn-sm(
           ng-hide="mainArea.deployed"
@@ -496,7 +496,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="size of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') N
               p#pn1i(style='display:inline') 1:&nbsp;
-              input#TwoTGUI_n1_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
+              input#TwoTGUI_n1_v(ng-disabled="mainArea.deployed" type="number" step="1" name='TwoTGUI_n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.TwoTGUI_n1" ng-keypress="mainArea.TwoTGUI_changeValue($event)")
             div(style='display:inline')
               #TwoTGUI_n1ui
           div(style='margin-top:20px;')
@@ -504,7 +504,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="size of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') N
               p#pn2i(style='display:inline') 2:&nbsp;
-              input#TwoTGUI_n2_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
+              input#TwoTGUI_n2_v(ng-disabled="mainArea.deployed" type="number" step="1" name='TwoTGUI_n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.TwoTGUI_n2" ng-keypress="mainArea.TwoTGUI_changeValue($event)")
             div(style='display:inline')
               #TwoTGUI_n2ui
         div
@@ -513,14 +513,14 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &mu;
               p#pmean1i(style='display:inline') 1:&nbsp;
-              input#TwoTGUI_mean1_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_mean1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
+              input#TwoTGUI_mean1_v(ng-disabled="mainArea.deployed" type="number" step="any" name='TwoTGUI_mean1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.TwoTGUI_mean1" ng-keypress="mainArea.TwoTGUI_changeValue($event)")
               #TwoTGUI_mean1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &mu;
               p#pmean2i(style='display:inline') 2:&nbsp;
-              input#TwoTGUI_mean2_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_mean2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
+              input#TwoTGUI_mean2_v(ng-disabled="mainArea.deployed" type="number" step="any" name='TwoTGUI_mean2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.TwoTGUI_mean2" ng-keypress="mainArea.TwoTGUI_changeValue($event)")
               #TwoTGUI_mean2ui
         div
           div(style='margin-top:20px;')
@@ -528,14 +528,14 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &sigma; 
               p#psigma1i(style='display:inline') 1:&nbsp;
-              input#TwoTGUI_sigma1_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
+              input#TwoTGUI_sigma1_v(ng-disabled="mainArea.deployed" type="number" step="any" name='TwoTGUI_sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.TwoTGUI_sigma1" ng-keypress="mainArea.TwoTGUI_changeValue($event)")
               #TwoTGUI_sigma1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &sigma; 
               p#psigma2i(style='display:inline') 2:&nbsp;
-              input#TwoTGUI_sigma2_v(ng-disabled="mainArea.deployed" type="text" name='TwoTGUI_sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.TwoTGUI_changeValue($event)")
+              input#TwoTGUI_sigma2_v(ng-disabled="mainArea.deployed" type="number" step="any" name='TwoTGUI_sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.TwoTGUI_sigma2" ng-keypress="mainArea.TwoTGUI_changeValue($event)")
               #TwoTGUI_sigma2ui
         <br>
         div
@@ -544,13 +544,13 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="Test Statistics Value" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') t-critical
               p#psigma1i(style='display:inline') :&nbsp;
-              input#TwoTGUI_t_v(ng-disabled="true" type="text" name='TwoTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+              input#TwoTGUI_t_v(ng-disabled="true" type="number" step="any" ng-model="mainArea.TwoTGUI_t" name='TwoTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="P-value" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') p-value
               p#psigma1i(style='display:inline') :&nbsp;
-              input#TwoTGUI_pvalue_v(ng-disabled="true" type="text" name='TwoTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+              input#TwoTGUI_pvalue_v(ng-disabled="true" type="number" step="any" ng-model="mainArea.TwoTGUI_pvalue" name='TwoTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
 
 
 

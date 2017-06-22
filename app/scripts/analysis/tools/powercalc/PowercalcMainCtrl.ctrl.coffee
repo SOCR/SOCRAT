@@ -1359,20 +1359,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     name = evt.target.name
     val = evt.target.value
     key = evt.which or evt.keyCode
-    if name is "TwoTGUI_n1"
-      @TwoTGUI_n1 = parseFloat(val)
-    if name is "TwoTGUI_n2"
-      @TwoTGUI_n2 = parseFloat(val)
-    if name is "TwoTGUI_mean1"
-      @TwoTGUI_mean1 = parseFloat(val)
-    if name is "TwoTGUI_mean2"
-      @TwoTGUI_mean2 = parseFloat(val)
-    if name is "TwoTGUI_sigma1"
-      @TwoTGUI_sigma1 = parseFloat(val)
-    if name is "TwoTGUI_sigma2"
-      @TwoTGUI_sigma2 = parseFloat(val)
-    if name is "TwoTGUI_power"
-      @TwoTGUI_power = parseFloat(val)
     if key is 13
       if name is "TwoTGUI_power"
         @TwoTGUI_powerTon()
