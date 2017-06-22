@@ -158,28 +158,28 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
     #variables needed for twoTest only
     @twoTest = @app_analysis_powercalc_twoTest
-    @twoTest_n1 = 10
-    @twoTest_n2 = 10
-    @twoTest_maxn1 = 20
-    @twoTest_maxn2 = 20
-    @twoTest_maxn = 20
-    @twoTest_mean1 = 10
-    @twoTest_mean2 = 10
-    @twoTest_meanMax1 = 20
-    @twoTest_meanMax2 = 20
-    @twoTest_meanMax = 20
-    @twoTest_sigma1 = 20
-    @twoTest_sigma2 = 20
-    @twoTest_sigmaMax1 = 40
-    @twoTest_sigmaMax2 = 40
-    @twoTest_sigmaMax = 40
-    @twoTest_alpha = 0.010
-    @twoTest_power = 0
-    @twoTest_powerMax = 1 
-    @twoTest_t = 0
-    @twoTest_pvalue = 0
-    @twoTest_mode = "Two Tailed"
-    @twoTest_modes = ["Two Tailed", "One Tailed"]
+    @twoTestn1 = 10
+    @twoTestn2 = 10
+    @twoTestmaxn1 = 20
+    @twoTestmaxn2 = 20
+    @twoTestmaxn = 20
+    @twoTestmean1 = 10
+    @twoTestmean2 = 10
+    @twoTestmeanMax1 = 20
+    @twoTestmeanMax2 = 20
+    @twoTestmeanMax = 20
+    @twoTestsigma1 = 20
+    @twoTestsigma2 = 20
+    @twoTestsigmaMax1 = 40
+    @twoTestsigmaMax2 = 40
+    @twoTestsigmaMax = 40
+    @twoTestalpha = 0.010
+    @twoTestpower = 0
+    @twoTestpowerMax = 1 
+    @twoTestt = 0
+    @twoTestpvalue = 0
+    @twoTestmode = "Two Tailed"
+    @twoTestmodes = ["Two Tailed", "One Tailed"]
     
     #@render_mathjax()
     @twoTestUpdate()
@@ -202,11 +202,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @agent = data.chosenVar
       @drive_data()
 
-    @$scope.$on 'powercalc:twoTest_alpha', (event, data)=>
-      @twoTest_alpha = data.alpha_in
+    @$scope.$on 'powercalc:twoTestalpha', (event, data)=>
+      @twoTestalpha = data.alpha_in
       @twoTestUpdate()
 
-    @$scope.$on 'powercalc:twoTest_data', (event, data)=>
+    @$scope.$on 'powercalc:twoTestdata', (event, data)=>
       @populations = data.populations
       if (data.chosenCol.length is 2)
         @comp_agents = data.chosenCol
@@ -723,8 +723,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     )         
     $( "#OneTGUI_power_v" ).val( @OneTGUI_power.toFixed(3) );
 
-    #$( "#twoTest_t_v" ).val( @OneTGUI_t.toFixed(3) );
-    #$( "#twoTest_pvalue_v" ).val( @OneTGUI_pvalue.toFixed(3) );
+    #$( "#twoTestt_v" ).val( @OneTGUI_t.toFixed(3) );
+    #$( "#twoTestpvalue_v" ).val( @OneTGUI_pvalue.toFixed(3) );
 
     # enable or disable slider
     if @deployed is true
@@ -791,19 +791,19 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         return
       @OneTGUI_update()
       return
-  # twoTest_show_help: () ->
-  #   if @twoTest_help is true
-  #     $('#twoTest_H').val "Show Help"
+  # twoTestshow_help: () ->
+  #   if @twoTesthelp is true
+  #     $('#twoTestH').val "Show Help"
   #   else
-  #     $('#twoTest_H').val "Hide Help"
-  #   @twoTest_help = !@twoTest_help
+  #     $('#twoTestH').val "Hide Help"
+  #   @twoTesthelp = !@twoTesthelp
   #   return
   # twoTestTTest: () ->
-  #   v1 = Math.pow(@twoTest_sigma1,2) / @twoTest_n1
-  #   v2 = Math.pow(@twoTest_sigma2,2) / @twoTest_n2
-  #   df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@twoTest_n1 - 1.0) + Math.pow(v2,2) / (@twoTest_n2 - 1.0))
-  #   @twoTest_t = @tdistr(df, 1-@twoTest_alpha)
-  #   @twoTest_pvalue = @tprob(df, @twoTest_t)
+  #   v1 = Math.pow(@twoTestsigma1,2) / @twoTestn1
+  #   v2 = Math.pow(@twoTestsigma2,2) / @twoTestn2
+  #   df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@twoTestn1 - 1.0) + Math.pow(v2,2) / (@twoTestn2 - 1.0))
+  #   @twoTestt = @tdistr(df, 1-@twoTestalpha)
+  #   @twoTestpvalue = @tprob(df, @twoTestt)
 
   #functions for Pilot only
   Pilot_click: () ->
@@ -1151,208 +1151,199 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $("#pn2i").text("(" + @comp_agents[1] + "): ")
     $("#pmean1i").text("(" + @comp_agents[0] + "): ")
     $("#pmean2i").text("(" + @comp_agents[1] + "): ")
-
     # update all Two_TGUI variables
-    @twoTest_n1 = @populations[item1].length
-    @twoTest_n2 = @populations[item2].length
-    @twoTest_mean1 = @twoTest.getMean(@twoTest.getSum(@populations[item1]),@populations[item1].length)
-    @twoTest_mean2 = @twoTest.getMean(@twoTest.getSum(@populations[item2]),@populations[item2].length)
-    twoTest_variance1 = @twoTest.getVariance(@populations[item1], @twoTest_mean1)
-    twoTest_variance2 = @twoTest.getVariance(@populations[item2], @twoTest_mean2)
-    @twoTest_sigma1 = Math.sqrt(twoTest_variance1)
-    @twoTest_sigma2 = Math.sqrt(twoTest_variance2)
-
+    @twoTestn1 = @populations[item1].length
+    @twoTestn2 = @populations[item2].length
+    @twoTestmean1 = @twoTest.getMean(@twoTest.getSum(@populations[item1]),@populations[item1].length)
+    @twoTestmean2 = @twoTest.getMean(@twoTest.getSum(@populations[item2]),@populations[item2].length)
+    twoTestvariance1 = @twoTest.getVariance(@populations[item1], @twoTestmean1)
+    twoTestvariance2 = @twoTest.getVariance(@populations[item2], @twoTestmean2)
+    @twoTestsigma1 = Math.sqrt(twoTestvariance1)
+    @twoTestsigma2 = Math.sqrt(twoTestvariance2)
     @twoTestCheckRange()
     @twoTestUpdate()
-
   twoTestCheckRange:() ->
-    @twoTest_maxn1 = Math.max(@twoTest_n1, @twoTest_maxn1)
-    @twoTest_maxn2 = Math.max(@twoTest_n2, @twoTest_maxn2)
-    @twoTest_maxn = Math.max(@twoTest_maxn1, @twoTest_maxn2)
-    @twoTest_meanMax1 = Math.max(@twoTest_mean1, @twoTest_meanMax1)
-    @twoTest_meanMax2 = Math.max(@twoTest_mean2, @twoTest_meanMax2)
-    @twoTest_meanMax = Math.max(@twoTest_meanMax1, @twoTest_meanMax2)
-    @twoTest_sigmaMax1 = Math.max(@twoTest_sigma1, @twoTest_sigmaMax1)
-    @twoTest_sigmaMax2 = Math.max(@twoTest_sigma2, @twoTest_sigmaMax2)
-    @twoTest_sigmaMax = Math.max(@twoTest_sigmaMax1, @twoTest_sigmaMax2)
-
+    @twoTestmaxn1 = Math.max(@twoTestn1, @twoTestmaxn1)
+    @twoTestmaxn2 = Math.max(@twoTestn2, @twoTestmaxn2)
+    @twoTestmaxn = Math.max(@twoTestmaxn1, @twoTestmaxn2)
+    @twoTestmeanMax1 = Math.max(@twoTestmean1, @twoTestmeanMax1)
+    @twoTestmeanMax2 = Math.max(@twoTestmean2, @twoTestmeanMax2)
+    @twoTestmeanMax = Math.max(@twoTestmeanMax1, @twoTestmeanMax2)
+    @twoTestsigmaMax1 = Math.max(@twoTestsigma1, @twoTestsigmaMax1)
+    @twoTestsigmaMax2 = Math.max(@twoTestsigma2, @twoTestsigmaMax2)
+    @twoTestsigmaMax = Math.max(@twoTestsigmaMax1, @twoTestsigmaMax2)
   twoTestClick: () ->
-    $( "#twoTest_sigma1ui" ).slider(
-      value: @twoTest_sigma1,
+    $( "#twoTestsigma1ui" ).slider(
+      value: @twoTestsigma1,
       min: 0,
-      max: @twoTest_sigmaMax,
+      max: @twoTestsigmaMax,
       range: 'min', 
       step: 0.01,
       slide: ( event, ui ) =>
-        $( "#twoTest_sigma1_v" ).val( ui.value );
-        @twoTest_sigma1 = ui.value
+        $( "#twoTestsigma1_v" ).val( ui.value );
+        @twoTestsigma1 = ui.value
         @twoTestUpdate()
         return
     )
-    $( "#twoTest_sigma1_v" ).val( @twoTest_sigma1.toFixed(3));
-    $( "#twoTest_sigma2ui" ).slider(
-      value:@twoTest_sigma2,
+    $( "#twoTestsigma1_v" ).val( @twoTestsigma1.toFixed(3));
+    $( "#twoTestsigma2ui" ).slider(
+      value:@twoTestsigma2,
       min: 0,
-      max: @twoTest_sigmaMax,
+      max: @twoTestsigmaMax,
       range: "min", 
       step: 0.01,
       slide: ( event, ui ) =>
-        $( "#twoTest_sigma2_v" ).val( ui.value );
-        @twoTest_sigma2 = ui.value
+        $( "#twoTestsigma2_v" ).val( ui.value );
+        @twoTestsigma2 = ui.value
         @twoTestUpdate()
         return
     )          
-    $( "#twoTest_sigma2_v" ).val(@twoTest_sigma2.toFixed(3));
+    $( "#twoTestsigma2_v" ).val(@twoTestsigma2.toFixed(3));
 
-    $( "#twoTest_n1ui" ).slider(
-      value:@twoTest_n1,
+    $( "#twoTestn1ui" ).slider(
+      value:@twoTestn1,
       min: 0,
-      max: @twoTest_maxn,
+      max: @twoTestmaxn,
       range: "min", 
       step: 1,
       slide: ( event, ui ) =>
-        $( "#twoTest_n1_v" ).val( ui.value );
-        @twoTest_n1 = ui.value
+        $( "#twoTestn1_v" ).val( ui.value );
+        @twoTestn1 = ui.value
         @twoTestUpdate()
         return
     )          
-    $( "#twoTest_n1_v" ).val( @twoTest_n1 );
-    $( "#twoTest_n2ui" ).slider(
-      value:@twoTest_n2,
+    $( "#twoTestn1_v" ).val( @twoTestn1 );
+    $( "#twoTestn2ui" ).slider(
+      value:@twoTestn2,
       min: 0,
-      max: @twoTest_maxn,
+      max: @twoTestmaxn,
       range: "min", 
       step: 1,
       slide: ( event, ui ) =>
-        $( "#twoTest_n2_v" ).val( ui.value );
-        @twoTest_n2 = ui.value
+        $( "#twoTestn2_v" ).val( ui.value );
+        @twoTestn2 = ui.value
         @twoTestUpdate()
         return
     )        
-    $( "#twoTest_n2_v" ).val( @twoTest_n2 );
+    $( "#twoTestn2_v" ).val( @twoTestn2 );
 
-    $( "#twoTest_mean1ui" ).slider(
-      value:@twoTest_mean1,
+    $( "#twoTestmean1ui" ).slider(
+      value:@twoTestmean1,
       min: 0,
-      max: @twoTest_meanMax,
+      max: @twoTestmeanMax,
       range: "min", 
       step: 0.01,
       slide: ( event, ui ) =>
-        $( "#twoTest_mean1_v" ).val( ui.value );
-        @twoTest_mean1 = ui.value
+        $( "#twoTestmean1_v" ).val( ui.value );
+        @twoTestmean1 = ui.value
         @twoTestUpdate()
         return
     )   
-    $( "#twoTest_mean1_v" ).val( @twoTest_mean1.toFixed(3) );       
-    $( "#twoTest_mean2ui" ).slider(
-      value:@twoTest_mean2,
+    $( "#twoTestmean1_v" ).val( @twoTestmean1.toFixed(3) );       
+    $( "#twoTestmean2ui" ).slider(
+      value:@twoTestmean2,
       min: 0,
-      max: @twoTest_meanMax,
+      max: @twoTestmeanMax,
       range: "min", 
       step: 0.01,
       slide: ( event, ui ) =>
-        $( "#twoTest_mean2_v" ).val( ui.value );
-        @twoTest_mean2 = ui.value
+        $( "#twoTestmean2_v" ).val( ui.value );
+        @twoTestmean2 = ui.value
         @twoTestUpdate()
         return
     )        
-    $( "#twoTest_mean2_v" ).val( @twoTest_mean2.toFixed(3) );
-    $( "#twoTest_powerui" ).slider(
-      value:@twoTest_power,
+    $( "#twoTestmean2_v" ).val( @twoTestmean2.toFixed(3) );
+    $( "#twoTestpowerui" ).slider(
+      value:@twoTestpower,
       min: 0.0001,
       max: 0.9999,
       range: "min", 
       step: 0.0001,
       slide:  ( event, ui ) =>
-        $( "#twoTest_power_v" ).val( ui.value );
-        @twoTest_power = ui.value
+        $( "#twoTestpower_v" ).val( ui.value );
+        @twoTestpower = ui.value
         @twoTestPowerTon()
         return
     )         
-    $( "#twoTest_power_v" ).val( @twoTest_power.toFixed(3) );
+    $( "#twoTestpower_v" ).val( @twoTestpower.toFixed(3) );
 
-    $( "#twoTest_t_v" ).val( @twoTest_t.toFixed(3) );
-    $( "#twoTest_pvalue_v" ).val( @twoTest_pvalue.toFixed(3) );
-    # enable or disable slider
-    
+    $( "#twoTestt_v" ).val( @twoTestt.toFixed(3) );
+    $( "#twoTestpvalue_v" ).val( @twoTestpvalue.toFixed(3) );
+    # enable or disable slider    
     if @deployed is true
-      $("#twoTest_sigma1ui").slider("disable")
-      $('#twoTest_sigma1ui').find('.ui-slider-handle').hide();
-      $("#twoTest_sigma2ui").slider("disable")
-      $('#twoTest_sigma2ui').find('.ui-slider-handle').hide();
-      $("#twoTest_n1ui").slider("disable")
-      $('#twoTest_n1ui').find('.ui-slider-handle').hide();
-      $("#twoTest_n2ui").slider("disable")
-      $('#twoTest_n2ui').find('.ui-slider-handle').hide();
-      $("#twoTest_powerui").slider("disable")
-      $('#twoTest_powerui').find('.ui-slider-handle').hide();
-      $("#twoTest_mean1ui").slider("disable")
-      $('#twoTest_mean1ui').find('.ui-slider-handle').hide();
-      $("#twoTest_mean2ui").slider("disable")
-      $('#twoTest_mean2ui').find('.ui-slider-handle').hide();
+      $("#twoTestsigma1ui").slider("disable")
+      $('#twoTestsigma1ui').find('.ui-slider-handle').hide();
+      $("#twoTestsigma2ui").slider("disable")
+      $('#twoTestsigma2ui').find('.ui-slider-handle').hide();
+      $("#twoTestn1ui").slider("disable")
+      $('#twoTestn1ui').find('.ui-slider-handle').hide();
+      $("#twoTestn2ui").slider("disable")
+      $('#twoTestn2ui').find('.ui-slider-handle').hide();
+      $("#twoTestpowerui").slider("disable")
+      $('#twoTestpowerui').find('.ui-slider-handle').hide();
+      $("#twoTestmean1ui").slider("disable")
+      $('#twoTestmean1ui').find('.ui-slider-handle').hide();
+      $("#twoTestmean2ui").slider("disable")
+      $('#twoTestmean2ui').find('.ui-slider-handle').hide();
     else 
-      $("#twoTest_sigma1ui").slider("enable")
-      $('#twoTest_sigma1ui').find('.ui-slider-handle').show();
-      $("#twoTest_sigma2ui").slider("enable")
-      $('#twoTest_sigma2ui').find('.ui-slider-handle').show();
-      $("#twoTest_n1ui").slider("enable")
-      $('#twoTest_n1ui').find('.ui-slider-handle').show();
-      $("#twoTest_n2ui").slider("enable")
-      $('#twoTest_n2ui').find('.ui-slider-handle').show();
-      $("#twoTest_powerui").slider("enable")
-      $('#twoTest_powerui').find('.ui-slider-handle').show();
-      $("#twoTest_mean1ui").slider("enable")
-      $('#twoTest_mean1ui').find('.ui-slider-handle').show();
-      $("#twoTest_mean2ui").slider("enable")
-      $('#twoTest_mean2ui').find('.ui-slider-handle').show();
+      $("#twoTestsigma1ui").slider("enable")
+      $('#twoTestsigma1ui').find('.ui-slider-handle').show();
+      $("#twoTestsigma2ui").slider("enable")
+      $('#twoTestsigma2ui').find('.ui-slider-handle').show();
+      $("#twoTestn1ui").slider("enable")
+      $('#twoTestn1ui').find('.ui-slider-handle').show();
+      $("#twoTestn2ui").slider("enable")
+      $('#twoTestn2ui').find('.ui-slider-handle').show();
+      $("#twoTestpowerui").slider("enable")
+      $('#twoTestpowerui').find('.ui-slider-handle').show();
+      $("#twoTestmean1ui").slider("enable")
+      $('#twoTestmean1ui').find('.ui-slider-handle').show();
+      $("#twoTestmean2ui").slider("enable")
+      $('#twoTestmean2ui').find('.ui-slider-handle').show();
   twoTestUpdate: () ->
-    twoTest_var1 = Math.pow(@twoTest_sigma1,2)
-    twoTest_var2 = Math.pow(@twoTest_sigma2,2)
-    kappa = @twoTest_n1 / @twoTest_n2
-
+    twoTestvar1 = Math.pow(@twoTestsigma1,2)
+    twoTestvar2 = Math.pow(@twoTestsigma2,2)
+    kappa = @twoTestn1 / @twoTestn2
     # calculate power using different modes
-    if @twoTest_mode is "Two Tailed"
-      z = (@twoTest_mean1 - @twoTest_mean2) / (Math.sqrt(twoTest_var1 + twoTest_var2) * Math.sqrt((1+(1 / kappa)) / @twoTest_n2))
-      @twoTest_power = @distribution.pnorm(z-@distribution.qnorm(1-@twoTest_alpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@twoTest_alpha/2))
+    if @twoTestmode is "Two Tailed"
+      z = (@twoTestmean1 - @twoTestmean2) / (Math.sqrt(twoTestvar1 + twoTestvar2) * Math.sqrt((1+(1 / kappa)) / @twoTestn2))
+      @twoTestpower = @distribution.pnorm(z-@distribution.qnorm(1-@twoTestalpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@twoTestalpha/2))
     else 
-      z = (@twoTest_mean1 - @twoTest_mean2) / Math.sqrt(twoTest_var1 + twoTest_var2 / kappa) * Math.sqrt(@twoTest_n1)
-      @twoTest_power = @distribution.pnorm(z-@distribution.qnorm(1-@twoTest_alpha))
-
+      z = (@twoTestmean1 - @twoTestmean2) / Math.sqrt(twoTestvar1 + twoTestvar2 / kappa) * Math.sqrt(@twoTestn1)
+      @twoTestpower = @distribution.pnorm(z-@distribution.qnorm(1-@twoTestalpha))
     @twoTestTTest()
     @twoTestCheckRange()
     @twoTestClick()
     @twoTestGraph()
     return
-
   twoTestPowerTon: () ->
-    kappa = @twoTest_n1 / @twoTest_n2
-    stdv = Math.sqrt(Math.pow(@twoTest_sigma1,2) + Math.pow(@twoTest_sigma2,2))
-    twoTest_var1 = Math.pow(@twoTest_sigma1,2)
-    twoTest_var2 = Math.pow(@twoTest_sigma2,2)
-
+    kappa = @twoTestn1 / @twoTestn2
+    stdv = Math.sqrt(Math.pow(@twoTestsigma1,2) + Math.pow(@twoTestsigma2,2))
+    twoTestvar1 = Math.pow(@twoTestsigma1,2)
+    twoTestvar2 = Math.pow(@twoTestsigma2,2)
     # calculate n1 or n2 from power based on different mdoes
-    if @twoTest_mode is "Two Tailed"
-      @twoTest_n2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@twoTest_alpha / 2)+@distribution.qnorm(@twoTest_power))/(@twoTest_mean1-@twoTest_mean2),2)
-      @twoTest_n2 = Math.ceil(@twoTest_n2)
-      @twoTest_maxn2 = Math.max(@twoTest_maxn2, @twoTest_n2)
+    if @twoTestmode is "Two Tailed"
+      @twoTestn2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@twoTestalpha / 2)+@distribution.qnorm(@twoTestpower))/(@twoTestmean1-@twoTestmean2),2)
+      @twoTestn2 = Math.ceil(@twoTestn2)
+      @twoTestmaxn2 = Math.max(@twoTestmaxn2, @twoTestn2)
     else
-      @twoTest_n1=(twoTest_var1 + twoTest_var2 / kappa) * Math.pow((@distribution.qnorm(1-@twoTest_alpha)+@distribution.qnorm(@twoTest_power))/(@twoTest_mean1-@twoTest_mean2),2)
-      @twoTest_n1 = Math.ceil(@twoTest_n1)
-      @twoTest_maxn2 = Math.max(@twoTest_maxn1, @twoTest_n1)
+      @twoTestn1=(twoTestvar1 + twoTestvar2 / kappa) * Math.pow((@distribution.qnorm(1-@twoTestalpha)+@distribution.qnorm(@twoTestpower))/(@twoTestmean1-@twoTestmean2),2)
+      @twoTestn1 = Math.ceil(@twoTestn1)
+      @twoTestmaxn2 = Math.max(@twoTestmaxn1, @twoTestn1)
     @twoTestCheckRange()
     @twoTestClick()
     @twoTestGraph()
     return
   twoTestGraph:() ->
-    @twoTest.drawNormalCurve(@twoTest_mean1, Math.pow(@twoTest_sigma1, 2), @twoTest_sigma1, @twoTest_mean2, Math.pow(@twoTest_sigma2, 2), @twoTest_sigma2, @twoTest_alpha);
+    @twoTest.drawNormalCurve(@twoTestmean1, Math.pow(@twoTestsigma1, 2), @twoTestsigma1, @twoTestmean2, Math.pow(@twoTestsigma2, 2), @twoTestsigma2, @twoTestalpha);
     if @deployed
-      $("#display_legend1").text(@comp_agents[0]+": "+@twoTest_mean1.toFixed(3))
-      $("#display_legend2").text(@comp_agents[1]+": "+@twoTest_mean2.toFixed(3))
+      $("#display_legend1").text(@comp_agents[0]+": "+@twoTestmean1.toFixed(3))
+      $("#display_legend2").text(@comp_agents[1]+": "+@twoTestmean2.toFixed(3))
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
     else
-      $("#display_legend1").text("Sample1: " + @twoTest_mean1.toFixed(3))
-      $("#display_legend2").text("Sample2: " + @twoTest_mean2.toFixed(3))
+      $("#display_legend1").text("Sample1: " + @twoTestmean1.toFixed(3))
+      $("#display_legend2").text("Sample2: " + @twoTestmean2.toFixed(3))
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
   twoTestChangeValue: (evt) ->
@@ -1360,81 +1351,63 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     val = evt.target.value
     key = evt.which or evt.keyCode
     if key is 13
-      if name is "twoTest_power"
+      if name is "twoTestpower"
         @twoTestPowerTon()
         return
       @twoTestUpdate()
       return
   twoTestTTest: () ->
-    v1 = Math.pow(@twoTest_sigma1,2) / @twoTest_n1
-    v2 = Math.pow(@twoTest_sigma2,2) / @twoTest_n2
-    df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@twoTest_n1 - 1.0) + Math.pow(v2,2) / (@twoTest_n2 - 1.0))
-    @twoTest_t = @tdistr(df, 1-@twoTest_alpha)
-    @twoTest_pvalue = @tprob(df, @twoTest_t)
+    v1 = Math.pow(@twoTestsigma1,2) / @twoTestn1
+    v2 = Math.pow(@twoTestsigma2,2) / @twoTestn2
+    df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@twoTestn1 - 1.0) + Math.pow(v2,2) / (@twoTestn2 - 1.0))
+    @twoTestt = @tdistr(df, 1-@twoTestalpha)
+    @twoTestpvalue = @tprob(df, @twoTestt)
   twoTestReset: () ->
-    @twoTest_n1 = 10
-    @twoTest_n2 = 10
-    @twoTest_maxn1 = 20
-    @twoTest_maxn2 = 20
-    @twoTest_maxn = 20
-    @twoTest_mean1 = 10
-    @twoTest_mean2 = 10
-    @twoTest_meanMax1 = 20
-    @twoTest_meanMax2 = 20
-    @twoTest_meanMax = 20
-    @twoTest_sigma1 = 20
-    @twoTest_sigma2 = 20
-    @twoTest_sigmaMax1 = 40
-    @twoTest_sigmaMax2 = 40
-    @twoTest_sigmaMax = 40
-    @twoTest_alpha = 0.010
-    @twoTest_power = 0
-    @twoTest_powerMax = 1 
-    @twoTest_t = 0
-    @twoTest_pvalue = 0
-    @twoTest_mode = "Two Tailed"
+    @twoTestn1 = 10
+    @twoTestn2 = 10
+    @twoTestmaxn1 = 20
+    @twoTestmaxn2 = 20
+    @twoTestmaxn = 20
+    @twoTestmean1 = 10
+    @twoTestmean2 = 10
+    @twoTestmeanMax1 = 20
+    @twoTestmeanMax2 = 20
+    @twoTestmeanMax = 20
+    @twoTestsigma1 = 20
+    @twoTestsigma2 = 20
+    @twoTestsigmaMax1 = 40
+    @twoTestsigmaMax2 = 40
+    @twoTestsigmaMax = 40
+    @twoTestalpha = 0.010
+    @twoTestpower = 0
+    @twoTestpowerMax = 1 
+    @twoTestt = 0
+    @twoTestpvalue = 0
+    @twoTestmode = "Two Tailed"
     @twoTestUpdate()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   tprob: ($n, $x) ->
     if $n <= 0
       throw 'Invalid n: $n\n'
       ### degree of freedom ###
-    @precision_string @_subtprob($n - 0, $x - 0)
-
+    @precisionString @subtprob($n - 0, $x - 0)
   integer: ($i) ->
     if $i > 0
       Math.floor $i
     else
       Math.ceil $i
-
-  precision_string: ($x) ->
+  precisionString: ($x) ->
     if $x
-      @round_to_precision $x, @precision($x)
+      @roundToPrecision $x, @precision($x)
     else
       '0'
-
-  round_to_precision: ($x, $p) ->
+  roundToPrecision: ($x, $p) ->
     $x = $x * 10 ** $p
     $x = Math.round($x)
     $x / 10 ** $p
-
   precision: ($x) ->
     Math.abs @integer(@log10(Math.abs($x)) - @SIGNIFICANT)
-
-  _subtprob: ($n, $x) ->
+  subtprob: ($n, $x) ->
     $a = undefined
     $b = undefined
     $w = Math.atan2($x / Math.sqrt($n), 1)
@@ -1454,7 +1427,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   log10: ($n) ->
     Math.log($n) / Math.log(10)
-
   max: () ->
     $max = arguments[0]
     $i = 0
@@ -1463,22 +1435,20 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         $max = arguments[$i]
       $i++
     $max
-
   tdistr: ($n, $p) ->
     if $n <= 0
       throw 'Invalid n: $n\n'
     if $p <= 0 or $p >= 1
       throw 'Invalid p: $p\n'
-    @precision_string @_subt($n - 0, $p - 0)
-
-  _subt: ($n, $p) ->
+    @precisionString @subt($n - 0, $p - 0)
+  subt: ($n, $p) ->
     if $p >= 1 or $p <= 0
       throw 'Invalid p: $p\n'
     if $p == 0.5
       return 0
     else if $p < 0.5
-      return -@_subt($n, 1 - $p)
-    $u = @_subu($p)
+      return -@subt($n, 1 - $p)
+    $u = @subu($p)
     $u2 = $u ** 2
     $a = ($u2 + 1) / 4
     $b = ((5 * $u2 + 16) * $u2 + 3) / 96
@@ -1489,16 +1459,15 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     if $n <= @log10($p) ** 2 + 3
       $round = undefined
       loop
-        $p1 = @_subtprob($n, $x)
+        $p1 = @subtprob($n, $x)
         $n1 = $n + 1
         $delta = ($p1 - $p) / Math.exp(($n1 * Math.log($n1 / ($n + $x * $x)) + Math.log($n / $n1 / 2 / Math.PI) - 1 + (1 / $n1 - (1 / $n)) / 6) / 2)
         $x += $delta
-        $round = @round_to_precision($delta, Math.abs(@integer(@log10(Math.abs($x)) - 4)))
+        $round = @roundToPrecision($delta, Math.abs(@integer(@log10(Math.abs($x)) - 4)))
         unless $x and $round != 0
           break
     $x
-
-  _subu: ($p) ->
+  subu: ($p) ->
     $y = -Math.log(4 * $p * (1 - $p))
     $x = Math.sqrt($y * (1.570796288 + $y * (.03706987906 + $y * (-.8364353589e-3 + $y * (-.2250947176e-3 + $y * (.6841218299e-5 + $y * (0.5824238515e-5 + $y * (-.104527497e-5 + $y * (.8360937017e-7 + $y * (-.3231081277e-8 + $y * (.3657763036e-10 + $y * .6936233982e-12)))))))))))
     if $p > .5

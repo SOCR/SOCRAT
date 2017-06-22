@@ -77,7 +77,7 @@ module.exports =
         'transform?vega/scripts/strip-schema.js',
         'transform?browserify-versionify'
       ]
-    ]
+   ]
 
   resolve:
 

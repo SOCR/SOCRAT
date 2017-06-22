@@ -468,8 +468,8 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div(style='margin-top:20px;')
           div(style='display:inline')
             | Power: &nbsp
-            input#twoTest_power_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTest_power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTest_power" ng-keypress="mainArea.twoTestChangeValue($event)")
-            #twoTest_powerui
+            input#twoTestpower_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTestpower',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestpower" ng-keypress="mainArea.twoTestChangeValue($event)")
+            #twoTestpowerui
         button.btn.btn-primary.btn-sm(
           ng-hide="mainArea.deployed"
           type="submit"
@@ -485,9 +485,9 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               ) Choose an mode &nbsp;
               select.form-control(
                 style='margin-bottom:20px;'
-                ng-model="mainArea.twoTest_mode"
+                ng-model="mainArea.twoTestmode"
                 ng-init="mainArea.TowTGUI_mode = 'Two Tailed'"
-                ng-options="mode for mode in mainArea.twoTest_modes"
+                ng-options="mode for mode in mainArea.twoTestmodes"
                 ng-change="mainArea.twoTestUpdate()"
               )
         div
@@ -496,47 +496,47 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="size of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') N
               p#pn1i(style='display:inline') 1:&nbsp;
-              input#twoTest_n1_v(ng-disabled="mainArea.deployed" type="number" step="1" name='twoTest_n1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTest_n1" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
+              input#twoTestn1_v(ng-disabled="mainArea.deployed" type="number" step="1" name='twoTestn1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestn1" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
             div(style='display:inline')
-              #twoTest_n1ui
+              #twoTestn1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="size of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') N
               p#pn2i(style='display:inline') 2:&nbsp;
-              input#twoTest_n2_v(ng-disabled="mainArea.deployed" type="number" step="1" name='twoTest_n2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTest_n2" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
+              input#twoTestn2_v(ng-disabled="mainArea.deployed" type="number" step="1" name='twoTestn2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestn2" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
             div(style='display:inline')
-              #twoTest_n2ui
+              #twoTestn2ui
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &mu;
               p#pmean1i(style='display:inline') 1:&nbsp;
-              input#twoTest_mean1_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTest_mean1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTest_mean1" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
-              #twoTest_mean1ui
+              input#twoTestmean1_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTestmean1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestmean1" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
+              #twoTestmean1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &mu;
               p#pmean2i(style='display:inline') 2:&nbsp;
-              input#twoTest_mean2_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTest_mean2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTest_mean2" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
-              #twoTest_mean2ui
+              input#twoTestmean2_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTestmean2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestmean2" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
+              #twoTestmean2ui
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &sigma; 
               p#psigma1i(style='display:inline') 1:&nbsp;
-              input#twoTest_sigma1_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTest_sigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTest_sigma1" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
-              #twoTest_sigma1ui
+              input#twoTestsigma1_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTestsigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestsigma1" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
+              #twoTestsigma1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &sigma; 
               p#psigma2i(style='display:inline') 2:&nbsp;
-              input#twoTest_sigma2_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTest_sigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTest_sigma2" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
-              #twoTest_sigma2ui
+              input#twoTestsigma2_v(ng-disabled="mainArea.deployed" type="number" step="any" name='twoTestsigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestsigma2" ng-click="mainArea.twoTestUpdate()" ng-keypress="mainArea.twoTestChangeValue($event)")
+              #twoTestsigma2ui
         <br>
         div
           div(style='margin-top:20px;')
@@ -544,13 +544,13 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="Test Statistics Value" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') t-critical
               p#psigma1i(style='display:inline') :&nbsp;
-              input#twoTest_t_v(ng-disabled="true" type="number" step="any" ng-model="mainArea.twoTest_t" name='twoTest_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+              input#twoTestt_v(ng-disabled="true" type="number" step="any" ng-model="mainArea.twoTestt" name='twoTestt',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="P-value" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') p-value
               p#psigma1i(style='display:inline') :&nbsp;
-              input#twoTest_pvalue_v(ng-disabled="true" type="number" step="any" ng-model="mainArea.twoTest_pvalue" name='twoTest_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+              input#twoTestpvalue_v(ng-disabled="true" type="number" step="any" ng-model="mainArea.twoTestpvalue" name='twoTestt',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
 
 
 
