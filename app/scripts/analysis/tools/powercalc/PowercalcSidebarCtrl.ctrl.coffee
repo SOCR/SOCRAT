@@ -6,7 +6,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 	@inject  'app_analysis_powercalc_dataService', 
 	'app_analysis_powercalc_msgService', 
 	'app_analysis_powercalc_algorithms', 
-	'app_analysis_powercalc_TwoTGUI',
 	'$scope', 
 	'$timeout'
 
@@ -15,7 +14,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@dataService = @app_analysis_powercalc_dataService
 		@msgService = @app_analysis_powercalc_msgService
 		@algorithmsService = @app_analysis_powercalc_algorithms
-		@TwoTGUI = @app_analysis_powercalc_TwoTGUI
 
 		# choose algorithms
 		@algorithms = ['Select',
@@ -63,7 +61,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@df = null
 		@valid = false
 
-		@TwoTGUI_alpha=0.010
+		@twoTest_alpha=0.010
 		@OneTGUI_alpha=0.010
 		@deployed = false
 		$("#toggle_switch").bootstrapSwitch();
@@ -164,7 +162,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				console.log @populations
 
 
-			@msgService.broadcast 'powercalc:TwoTGUI_data',
+			@msgService.broadcast 'powercalc:twoTest_data',
 				populations:@populations
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
@@ -260,21 +258,21 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 	slidebar: () ->
 
-		$("#TwoTGUI_alphaui").slider(
+		$("#twoTest_alphaui").slider(
 			min: 0.001
 			max: 0.200
-			value: @TwoTGUI_alpha
+			value: @twoTest_alpha
 			orientation: "horizontal"
 			range: "min"
 			step: 0.001
 			slide: (event, ui) =>
-				@TwoTGUI_alpha = ui.value
-				$('#TwoTGUI_alpha_v').val ui.value
-				@msgService.broadcast 'powercalc:TwoTGUI_alpha',
-					alpha_in: @TwoTGUI_alpha
+				@twoTest_alpha = ui.value
+				$('#twoTest_alpha_v').val ui.value
+				@msgService.broadcast 'powercalc:twoTest_alpha',
+					alpha_in: @twoTest_alpha
 				return
 		)
-		$( "#TwoTGUI_alpha_v" ).val( @TwoTGUI_alpha.toFixed(3) );  
+		$( "#twoTest_alpha_v" ).val( @twoTest_alpha.toFixed(3) );  
 
 		$("#OneTGUI_alphaui").slider(
 			min: 0.001
@@ -295,8 +293,8 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		name = evt.target.name
 		val = evt.target.value
 		key = evt.which or evt.keyCode
-		if name is "TwoTGUI_alpha"
-			@TwoTGUI_alpha = parseFloat(val)
+		if name is "twoTest_alpha"
+			@twoTest_alpha = parseFloat(val)
 		else if name is "OneTGUI_alpha"
 			@OneTGUI_alpha = parseFloat(val)
 		if key is 13
