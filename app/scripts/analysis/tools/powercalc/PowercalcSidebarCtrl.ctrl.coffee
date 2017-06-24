@@ -162,7 +162,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				console.log @populations
 
 
-			@msgService.broadcast 'powercalc:twoTest_data',
+			@msgService.broadcast 'powercalc:twoTestdata',
 				populations:@populations
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
@@ -268,7 +268,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@twoTest_alpha = ui.value
 				$('#twoTest_alpha_v').val ui.value
-				@msgService.broadcast 'powercalc:twoTest_alpha',
+				@msgService.broadcast 'powercalc:twoTestalpha',
 					alpha_in: @twoTest_alpha
 				return
 		)

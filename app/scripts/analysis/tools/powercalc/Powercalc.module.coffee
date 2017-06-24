@@ -21,8 +21,8 @@ module.exports = powercalc = new Module
       'powercalcMainCtrl': require 'scripts/analysis/tools/powercalc/PowercalcMainCtrl.ctrl.coffee'
       'powercalcSidebarCtrl': require 'scripts/analysis/tools/powercalc/PowercalcSidebarCtrl.ctrl.coffee'
 
-    #directives:
-      #'socratClusterViz': require 'scripts/analysis/tools/Cluster/ClusterVizDir.directive.coffee'
+    directives:
+      'powercalcViz': require 'scripts/analysis/tools/powercalc/PowercalcVizDir.directive.coffee'
 
   # module state config
   state:
