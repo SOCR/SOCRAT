@@ -18,11 +18,9 @@ module.exports = class DatalibApi extends BaseModuleInitService
   initDl: () ->
     @$timeout =>
       @DATA_TYPES = @msgService.getSupportedDataTypes()
-      console.log @dl
       # extract names of all available functions from the object
       dlApi = []
       @iterateOverObj @dl, dlApi
-      console.log dlApi
       # subscribe using indentified methods as messages
       @subscribeForApiMethods dlApi
 
