@@ -71,7 +71,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       div
         input#cfapH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cfap_show_help();')
         div(ng-show='mainArea.cfap_help == true;')
-          p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error: 
+          p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error:
           p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} $  &nbsp;&nbsp;&nbsp; (infinite population)
           p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} * \sqrt{1- \frac{n}{N}} $  &nbsp;&nbsp;&nbsp; (finite population)
           p where z is a critical value from the normal distribution, p is the sample proportion, n is the sample size, and N is the population size.
@@ -81,7 +81,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           br
           p <b>Finite Population</b>
           p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
-          br 
+          br
           p <b>Worst Case</b>
           p If "Worst case" is checked, computations are based on the assumption that the true sample proportion, pi, is .5.  If it is not checked, then a pi value other than .5 may be entered in the field to the right of the checkbox.
           br
@@ -136,7 +136,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div
           input#cimeanH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cimean_show_help();')
           div(ng-show='mainArea.cimean_help == true;')
-            p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error: 
+            p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error:
             p $ ME = t * s / \sqrt{n} $  &nbsp;&nbsp;&nbsp; (infinite population)
             p $ ME = t * s * \sqrt{\frac{\frac{1-n}{N}}{n}} $  &nbsp;&nbsp;&nbsp; (finite population)
             p where t is a critical value from the t distribution, s is the sample SD, n is the sample size, and N is the population size.
@@ -146,7 +146,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
             br
             p <b>Finite Population</b>
             p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
-            br 
+            br
             p <b>Confidence</b>
             p Choose the desired confidence coefficient for the ME.  This determines the value of t.
             br
@@ -157,7 +157,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
             p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
             br
             p <b>Graphics</b>
-            p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.             
+            p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
   div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
     h3 Test of One Proportion
     p <i>This dialog provides for power analysis of a one-sample test of proportions. You have your choice of the normal approximation, the beta approximation (which is more accurate), or two exact calculations based on the binomial distribution.  In the latter cases, the size of the test (i.e., the probability of a type I error) is often much smaller than the stated significance level.</i>
@@ -208,14 +208,14 @@ div(ng-controller="powercalcMainCtrl as mainArea")
       input#OnePGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OnePGUI_show_help();')
       div(ng-show='mainArea.OnePGUI_help == true;')
         p Common notations: Suppose that X is a binomial random variable with "success" probability p and n independent trials, and let:
-        p $ P = \frac{X}{n} $ 
+        p $ P = \frac{X}{n} $
         br
-        p <b>Normal approximation:</b> 
+        p <b>Normal approximation:</b>
         p We approximate distribution of P with N ($ mu=p $, $ sigma^2=p* \frac{1-p}{n} $). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
         br
         p <b>Beta approximation: </b>
         p We approximate distribution of P with Beta( a=(n-1)*p, b=(n-1)*(1-p) ). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
-        br 
+        br
         p <b>Exact:</b>
         p In the exact test, the significance level alpha is taken as an upper bound on the size of the test (its power under the null hypothesis). Since X has a discrete distribution, the size cannot be controlled exactly and is often much lower than the specified alpha.
         br
@@ -262,7 +262,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
-              p(style='display:inline') &sigma; 
+              p(style='display:inline') &sigma;
               p#OneTGUI_sigma_disp(style='display:inline') :&nbsp;
               input#OneTGUI_sigma_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_sigma',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
               #OneTGUI_sigmaui
@@ -375,7 +375,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
     div(style='margin-top:20px;')
       div(style='margin-left=40%;display:inline')
         | df: &nbsp
-        input#dfg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='df', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);') 
+        input#dfg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='df', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
     div(style='margin-top:20px;')
       div(style='margin-left=40%;display:inline')
         | Alpha*: &nbsp
@@ -385,7 +385,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         | n: &nbsp
         input#ng(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimpleChi2GUI_changeSlider('n',$event);")
       div(style='display:inline')
-        #nuig(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top") 
+        #nuig(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
     div(style='margin-top:20px;')
       div(style='display:inline')
         | Power: &nbsp
@@ -526,14 +526,14 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
-              p(style='display:inline') &sigma; 
+              p(style='display:inline') &sigma;
               p#psigma1i(style='display:inline') 1:&nbsp;
               input#twoTestsigma1_v(ng-disabled="mainArea.deployed" type="number" step="3" name='twoTestsigma1',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestsigma1" ng-click="mainArea.twoTestSync()" ng-keypress="mainArea.twoTestPress($event)")
               #twoTestsigma1ui
           div(style='margin-top:20px;')
             div(style='display:inline')
               <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
-              p(style='display:inline') &sigma; 
+              p(style='display:inline') &sigma;
               p#psigma2i(style='display:inline') 2:&nbsp;
               input#twoTestsigma2_v(ng-disabled="mainArea.deployed" type="number" step="3" name='twoTestsigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestsigma2" ng-click="mainArea.twoTestSync()" ng-keypress="mainArea.twoTestPress($event)")
               #twoTestsigma2ui
@@ -551,6 +551,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               p(style='display:inline') p-value
               p#psigma1i(style='display:inline') :&nbsp;
               input#twoTestpvalue_v(ng-disabled="true" type="number" step="3" ng-model="mainArea.twoTestpvalue" name='twoTestt',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+  powercalc-viz
 
 
 
