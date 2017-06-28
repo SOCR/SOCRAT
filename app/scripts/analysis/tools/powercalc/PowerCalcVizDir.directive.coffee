@@ -3,183 +3,182 @@
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class PowercalcVizDiv extends BaseDirective
-    @inject '$parse'
+  @inject '$parse'
 
-    initialize: ->
-        @link = (scope, elem, attr) =>
-            scope.$watchCollection '[mainArea.params]', (params) =>
-                if (scope.mainArea.selectedAlgorithm is "Two-sample t test (general case)")
-                    @TwoTestCurve(params.mean1, params.mean2, params.sigma1, params.sigma2, Math.pow(params.sigma1, 2), Math.pow(params.sigma2, 2), scope.mainArea.twoTestAlpha)
+  initialize: ->
+    scope.$watchCollection 'mainArea.params', (params) =>
+      if (scope.mainArea.selectedAlgorithm is "Two-sample t test (general case)")
+        @TwoTestCurve(params.mean1, Math.pow(params.sigma1, 2), params.sigma1, params.mean2, Math.pow(params.sigma2, 2), params.sigma2, scope.mainArea.twoTestAlpha)
+    ,on
+
+    TwoTestCurve: (mean_in1, variance_in1, sigma_in1, mean_in2, variance_in2, sigma_in2, alpha_in) ->
+      margin = {top: 20, right: 20, bottom: 20, left:20}
+      width = 500 - margin.left - margin.right
+      height = 500 - margin.top - margin.bottom
+      container = d3.select("#twoTestGraph")
+      container.select("svg").remove()
+      svg = container.append('svg')
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      _graph = svg.append('g')
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      mean1 = mean_in1
+      variance1 = variance_in1
+      standardDerivation1 =  sigma_in1
+
+      mean2 = mean_in2
+      variance2 = variance_in2
+      standardDerivation2 = sigma_in2
+
+      rightBound = Math.max(@getRightBound(mean1, standardDerivation1), @getRightBound(mean2, standardDerivation2))
+      leftBound = Math.min(@getLeftBound(mean1, standardDerivation1), @getLeftBound(mean2, standardDerivation2))
+      bottomBound = 0
+      topBound = Math.max(1 / (standardDerivation1 * Math.sqrt(Math.PI * 2)), 1 / (standardDerivation2 * Math.sqrt(Math.PI * 2)))
+      gaussianCurveData1 = @getGaussianFunctionPoints(standardDerivation1,mean1,variance1,leftBound,rightBound)
+      gaussianCurveData2 = @getGaussianFunctionPoints(standardDerivation2,mean2,variance2,leftBound,rightBound)
+
+      radiusCoef = 5
+
+      padding = 50
+      xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
+      #console.log "xScale: " + xScale
+      yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
+
+      xAxis = d3.svg.axis().ticks(10)
+      .scale(xScale)
+
+      yAxis = d3.svg.axis()
+      .scale(yScale)
+      .ticks(10)
+      .tickPadding(0)
+      .orient("right")
+
+      lineGen = d3.svg.line()
+      .x (d) -> xScale(d.x)
+      .y (d) -> yScale(d.y)
+      .interpolate("basis")
 
 
-            TwoTestCurve: (mean_in1, variance_in1, sigma_in1, mean_in2, variance_in2, sigma_in2, alpha_in) ->
-                margin = {top: 20, right: 20, bottom: 20, left:20}
-                width = 500 - margin.left - margin.right
-                height = 500 - margin.top - margin.bottom
-                container = d3.select("#twoTestGraph")
-                container.select("svg").remove()
-                svg = container.append('svg')
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                _graph = svg.append('g')
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-                mean1 = mean_in1
-                variance1 = variance_in1
-                standardDerivation1 =  sigma_in1
+      # data1
+      path1 = _graph.append('svg:path')
+      .attr('d', lineGen(gaussianCurveData1))
+      .data([gaussianCurveData1])
+      .attr('stroke', 'black')
+      .attr('stroke-width', 5)
+      .attr('fill', "blue")
+      .style("opacity", 0.5)
 
-                mean2 = mean_in2
-                variance2 = variance_in2
-                standardDerivation2 = sigma_in2
+      # data2
+      path2 = _graph.append('svg:path')
+      .attr('d', lineGen(gaussianCurveData2))
+      .data([gaussianCurveData2])
+      .attr('stroke', 'red')
+      .attr('stroke-width', 5)
+      .attr('fill', "chocolate")
+      .style("opacity", 0.5)
 
-                rightBound = Math.max(@getRightBound(mean1, standardDerivation1), @getRightBound(mean2, standardDerivation2))
-                leftBound = Math.min(@getLeftBound(mean1, standardDerivation1), @getLeftBound(mean2, standardDerivation2))
-                bottomBound = 0
-                topBound = Math.max(1 / (standardDerivation1 * Math.sqrt(Math.PI * 2)), 1 / (standardDerivation2 * Math.sqrt(Math.PI * 2)))
-                gaussianCurveData1 = @getGaussianFunctionPoints(standardDerivation1,mean1,variance1,leftBound,rightBound)
-                gaussianCurveData2 = @getGaussianFunctionPoints(standardDerivation2,mean2,variance2,leftBound,rightBound)
+      # x-axis
+      _graph.append("svg:g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (height - padding) + ")")
+      .call(xAxis)
 
-                radiusCoef = 5
+      # y-axis
+      _graph.append("svg:g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + (xScale(leftBound))+ ",0)")
+      .call(yAxis)
 
-                padding = 50
-                xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
-                #console.log "xScale: " + xScale
-                yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
+      # make x y axis thin
+      _graph.selectAll('.x.axis path')
+      .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+      _graph.selectAll('.y.axis path')
+      .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
 
-                xAxis = d3.svg.axis().ticks(10)
-                .scale(xScale)
+      # display lengend1
+      svg.append("text")
+      .attr("id", "displayLegend1")
+      .attr("x", xScale(rightBound*0.9))
+      .attr("y", yScale(topBound*0.9))
+      .style("text-anchor", "middle")
+      .attr('fill', "blue");
 
-                yAxis = d3.svg.axis()
-                .scale(yScale)
-                .ticks(10)
-                .tickPadding(0)
-                .orient("right")
+      # display legend2
+      svg.append("text")
+      .attr("id", "displayLegend2")
+      .attr("x", xScale(rightBound*0.9))
+      .attr("y", yScale(topBound*0.85))
+      .style("text-anchor", "middle")
+      .attr('fill', "chocolate");
 
-                lineGen = d3.svg.line()
-                .x (d) -> xScale(d.x)
-                .y (d) -> yScale(d.y)
-                .interpolate("basis")
+      # rotate text on x axis
+      # _graph.selectAll('.x.axis text')
+      # .attr('transform', (d) ->
+      #    'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
+      # .style('font-size', '16px')
 
+      return
 
-                # data1
-                path1 = _graph.append('svg:path')
-                .attr('d', lineGen(gaussianCurveData1))
-                .data([gaussianCurveData1])
-                .attr('stroke', 'black')
-                .attr('stroke-width', 5)
-                .attr('fill', "blue")
-                .style("opacity", 0.5)
+    extract: (data, variable) ->
+      tmp = []
+      for d in data
+        tmp.push +d[variable]
+      tmp
 
-                # data2
-                path2 = _graph.append('svg:path')
-                .attr('d', lineGen(gaussianCurveData2))
-                .data([gaussianCurveData2])
-                .attr('stroke', 'red')
-                .attr('stroke-width', 5)
-                .attr('fill', "chocolate")
-                .style("opacity", 0.5)
+    getRightBound: (middle,step) ->
+      return middle + step * @distanceFromMean
 
-                # x-axis
-                _graph.append("svg:g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + (height - padding) + ")")
-                .call(xAxis)
+    getLeftBound: (middle,step) ->
+      return middle - step * @distanceFromMean
 
-                # y-axis
-                _graph.append("svg:g")
-                .attr("class", "y axis")
-                .attr("transform", "translate(" + (xScale(leftBound))+ ",0)")
-                .call(yAxis)
+    sort: (values) ->
+      values.sort (a, b) -> a-b
 
-                # make x y axis thin
-                _graph.selectAll('.x.axis path')
-                .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-                _graph.selectAll('.y.axis path')
-                .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+    getVariance: (values, mean) ->
+      temp = 0
+      numberOfValues = values.length
+      while( numberOfValues--)
+        temp += Math.pow( (parseInt(values[numberOfValues]) - mean), 2 )
 
-                # display lengend1
-                svg.append("text")
-                .attr("id", "displayLegend1")
-                .attr("x", xScale(rightBound*0.9))
-                .attr("y", yScale(topBound*0.9))
-                .style("text-anchor", "middle")
-                .attr('fill', "blue");
+      return temp / values.length
 
-                # display legend2
-                svg.append("text")
-                .attr("id", "displayLegend2")
-                .attr("x", xScale(rightBound*0.9))
-                .attr("y", yScale(topBound*0.85))
-                .style("text-anchor", "middle")
-                .attr('fill', "chocolate");
+    getSum: (values) ->
+      values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
 
-                # rotate text on x axis
-                # _graph.selectAll('.x.axis text')
-                # .attr('transform', (d) ->
-                #    'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-                # .style('font-size', '16px')
+    getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
+      data = []
+      for i in [leftBound...rightBound] by 1
+        data.push
+          x: i
+          y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
+        data
 
-                return
+    getMean: (valueSum, numberOfOccurrences) ->
+      valueSum / numberOfOccurrences
 
-            extract: (data, variable) ->
-                tmp = []
-                for d in data
-                    tmp.push +d[variable]
-                tmp
+    getZ: (x, mean, standardDerivation) ->
+      (x - mean) / standardDerivation
 
-            getRightBound: (middle,step) ->
-                return middle + step * @distanceFromMean
+    getWeightedValues: (values) ->
+      weightedValues= {}
+      data= []
+      lengthValues = values.length
+      for i in [0...lengthValues] by 1
+        label = values[i].toString()
+        if(weightedValues[label])
+          weightedValues[label].weight++
+        else
+          weightedValues[label]={weight :1,value :label}
+          data.push(weightedValues[label])
+      return data
 
-            getLeftBound: (middle,step) ->
-                return middle - step * @distanceFromMean
+    getRandomNumber: (min,max) ->
+      Math.round((max-min) * Math.random() + min)
 
-            sort: (values) ->
-                values.sort (a, b) -> a-b
-
-            getVariance: (values, mean) ->
-                temp = 0
-                numberOfValues = values.length
-                while( numberOfValues--)
-                    temp += Math.pow( (parseInt(values[numberOfValues]) - mean), 2 )
-
-                return temp / values.length
-
-            getSum: (values) ->
-                values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
-
-            getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
-                data = []
-                for i in [leftBound...rightBound] by 1
-                  data.push
-                    x: i
-                    y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
-                data
-
-            getMean: (valueSum, numberOfOccurrences) ->
-                valueSum / numberOfOccurrences
-
-            getZ: (x, mean, standardDerivation) ->
-                (x - mean) / standardDerivation
-
-            getWeightedValues: (values) ->
-                weightedValues= {}
-                data= []
-                lengthValues = values.length
-                for i in [0...lengthValues] by 1
-                    label = values[i].toString()
-                    if(weightedValues[label])
-                        weightedValues[label].weight++
-                    else
-                        weightedValues[label]={weight :1,value :label}
-                        data.push(weightedValues[label])
-                return data
-
-            getRandomNumber: (min,max) ->
-                Math.round((max-min) * Math.random() + min)
-
-            getRandomValueArray: (data) ->
-                values = []
-                length = data.length
-                for i in [1...length]
-                    values.push data[Math.floor(Math.random() * data.length)]
-                return values
+    getRandomValueArray: (data) ->
+      values = []
+      length = data.length
+      for i in [1...length]
+        values.push data[Math.floor(Math.random() * data.length)]
+      return values
 

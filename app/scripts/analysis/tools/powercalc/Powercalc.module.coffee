@@ -22,7 +22,7 @@ module.exports = powercalc = new Module
       'powercalcSidebarCtrl': require 'scripts/analysis/tools/powercalc/PowercalcSidebarCtrl.ctrl.coffee'
 
     directives:
-      'powercalcViz': require 'scripts/analysis/tools/powercalc/PowercalcVizDir.directive.coffee'
+      'powercalcViz': require 'scripts/analysis/tools/powercalc/PowerCalcVizDir.directive.coffee'
 
   # module state config
   state:
