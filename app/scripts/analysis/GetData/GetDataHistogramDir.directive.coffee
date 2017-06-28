@@ -16,7 +16,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
       width = 100 - margin.left - margin.right
       height = 60 - margin.top - margin.bottom
       colName = attr.colName
-          
+
       scope.$watch 'mainArea.colHistograms', (newChartData) =>
         if newChartData
           data = newChartData[colName]
@@ -32,24 +32,23 @@ module.exports = class GetDataHistogramDir extends BaseDirective
           .attr('height',height + margin.top + margin.bottom)
 
           if typeof data[0] == 'string'
-            debugger         
             tempCount = {}
             data.forEach (d)->
               tempCount[d] = if tempCount[d]? then tempCount[d] + 1 else 1
-         
-            cardinalityData = [] 
+
+            cardinalityData = []
             for k,v of tempCount
               cardinalityData.push(
                 name: k
                 count: v
               )
 
-            # Creating scales  
+            # Creating scales
             xScale = d3.scale.ordinal()
             .domain(cardinalityData.map (d)->
               d.name
             ).rangeBands([0, width])
-            
+
             yScale = d3.scale.linear()
             .domain(d3.extent(cardinalityData.map (d)->
               d.count
@@ -59,7 +58,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
             .data(cardinalityData)
             .enter()
             .append("g")
-            .attr("transform", (d) -> 
+            .attr("transform", (d) ->
               "translate(" + xScale(d.name) + ",0)"
             )
             bar.append('rect')
@@ -79,7 +78,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
           else
             histogram = d3.layout.histogram().bins(10)
             histogramData = histogram(data)
-          
+
             # Creating scales
             xScale = d3.scale.linear().range([
               0
@@ -90,7 +89,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
                 d.x + d.dx
               )
             ])
-            
+
             yScale = d3.scale.linear().range([
               0
               height
@@ -102,7 +101,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
             ])
             svg.selectAll('rect').data(histogramData).enter().append('rect')
             .attr('fill','steelblue')
-            .attr('width', (d) ->  
+            .attr('width', (d) ->
               # console.log(d.dx,xScale(d.dx),xScale.domain(), xScale.range())
               xScale(xScale.domain()[0]+d.dx) - 2
             ).attr('height', (d) ->
