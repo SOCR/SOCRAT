@@ -11,10 +11,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   initialize: ->
     console.log("mainArea initialized")
+
     @powerAnalysis = require 'powercalc'
     @distribution = require 'distributome'
     @msgService = @app_analysis_powercalc_msgService
     @algorithmService = @app_analysis_powercalc_algorithms
+
     @title = 'Power Calculator Module'
     #algorithm type
     @selectedAlgorithm = "Two-sample t test (general case)"
@@ -30,6 +32,9 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @comp_agents = []
     @agent = ""
     @params = {}
+
+    # initialize data for plotting
+    @chartData = null
 
     #variables needed for cfap only
     @cfap_nn = 1
@@ -141,15 +146,15 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @SimplePoissonGUI_click();
     @SimplePoissonGUI_submit();
 
-    @drive_data()
+    @loadData()
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
-      @drive_data()
+      @loadData()
 
     @$scope.$on 'powercalc:syncSignal', (event, data) =>
-      @drive_data
+      @loadData
 
     @$scope.$on 'powercalc:OneTGUI_alpha', (event, data)=>
       @OneTGUI_alpha = data.alpha_in
@@ -163,13 +168,14 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @agent = data.chosenCol
       else
         @agent = data.chosenVar
-      @drive_data()
+      @loadData()
 
    #receive data
     @$scope.$on 'powercalc:twoTestdata', (event, data)=>
       @populations = data.populations
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @twoTestRetrieve()
+      @twoTestGraph()
 
     @$scope.$on 'powercalc:twoTestalpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
@@ -177,7 +183,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
-      
+
       @OneTGUI_update()
       @twoTestClick()
       #@render_mathjax()
@@ -196,16 +202,16 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
 
-
-  drive_data: () ->
+  loadData: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
       @twoTestRetrieve()
+      @twoTestGraph()
       return
 
     else if (@selectedAlgorithm is "One-Sample (or Paired) t Test")
       # check population length
       if (Object.keys(@populations).length isnt 1)
-        window.alert("main: population length")
+        console.log "main: population length"
         return
 
       @OneTGUI_receive_data()
@@ -1100,8 +1106,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @twoTestClick()
     return
   twoTestSync: () ->
-    @params.n1 = @twoTestn1 
-    @params.n2 = @twoTestn2 
+    @params.n1 = @twoTestn1
+    @params.n2 = @twoTestn2
     @params.nMax = @twoTestmaxn
     @params.mean1 = @twoTestmean1
     @params.mean2 = @twoTestmean2
@@ -1255,8 +1261,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#twoTestmean1ui').find('.ui-slider-handle').show();
       $("#twoTestmean2ui").slider("enable")
       $('#twoTestmean2ui').find('.ui-slider-handle').show();
+
   twoTestGraph:() ->
-    @twoTest.drawNormalCurve(@twoTestmean1, Math.pow(@twoTestsigma1, 2), @twoTestsigma1, @twoTestmean2, Math.pow(@twoTestsigma2, 2), @twoTestsigma2, @twoTestalpha);
     if @deployed
       $("#display_legend1").text(@comp_agents[0]+": "+@twoTestmean1.toFixed(3))
       $("#display_legend2").text(@comp_agents[1]+": "+@twoTestmean2.toFixed(3))
@@ -1267,4 +1273,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $("#display_legend2").text("Sample2: " + @twoTestmean2.toFixed(3))
       $("#display_legend1").css("background-color","aquamarine")
       $("#display_legend2").css("background-color","chocolate")
+
+    params =
+      mean1: @twoTestmean1
+      stdDev1: @twoTestsigma1
+      mean2: @twoTestmean2
+      stdDev2: @twoTestsigma2
+      alpha: @twoTestalpha
+
+    @chartData = @algorithmService.getChartData @selectedAlgorithm, params
 

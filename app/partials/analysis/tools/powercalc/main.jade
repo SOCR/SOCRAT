@@ -256,7 +256,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           div(style='margin-top:20px;')
             div(style='display:inline')
               p(style='display:inline') Mean0
-              p#OneTGUI_mean0_disp(style='display:inline'):&nbsp;
+              p#OneTGUI_mean0_disp(style='display:inline') &nbsp;
               input#OneTGUI_mean0_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_mean0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
               #OneTGUI_mean0ui
         div
@@ -461,10 +461,15 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         <br>
         p power: The probability of the critical region, given lambda and n.</p>
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
-    h5 Two-Sample t Test with Power Analysis <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="This power analysis is for tests concerning whether the means of two groups are different." tooltip-placement="bottom"></span>
+    h5 Two-Sample t Test with Power Analysis &nbsp;
+      span.glyphicon.glyphicon-question-sign(
+        aria-hidden="true"
+        uib-tooltip="This power analysis is for tests concerning whether the means of two groups are different."
+        tooltip-placement="bottom"
+      )
     .row
       .col-md-7
-        div(id="Two_TGUI_graph" class="graph")
+        powercalc-viz
         div(style='margin-top:20px;')
           div(style='display:inline')
             | Power: &nbsp
@@ -537,7 +542,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               p#psigma2i(style='display:inline') 2:&nbsp;
               input#twoTestsigma2_v(ng-disabled="mainArea.deployed" type="number" step="3" name='twoTestsigma2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.twoTestsigma2" ng-click="mainArea.twoTestSync()" ng-keypress="mainArea.twoTestPress($event)")
               #twoTestsigma2ui
-        <br>
+        br
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
@@ -551,7 +556,6 @@ div(ng-controller="powercalcMainCtrl as mainArea")
               p(style='display:inline') p-value
               p#psigma1i(style='display:inline') :&nbsp;
               input#twoTestpvalue_v(ng-disabled="true" type="number" step="3" ng-model="mainArea.twoTestpvalue" name='twoTestt',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
-  powercalc-viz
 
 
 

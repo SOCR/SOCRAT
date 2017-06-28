@@ -3,10 +3,10 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class PowercalcSidebarCtrl extends BaseCtrl
-	@inject  'app_analysis_powercalc_dataService', 
-	'app_analysis_powercalc_msgService', 
-	'app_analysis_powercalc_algorithms', 
-	'$scope', 
+	@inject  'app_analysis_powercalc_dataService',
+	'app_analysis_powercalc_msgService',
+	'app_analysis_powercalc_algorithms',
+	'$scope',
 	'$timeout'
 
 	initialize: ->
@@ -17,14 +17,14 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 		# choose algorithms
 		@algorithms = ['Select',
-		 'CI for One Proportion', 
-		 'CI for One Mean', 
-		 'Test of One Proportion', 
-		 'One-Sample (or Paired) t Test', 
-		 'Pilot Study', 
-		 'R-square (multiple correlation)', 
-		 'Generic chi-square test', 
-		 'Power of a Simple Poisson Test', 
+		 'CI for One Proportion',
+		 'CI for One Mean',
+		 'Test of One Proportion',
+		 'One-Sample (or Paired) t Test',
+		 'Pilot Study',
+		 'R-square (multiple correlation)',
+		 'Generic chi-square test',
+		 'Power of a Simple Poisson Test',
 		 'Two-sample t test (general case)']
 		@powercalcRunning = off
 		@algParams = null
@@ -95,13 +95,12 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			console.log("algorithms updated:", @selectedAlgorithm)
 
 
-	drive_data: () ->
-		@msgService.broadcast 'powercalc:drive_data',
+	loadData: () ->
+		@msgService.broadcast 'powercalc:loadData',
 			populations:@populations
 			chosenCol:@chosenCols
 			chosenVar:@chosenVars
 			chosenlab:@chosenLabel
-
 
 		# if data selected meets specified creteria, run the caculation
 	run: (data) ->
@@ -132,9 +131,9 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				#check if index if -1
 				if index is -1
 					console.log -1
-					return 
+					return
 
-				#extract data from container to population 
+				#extract data from container to population
 				@populations = {}
 				for elt in @chosenVars
 					@populations[elt] = []
@@ -177,9 +176,9 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				#check if index if -1
 				if index is -1
 					console.log -1
-					return 
+					return
 
-				#extract data from container to population 
+				#extract data from container to population
 				@populations = {}
 				@populations[@chosenVars] = []
 				for row in @container[@chosenVars]
@@ -227,8 +226,8 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				#console.log (@container)
 
 		console.log @container
-		
-			
+
+
 
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
@@ -272,7 +271,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 					alpha_in: @twoTest_alpha
 				return
 		)
-		$( "#twoTest_alpha_v" ).val( @twoTest_alpha.toFixed(3) );  
+		$( "#twoTest_alpha_v" ).val( @twoTest_alpha.toFixed(3) );
 
 		$("#OneTGUI_alphaui").slider(
 			min: 0.001

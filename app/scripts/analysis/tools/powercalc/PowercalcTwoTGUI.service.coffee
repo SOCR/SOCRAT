@@ -47,7 +47,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     @twoTestmodes = ["Two Tailed", "One Tailed"]
 
     #data to observe
-    @parameters = 
+    @parameters =
       n1: @twoTestn1
       n2: @twoTestn2
       nMax: @twoTestmaxn
@@ -83,7 +83,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     return @name
 
   getParams: () ->
-    @parameters = 
+    @parameters =
       n1: @twoTestn1
       n2: @twoTestn2
       nMax: @twoTestmaxn
@@ -219,12 +219,12 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
   getSum: (values) ->
     values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
 
-  getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
+  getGaussianFunctionPoints: (mean, std, leftBound, rightBound) ->
     data = []
-    for i in [leftBound...rightBound] by 1
+    for i in [leftBound...rightBound]
       data.push
         x: i
-        y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
+        y: (1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * Math.pow(std, 2))))
     data
 
   getMean: (valueSum, numberOfOccurrences) ->
@@ -255,6 +255,33 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     for i in [1...length]
       values.push data[Math.floor(Math.random() * data.length)]
     return values
+
+  getChartData: (params) ->
+    mean1 = params.mean1
+    stdDev1 = params.stdDev1
+    mean2 = params.mean2
+    stdDev2 = params.stdDev2
+    alpha = params.alpha
+
+    rightBound = Math.max(@getRightBound(mean1, stdDev1), @getRightBound(mean2, stdDev2))
+    leftBound = Math.min(@getLeftBound(mean1, stdDev1), @getLeftBound(mean2, stdDev2))
+    bottomBound = 0
+    topBound = Math.max(1 / (stdDev1 * Math.sqrt(Math.PI * 2)), 1 / (stdDev2 * Math.sqrt(Math.PI * 2)))
+    gaussianCurveData1 = @getGaussianFunctionPoints(mean1, stdDev1,leftBound,rightBound)
+    gaussianCurveData2 = @getGaussianFunctionPoints(mean2, stdDev2,leftBound,rightBound)
+
+    bounds =
+      left: leftBound
+      right: rightBound
+      top: topBound
+      bottom: bottomBound
+
+    data = [gaussianCurveData1, gaussianCurveData2]
+
+    return {
+      data: data
+      bounds: bounds
+    }
 
   drawNormalCurve: (mean_in1, variance_in1, sigma_in1, mean_in2, variance_in2, sigma_in2, alpha_in) ->
     margin = {top: 20, right: 20, bottom: 20, left:20}
@@ -288,7 +315,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     gaussianCurveData2 = @getGaussianFunctionPoints(standardDerivation2,mean2,variance2,leftBound,rightBound)
 
     radiusCoef = 5
-    
+
     padding = 50
     xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
     #console.log "xScale: " + xScale
@@ -344,7 +371,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
     _graph.selectAll('.y.axis path')
     .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-    
+
     # display lengend1
     svg.append("text")
     .attr("id", "display_legend1")
@@ -360,7 +387,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     .attr("y", yScale(topBound*0.85))
     .style("text-anchor", "middle")
     .attr('fill', "chocolate");
-    
+
     # rotate text on x axis
     # _graph.selectAll('.x.axis text')
     # .attr('transform', (d) ->
@@ -456,5 +483,3 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     if $p > .5
       $x = -$x
     $x
-
-
