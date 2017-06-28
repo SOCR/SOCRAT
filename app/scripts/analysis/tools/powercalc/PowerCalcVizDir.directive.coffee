@@ -6,6 +6,7 @@ module.exports = class PowercalcVizDiv extends BaseDirective
   @inject '$parse'
 
   initialize: ->
+    console.log 'PowercalcVizDiv initialized'
     scope.$watchCollection 'mainArea.params', (params) =>
       if (scope.mainArea.selectedAlgorithm is "Two-sample t test (general case)")
         @TwoTestCurve(params.mean1, Math.pow(params.sigma1, 2), params.sigma1, params.mean2, Math.pow(params.sigma2, 2), params.sigma2, scope.mainArea.twoTestAlpha)
