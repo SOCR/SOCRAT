@@ -1118,6 +1118,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @params.power = @twoTestpower
     @params.mode = @twoTestmode
     @syncData(@params)
+    @twoTestGraph()
     return
   twoTestPower: () ->
     @params.power = @twoTestpower
@@ -1281,5 +1282,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       stdDev2: @twoTestsigma2
       alpha: @twoTestalpha
 
-    @chartData = @algorithmService.getChartData @selectedAlgorithm, params
+    chartData = @algorithmService.getChartData @selectedAlgorithm, params
+    @$timeout => @chartData = chartData,
+    5
 
