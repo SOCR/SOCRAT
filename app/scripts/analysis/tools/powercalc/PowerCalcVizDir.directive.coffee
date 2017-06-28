@@ -7,11 +7,12 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
     initialize: ->
         @link = (scope, elem, attr) =>
-            scope.$watch '[mainArea.twoTest]', (newDataPoints) =>
-                return
+            scope.$watchCollection '[mainArea.params]', (params) =>
+                if (scope.mainArea.selectedAlgorithm is "Two-sample t test (general case)")
+                    @TwoTestCurve(params.mean1, params.mean2, params.sigma1, params.sigma2, Math.pow(params.sigma1, 2), Math.pow(params.sigma2, 2), scope.mainArea.twoTestAlpha)
 
 
-            drawNormalCurve: (mean_in1, variance_in1, sigma_in1, mean_in2, variance_in2, sigma_in2, alpha_in) ->
+            TwoTestCurve: (mean_in1, variance_in1, sigma_in1, mean_in2, variance_in2, sigma_in2, alpha_in) ->
                 margin = {top: 20, right: 20, bottom: 20, left:20}
                 width = 500 - margin.left - margin.right
                 height = 500 - margin.top - margin.bottom
@@ -118,3 +119,67 @@ module.exports = class PowercalcVizDiv extends BaseDirective
                 # .style('font-size', '16px')
 
                 return
+
+            extract: (data, variable) ->
+                tmp = []
+                for d in data
+                    tmp.push +d[variable]
+                tmp
+
+            getRightBound: (middle,step) ->
+                return middle + step * @distanceFromMean
+
+            getLeftBound: (middle,step) ->
+                return middle - step * @distanceFromMean
+
+            sort: (values) ->
+                values.sort (a, b) -> a-b
+
+            getVariance: (values, mean) ->
+                temp = 0
+                numberOfValues = values.length
+                while( numberOfValues--)
+                    temp += Math.pow( (parseInt(values[numberOfValues]) - mean), 2 )
+
+                return temp / values.length
+
+            getSum: (values) ->
+                values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
+
+            getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
+                data = []
+                for i in [leftBound...rightBound] by 1
+                  data.push
+                    x: i
+                    y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
+                data
+
+            getMean: (valueSum, numberOfOccurrences) ->
+                valueSum / numberOfOccurrences
+
+            getZ: (x, mean, standardDerivation) ->
+                (x - mean) / standardDerivation
+
+            getWeightedValues: (values) ->
+                weightedValues= {}
+                data= []
+                lengthValues = values.length
+                for i in [0...lengthValues] by 1
+                    label = values[i].toString()
+                    if(weightedValues[label])
+                        weightedValues[label].weight++
+                    else
+                        weightedValues[label]={weight :1,value :label}
+                        data.push(weightedValues[label])
+                return data
+
+            getRandomNumber: (min,max) ->
+                Math.round((max-min) * Math.random() + min)
+
+            getRandomValueArray: (data) ->
+                values = []
+                length = data.length
+                for i in [1...length]
+                    values.push data[Math.floor(Math.random() * data.length)]
+                return values
+
