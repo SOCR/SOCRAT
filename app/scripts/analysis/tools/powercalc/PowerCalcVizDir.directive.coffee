@@ -22,10 +22,11 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
         if newChartData
-          drawNormalCurve(newChartData)
+          if scope.mainArea.selectedAlgorithm is "Two-sample t test (general case)"
+            twoTestDrawNormalCurve(newChartData)
       , on
 
-      drawNormalCurve = (newChartData) ->
+      twoTestDrawNormalCurve = (newChartData) ->
 
         bounds = newChartData.bounds
         data = newChartData.data
@@ -64,32 +65,32 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         .y (d) -> yScale(d.y)
         .interpolate('basis')
 
-        for datum in data
-          _graph.append('svg:path')
-            .attr('d', lineGen(datum))
-            .data([datum])
-            .attr('stroke', 'black')
-            .attr('stroke-width', 5)
-            .attr('fill', 'blue')
-            .style('opacity', 0.5)
+        # for datum in data
+        #   _graph.append('svg:path')
+        #     .attr('d', lineGen(datum))
+        #     .data([datum])
+        #     .attr('stroke', 'black')
+        #     .attr('stroke-width', 5)
+        #     .attr('fill', 'blue')
+        #     .style('opacity', 0.5)
 
-#        # data1
-#        path1 = _graph.append('svg:path')
-#        .attr('d', lineGen(gaussianCurveData1))
-#        .data([gaussianCurveData1])
-#        .attr('stroke', 'black')
-#        .attr('stroke-width', 5)
-#        .attr('fill', 'blue')
-#        .style('opacity', 0.5)
-#
-#        # data2
-#        path2 = _graph.append('svg:path')
-#        .attr('d', lineGen(gaussianCurveData2))
-#        .data([gaussianCurveData2])
-#        .attr('stroke', 'red')
-#        .attr('stroke-width', 5)
-#        .attr('fill', 'chocolate')
-#        .style('opacity', 0.5)
+        # data1
+        path1 = _graph.append('svg:path')
+        .attr('d', lineGen(data[0]))
+        .data([data[0]])
+        .attr('stroke', 'black')
+        .attr('stroke-width', 5)
+        .attr('fill', 'blue')
+        .style('opacity', 0.5)
+
+        # data2
+        path2 = _graph.append('svg:path')
+        .attr('d', lineGen(data[1]))
+        .data([data[1]])
+        .attr('stroke', 'red')
+        .attr('stroke-width', 5)
+        .attr('fill', 'chocolate')
+        .style('opacity', 0.5)
 
         # x-axis
         _graph.append('svg:g')
@@ -130,5 +131,16 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         # .attr('transform', (d) ->
         #    'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
         # .style('font-size', '16px')
+        if scope.mainArea.deployed
+          $("#displayLegend1").text(comp_agents[0]+": "+scope.mainArea.twoTestmean1.toFixed(3))
+          $("#displayLegend2").text(comp_agents[1]+": "+scope.mainArea.twoTestmean2.toFixed(3))
+          $("#displayLegend1").css("background-color","aquamarine")
+          $("#displayLegend2").css("background-color","chocolate")
+        else
+          $("#displayLegend1").text("Sample1: " + scope.mainArea.twoTestmean1.toFixed(3))
+          $("#displayLegend2").text("Sample2: " + scope.mainArea.twoTestmean2.toFixed(3))
+          $("#displayLegend1").css("background-color","aquamarine")
+          $("#displayLegend2").css("background-color","chocolate")
+
 
         return

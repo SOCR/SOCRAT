@@ -1274,17 +1274,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#twoTestmean2ui').find('.ui-slider-handle').show();
 
   twoTestGraph:() ->
-    if @deployed
-      $("#display_legend1").text(@comp_agents[0]+": "+@twoTestmean1.toFixed(3))
-      $("#display_legend2").text(@comp_agents[1]+": "+@twoTestmean2.toFixed(3))
-      $("#display_legend1").css("background-color","aquamarine")
-      $("#display_legend2").css("background-color","chocolate")
-    else
-      $("#display_legend1").text("Sample1: " + @twoTestmean1.toFixed(3))
-      $("#display_legend2").text("Sample2: " + @twoTestmean2.toFixed(3))
-      $("#display_legend1").css("background-color","aquamarine")
-      $("#display_legend2").css("background-color","chocolate")
-
     params =
       mean1: @twoTestmean1
       stdDev1: @twoTestsigma1
@@ -1295,4 +1284,3 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     chartData = @algorithmService.getChartData @selectedAlgorithm, params
     @$timeout => @chartData = chartData,
     5
-
