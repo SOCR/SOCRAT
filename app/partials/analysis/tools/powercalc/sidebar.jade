@@ -54,7 +54,7 @@ div(ng-controller="powercalcSidebarCtrl as sidebar")
               h9 Significance Level: &nbsp
               input#twoTest_alpha_v(type="text" name='twoTest_alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-keypress="sidebar.changeValue($event)")
             div(style='display:inline')
-              #twoTest_alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
+              #twoTest_alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="bottom")
         fieldset(ng-show="sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'")
           legend(ng-show="sidebar.deployed") Data
           div.form-group(ng-show="sidebar.deployed")

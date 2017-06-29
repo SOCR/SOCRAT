@@ -132,8 +132,8 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         #    'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
         # .style('font-size', '16px')
         if scope.mainArea.deployed
-          $("#displayLegend1").text(comp_agents[0]+": "+scope.mainArea.twoTestmean1.toFixed(3))
-          $("#displayLegend2").text(comp_agents[1]+": "+scope.mainArea.twoTestmean2.toFixed(3))
+          $("#displayLegend1").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1.toFixed(3))
+          $("#displayLegend2").text(scope.mainArea.comp_agents[1]+": "+scope.mainArea.twoTestmean2.toFixed(3))
           $("#displayLegend1").css("background-color","aquamarine")
           $("#displayLegend2").css("background-color","chocolate")
         else

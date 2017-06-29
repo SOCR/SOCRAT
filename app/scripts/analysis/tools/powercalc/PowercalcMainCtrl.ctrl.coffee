@@ -186,18 +186,9 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       @deployed=data.deploy
 
       @OneTGUI_update()
+      @twoTestRetrieve()
       @twoTestClick()
       #@render_mathjax()
-      if !@deployed
-        $("#psigma1i").text("1: ")
-        $("#psigma2i").text("2: ")
-        $("#pn1i").text("1: ")
-        $("#pn2i").text("2: ")
-        $("#pmean1i").text("1: ")
-        $("#pmean2i").text("2: ")
-        $("#OneTGUI_N_disp").text(": ")
-        $("#OneTGUI_mean_disp").text(": ")
-        $("#OneTGUI_sigma_disp").text(": ")
 
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
@@ -1108,9 +1099,9 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @twoTestt = @params.t
     @twoTestpvalue = @params.pvl
     @twoTestmode = @params.mode
+    @comp_agents = @params.comp
     @twoTestmodes = ["Two Tailed", "One Tailed"]
     @twoTestClick()
-    @twoTestGraph()
     if (@twoTestn2 is Infinity) or (@twoTestn1 is Infinity)
       @brokenCalc = true
       return
@@ -1257,6 +1248,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#twoTestmean1ui').find('.ui-slider-handle').hide();
       $("#twoTestmean2ui").slider("disable")
       $('#twoTestmean2ui').find('.ui-slider-handle').hide();
+      $("#psigma1i").text("(" + @comp_agents[0] + "): ")
+      $("#psigma2i").text("(" + @comp_agents[1] + "): ")
+      $("#pn1i").text("(" + @comp_agents[0] + "): ")
+      $("#pn2i").text("(" + @comp_agents[1] + "): ")
+      $("#pmean1i").text("(" + @comp_agents[0] + "): ")
+      $("#pmean2i").text("(" + @comp_agents[1] + "): ")
     else
       $("#twoTestsigma1ui").slider("enable")
       $('#twoTestsigma1ui').find('.ui-slider-handle').show();
@@ -1272,6 +1269,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#twoTestmean1ui').find('.ui-slider-handle').show();
       $("#twoTestmean2ui").slider("enable")
       $('#twoTestmean2ui').find('.ui-slider-handle').show();
+      $("#psigma1i").text("1: ")
+      $("#psigma2i").text("2: ")
+      $("#pn1i").text("1: ")
+      $("#pn2i").text("2: ")
+      $("#pmean1i").text("1: ")
+      $("#pmean2i").text("2: ")
+
 
   twoTestGraph:() ->
     params =
