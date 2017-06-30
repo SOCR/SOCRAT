@@ -1275,8 +1275,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $("#pn2i").text("2: ")
       $("#pmean1i").text("1: ")
       $("#pmean2i").text("2: ")
-
-
+  twoTestReset: () ->
+    @reset()
   twoTestGraph:() ->
     params =
       mean1: @twoTestmean1

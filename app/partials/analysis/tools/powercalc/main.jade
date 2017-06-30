@@ -468,7 +468,7 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         tooltip-placement="bottom"
       )
     .row
-      .col-md-7
+      .col-md-8
         powercalc-viz
         div(style='margin-top:20px;')
           div(style='display:inline')
@@ -479,13 +479,13 @@ div(ng-controller="powercalcMainCtrl as mainArea")
           ng-hide="mainArea.deployed"
           type="submit"
           aria-label="Reset"
-          ng-click="mainArea.reset()")
+          ng-click="mainArea.twoTestReset()")
             | Reset&nbsp;
         h(
           ng-show="mainArea.brokenCalc"
           style="color:red;"
         ) &nbsp;&nbsp;Calculator breaks. Reset needed.
-      .col-md-5
+      .col-md-4
         div
           div.form-group
             fieldset

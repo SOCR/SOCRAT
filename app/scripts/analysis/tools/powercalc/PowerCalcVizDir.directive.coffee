@@ -113,7 +113,7 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         # display lengend1
         svg.append('text')
         .attr('id', 'displayLegend1')
-        .attr('x', xScale(bounds.right * 0.9))
+        .attr('x', xScale(bounds.right * 0.8))
         .attr('y', yScale(bounds.top * 0.9))
         .style('text-anchor', 'middle')
         .attr('fill', 'blue');
@@ -121,7 +121,7 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         # display legend2
         svg.append('text')
         .attr('id', 'displayLegend2')
-        .attr('x', xScale(bounds.right * 0.9))
+        .attr('x', xScale(bounds.right * 0.8))
         .attr('y', yScale(bounds.top * 0.85))
         .style('text-anchor', 'middle')
         .attr('fill', 'chocolate');
