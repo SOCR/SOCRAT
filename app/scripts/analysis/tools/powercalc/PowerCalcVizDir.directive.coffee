@@ -23,10 +23,23 @@ module.exports = class PowercalcVizDiv extends BaseDirective
       scope.$watch 'mainArea.chartData', (newChartData) =>
         if newChartData
           if scope.mainArea.selectedAlgorithm is "Two-sample t test (general case)"
-            twoTestDrawNormalCurve(newChartData)
+            drawNormalCurve(newChartData)
       , on
 
-      twoTestDrawNormalCurve = (newChartData) ->
+      twoTestLegend = () ->
+        if scope.mainArea.deployed
+          $("#displayLegend0").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1.toFixed(3))
+          $("#displayLegend1").text(scope.mainArea.comp_agents[1]+": "+scope.mainArea.twoTestmean2.toFixed(3))
+          $("#displayLegend0").css("background-color","aquamarine")
+          $("#displayLegend1").css("background-color","chocolate")
+        else
+          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestmean1.toFixed(3))
+          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestmean2.toFixed(3))
+          $("#displayLegend0").css("background-color","aquamarine")
+          $("#displayLegend1").css("background-color","chocolate")
+
+
+      drawNormalCurve = (newChartData) ->
 
         bounds = newChartData.bounds
         data = newChartData.data
@@ -65,32 +78,18 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         .y (d) -> yScale(d.y)
         .interpolate('basis')
 
-        # for datum in data
-        #   _graph.append('svg:path')
-        #     .attr('d', lineGen(datum))
-        #     .data([datum])
-        #     .attr('stroke', 'black')
-        #     .attr('stroke-width', 5)
-        #     .attr('fill', 'blue')
-        #     .style('opacity', 0.5)
+        color = ['aquamarine', 'chocolate', 'yellow', 'red', 'orange']
 
-        # data1
-        path1 = _graph.append('svg:path')
-        .attr('d', lineGen(data[0]))
-        .data([data[0]])
-        .attr('stroke', 'black')
-        .attr('stroke-width', 5)
-        .attr('fill', 'blue')
-        .style('opacity', 0.5)
-
-        # data2
-        path2 = _graph.append('svg:path')
-        .attr('d', lineGen(data[1]))
-        .data([data[1]])
-        .attr('stroke', 'red')
-        .attr('stroke-width', 5)
-        .attr('fill', 'chocolate')
-        .style('opacity', 0.5)
+        i = 0
+        for datum in data
+          _graph.append('svg:path')
+            .attr('d', lineGen(datum))
+            .data([datum])
+            .attr('stroke', 'black')
+            .attr('stroke-width', 5)
+            .attr('fill', color[i])
+            .style('opacity', 0.8)
+          i++
 
         # x-axis
         _graph.append('svg:g')
@@ -110,37 +109,19 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         _graph.selectAll('.y.axis path')
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
 
-        # display lengend1
-        svg.append('text')
-        .attr('id', 'displayLegend1')
-        .attr('x', xScale(bounds.right * 0.8))
-        .attr('y', yScale(bounds.top * 0.9))
-        .style('text-anchor', 'middle')
-        .attr('fill', 'blue');
+        i = 0
+        for datum in data
+          # # display lengend
+          svg.append('text')
+            .attr('id', 'displayLegend'+i)
+            .attr('x', xScale(bounds.right * 0.8))
+            .attr('y', yScale(bounds.top * (0.9- i*0.05)))
+            .style('text-anchor', 'middle')
+          .attr('fill', color[i])
+          i++
 
-        # display legend2
-        svg.append('text')
-        .attr('id', 'displayLegend2')
-        .attr('x', xScale(bounds.right * 0.8))
-        .attr('y', yScale(bounds.top * 0.85))
-        .style('text-anchor', 'middle')
-        .attr('fill', 'chocolate');
-
-        # rotate text on x axis
-        # _graph.selectAll('.x.axis text')
-        # .attr('transform', (d) ->
-        #    'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-        # .style('font-size', '16px')
-        if scope.mainArea.deployed
-          $("#displayLegend1").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1.toFixed(3))
-          $("#displayLegend2").text(scope.mainArea.comp_agents[1]+": "+scope.mainArea.twoTestmean2.toFixed(3))
-          $("#displayLegend1").css("background-color","aquamarine")
-          $("#displayLegend2").css("background-color","chocolate")
-        else
-          $("#displayLegend1").text("Sample1: " + scope.mainArea.twoTestmean1.toFixed(3))
-          $("#displayLegend2").text("Sample2: " + scope.mainArea.twoTestmean2.toFixed(3))
-          $("#displayLegend1").css("background-color","aquamarine")
-          $("#displayLegend2").css("background-color","chocolate")
+        if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
+          twoTestLegend()
 
 
         return
