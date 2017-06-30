@@ -1089,15 +1089,15 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @twoTestn1 = @params.n1
     @twoTestn2 = @params.n2
     @twoTestmaxn = @params.nMax
-    @twoTestmean1 = @params.mean1
-    @twoTestmean2 = @params.mean2
-    @twoTestmeanMax = @params.meanMax
-    @twoTestsigma1 = @params.sigma1
-    @twoTestsigma2 = @params.sigma2
-    @twoTestsigmaMax = @params.sigmaMax
-    @twoTestpower = @params.power
-    @twoTestt = @params.t
-    @twoTestpvalue = @params.pvl
+    @twoTestmean1 = parseFloat(@params.mean1.toPrecision(4))
+    @twoTestmean2 = parseFloat(@params.mean2.toPrecision(4))
+    @twoTestmeanMax = parseFloat(@params.meanMax.toPrecision(4))
+    @twoTestsigma1 = parseFloat(@params.sigma1.toPrecision(4))
+    @twoTestsigma2 = parseFloat(@params.sigma2.toPrecision(4))
+    @twoTestsigmaMax = parseFloat(@params.sigmaMax.toPrecision(4))
+    @twoTestpower = parseFloat(@params.power.toPrecision(4))
+    @twoTestt = parseFloat(@params.t.toPrecision(4))
+    @twoTestpvalue = parseFloat(@params.pvl.toPrecision(4))
     @twoTestmode = @params.mode
     @comp_agents = @params.comp
     @twoTestmodes = ["Two Tailed", "One Tailed"]
@@ -1149,7 +1149,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @twoTestSync()
         return
     )
-    $( "#twoTestsigma1_v" ).val( @twoTestsigma1.toFixed(3));
+    $( "#twoTestsigma1_v" ).val( @twoTestsigma1);
     $( "#twoTestsigma2ui" ).slider(
       value:@twoTestsigma2,
       min: 0,
@@ -1162,7 +1162,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @twoTestSync()
         return
     )
-    $( "#twoTestsigma2_v" ).val(@twoTestsigma2.toFixed(3));
+    $( "#twoTestsigma2_v" ).val(@twoTestsigma2);
 
     $( "#twoTestn1ui" ).slider(
       value:@twoTestn1,
@@ -1203,7 +1203,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @twoTestSync()
         return
     )
-    $( "#twoTestmean1_v" ).val( @twoTestmean1.toFixed(3) );
+    $( "#twoTestmean1_v" ).val( @twoTestmean1);
     $( "#twoTestmean2ui" ).slider(
       value:@twoTestmean2,
       min: 0,
@@ -1216,7 +1216,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @twoTestSync()
         return
     )
-    $( "#twoTestmean2_v" ).val( @twoTestmean2.toFixed(3) );
+    $( "#twoTestmean2_v" ).val( @twoTestmean2);
     $( "#twoTestpowerui" ).slider(
       value:@twoTestpower,
       min: 0.0001,
@@ -1229,7 +1229,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @twoTestPower()
         return
     )
-    $( "#twoTestpower_v" ).val( @twoTestpower.toFixed(3) );
+    $( "#twoTestpower_v" ).val( @twoTestpower);
     $( "#twoTestt_v" ).val( @twoTestt );
     $( "#twoTestpvalue_v" ).val( @twoTestpvalue );
     # enable or disable slider

@@ -28,13 +28,13 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
       twoTestLegend = () ->
         if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1.toFixed(3))
-          $("#displayLegend1").text(scope.mainArea.comp_agents[1]+": "+scope.mainArea.twoTestmean2.toFixed(3))
+          $("#displayLegend0").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1)
+          $("#displayLegend1").text(scope.mainArea.comp_agents[1]+": "+scope.mainArea.twoTestmean2)
           $("#displayLegend0").css("background-color","aquamarine")
           $("#displayLegend1").css("background-color","chocolate")
         else
-          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestmean1.toFixed(3))
-          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestmean2.toFixed(3))
+          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestmean1)
+          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestmean2)
           $("#displayLegend0").css("background-color","aquamarine")
           $("#displayLegend1").css("background-color","chocolate")
 
