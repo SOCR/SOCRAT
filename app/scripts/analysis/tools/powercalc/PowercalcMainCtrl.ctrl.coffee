@@ -61,23 +61,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cimean_click()
     @cimean_submit()
 
-    #variables needed for OnePGUI only
-    @OnePGUI_nn = 1
-    @OnePGUI_p0=null
-    @OnePGUI_p=null
-    @OnePGUI_ssize=null
-    @OnePGUI_power=null
-    @OnePGUI_maxp0=1.0
-    @OnePGUI_maxp=1.0
-    @OnePGUI_maxssize=77
-    @OnePGUI_maxpower=1.0
-    @OnePGUI_alpha=0.02
-    @OnePGUI_help=false
-    @OnePGUI_altt_value = 1
-    @OnePGUI_method_value = 1
-    @OnePGUI_click()
-    @OnePGUI_submit()
-
     #variables needed for OneTGUI only
     @OneTGUI = @app_analysis_powercalc_oneTest
     @OneTGUI_n = 10
@@ -154,41 +137,21 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       console.log("algorithms updated:", @selectedAlgorithm)
       @loadData()
 
-    @$scope.$on 'powercalc:syncSignal', (event, data) =>
-      @loadData
-
-    @$scope.$on 'powercalc:OneTGUI_alpha', (event, data)=>
-      @OneTGUI_alpha = data.alpha_in
-      @OneTGUI_update()
-
-    @$scope.$on 'powercalc:OneTGUI_data', (event, data)=>
-      @populations = data.populations
-      lab = data.chosenlab
-      if (lab is "none") or (lab is null)
-        console.log "hit"
-        @agent = data.chosenCol
-      else
-        @agent = data.chosenVar
-      @loadData()
-
    #receive data
-    @$scope.$on 'powercalc:twoTestdata', (event, data)=>
+    @$scope.$on 'powercalc: onetwoTestdata', (event, data)=>
       @populations = data.populations
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @twoTestRetrieve()
       @twoTestGraph()
 
-    @$scope.$on 'powercalc:twoTestalpha', (event, data)=>
+    @$scope.$on 'powercalc:onetwoTestalpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
       @twoTestRetrieve()
 
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
-
-      @OneTGUI_update()
+      @oneTestRetrieve()
       @twoTestRetrieve()
-      @twoTestClick()
-      #@render_mathjax()
 
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
@@ -197,17 +160,11 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   loadData: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
       @twoTestRetrieve()
-      @twoTestGraph()
       return
-
     else if (@selectedAlgorithm is "One-Sample (or Paired) t Test")
-      # check population length
-      if (Object.keys(@populations).length isnt 1)
-        console.log "main: population length"
-        return
-
-      @OneTGUI_receive_data()
-      @OneTGUI_graph()
+      @oneTestRetrieve()
+      return
+    else
       return
 
   update_algo: (evt) ->
@@ -577,176 +534,161 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     return
 
   #functions for OneTGUI only
-  OneTGUI_receive_data: () ->
-    item = Object.keys(@populations)[0]
-    # extract name of two sample
-    $("#OneTGUI_N_disp").text("(" + @agent + "): ")
-    $("#OneTGUI_sigma_disp").text("(" + @agent + "): ")
-    $("#OneTGUI_mean_disp").text("(" + @agent + "): ")
-
-    # update all Two_TGUI variables
-    @OneTGUI_n = @populations[item].length
-    @OneTGUI_mean = @OneTGUI.getMean(@OneTGUI.getSum(@populations[item]),@populations[item].length)
-    @OneTGUI_variance = @OneTGUI.getVariance(@populations[item], @OneTGUI_mean)
-    @OneTGUI_sigma = Math.sqrt(@OneTGUI_variance)
-    @OneTGUI_checkRange()
-    @OneTGUI_update()
-  OneTGUI_checkRange:() ->
-    @OneTGUI_nMax = Math.max(@OneTGUI_n, @OneTGUI_nMax)
-    @OneTGUI_meanMax = Math.max(@OneTGUI_mean, @OneTGUI_meanMax)
-    @OneTGUI_sigmaMax = Math.max(@OneTGUI_sigma, @OneTGUI_sigmaMax)
-  OneTGUI_click: () ->
-    $( "#OneTGUI_sigmaui" ).slider(
-      value: @OneTGUI_sigma,
+  oneTestRetrieve: () ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @oneTestn = @params.n
+    @oneTestnMax = @params.nMax
+    @oneTestmean = parseFloat(@params.mean.toPrecision(4))
+    @oneTestmean0 = parseFloat(@params.mean0.toPrecision(4))
+    @oneTestmeanMax = parseFloat(@params.meanMax.toPrecision(4))
+    @oneTestmean0Max = parseFloat(@params.mean0Max.toPrecision(4))
+    @oneTestsigma = parseFloat(@params.sigma.toPrecision(4))
+    @oneTestsigmaMax = parseFloat(@params.sigmaMax.toPrecision(4))
+    @oneTestpower = parseFloat(@params.power.toPrecision(4))
+    @oneTestt = parseFloat(@params.t.toPrecision(4))
+    @oneTestpvalue = parseFloat(@params.pvl.toPrecision(4))
+    @oneTestmode = @params.mode
+    @comp_agents = @params.comp
+    @oneTestmodes = ["Two Tailed", "One Tailed"]
+    @oneTestClick()
+    if (@oneTestn is Infinity)
+      @brokenCalc = true
+      return
+    @oneTestGraph()
+    return
+  oneTestSync: () ->
+    @params.n = @oneTestn
+    @params.nMax = @oneTestnMax
+    @params.mean = @oneTestmean
+    @params.mean0 = @oneTestmean0
+    @params.meanMax = @oneTestmeanMax
+    @params.sigma = @oneTestsigma
+    @params.sigmaMax = @oneTestsigmaMax
+    @params.power = @oneTestpower
+    @params.mode = @oneTestmode
+    @syncData(@params)
+    return
+  oneTestPower: () ->
+    @params.power = @oneTestpower
+    @params.mode = @oneTestmode
+    @syncPower(@params)
+    return
+  oneTestPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "oneTestpower"
+        @oneTestPower()
+      else
+        @oneTestSync()
+    return
+  oneTestClick: () ->
+    $( "#oneTestSigmaUI" ).slider(
+      value: @oneTestsigma,
       min: 0,
-      max: @OneTGUI_sigmaMax,
+      max: @oneTestsigma,
       range: 'min',
-      step: 0.01,
+      step: 0.001,
       slide: ( event, ui ) =>
-        $( "#OneTGUI_sigma_v" ).val( ui.value );
-        @OneTGUI_sigma = ui.value
-        @OneTGUI_update()
+        $( "#oneTestSigmaV" ).val( ui.value );
+        @oneTestsigma = ui.value
+        @oneTestSync
         return
     )
-    $( "#OneTGUI_sigma_v" ).val( @OneTGUI_sigma.toFixed(3));
+    $( "#oneTestSigmaV" ).val(@oneTestsigma);
 
-    $( "#OneTGUI_nui" ).slider(
-      value:@OneTGUI_n,
+    $( "#oneTestNUI" ).slider(
+      value: @oneTestn,
       min: 0,
-      max: @OneTGUI_nMax,
+      max: @oneTestnMax,
       range: "min",
       step: 1,
       slide: ( event, ui ) =>
-        $( "#OneTGUI_n_v" ).val( ui.value );
-        @OneTGUI_n = ui.value
-        @OneTGUI_update()
+        $( "#oneTestNV" ).val( ui.value );
+        @oneTestn = ui.value
+        @oneTestSync()
         return
     )
-    $( "#OneTGUI_n_v" ).val( @OneTGUI_n );
+    $( "#oneTestNV" ).val( @oneTestn );
 
-    $( "#OneTGUI_meanui" ).slider(
-      value:@OneTGUI_mean,
+    $( "#oneTestMeanUI" ).slider(
+      value: @oneTestmean,
       min: 0,
-      max: @OneTGUI_meanMax,
+      max: @oneTestmeanMax,
       range: "min",
-      step: 0.01,
+      step: 0.001,
       slide: ( event, ui ) =>
-        $( "#OneTGUI_mean_v" ).val( ui.value );
-        @OneTGUI_mean = ui.value
-        @OneTGUI_update()
+        $( "#oneTestMeanV" ).val( ui.value );
+        @oneTestmean = ui.value
+        @oneTestSync()
         return
     )
-    $( "#OneTGUI_mean_v" ).val( @OneTGUI_mean.toFixed(3) );
+    $( "#oneTestMeanV" ).val( @oneTestmean );
 
-    $( "#OneTGUI_mean0ui" ).slider(
-      value:@OneTGUI_mean0,
+    $( "#oneTestMean0UI" ).slider(
+      value: @oneTestmean0,
       min: 0,
-      max: @OneTGUI_meanMax,
+      max: @oneTestmean0Max,
       range: "min",
-      step: 0.01,
+      step: 0.001,
       slide: ( event, ui ) =>
-        $( "#OneTGUI_mean0_v" ).val( ui.value );
-        @OneTGUI_mean0 = ui.value
-        @OneTGUI_update()
+        $( "#oneTestmean0V" ).val( ui.value );
+        @oneTestmean0 = ui.value
+        @oneTestSync()
         return
     )
-    $( "#OneTGUI_mean0_v" ).val( @OneTGUI_mean0.toFixed(3) );
+    $( "#oneTestmean0V" ).val( @oneTestmean0 );
 
-    $( "#OneTGUI_powerui" ).slider(
-      value:@OneTGUI_power,
+    $( "#oneTestPowerUI" ).slider(
+      value: @oneTestpower,
       min: 0.0001,
       max: 0.9999,
       range: "min",
       step: 0.0001,
       slide:  ( event, ui ) =>
-        $( "#OneTGUI_power_v" ).val( ui.value );
-        @OneTGUI_power = ui.value
-        @OneTGUI_powerTon()
+        $( "#oneTestPowerV" ).val( ui.value );
+        @oneTestpower = ui.value
+        @oneTestPower()
         return
     )
-    $( "#OneTGUI_power_v" ).val( @OneTGUI_power.toFixed(3) );
-
-    #$( "#twoTestt_v" ).val( @OneTGUI_t.toFixed(3) );
-    #$( "#twoTestpvalue_v" ).val( @OneTGUI_pvalue.toFixed(3) );
-
+    $( "#oneTestPowerV" ).val( @oneTestpower );
+    $( "#oneTestTV" ).val( @oneTestt );
+    $( "#oneTestPValueV" ).val( @oneTestpvalue );
     # enable or disable slider
     if @deployed is true
-      $("#OneTGUI_sigmaui").slider("disable")
-      $('#OneTGUI_sigmaui').find('.ui-slider-handle').hide();
-      $("#OneTGUI_nui").slider("disable")
-      $('#OneTGUI_nui').find('.ui-slider-handle').hide();
-      $("#OneTGUI_powerui").slider("disable")
-      $('#OneTGUI_powerui').find('.ui-slider-handle').hide();
-      $("#OneTGUI_meanui").slider("disable")
-      $('#OneTGUI_meanui').find('.ui-slider-handle').hide();
+      $("#oneTestSigmaUI").slider("disable")
+      $('#oneTestSigmaUI').find('.ui-slider-handle').hide();
+      $("#oneTestNUI").slider("disable")
+      $('#oneTestNUI').find('.ui-slider-handle').hide();
+      $("#oneTestPowerUI").slider("disable")
+      $('#oneTestPowerUI').find('.ui-slider-handle').hide();
+      $("#oneTestMeanUI").slider("disable")
+      $('#oneTestMeanUI').find('.ui-slider-handle').hide();
+      $("#oneTestNDisp").text("(" + @comp_agents[0] + "): ")
+      $("#oneTestSigmaDisp").text("(" + @comp_agents[0] + "): ")
+      $("#oneTestMeanDisp").text("(" + @comp_agents[0] + "): ")
     else
-      $("#OneTGUI_sigmaui").slider("enable")
-      $('#OneTGUI_sigmaui').find('.ui-slider-handle').show();
-      $("#OneTGUI_nui").slider("enable")
-      $('#OneTGUI_nui').find('.ui-slider-handle').show();
-      $("#OneTGUI_powerui").slider("enable")
-      $('#OneTGUI_powerui').find('.ui-slider-handle').show();
-      $("#OneTGUI_meanui").slider("enable")
-      $('#OneTGUI_meanui').find('.ui-slider-handle').show();
-  OneTGUI_update: () ->
-    z = (@OneTGUI_mean - @OneTGUI_mean0)/ (@OneTGUI_sigma * Math.sqrt(@OneTGUI_n))
-    @OneTGUI_power=@distribution.pnorm(z-@distribution.qnorm(1-@OneTGUI_alpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@OneTGUI_alpha/2))
-    # @twoTestTTest()
-    @OneTGUI_checkRange()
-    @OneTGUI_click()
-    @OneTGUI_graph()
+      $("#oneTestSigmaUI").slider("enable")
+      $('#oneTestSigmaUI').find('.ui-slider-handle').show();
+      $("#oneTestNUI").slider("enable")
+      $('#oneTestNUI').find('.ui-slider-handle').show();
+      $("#oneTestPowerUI").slider("enable")
+      $('#oneTestPowerUI').find('.ui-slider-handle').show();
+      $("#oneTestMeanUI").slider("enable")
+      $('#oneTestMeanUI').find('.ui-slider-handle').show();
+      $("#oneTestNDisp").text(": ")
+      $("#oneTestSigmaDisp").text(": ")
+      $("#oneTestMeanDisp").text(": ")
     return
-  OneTGUI_powerTon: () ->
-    # TODO:
-    @OneTGUI_n = Math.pow((@OneTGUI_sigma * (@distribution.qnorm (1 - @OneTGUI_alpha / 2) + @distribution.qnorm(@OneTGUI_power))/(@OneTGUI_mean-@OneTGUI_mean0)),2)
-    Math.ceil(@OneTGUI_n)
-    @OneTGUI_checkRange()
-    @OneTGUI_click()
-    @OneTGUI_graph()
-    return
-  OneTGUI_graph:() ->
+  oneTestReset: () ->
+    @reset()
+  oneTestGraph:() ->
+    chartData = @algorithmService.getChartData @selectedAlgorithm
+    @$timeout => @chartData = chartData,
+    5
 
-    @OneTGUI.drawNormalCurve(@OneTGUI_mean0, @OneTGUI_mean, Math.pow(@OneTGUI_sigma, 2), @OneTGUI_sigma, @OneTGUI_alpha);
-    if @deployed
-      $("#OneTGUI_display_legend1").text(@agent+": "+@OneTGUI_mean)
-      $("#OneTGUI_display_legend1").css("background-color","aquamarine")
-    else
-      $("#OneTGUI_display_legend1").text("Sample: "+@OneTGUI_mean)
-      $("#OneTGUI_display_legend1").css("background-color","aquamarine")
-    return
-  OneTGUI_changeValue: (evt) ->
-    name = evt.target.name
-    val = evt.target.value
-    key = evt.which or evt.keyCode
-    if name is "OneTGUI_n"
-      @OneTGUI_n = parseFloat(val)
-    if name is "OneTGUI_mean"
-      @OneTGUI_mean = parseFloat(val)
-    if name is "OneTGUI_mean0"
-      @OneTGUI_mean0 = parseFloat(val)
-    if name is "OneTGUI_sigma"
-      @OneTGUI_sigma = parseFloat(val)
-    if name is "OneTGUI_power"
-      @OneTGUI_power = parseFloat(val)
-    if key is 13
-      if name is "OneTGUI_power"
-        @OneTGUI_powerTon()
-        return
-      @OneTGUI_update()
-      return
-  # twoTestshow_help: () ->
-  #   if @twoTesthelp is true
-  #     $('#twoTestH').val "Show Help"
-  #   else
-  #     $('#twoTestH').val "Hide Help"
-  #   @twoTesthelp = !@twoTesthelp
-  #   return
-  # twoTestTTest: () ->
-  #   v1 = Math.pow(@twoTestsigma1,2) / @twoTestn1
-  #   v2 = Math.pow(@twoTestsigma2,2) / @twoTestn2
-  #   df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@twoTestn1 - 1.0) + Math.pow(v2,2) / (@twoTestn2 - 1.0))
-  #   @twoTestt = @tdistr(df, 1-@twoTestalpha)
-  #   @twoTestpvalue = @tprob(df, @twoTestt)
+
+  
 
   #functions for Pilot only
   Pilot_click: () ->
@@ -1084,7 +1026,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     return
 
   twoTestRetrieve: () ->
-    #console.log  @algorithmService.getParamsByName(@selectedAlgorithm)
     @params = @algorithmService.getParamsByName(@selectedAlgorithm)
     @twoTestn1 = @params.n1
     @twoTestn2 = @params.n2
@@ -1278,13 +1219,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   twoTestReset: () ->
     @reset()
   twoTestGraph:() ->
-    params =
-      mean1: @twoTestmean1
-      stdDev1: @twoTestsigma1
-      mean2: @twoTestmean2
-      stdDev2: @twoTestsigma2
-      alpha: @twoTestalpha
-
-    chartData = @algorithmService.getChartData @selectedAlgorithm, params
+    chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5

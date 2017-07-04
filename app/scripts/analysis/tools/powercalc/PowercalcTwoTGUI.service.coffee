@@ -279,12 +279,12 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
       values.push data[Math.floor(Math.random() * data.length)]
     return values
 
-  getChartData: (params) ->
-    mean1 = params.mean1
-    stdDev1 = params.stdDev1
-    mean2 = params.mean2
-    stdDev2 = params.stdDev2
-    alpha = params.alpha
+  getChartData: () ->
+    mean1 = @twoTestmean1
+    stdDev1 = @twoTestsigma1
+    mean2 = @twoTestmean2
+    stdDev2 = @twoTestsigma2
+    alpha = @twoTestalpha
 
     rightBound = Math.max(@getRightBound(mean1, stdDev1), @getRightBound(mean2, stdDev2))
     leftBound = Math.min(@getLeftBound(mean1, stdDev1), @getLeftBound(mean2, stdDev2))

@@ -38,6 +38,13 @@ module.exports = class PowercalcVizDiv extends BaseDirective
           $("#displayLegend0").css("background-color","aquamarine")
           $("#displayLegend1").css("background-color","chocolate")
 
+      oneTestLegend = () ->
+        if scope.mainArea.deployed
+          $("#displayLegend0").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1)
+          $("#displayLegend0").css("background-color","aquamarine")
+        else
+          $("#displayLegend0").text("Sample: " + scope.mainArea.twoTestmean1)
+          $("#displayLegend0").css("background-color","aquamarine")
 
       drawNormalCurve = (newChartData) ->
 
@@ -122,6 +129,7 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
         if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
           twoTestLegend()
-
-
+        else if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
+          oneTestLegend()
+        
         return

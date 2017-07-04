@@ -19,8 +19,8 @@ module.exports = class PowercalcAlgorithms extends BaseModuleDataService
   getParamsByName: (algName) ->
     (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()
 
-  getChartData: (algName, params) ->
-    (alg.getChartData(params) for alg in @algorithms when algName is alg.getName()).shift()
+  getChartData: (algName) ->
+    (alg.getChartData() for alg in @algorithms when algName is alg.getName()).shift()
 
   setParamsByName: (algName, dataIn) ->
     (alg.setParams(dataIn) for alg in @algorithms when algName is alg.getName()).shift()

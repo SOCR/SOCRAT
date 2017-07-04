@@ -228,59 +228,93 @@ div(ng-controller="powercalcMainCtrl as mainArea")
         p This is like the exact method, except the critical values are calculated based on an adjusted Wald statistic.  This does NOT guarantee that the size of the test is less than alpha.
         p Note: This is the exact method used in the JMP statistical software.
   div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
-    h5 One-Sample t Test with Power Analysis
+    h5 One-Sample (or Paired) t Test &nbsp;
+      span.glyphicon.glyphicon-question-sign(
+        aria-hidden="true"
+        uib-tooltip="This calculator is useful for tests concerning whether a mean, μ, is equal to a reference value, μ0."
+        tooltip-placement="bottom"
+      )
     .row
-      .col-md-7.col-xs-7
-        div(id="One_TGUI_graph" class="graph")
+      .col-md-8
+        powercalc-viz
         div(style='margin-top:20px;')
           div(style='display:inline')
             | Power: &nbsp
-            input#OneTGUI_power_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
-            #OneTGUI_powerui
-      .col-md-5.col.xs-5
+            input#oneTestPowerV(ng-disabled="mainArea.deployed" type="number" step="any" name='oneTestpower',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-click="mainArea.oneTestPower()" ng-keypress="mainArea.oneTestPress($event)")
+            #oneTestPowerUI
+        button.btn.btn-primary.btn-sm(
+          ng-hide="mainArea.deployed"
+          type="submit"
+          aria-label="Reset"
+          ng-click="mainArea.oneTestReset()")
+            | Reset&nbsp;
+        h(
+          ng-show="mainArea.brokenCalc"
+          style="color:red;"
+        ) &nbsp;&nbsp;Calculator breaks. Reset needed.
+      .col-md-4
+        div
+          div.form-group
+            fieldset
+              label(
+                style=''
+              ) Choose an mode &nbsp;
+              select.form-control(
+                style='margin-bottom:20px;'
+                ng-model="mainArea.twoTestmode"
+                ng-init="mainArea.TowTGUI_mode = 'Two Tailed'"
+                ng-options="mode for mode in mainArea.oneTestmodes"
+                ng-change="mainArea.oneTestSync()"
+              )
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="size of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') N
-              p#OneTGUI_N_disp(style='display:inline') :&nbsp;
-              input#OneTGUI_n_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
+              p#oneTestNDisp(style='display:inline') :&nbsp;
+              input#oneTestNV(ng-disabled="mainArea.deployed" type="number" step="1" name='oneTestn',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.oneTestn" ng-click="mainArea.oneTestSync()" ng-keypress="mainArea.oneTestPress($event)")
             div(style='display:inline')
-              #OneTGUI_nui
+              #oneTestNUI
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
-              p(style='display:inline') Mean
-              p#OneTGUI_mean_disp(style='display:inline') :&nbsp;
-              input#OneTGUI_mean_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_mean',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
-              #OneTGUI_meanui
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
+              p(style='display:inline') &mu;
+              p#oneTestMeanDisp(style='display:inline') :&nbsp;
+              input#oneTestMeanV(ng-disabled="mainArea.deployed" type="number" step="3" name='oneTestmean',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.oneTestmean" ng-click="mainArea.oneTestSync()" ng-keypress="mainArea.oneTestPress($event)")
+            div(style='display:inline')
+              #oneTestMeanUI
           div(style='margin-top:20px;')
             div(style='display:inline')
-              p(style='display:inline') Mean0
-              p#OneTGUI_mean0_disp(style='display:inline') &nbsp;
-              input#OneTGUI_mean0_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_mean0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
-              #OneTGUI_mean0ui
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="mean of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
+              p(style='display:inline') &mu;
+              p(style='display:inline') 0:&nbsp;
+              input#oneTestmean0V(type="number" step="3" name='oneTestmean0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.oneTestmean0" ng-click="mainArea.oneTestSync()" ng-keypress="mainArea.oneTestPress($event)")
+            div(style='display:inline')
+              #oneTestMean0UI
         div
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="standard deviation of the population" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') &sigma;
-              p#OneTGUI_sigma_disp(style='display:inline') :&nbsp;
-              input#OneTGUI_sigma_v(ng-disabled="mainArea.deployed" type="text" name='OneTGUI_sigma',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-keypress="mainArea.OneTGUI_changeValue($event)")
-              #OneTGUI_sigmaui
-
-        <br>
-        div(hidden)
+              p#oneTestSigmaDisp(style='display:inline') :&nbsp;
+              input#oneTestSigmaV(ng-disabled="mainArea.deployed" type="number" step="3" name='oneTestsigma',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;' ng-model="mainArea.oneTestsigma" ng-click="mainArea.oneTestSync()" ng-keypress="mainArea.oneTestPress($event)")
+            div(style='display:inline')
+              #oneTestSigmaUI
+        br
+        div
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="Test Statistics Value" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') t-critical
-              input#OneTGUI_t_v(ng-disabled="true" type="text" name='OneTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
+              p(style='display:inline') :&nbsp;
+              input#oneTestTV(ng-disabled="true" type="number" step="3" ng-model="mainArea.oneTestt" name='oneTestt',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
           div(style='margin-top:20px;')
             div(style='display:inline')
+              <span class="glyphicon glyphicon-question-sign" aria-hidden="true" uib-tooltip="P-value" tooltip-placement="right"></span> &nbsp;&nbsp;
               p(style='display:inline') p-value
-              input#OneTGUI_pvalue_v(ng-disabled="true" type="text" name='OneTGUI_t',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
-    div(hidden)
-      input#OneTGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OneTGUI_show_help();')
-      div(ng-show='mainArea.OneTGUI_help == true;')
-        p You may choose whether to solve for effect size or sample size when you click on the "Power" slider.  The current values are scaled upward or downward to make the power come out right, while preserving (at least approximately) the ratio of the two SDs or two ns
+              p(style='display:inline') :&nbsp;
+              input#oneTestPValueV(ng-disabled="true" type="number" step="3" ng-model="mainArea.oneTestpvalue" name='oneTestpvalue',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold; display:inline;')
   div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
     h3 Pilot Study
     p <i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study</i>

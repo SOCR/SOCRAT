@@ -161,7 +161,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				console.log @populations
 
 
-			@msgService.broadcast 'powercalc:twoTestdata',
+			@msgService.broadcast 'powercalc:onetwoTestdata',
 				populations:@populations
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
@@ -195,7 +195,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				console.log @populations
 
 
-			@msgService.broadcast 'powercalc:OneTGUI_data',
+			@msgService.broadcast 'powercalc:onetwoTestdata',
 				populations:@populations
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
@@ -267,7 +267,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@twoTest_alpha = ui.value
 				$('#twoTest_alpha_v').val ui.value
-				@msgService.broadcast 'powercalc:twoTestalpha',
+				@msgService.broadcast 'powercalc:onetwoTestalpha',
 					alpha_in: @twoTest_alpha
 				return
 		)
@@ -283,7 +283,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@OneTGUI_alpha = ui.value
 				$('#OneTGUI_alpha_v').val ui.value
-				@msgService.broadcast 'powercalc:OneTGUI_alpha',
+				@msgService.broadcast 'powercalc:onetwoTestalpha',
 					alpha_in: @OneTGUI_alpha
 				return
 		)
