@@ -5,7 +5,6 @@ BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 module.exports = class PowercalcMainCtrl extends BaseCtrl
   @inject 'app_analysis_powercalc_msgService',
   'app_analysis_powercalc_algorithms',
-  'app_analysis_powercalc_oneTest',
   '$timeout',
   '$scope'
 
@@ -61,21 +60,6 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cimean_click()
     @cimean_submit()
 
-    #variables needed for OneTGUI only
-    @OneTGUI = @app_analysis_powercalc_oneTest
-    @OneTGUI_n = 10
-    @OneTGUI_nMax = 20
-    @OneTGUI_mean = 10
-    @OneTGUI_meanMax = 20
-    @OneTGUI_mean0 = 10
-    @OneTGUI_sigma = 10
-    @OneTGUI_sigmaMax = 20
-    @OneTGUI_power = 0
-    @OneTGUI_alpha = 0.010
-    @OneTGUI_variance = 0
-    @OneTGUI_t = 0
-    @OneTGUI_pvalue = 0
-    @OneTGUI_update()
 
 
     #variables needed for Pilot only
@@ -138,20 +122,18 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       @loadData()
 
    #receive data
-    @$scope.$on 'powercalc: onetwoTestdata', (event, data)=>
+    @$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
       @populations = data.populations
       @algorithmService.passDataByName(@selectedAlgorithm, data)
-      @twoTestRetrieve()
-      @twoTestGraph()
+      @loadData()
 
     @$scope.$on 'powercalc:onetwoTestalpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
-      @twoTestRetrieve()
+      @loadData()
 
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
-      @oneTestRetrieve()
-      @twoTestRetrieve()
+      @loadData()
 
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
@@ -175,16 +157,17 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   syncData: (dataIn) ->
     @algorithmService.setParamsByName(@selectedAlgorithm, dataIn)
-    @twoTestRetrieve()
+    @loadData()
 
   syncPower: (dataIn) ->
     @algorithmService.setPowerByName(@selectedAlgorithm, dataIn)
-    @twoTestRetrieve()
+    @loadData()
 
   reset: () ->
     @brokenCalc = false
     @algorithmService.resetByName(@selectedAlgorithm)
-    @twoTestRetrieve()
+    @loadData()
+
 
   #cfap function only
   cfap_clk: (evt) ->
@@ -586,13 +569,13 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     $( "#oneTestSigmaUI" ).slider(
       value: @oneTestsigma,
       min: 0,
-      max: @oneTestsigma,
+      max: @oneTestsigmaMax,
       range: 'min',
       step: 0.001,
       slide: ( event, ui ) =>
         $( "#oneTestSigmaV" ).val( ui.value );
         @oneTestsigma = ui.value
-        @oneTestSync
+        @oneTestSync()
         return
     )
     $( "#oneTestSigmaV" ).val(@oneTestsigma);
@@ -609,7 +592,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @oneTestSync()
         return
     )
-    $( "#oneTestNV" ).val( @oneTestn );
+    $( "#oneTestNV" ).val( @oneTestn.toFixed(0) );
 
     $( "#oneTestMeanUI" ).slider(
       value: @oneTestmean,
@@ -664,9 +647,9 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       $('#oneTestPowerUI').find('.ui-slider-handle').hide();
       $("#oneTestMeanUI").slider("disable")
       $('#oneTestMeanUI').find('.ui-slider-handle').hide();
-      $("#oneTestNDisp").text("(" + @comp_agents[0] + "): ")
-      $("#oneTestSigmaDisp").text("(" + @comp_agents[0] + "): ")
-      $("#oneTestMeanDisp").text("(" + @comp_agents[0] + "): ")
+      $("#oneTestNDisp").text("(" + @comp_agents + "): ")
+      $("#oneTestSigmaDisp").text("(" + @comp_agents + "): ")
+      $("#oneTestMeanDisp").text("(" + @comp_agents + "): ")
     else
       $("#oneTestSigmaUI").slider("enable")
       $('#oneTestSigmaUI').find('.ui-slider-handle').show();

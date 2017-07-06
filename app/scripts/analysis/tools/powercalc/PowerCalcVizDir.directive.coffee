@@ -22,8 +22,7 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
         if newChartData
-          if scope.mainArea.selectedAlgorithm is "Two-sample t test (general case)"
-            drawNormalCurve(newChartData)
+          drawNormalCurve(newChartData)
       , on
 
       twoTestLegend = () ->
@@ -40,10 +39,10 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
       oneTestLegend = () ->
         if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1)
+          $("#displayLegend0").text(scope.mainArea.comp_agents+": "+scope.mainArea.twoTestmean1)
           $("#displayLegend0").css("background-color","aquamarine")
         else
-          $("#displayLegend0").text("Sample: " + scope.mainArea.twoTestmean1)
+          $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestmean)
           $("#displayLegend0").css("background-color","aquamarine")
 
       drawNormalCurve = (newChartData) ->
@@ -88,12 +87,13 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         color = ['aquamarine', 'chocolate', 'yellow', 'red', 'orange']
 
         i = 0
+        console.log data
         for datum in data
           _graph.append('svg:path')
             .attr('d', lineGen(datum))
             .data([datum])
             .attr('stroke', 'black')
-            .attr('stroke-width', 5)
+            .attr('stroke-width', 2)
             .attr('fill', color[i])
             .style('opacity', 0.8)
           i++
@@ -129,7 +129,6 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
         if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
           twoTestLegend()
-        else if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
-          oneTestLegend()
-        
+        else if scope.mainArea.selectedAlgorithm is 'One-Sample (or Paired) t Test'
+          oneTestLegend()       
         return

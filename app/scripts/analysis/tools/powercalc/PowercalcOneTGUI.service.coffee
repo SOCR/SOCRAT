@@ -3,13 +3,13 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
-  @name: app_analysis_powercalc_twoTest
+  @name: app_analysis_powercalc_oneTest
   @type: service
-  @desc: Performs two sample t test analysis
+  @desc: Performs one sample t test analysis
 ###
 
 
-module.exports = class PowerCalc_TwoTGUI extends BaseService
+module.exports = class PowerCalc_OneTGUI extends BaseService
   @inject 'app_analysis_powercalc_msgService',
     '$timeout'
 
@@ -39,7 +39,20 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     @oneTestmodes = ["Two Tailed", "One Tailed"]
 
     #data to observe
-    @parameters = null
+    @parameters =
+      n: @oneTestn
+      nMax: @oneTestnMax
+      mean: @oneTestmean
+      mean0: @oneTestmean0
+      meanMax: @oneTestmeanMax
+      mean0Max: @oneTestmean0Max
+      sigma: @oneTestsigma
+      sigmaMax: @oneTestsigmaMax
+      power: @oneTestpower
+      t: @oneTestt
+      pvl: @oneTestpvalue
+      comp: @comp_agents
+      mode: @oneTestmode
 
     @oneTestUpdate()
 
@@ -50,12 +63,12 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
       @comp_agents = data.chosenCol
     else
       @comp_agents = data.chosenVar
-    @oneTestR()
+    @oneTestReceiveData()
 
   setAlpha: (alphaIn) ->
-    @twoTestalpha = alphaIn
-    @twoTestUpdate()
-    @twoTestCheckRange()
+    @oneTestalpha = alphaIn
+    @oneTestUpdate()
+    @oneTestCheckRange()
     return
 
   getName: () ->
@@ -100,8 +113,8 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     @oneTestmeanMax = 20
     @oneTestmean0 = 10
     @oneTestmean0Max = 20
-    @oneTestsigma = 10
-    @oneTestsigmaMax = 20
+    @oneTestsigma = 40
+    @oneTestsigmaMax = 60
     @oneTestpower = 0
     @oneTestalpha = 0.010
     @oneTestvariance = 0
@@ -116,8 +129,8 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     item = Object.keys(@populations)[0]
     @oneTestn = @populations[item].length
     @oneTestmean = @getMean(@getSum(@populations[item]),@populations[item].length)
-    @oneTestvariance = @getVariance(@populations[item], @OneTGUI_mean)
-    @oneTestsigma = Math.sqrt(@OneTGUI_variance)
+    @oneTestvariance = @getVariance(@populations[item], @oneTestmean)
+    @oneTestsigma = Math.sqrt(@oneTestvariance)
     @oneTestCheckRange()
     @oneTestUpdate()
     return
@@ -145,7 +158,8 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
       @oneTestn = Math.pow(@oneTestsigma * (@distribution.qnorm(1-@oneTestalpha / 2) + @distribution.qnorm(@oneTestpower))/(@oneTestmean-@oneTestmean0),2)
     else
       @oneTestn = Math.pow(@oneTestsigma * (@distribution.qnorm(1-@oneTestalpha) + @distribution.qnorm(@oneTestalpha))/(@oneTestmean-@oneTestmean0), 2)
-    @twoTestCheckRange()
+      @oneTestn = Math.ceil(@oneTestn)
+    @oneTestCheckRange()
     return
 
   oneTestTTest: () ->
