@@ -68,7 +68,7 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         padding = 50
         xScale = d3.scale.linear().range([0, width]).domain([bounds.left, bounds.right])
         #console.log 'xScale: ' + xScale
-        yScale = d3.scale.linear().range([height-padding, 0]).domain([bounds.bottom, bounds.top])
+        yScale = d3.scale.linear().range([height-padding, 0]).domain([bounds.bottom + 0.0001, bounds.top])
 
         xAxis = d3.svg.axis().ticks(10)
         .scale(xScale)
