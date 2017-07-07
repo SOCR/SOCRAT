@@ -2,7 +2,7 @@
 
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class PowercalcAlgorithms extends BaseModuleDataService
+module.exports = class PowerCalcAlgorithms extends BaseModuleDataService
   @inject 'app_analysis_powerCalc_msgService',
     'app_analysis_powerCalc_twoTest',
     'app_analysis_powerCalc_oneTest'

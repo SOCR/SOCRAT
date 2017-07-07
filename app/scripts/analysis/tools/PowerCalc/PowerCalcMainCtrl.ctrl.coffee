@@ -2,7 +2,7 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-module.exports = class PowercalcMainCtrl extends BaseCtrl
+module.exports = class PowerCalcMainCtrl extends BaseCtrl
   @inject 'app_analysis_powerCalc_msgService',
   'app_analysis_powerCalc_algorithms',
   '$timeout',

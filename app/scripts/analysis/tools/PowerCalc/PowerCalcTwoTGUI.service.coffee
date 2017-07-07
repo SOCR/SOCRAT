@@ -9,7 +9,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 
-module.exports = class PowerCalc_TwoTGUI extends BaseService
+module.exports = class PowerCalcTwoTGUI extends BaseService
   @inject 'app_analysis_powerCalc_msgService',
     '$timeout'
 

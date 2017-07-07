@@ -2,7 +2,7 @@
 
 BaseModuleInitService = require 'scripts/BaseClasses/BaseModuleInitService.coffee'
 
-module.exports = class PowercalcInitService extends BaseModuleInitService
+module.exports = class PowerCalcInitService extends BaseModuleInitService
   @inject 'app_analysis_powerCalc_msgService'
 
   initialize: ->

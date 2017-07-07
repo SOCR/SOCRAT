@@ -2,7 +2,7 @@
 
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
-module.exports = class PowercalcVizDiv extends BaseDirective
+module.exports = class PowerCalcVizDiv extends BaseDirective
   @inject '$parse'
 
   initialize: ->
@@ -130,5 +130,5 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
           twoTestLegend()
         else if scope.mainArea.selectedAlgorithm is 'One-Sample (or Paired) t Test'
-          oneTestLegend()       
+          oneTestLegend()
         return

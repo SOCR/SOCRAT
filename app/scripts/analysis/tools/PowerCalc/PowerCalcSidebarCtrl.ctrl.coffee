@@ -2,7 +2,7 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-module.exports = class PowercalcSidebarCtrl extends BaseCtrl
+module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 	@inject  'app_analysis_powerCalc_dataService',
 	'app_analysis_powerCalc_msgService',
 	'app_analysis_powerCalc_algorithms',

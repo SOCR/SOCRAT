@@ -2,7 +2,7 @@
 
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class PowercalcDataService extends BaseModuleDataService
+module.exports = class PowerCalcDataService extends BaseModuleDataService
   @inject '$q', 'app_analysis_powerCalc_msgService'
 
   # requires renaming message service injection to @msgService
