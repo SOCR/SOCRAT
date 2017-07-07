@@ -135,6 +135,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       @selectedAlgorithm = data
       console.log("algorithms updated:", @selectedAlgorithm)
       @loadData()
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
    #receive data
     @$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
