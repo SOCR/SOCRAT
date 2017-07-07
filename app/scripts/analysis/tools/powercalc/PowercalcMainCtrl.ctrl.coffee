@@ -60,7 +60,22 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cimean_click()
     @cimean_submit()
 
-
+    #variables needed for OnePGUI only   
+    @OnePGUI_nn = 1   
+    @OnePGUI_p0=null    
+    @OnePGUI_p=null   
+    @OnePGUI_ssize=null   
+    @OnePGUI_power=null   
+    @OnePGUI_maxp0=1.0    
+    @OnePGUI_maxp=1.0   
+    @OnePGUI_maxssize=77    
+    @OnePGUI_maxpower=1.0   
+    @OnePGUI_alpha=0.02   
+    @OnePGUI_help=false   
+    @OnePGUI_altt_value = 1   
+    @OnePGUI_method_value = 1   
+    @OnePGUI_click()    
+    @OnePGUI_submit()
 
     #variables needed for Pilot only
     @Pilot_n = 1;
