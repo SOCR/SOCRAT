@@ -3,15 +3,15 @@
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
 module.exports = class PowercalcAlgorithms extends BaseModuleDataService
-  @inject 'app_analysis_powercalc_msgService',
-    'app_analysis_powercalc_twoTest',
-    'app_analysis_powercalc_oneTest'
+  @inject 'app_analysis_powerCalc_msgService',
+    'app_analysis_powerCalc_twoTest',
+    'app_analysis_powerCalc_oneTest'
     '$interval'
 
   initialize: ->
-    @msgManager = @app_analysis_powercalc_msgService
-    @twoTest = @app_analysis_powercalc_twoTest
-    @oneTest = @app_analysis_powercalc_oneTest
+    @msgManager = @app_analysis_powerCalc_msgService
+    @twoTest = @app_analysis_powerCalc_twoTest
+    @oneTest = @app_analysis_powerCalc_oneTest
     @algorithms = [@twoTest, @oneTest]
 
   ############

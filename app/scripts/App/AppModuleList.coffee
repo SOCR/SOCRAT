@@ -44,7 +44,7 @@ module.exports = class AppModuleList
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
     ,
-      require 'scripts/analysis/tools/powercalc/Powercalc.module.coffee'
+      require 'scripts/analysis/tools/PowerCalc/PowerCalc.module.coffee'
     ]
   ]
 

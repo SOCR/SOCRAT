@@ -3,17 +3,17 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class PowercalcSidebarCtrl extends BaseCtrl
-	@inject  'app_analysis_powercalc_dataService',
-	'app_analysis_powercalc_msgService',
-	'app_analysis_powercalc_algorithms',
+	@inject  'app_analysis_powerCalc_dataService',
+	'app_analysis_powerCalc_msgService',
+	'app_analysis_powerCalc_algorithms',
 	'$scope',
 	'$timeout'
 
 	initialize: ->
 		console.log("sidebar initialized")
-		@dataService = @app_analysis_powercalc_dataService
-		@msgService = @app_analysis_powercalc_msgService
-		@algorithmsService = @app_analysis_powercalc_algorithms
+		@dataService = @app_analysis_powerCalc_dataService
+		@msgService = @app_analysis_powerCalc_msgService
+		@algorithmsService = @app_analysis_powerCalc_algorithms
 
 		# choose algorithms
 		@algorithms = ['Select',

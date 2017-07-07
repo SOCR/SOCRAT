@@ -10,7 +10,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 
 module.exports = class PowerCalc_OneTGUI extends BaseService
-  @inject 'app_analysis_powercalc_msgService',
+  @inject 'app_analysis_powerCalc_msgService',
     '$timeout'
 
    initialize: ->
@@ -18,7 +18,7 @@ module.exports = class PowerCalc_OneTGUI extends BaseService
     @SIGNIFICANT = 5
     @populations = null
     @distribution = require 'distributome'
-    @msgService = @app_analysis_powercalc_msgService
+    @msgService = @app_analysis_powerCalc_msgService
     @name = 'One-Sample (or Paired) t Test'
     #variables needed for One-sample t test
     @oneTestn = 10
