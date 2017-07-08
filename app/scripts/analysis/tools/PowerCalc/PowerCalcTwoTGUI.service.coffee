@@ -14,11 +14,14 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     '$timeout'
 
   initialize: ->
+
+    # dependecies
+    @distribution = require 'distributome'
+    @msgService = @app_analysis_powerCalc_msgService
+
     @distanceFromMean = 5
     @SIGNIFICANT = 5
     @populations = null
-    @distribution = require 'distributome'
-    @msgService = @app_analysis_powerCalc_msgService
     @name = 'Two-sample t test (general case)'
     #variables needed for twoTest
     @twoTest = @app_analysis_powerCalc_twoTest

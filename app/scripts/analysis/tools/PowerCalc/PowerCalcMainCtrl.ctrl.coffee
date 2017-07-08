@@ -198,6 +198,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       else
         @cfap_submit("1",id,"")
     return
+
   cfap_valiad: (evt) ->
     id = evt.currentTarget.id
     data = evt.currentTarget.value
@@ -208,8 +209,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     else
       return false
     return
+
   cfap_presubmit: (id, key, evt) ->
     @cfap_submit(id, key, evt.target.value)
+
   cfap_click: () ->
     $('#nui').slider(
       animate: 'slow'
@@ -250,6 +253,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
         return
     )
     return
+
   cfap_submit: (id, key, value) ->
     a = @powerAnalysis.cfap(id, key, value);
     if a.isFinite == 1
@@ -289,6 +293,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     console.log(key)
     @cfap_submit '1', sliderId, key
     return
+
   cfap_show_help: () ->
     # @render_mathjax()
     #console.log(@cfap_help)
@@ -312,6 +317,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       else
         @cimean_submit("1",'isFinite',"")
     return
+
   cimean_click: () ->
     $( "#sgnui" ).slider(
       value:@cimean_signa
@@ -362,10 +368,12 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
         @cimean_submit '1', 'conf', ui.value
         return
     )
+
   cimean_presubmit: (id, key, evt) ->
     value = evt.currentTarget.value
     #console.log(evt.currentTarget.value)
     @cimean_submit(id, key, value)
+
   cimean_submit: (id, key, value) ->
     b = @powerAnalysis.CImean(id, key, value)
     if b.isFinite == 1
@@ -395,12 +403,14 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @cimean_conf_level = b.conf
     @cimean_click()
     return
+
   cimean_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value
     #console.log(key)
     @cimean_submit '1', sliderId, key
     return
+
   cimean_show_help: () ->
     #console.log(@cfap_help)
     if (@cimean_help == true)
@@ -1047,6 +1057,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       return
     @twoTestGraph()
     return
+
   twoTestSync: () ->
     @params.n1 = @twoTestn1
     @params.n2 = @twoTestn2
@@ -1060,12 +1071,16 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @params.power = @twoTestpower
     @params.mode = @twoTestmode
     @syncData(@params)
+    @loadData()
     return
+
   twoTestPower: () ->
     @params.power = @twoTestpower
     @params.mode = @twoTestmode
     @syncPower(@params)
+    @loadData()
     return
+
   twoTestPress: (evt) ->
     name = evt.target.name
     key = evt.which or evt.keyCode
@@ -1076,6 +1091,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       else
         @twoTestSync()
         return
+
   twoTestClick: () ->
     $( "#twoTestsigma1ui" ).slider(
       value: @twoTestsigma1,
@@ -1215,8 +1231,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       $("#pn2i").text("2: ")
       $("#pmean1i").text("1: ")
       $("#pmean2i").text("2: ")
+
   twoTestReset: () ->
     @reset()
+
   twoTestGraph:() ->
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
