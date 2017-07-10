@@ -21,38 +21,39 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @msgService = @app_analysis_powerCalc_msgService
     @name = 'One-Sample (or Paired) t Test'
     #variables needed for One-sample t test
-    @oneTestn = 10
-    @oneTestnMax = 20
-    @oneTestmean = 10
-    @oneTestmeanMax = 20
-    @oneTestmean0 = 10
-    @oneTestmean0Max = 20
-    @oneTestsigma = 10
-    @oneTestsigmaMax = 20
-    @oneTestpower = 0
-    @oneTestalpha = 0.010
-    @oneTestvariance = 0
-    @oneTestt = 0
-    @oneTestpvalue = 0
-    @comp_agents = []
-    @oneTestmode = "Two Tailed"
-    @oneTestmodes = ["Two Tailed", "One Tailed"]
+    @oneTestN = 10
+    @oneTestN0 = 10
+    @oneTestNMax = 20
+    @oneTestMean = 10
+    @oneTestMeanMax = 20
+    @oneTestMean0 = 10
+    @oneTestMean0Max = 20
+    @oneTestSigma = 10
+    @oneTestSigmaMax = 20
+    @oneTestPower = 0
+    @oneTestAlpha = 0.010
+    @oneTestVariance = 0
+    @oneTestT = 0
+    @oneTestPvalue = 0
+    @compAgents = []
+    @oneTestMode = "Two Tailed"
+    @oneTestModes = ["Two Tailed", "One Tailed"]
 
     #data to observe
     @parameters =
-      n: @oneTestn
-      nMax: @oneTestnMax
-      mean: @oneTestmean
-      mean0: @oneTestmean0
-      meanMax: @oneTestmeanMax
-      mean0Max: @oneTestmean0Max
-      sigma: @oneTestsigma
-      sigmaMax: @oneTestsigmaMax
-      power: @oneTestpower
-      t: @oneTestt
-      pvl: @oneTestpvalue
-      comp: @comp_agents
-      mode: @oneTestmode
+      n: @oneTestN
+      nMax: @oneTestNMax
+      mean: @oneTestMean
+      mean0: @oneTestMean0
+      meanMax: @oneTestMeanMax
+      mean0Max: @oneTestMean0Max
+      sigma: @oneTestSigma
+      sigmaMax: @oneTestSigmaMax
+      power: @oneTestPower
+      t: @oneTestT
+      pvl: @oneTestPvalue
+      comp: @compAgents
+      mode: @oneTestMode
 
     @oneTestUpdate()
 
@@ -60,13 +61,13 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @populations = data.populations
     lab = data.chosenlab
     if (lab is "none") or (lab is null)
-      @comp_agents = data.chosenCol
+      @compAgents = data.chosenCol
     else
-      @comp_agents = data.chosenVar
+      @compAgents = data.chosenVar
     @oneTestReceiveData()
 
   setAlpha: (alphaIn) ->
-    @oneTestalpha = alphaIn
+    @oneTestAlpha = alphaIn
     @oneTestUpdate()
     @oneTestCheckRange()
     return
@@ -76,96 +77,98 @@ module.exports = class PowerCalcOneTGUI extends BaseService
 
   getParams: () ->
     @parameters =
-      n: @oneTestn
-      nMax: @oneTestnMax
-      mean: @oneTestmean
-      mean0: @oneTestmean0
-      meanMax: @oneTestmeanMax
-      mean0Max: @oneTestmean0Max
-      sigma: @oneTestsigma
-      sigmaMax: @oneTestsigmaMax
-      power: @oneTestpower
-      t: @oneTestt
-      pvl: @oneTestpvalue
-      comp: @comp_agents
-      mode: @oneTestmode
+      n: @oneTestN
+      nMax: @oneTestNMax
+      mean: @oneTestMean
+      mean0: @oneTestMean0
+      meanMax: @oneTestMeanMax
+      mean0Max: @oneTestMean0Max
+      sigma: @oneTestSigma
+      sigmaMax: @oneTestSigmaMax
+      power: @oneTestPower
+      t: @oneTestT
+      pvl: @oneTestPvalue
+      comp: @compAgents
+      mode: @oneTestMode
 
   setParams: (newParams) ->
-    @oneTestn = newParams.n
-    @oneTestmean = newParams.mean
-    @oneTestmean0 = newParams.mean0
-    @oneTestsigma = newParams.sigma
-    @oneTestpower = newParams.power
-    @oneTestmode = newParams.mode
+    @oneTestN = newParams.n
+    @oneTestMean = newParams.mean
+    @oneTestMean0 = newParams.mean0
+    @oneTestSigma = newParams.sigma
+    @oneTestPower = newParams.power
+    @oneTestMode = newParams.mode
     @oneTestUpdate()
     return
 
   savePower: (newParams) ->
-    @oneTestpower = newParams.power
-    @oneTestmode = newParams.mode
+    @oneTestPower = newParams.power
+    @oneTestMode = newParams.mode
     @oneTestPowerTon()
     return
 
   reset: () ->
-    @oneTestn = 10
-    @oneTestnMax = 20
-    @oneTestmean = 10
-    @oneTestmeanMax = 20
-    @oneTestmean0 = 10
-    @oneTestmean0Max = 20
-    @oneTestsigma = 40
-    @oneTestsigmaMax = 60
-    @oneTestpower = 0
-    @oneTestalpha = 0.010
-    @oneTestvariance = 0
-    @oneTestt = 0
-    @oneTestpvalue = 0
-    @comp_agents = []
-    @oneTestmode = "Two Tailed"
+    @oneTestN = 10
+    @oneTestNMax = 20
+    @oneTestMean = 10
+    @oneTestMeanMax = 20
+    @oneTestMean0 = 10
+    @oneTestMean0Max = 20
+    @oneTestSigma = 40
+    @oneTestSigmaMax = 60
+    @oneTestPower = 0
+    @oneTestAlpha = 0.010
+    @oneTestVariance = 0
+    @oneTestT = 0
+    @oneTestPvalue = 0
+    @compAgents = []
+    @oneTestMode = "Two Tailed"
     @oneTestUpdate()
     return
 
   oneTestReceiveData: () ->
     item = Object.keys(@populations)[0]
-    @oneTestn = @populations[item].length
-    @oneTestmean = @getMean(@getSum(@populations[item]),@populations[item].length)
-    @oneTestvariance = @getVariance(@populations[item], @oneTestmean)
-    @oneTestsigma = Math.sqrt(@oneTestvariance)
+    @oneTestN = @populations[item].length
+    @oneTestMean = @getMean(@getSum(@populations[item]),@populations[item].length)
+    @oneTestVariance = @getVariance(@populations[item], @oneTestMean)
+    @oneTestSigma = Math.sqrt(@oneTestVariance)
     @oneTestCheckRange()
     @oneTestUpdate()
     return
 
   oneTestCheckRange:() ->
-    @oneTestnMax = Math.max(@oneTestn, @oneTestmeanMax)
-    @oneTestmeanMax = Math.max(@oneTestmean, @oneTestmeanMax, @oneTestmean0Max)
-    @oneTestmean0Max = @oneTestmeanMax
-    @oneTestsigmaMax = Math.max(@oneTestsigma, @oneTestsigmaMax)
+    @oneTestNMax = Math.max(@oneTestN, @oneTestMeanMax)
+    @oneTestMeanMax = Math.max(@oneTestMean, @oneTestMeanMax, @oneTestMean0Max)
+    @oneTestMean0Max = @oneTestMeanMax
+    @oneTestSigmaMax = Math.max(@oneTestSigma, @oneTestSigmaMax)
     return
 
   oneTestUpdate: () ->
-    z = (@oneTestmean - @oneTestmean0)/ (@oneTestsigma * Math.sqrt(@oneTestn))
-    if @oneTestmode is "Two Tailed"
-      @oneTestpower=@distribution.pnorm(z-@distribution.qnorm(1-@oneTestalpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@oneTestalpha/2))
+    z = (@oneTestMean - @oneTestMean0)/ (@oneTestSigma * Math.sqrt(@oneTestN))
+    if @oneTestMode is "Two Tailed"
+      @oneTestPower=@distribution.pnorm(z-@distribution.qnorm(1-@oneTestAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@oneTestAlpha/2))
     else
-      @oneTestpower=@distribution.pnorm(Math.abs(z)-@distribution.qnorm(1-@oneTestalpha))
+      @oneTestPower=@distribution.pnorm(Math.abs(z)-@distribution.qnorm(1-@oneTestAlpha))
     @oneTestTTest()
     @oneTestCheckRange()
     return
 
   oneTestPowerTon: () ->
     # calculate n1 or n2 from power based on different mdoes
-    if @oneTestmode is "Two Tailed"
-      @oneTestn = Math.pow(@oneTestsigma * (@distribution.qnorm(1-@oneTestalpha / 2) + @distribution.qnorm(@oneTestpower))/(@oneTestmean-@oneTestmean0),2)
+    if @oneTestMode is "Two Tailed"
+      @oneTestN = Math.pow(@oneTestSigma * (@distribution.qnorm(1-@oneTestAlpha / 2) + @distribution.qnorm(@oneTestPower))/(@oneTestMean-@oneTestMean0),2)
     else
-      @oneTestn = Math.pow(@oneTestsigma * (@distribution.qnorm(1-@oneTestalpha) + @distribution.qnorm(@oneTestalpha))/(@oneTestmean-@oneTestmean0), 2)
-      @oneTestn = Math.ceil(@oneTestn)
+      @oneTestN = Math.pow(@oneTestSigma * (@distribution.qnorm(1-@oneTestAlpha) + @distribution.qnorm(@oneTestAlpha))/(@oneTestMean-@oneTestMean0), 2)
+      @oneTestN = Math.ceil(@oneTestN)
     @oneTestCheckRange()
     return
 
   oneTestTTest: () ->
-    df = @oneTestn - 1
-    @oneTestt = @tdistr(df, 1 - @oneTestalpha)
-    @oneTestpvalue = @tprob(df, @oneTestt)
+    df = @oneTestN - 1
+    oneTestT = (@oneTestMean - @oneTestMean0)
+    @oneTestT = oneTestT / (@oneTestSigma * Math.sqrt((1/@oneTestN) * ((@oneTestN0 - @oneTestN) / (@oneTestN0 - 1))))
+    @oneTestPvalue = 1 - @tProb(df, @oneTestT)
+    @oneTestPvalue *= 2 if @oneTestMode is 'Two Tailed'
 
   getRightBound: (middle,step) ->
     return middle + step * @distanceFromMean
@@ -195,9 +198,9 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     valueSum / numberOfOccurrences
 
   getChartData: () ->
-    mean = @oneTestmean
-    stdDev = @oneTestsigma
-    alpha = @oneTestalpha
+    mean = @oneTestMean
+    stdDev = @oneTestSigma
+    alpha = @oneTestAlpha
 
     rightBound = @getRightBound(mean, stdDev)
     leftBound =  @getLeftBound(mean, stdDev)
@@ -218,28 +221,33 @@ module.exports = class PowerCalcOneTGUI extends BaseService
       bounds: bounds
     }
 
-  tprob: ($n, $x) ->
+  tProb: ($n, $x) ->
     if $n <= 0
       throw 'Invalid n: $n\n'
       ### degree of freedom ###
-    @precisionString @subtprob($n - 0, $x - 0)
+    @precisionString @subTProb($n - 0, $x - 0)
+
   integer: ($i) ->
     if $i > 0
       Math.floor $i
     else
       Math.ceil $i
+
   precisionString: ($x) ->
     if $x
       @roundToPrecision $x, @precision($x)
     else
       '0'
+
   roundToPrecision: ($x, $p) ->
     $x = $x * 10 ** $p
     $x = Math.round($x)
     $x / 10 ** $p
+
   precision: ($x) ->
     Math.abs @integer(@log10(Math.abs($x)) - @SIGNIFICANT)
-  subtprob: ($n, $x) ->
+
+  subTProb: ($n, $x) ->
     $a = undefined
     $b = undefined
     $w = Math.atan2($x / Math.sqrt($n), 1)
@@ -259,6 +267,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
 
   log10: ($n) ->
     Math.log($n) / Math.log(10)
+
   max: () ->
     $max = arguments[0]
     $i = 0
@@ -267,20 +276,22 @@ module.exports = class PowerCalcOneTGUI extends BaseService
         $max = arguments[$i]
       $i++
     $max
-  tdistr: ($n, $p) ->
+
+  tDistr: ($n, $p) ->
     if $n <= 0
       throw 'Invalid n: $n\n'
     if $p <= 0 or $p >= 1
       throw 'Invalid p: $p\n'
-    @precisionString @subt($n - 0, $p - 0)
-  subt: ($n, $p) ->
+    @precisionString @subT($n - 0, $p - 0)
+
+  subT: ($n, $p) ->
     if $p >= 1 or $p <= 0
       throw 'Invalid p: $p\n'
     if $p == 0.5
       return 0
     else if $p < 0.5
-      return -@subt($n, 1 - $p)
-    $u = @subu($p)
+      return -@subT($n, 1 - $p)
+    $u = @subU($p)
     $u2 = $u ** 2
     $a = ($u2 + 1) / 4
     $b = ((5 * $u2 + 16) * $u2 + 3) / 96
@@ -291,7 +302,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     if $n <= @log10($p) ** 2 + 3
       $round = undefined
       loop
-        $p1 = @subtprob($n, $x)
+        $p1 = @subTProb($n, $x)
         $n1 = $n + 1
         $delta = ($p1 - $p) / Math.exp(($n1 * Math.log($n1 / ($n + $x * $x)) + Math.log($n / $n1 / 2 / Math.PI) - 1 + (1 / $n1 - (1 / $n)) / 6) / 2)
         $x += $delta
@@ -299,7 +310,8 @@ module.exports = class PowerCalcOneTGUI extends BaseService
         unless $x and $round != 0
           break
     $x
-  subu: ($p) ->
+
+  subU: ($p) ->
     $y = -Math.log(4 * $p * (1 - $p))
     $x = Math.sqrt($y * (1.570796288 + $y * (.03706987906 + $y * (-.8364353589e-3 + $y * (-.2250947176e-3 + $y * (.6841218299e-5 + $y * (0.5824238515e-5 + $y * (-.104527497e-5 + $y * (.8360937017e-7 + $y * (-.3231081277e-8 + $y * (.3657763036e-10 + $y * .6936233982e-12)))))))))))
     if $p > .5

@@ -130,7 +130,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 				#check if index if -1
 				if index is -1
-					console.log -1
+#					console.log -1
 					return
 
 				#extract data from container to population
@@ -139,7 +139,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 					@populations[elt] = []
 					for row in @container[elt]
 						@populations[elt].push(row[index])
-				console.log @populations
+#				console.log @populations
 
 			else
 
@@ -158,7 +158,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				for row in data.data
 					@populations[@chosenCols[0]].push(row[index1])
 					@populations[@chosenCols[1]].push(row[index2])
-				console.log @populations
+#				console.log @populations
 
 
 			@msgService.broadcast 'powercalc:onetwoTestdata',
@@ -175,7 +175,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 				#check if index if -1
 				if index is -1
-					console.log -1
+#					console.log -1
 					return
 
 				#extract data from container to population
@@ -183,7 +183,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@populations[@chosenVars] = []
 				for row in @container[@chosenVars]
 					@populations[@chosenVars].push(row[index])
-				console.log @populations
+#				console.log @populations
 
 			else
 				# extract data from data to population
@@ -192,7 +192,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@populations[@chosenCols] = []
 				for row in data.data
 					@populations[@chosenCols].push(row[index1])
-				console.log @populations
+#				console.log @populations
 
 
 			@msgService.broadcast 'powercalc:onetwoTestdata',
@@ -225,7 +225,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@container[row[index]].push(row)
 				#console.log (@container)
 
-		console.log @container
+#		console.log @container
 
 
 

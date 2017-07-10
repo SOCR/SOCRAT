@@ -27,22 +27,22 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
 
       twoTestLegend = () ->
         if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1)
-          $("#displayLegend1").text(scope.mainArea.comp_agents[1]+": "+scope.mainArea.twoTestmean2)
+          $("#displayLegend0").text(scope.mainArea.compAgents[0]+": "+scope.mainArea.twoTestMean1)
+          $("#displayLegend1").text(scope.mainArea.compAgents[1]+": "+scope.mainArea.twoTestMean2)
           $("#displayLegend0").css("background-color","aquamarine")
           $("#displayLegend1").css("background-color","chocolate")
         else
-          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestmean1)
-          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestmean2)
+          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestMean1)
+          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestMean2)
           $("#displayLegend0").css("background-color","aquamarine")
           $("#displayLegend1").css("background-color","chocolate")
 
       oneTestLegend = () ->
         if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.comp_agents+": "+scope.mainArea.twoTestmean1)
+          $("#displayLegend0").text(scope.mainArea.compAgents+": "+scope.mainArea.twoTestMean1)
           $("#displayLegend0").css("background-color","aquamarine")
         else
-          $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestmean)
+          $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestMean)
           $("#displayLegend0").css("background-color","aquamarine")
 
       drawNormalCurve = (newChartData) ->
