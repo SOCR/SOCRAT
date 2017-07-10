@@ -209,7 +209,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
       @twoTestMaxN2 = Math.max(@twoTestMaxN1, @twoTestN1)
       # @parameters.n1 = @twoTestn1
     @twoTestCheckRange()
-    #@twoTestGraph()
+    @twoTestTTest()
     return
 
   twoTestTTest: () ->
