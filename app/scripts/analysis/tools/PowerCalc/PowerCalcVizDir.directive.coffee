@@ -93,7 +93,7 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
             .attr('stroke', 'black')
             .attr('stroke-width', 1)
             .attr('fill', color(i))
-            .style('opacity', 0.8)
+            .style('opacity', 0.75)
 
         # x-axis
         _graph.append('svg:g')
@@ -113,16 +113,14 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
         _graph.selectAll('.y.axis path')
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
 
-        i = 0
-        for datum in data
+        for datum, i in data
           # # display lengend
           svg.append('text')
             .attr('id', 'displayLegend'+i)
             .attr('x', xScale(bounds.right * 0.8))
             .attr('y', yScale(bounds.top * (0.9- i*0.05)))
             .style('text-anchor', 'middle')
-          .attr('fill', color[i])
-          i++
+          .attr('fill', color(i))
 
         if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
           twoTestLegend()
