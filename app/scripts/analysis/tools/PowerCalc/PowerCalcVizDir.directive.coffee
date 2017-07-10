@@ -84,19 +84,16 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
         .y (d) -> yScale(d.y)
         .interpolate('basis')
 
-        color = ['aquamarine', 'chocolate', 'yellow', 'red', 'orange']
+        color = d3.scale.category10()
 
-        i = 0
-        console.log data
-        for datum in data
+        for datum, i in data
           _graph.append('svg:path')
             .attr('d', lineGen(datum))
             .data([datum])
             .attr('stroke', 'black')
-            .attr('stroke-width', 2)
-            .attr('fill', color[i])
+            .attr('stroke-width', 1)
+            .attr('fill', color(i))
             .style('opacity', 0.8)
-          i++
 
         # x-axis
         _graph.append('svg:g')
