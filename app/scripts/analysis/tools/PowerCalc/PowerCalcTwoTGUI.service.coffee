@@ -200,12 +200,12 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     # calculate n1 or n2 from power based on different mdoes
     if @twoTestMode is "Two Tailed"
       @twoTestN2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@twoTestAlpha / 2)+@distribution.qnorm(@twoTestPower))/(@twoTestMean1-@twoTestMean2),2)
-      @twoTestN2 = Math.ceil(@twoTestN2)
+      @twoTestN2 = Math.round(@twoTestN2)
       @twoTestMaxN2 = Math.max(@twoTestMaxN2, @twoTestN2)
       # @parameters.n2 = @twoTestn2
     else
       @twoTestN1=(twoTestvar1 + twoTestvar2 / kappa) * Math.pow((@distribution.qnorm(1-@twoTestAlpha)+@distribution.qnorm(@twoTestPower))/(@twoTestMean1-@twoTestMean2),2)
-      @twoTestN1 = Math.ceil(@twoTestN1)
+      @twoTestN1 = Math.round(@twoTestN1)
       @twoTestMaxN2 = Math.max(@twoTestMaxN1, @twoTestN1)
       # @parameters.n1 = @twoTestn1
     @twoTestCheckRange()

@@ -28,7 +28,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @oneTestMeanMax = 20
     @oneTestMean0 = 10
     @oneTestMean0Max = 20
-    @oneTestSigma = 10
+    @oneTestStDev = 10
     @oneTestSigmaMax = 20
     @oneTestPower = 0
     @oneTestAlpha = 0.010
@@ -47,7 +47,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
       mean0: @oneTestMean0
       meanMax: @oneTestMeanMax
       mean0Max: @oneTestMean0Max
-      sigma: @oneTestSigma
+      sigma: @oneTestStDev
       sigmaMax: @oneTestSigmaMax
       power: @oneTestPower
       t: @oneTestT
@@ -83,7 +83,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
       mean0: @oneTestMean0
       meanMax: @oneTestMeanMax
       mean0Max: @oneTestMean0Max
-      sigma: @oneTestSigma
+      sigma: @oneTestStDev
       sigmaMax: @oneTestSigmaMax
       power: @oneTestPower
       t: @oneTestT
@@ -95,7 +95,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @oneTestN = newParams.n
     @oneTestMean = newParams.mean
     @oneTestMean0 = newParams.mean0
-    @oneTestSigma = newParams.sigma
+    @oneTestStDev = newParams.sigma
     @oneTestPower = newParams.power
     @oneTestMode = newParams.mode
     @oneTestUpdate()
@@ -114,7 +114,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @oneTestMeanMax = 20
     @oneTestMean0 = 10
     @oneTestMean0Max = 20
-    @oneTestSigma = 40
+    @oneTestStDev = 40
     @oneTestSigmaMax = 60
     @oneTestPower = 0
     @oneTestAlpha = 0.010
@@ -131,7 +131,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @oneTestN = @populations[item].length
     @oneTestMean = @getMean(@getSum(@populations[item]),@populations[item].length)
     @oneTestVariance = @getVariance(@populations[item], @oneTestMean)
-    @oneTestSigma = Math.sqrt(@oneTestVariance)
+    @oneTestStDev = Math.sqrt(@oneTestVariance)
     @oneTestCheckRange()
     @oneTestUpdate()
     return
@@ -140,11 +140,11 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @oneTestNMax = Math.max(@oneTestN, @oneTestMeanMax)
     @oneTestMeanMax = Math.max(@oneTestMean, @oneTestMeanMax, @oneTestMean0Max)
     @oneTestMean0Max = @oneTestMeanMax
-    @oneTestSigmaMax = Math.max(@oneTestSigma, @oneTestSigmaMax)
+    @oneTestSigmaMax = Math.max(@oneTestStDev, @oneTestSigmaMax)
     return
 
   oneTestUpdate: () ->
-    z = (@oneTestMean - @oneTestMean0)/ (@oneTestSigma * Math.sqrt(@oneTestN))
+    z = (@oneTestMean - @oneTestMean0)/ (@oneTestStDev * Math.sqrt(@oneTestN))
     if @oneTestMode is "Two Tailed"
       @oneTestPower=@distribution.pnorm(z-@distribution.qnorm(1-@oneTestAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@oneTestAlpha/2))
     else
@@ -156,19 +156,20 @@ module.exports = class PowerCalcOneTGUI extends BaseService
   oneTestPowerTon: () ->
     # calculate n1 or n2 from power based on different mdoes
     if @oneTestMode is "Two Tailed"
-      @oneTestN = Math.pow(@oneTestSigma * (@distribution.qnorm(1-@oneTestAlpha / 2) + @distribution.qnorm(@oneTestPower))/(@oneTestMean-@oneTestMean0),2)
+      @oneTestN = Math.round(Math.pow(@oneTestStDev * (@distribution.qnorm(1-@oneTestAlpha / 2) + @distribution.qnorm(@oneTestPower))/(@oneTestMean-@oneTestMean0),2))
     else
-      @oneTestN = Math.pow(@oneTestSigma * (@distribution.qnorm(1-@oneTestAlpha) + @distribution.qnorm(@oneTestAlpha))/(@oneTestMean-@oneTestMean0), 2)
-      @oneTestN = Math.ceil(@oneTestN)
+      @oneTestN = Math.round(Math.pow(@oneTestStDev * (@distribution.qnorm(1-@oneTestAlpha) + @distribution.qnorm(@oneTestAlpha))/(@oneTestMean-@oneTestMean0), 2))
+    @oneTestTTest()
     @oneTestCheckRange()
     return
 
   oneTestTTest: () ->
-    df = @oneTestN - 1
-    oneTestT = (@oneTestMean - @oneTestMean0)
-    @oneTestT = oneTestT / (@oneTestSigma * Math.sqrt((1/@oneTestN) * ((@oneTestN0 - @oneTestN) / (@oneTestN0 - 1))))
+    df = Math.round(@oneTestN - 1)
+    @oneTestT = (@oneTestMean - @oneTestMean0) / (@oneTestStDev / Math.sqrt(@oneTestN))
     @oneTestPvalue = 1 - @tProb(df, @oneTestT)
     @oneTestPvalue *= 2 if @oneTestMode is 'Two Tailed'
+    @oneTestPvalue = Math.max(0, @oneTestPvalue)
+    @oneTestPvalue = Math.min(1, @oneTestPvalue)
 
   getRightBound: (middle,step) ->
     return middle + step * @distanceFromMean
@@ -199,7 +200,7 @@ module.exports = class PowerCalcOneTGUI extends BaseService
 
   getChartData: () ->
     mean = @oneTestMean
-    stdDev = @oneTestSigma
+    stdDev = @oneTestStDev
     alpha = @oneTestAlpha
 
     rightBound = @getRightBound(mean, stdDev)

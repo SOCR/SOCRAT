@@ -551,7 +551,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @oneTestMean0 = parseFloat(@params.mean0.toPrecision(4))
     @oneTestMeanMax = parseFloat(@params.meanMax.toPrecision(4))
     @oneTestMean0Max = parseFloat(@params.mean0Max.toPrecision(4))
-    @oneTestSigma = parseFloat(@params.sigma.toPrecision(4))
+    @oneTestStDev = parseFloat(@params.sigma.toPrecision(4))
     @oneTestSigmaMax = parseFloat(@params.sigmaMax.toPrecision(4))
     @oneTestPower = parseFloat(@params.power.toPrecision(4))
     @oneTestT = parseFloat(@params.t.toPrecision(4))
@@ -565,136 +565,121 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       return
     @oneTestGraph()
     return
+
   oneTestSync: () ->
     @params.n = @oneTestN
     @params.nMax = @oneTestNMax
     @params.mean = @oneTestMean
     @params.mean0 = @oneTestMean0
     @params.meanMax = @oneTestMeanMax
-    @params.sigma = @oneTestSigma
+    @params.sigma = @oneTestStDev
     @params.sigmaMax = @oneTestSigmaMax
     @params.power = @oneTestPower
     @params.mode = @oneTestMode
     @syncData(@params)
+    @loadData()
     return
-  oneTestPower: () ->
+
+  oneTestCalcPower: () ->
     @params.power = @oneTestPower
     @params.mode = @oneTestMode
     @syncPower(@params)
+    @loadData()
     return
+
   oneTestPress: (evt) ->
     name = evt.target.name
     key = evt.which or evt.keyCode
     if key is 13
       if name is "oneTestPower"
-        @oneTestPower()
+        @oneTestCalcPower()
       else
         @oneTestSync()
     return
-  oneTestClick: () ->
-    $( "#oneTestSigmaUI" ).slider(
-      value: @oneTestSigma,
-      min: 0,
-      max: @oneTestSigmaMax,
-      range: 'min',
-      step: 0.001,
-      slide: ( event, ui ) =>
-        $( "#oneTestSigmaV" ).val( ui.value );
-        @oneTestSigma = ui.value
-        @oneTestSync()
-        return
-    )
 
-    $( "#oneTestNUI" ).slider(
+  oneTestClick: () ->
+
+    # slider elements
+    oneTestNUI = $("#oneTestNUI")
+    oneTestMean0UI = $("#oneTestMean0UI")
+    oneTestMeanUI = $("#oneTestMeanUI")
+    oneTestStDevUI= $("#oneTestStDevUI")
+    oneTestPowerUI = $("#oneTestPowerUI")
+
+    oneTestNUI.slider(
       value: @oneTestN,
       min: 2,
       max: @oneTestNMax,
       range: "min",
       step: 1,
-      slide: ( event, ui ) =>
-        $( "#oneTestNV" ).val( ui.value );
+      slide: (event, ui) =>
         @oneTestN = ui.value
         @oneTestSync()
-        return
     )
 
-    $( "#oneTestMeanUI" ).slider(
-      value: @oneTestMean,
-      min: 0,
-      max: @oneTestMeanMax,
-      range: "min",
-      step: 0.001,
-      slide: ( event, ui ) =>
-        $( "#oneTestMeanV" ).val( ui.value );
-        @oneTestMean = ui.value
-        @oneTestSync()
-        return
-    )
-    $( "#oneTestMeanV" ).val( @oneTestMean );
-
-    $( "#oneTestMean0UI" ).slider(
+    oneTestMean0UI.slider(
       value: @oneTestMean0,
       min: 0,
       max: @oneTestMean0Max,
       range: "min",
       step: 0.001,
-      slide: ( event, ui ) =>
-        $( "#oneTestmean0V" ).val( ui.value );
+      slide: (event, ui) =>
         @oneTestMean0 = ui.value
         @oneTestSync()
-        return
     )
 
-    $( "#oneTestPowerUI" ).slider(
+    oneTestMeanUI.slider(
+      value: @oneTestMean,
+      min: 0,
+      max: @oneTestMeanMax,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @oneTestMean = ui.value
+        @oneTestSync()
+    )
+
+    oneTestStDevUI.slider(
+      value: @oneTestStDev,
+      min: 0,
+      max: @oneTestSigmaMax,
+      range: 'min',
+      step: 0.001,
+      slide: (event, ui) =>
+        @oneTestStDev = ui.value
+        @oneTestSync()
+    )
+
+    oneTestPowerUI.slider(
       value: @oneTestPower,
       min: 0.0001,
-      max: 0.9999,
+      max: 0.2,
       range: "min",
       step: 0.0001,
-      slide:  ( event, ui ) =>
-        $( "#oneTestPowerV" ).val( ui.value );
+      slide:  (event, ui) =>
         @oneTestPower = ui.value
-        @oneTestPower()
-        return
+        @oneTestCalcPower()
     )
-    $( "#oneTestPowerV" ).val( @oneTestPower );
-    $( "#oneTestTV" ).val( @oneTestT );
 
     # enable or disable slider
+    sliders = [oneTestNUI, oneTestMean0UI, oneTestMeanUI, oneTestStDevUI, oneTestPowerUI]
+
     if @deployed is true
-      $("#oneTestSigmaUI").slider("disable")
-      $('#oneTestSigmaUI').find('.ui-slider-handle').hide();
-      $("#oneTestNUI").slider("disable")
-      $('#oneTestNUI').find('.ui-slider-handle').hide();
-      $("#oneTestPowerUI").slider("disable")
-      $('#oneTestPowerUI').find('.ui-slider-handle').hide();
-      $("#oneTestMeanUI").slider("disable")
-      $('#oneTestMeanUI').find('.ui-slider-handle').hide();
-      $("#oneTestNDisp").text("(" + @compAgents + "): ")
-      $("#oneTestSigmaDisp").text("(" + @compAgents + "): ")
-      $("#oneTestMeanDisp").text("(" + @compAgents + "): ")
+      for sl in sliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
     else
-      $("#oneTestSigmaUI").slider("enable")
-      $('#oneTestSigmaUI').find('.ui-slider-handle').show();
-      $("#oneTestNUI").slider("enable")
-      $('#oneTestNUI').find('.ui-slider-handle').show();
-      $("#oneTestPowerUI").slider("enable")
-      $('#oneTestPowerUI').find('.ui-slider-handle').show();
-      $("#oneTestMeanUI").slider("enable")
-      $('#oneTestMeanUI').find('.ui-slider-handle').show();
-      $("#oneTestNDisp").text(": ")
-      $("#oneTestSigmaDisp").text(": ")
-      $("#oneTestMeanDisp").text(": ")
-    return
+      for sl in sliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+
   oneTestReset: () ->
     @reset()
+
   oneTestGraph:() ->
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5
-
-
-
 
   #functions for Pilot only
   Pilot_click: () ->
@@ -1084,10 +1069,9 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     if key is 13
       if name is "twoTestPower"
         @twoTestCalcPower()
-        return
       else
         @twoTestSync()
-        return
+    return
 
   twoTestClick: () ->
 
@@ -1191,24 +1175,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       for sl in sliders
         sl.slider("disable")
         sl.find('.ui-slider-handle').hide()
-
-#      $("#psigma1i").text("(" + @compAgents[0] + "): ")
-#      $("#psigma2i").text("(" + @compAgents[1] + "): ")
-#      $("#pn1i").text("(" + @compAgents[0] + "): ")
-#      $("#pn2i").text("(" + @compAgents[1] + "): ")
-#      $("#pmean1i").text("(" + @compAgents[0] + "): ")
-#      $("#pmean2i").text("(" + @compAgents[1] + "): ")
     else
       for sl in sliders
         sl.slider("enable")
         sl.find('.ui-slider-handle').show()
-
-#      $("#psigma1i").text("1: ")
-#      $("#psigma2i").text("2: ")
-#      $("#pn1i").text("1: ")
-#      $("#pn2i").text("2: ")
-#      $("#pmean1i").text("1: ")
-#      $("#pmean2i").text("2: ")
 
   twoTestReset: () ->
     @reset()
