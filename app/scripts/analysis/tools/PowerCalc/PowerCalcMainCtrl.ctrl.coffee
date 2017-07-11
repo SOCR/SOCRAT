@@ -662,7 +662,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     )
 
     # enable or disable slider
-    sliders = [oneTestNUI, oneTestMean0UI, oneTestMeanUI, oneTestStDevUI, oneTestPowerUI]
+    sliders = [oneTestNUI, oneTestMeanUI, oneTestStDevUI, oneTestPowerUI]
 
     if @deployed is true
       for sl in sliders
