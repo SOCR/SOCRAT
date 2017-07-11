@@ -219,6 +219,8 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @twoTestT = (@twoTestMean1 - @twoTestMean2) / (Math.sqrt(v1 + v2))
     @twoTestPvalue = 1 - @tProb(df, @twoTestT)
     @twoTestPvalue *= 2 if @twoTestMode is 'Two Tailed'
+    @twoTestPvalue = Math.max(0, @twoTestPvalue)
+    @twoTestPvalue = Math.min(1, @twoTestPvalue)
 
   extract: (data, variable) ->
     tmp = []
