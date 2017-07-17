@@ -2,7 +2,7 @@
 
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
-module.exports = class PowercalcVizDiv extends BaseDirective
+module.exports = class PowerCalcVizDiv extends BaseDirective
   @inject '$parse'
 
   initialize: ->
@@ -27,22 +27,22 @@ module.exports = class PowercalcVizDiv extends BaseDirective
 
       twoTestLegend = () ->
         if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.comp_agents[0]+": "+scope.mainArea.twoTestmean1)
-          $("#displayLegend1").text(scope.mainArea.comp_agents[1]+": "+scope.mainArea.twoTestmean2)
+          $("#displayLegend0").text(scope.mainArea.compAgents[0]+": "+scope.mainArea.twoTestMean1)
+          $("#displayLegend1").text(scope.mainArea.compAgents[1]+": "+scope.mainArea.twoTestMean2)
           $("#displayLegend0").css("background-color","aquamarine")
           $("#displayLegend1").css("background-color","chocolate")
         else
-          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestmean1)
-          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestmean2)
+          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestMean1)
+          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestMean2)
           $("#displayLegend0").css("background-color","aquamarine")
           $("#displayLegend1").css("background-color","chocolate")
 
       oneTestLegend = () ->
         if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.comp_agents+": "+scope.mainArea.twoTestmean1)
+          $("#displayLegend0").text(scope.mainArea.compAgents+": "+scope.mainArea.twoTestMean1)
           $("#displayLegend0").css("background-color","aquamarine")
         else
-          $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestmean)
+          $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestMean)
           $("#displayLegend0").css("background-color","aquamarine")
 
       drawNormalCurve = (newChartData) ->
@@ -84,19 +84,16 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         .y (d) -> yScale(d.y)
         .interpolate('basis')
 
-        color = ['aquamarine', 'chocolate', 'yellow', 'red', 'orange']
+        color = d3.scale.category10()
 
-        i = 0
-        console.log data
-        for datum in data
+        for datum, i in data
           _graph.append('svg:path')
             .attr('d', lineGen(datum))
             .data([datum])
             .attr('stroke', 'black')
-            .attr('stroke-width', 2)
-            .attr('fill', color[i])
-            .style('opacity', 0.8)
-          i++
+            .attr('stroke-width', 1)
+            .attr('fill', color(i))
+            .style('opacity', 0.75)
 
         # x-axis
         _graph.append('svg:g')
@@ -116,19 +113,17 @@ module.exports = class PowercalcVizDiv extends BaseDirective
         _graph.selectAll('.y.axis path')
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
 
-        i = 0
-        for datum in data
+        for datum, i in data
           # # display lengend
           svg.append('text')
             .attr('id', 'displayLegend'+i)
             .attr('x', xScale(bounds.right * 0.8))
             .attr('y', yScale(bounds.top * (0.9- i*0.05)))
             .style('text-anchor', 'middle')
-          .attr('fill', color[i])
-          i++
+          .attr('fill', color(i))
 
         if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
           twoTestLegend()
         else if scope.mainArea.selectedAlgorithm is 'One-Sample (or Paired) t Test'
-          oneTestLegend()       
+          oneTestLegend()
         return

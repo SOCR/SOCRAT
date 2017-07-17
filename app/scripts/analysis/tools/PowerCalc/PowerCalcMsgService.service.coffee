@@ -2,7 +2,7 @@
 
 BaseModuleMessageService = require 'scripts/BaseClasses/BaseModuleMessageService.coffee'
 
-module.exports = class PowercalcMsgService extends BaseModuleMessageService
+module.exports = class PowerCalcMsgService extends BaseModuleMessageService
   msgList:
     outgoing: ['getData', 'infer data types']
     incoming: ['takeTable', 'data types inferred']

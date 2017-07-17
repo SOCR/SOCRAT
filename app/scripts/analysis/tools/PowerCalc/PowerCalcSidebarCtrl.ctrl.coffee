@@ -2,18 +2,18 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-module.exports = class PowercalcSidebarCtrl extends BaseCtrl
-	@inject  'app_analysis_powercalc_dataService',
-	'app_analysis_powercalc_msgService',
-	'app_analysis_powercalc_algorithms',
+module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
+	@inject  'app_analysis_powerCalc_dataService',
+	'app_analysis_powerCalc_msgService',
+	'app_analysis_powerCalc_algorithms',
 	'$scope',
 	'$timeout'
 
 	initialize: ->
 		console.log("sidebar initialized")
-		@dataService = @app_analysis_powercalc_dataService
-		@msgService = @app_analysis_powercalc_msgService
-		@algorithmsService = @app_analysis_powercalc_algorithms
+		@dataService = @app_analysis_powerCalc_dataService
+		@msgService = @app_analysis_powerCalc_msgService
+		@algorithmsService = @app_analysis_powerCalc_algorithms
 
 		# choose algorithms
 		@algorithms = ['Select',
@@ -61,8 +61,8 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 		@df = null
 		@valid = false
 
-		@twoTest_alpha=0.010
-		@OneTGUI_alpha=0.010
+		@tTestAlpha = 0.010
+
 		@deployed = false
 		$("#toggle_switch").bootstrapSwitch();
 
@@ -73,7 +73,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				deploy: @deployed
 
 		@slidebar()
-
 
 		@dataService.getData().then (obj) =>
 			if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
@@ -92,8 +91,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 		@$scope.$on 'powercalc:updateAlgorithm_back', (event, data)=>
 			@selectedAlgorithm = data
-			console.log("algorithms updated:", @selectedAlgorithm)
-
 
 	loadData: () ->
 		@msgService.broadcast 'powercalc:loadData',
@@ -130,7 +127,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 				#check if index if -1
 				if index is -1
-					console.log -1
+#					console.log -1
 					return
 
 				#extract data from container to population
@@ -139,7 +136,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 					@populations[elt] = []
 					for row in @container[elt]
 						@populations[elt].push(row[index])
-				console.log @populations
+#				console.log @populations
 
 			else
 
@@ -158,8 +155,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				for row in data.data
 					@populations[@chosenCols[0]].push(row[index1])
 					@populations[@chosenCols[1]].push(row[index2])
-				console.log @populations
-
 
 			@msgService.broadcast 'powercalc:onetwoTestdata',
 				populations:@populations
@@ -167,7 +162,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
 		else if (@selectedAlgorithm is 'One-Sample (or Paired) t Test')
-			# if compare two different Variables, calculate sepaerately
+			# if compare two different Variables, calculate separately
 			if (@chosenLabel isnt "none") and (@chosenLabel isnt null)
 
 				#extract index if col
@@ -175,7 +170,7 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 				#check if index if -1
 				if index is -1
-					console.log -1
+#					console.log -1
 					return
 
 				#extract data from container to population
@@ -183,7 +178,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				@populations[@chosenVars] = []
 				for row in @container[@chosenVars]
 					@populations[@chosenVars].push(row[index])
-				console.log @populations
 
 			else
 				# extract data from data to population
@@ -192,8 +186,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				@populations[@chosenCols] = []
 				for row in data.data
 					@populations[@chosenCols].push(row[index1])
-				console.log @populations
-
 
 			@msgService.broadcast 'powercalc:onetwoTestdata',
 				populations:@populations
@@ -201,14 +193,11 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
 
-
-
 	updateAlgControls: () ->
 		#update algorithm method in local and broadcast to main control
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
-
 
 	updateVar: (data) ->
 		index = data.header.indexOf(@chosenLabel)
@@ -223,11 +212,6 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 					@vars.push(row[index])
 
 				@container[row[index]].push(row)
-				#console.log (@container)
-
-		console.log @container
-
-
 
 	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
@@ -257,45 +241,23 @@ module.exports = class PowercalcSidebarCtrl extends BaseCtrl
 
 	slidebar: () ->
 
-		$("#twoTest_alphaui").slider(
+		$("#tTestAlphaUI").slider(
 			min: 0.001
 			max: 0.200
-			value: @twoTest_alpha
+			value: @tTestAlpha
 			orientation: "horizontal"
 			range: "min"
 			step: 0.001
 			slide: (event, ui) =>
-				@twoTest_alpha = ui.value
-				$('#twoTest_alpha_v').val ui.value
+				@tTestAlpha = ui.value
 				@msgService.broadcast 'powercalc:onetwoTestalpha',
-					alpha_in: @twoTest_alpha
-				return
+					alpha_in: @tTestAlpha
 		)
-		$( "#twoTest_alpha_v" ).val( @twoTest_alpha.toFixed(3) );
 
-		$("#OneTGUI_alphaui").slider(
-			min: 0.001
-			max: 0.200
-			value: @OneTGUI_alpha
-			orientation: "horizontal"
-			range: "min"
-			step: 0.001
-			slide: (event, ui) =>
-				@OneTGUI_alpha = ui.value
-				$('#OneTGUI_alpha_v').val ui.value
-				@msgService.broadcast 'powercalc:onetwoTestalpha',
-					alpha_in: @OneTGUI_alpha
-				return
-		)
-		$( "#OneTGUI_alpha_v" ).val( @OneTGUI_alpha.toFixed(3) );
-	changeValue: (evt) ->
-		name = evt.target.name
-		val = evt.target.value
-		key = evt.which or evt.keyCode
-		if name is "twoTest_alpha"
-			@twoTest_alpha = parseFloat(val)
-		else if name is "OneTGUI_alpha"
-			@OneTGUI_alpha = parseFloat(val)
-		if key is 13
-			@slidebar()
-			return
+  changeValue: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      @tTestAlpha = parseFloat(val)
+    @slidebar()
+    return

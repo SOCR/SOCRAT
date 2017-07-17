@@ -2,9 +2,9 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-module.exports = class PowercalcMainCtrl extends BaseCtrl
-  @inject 'app_analysis_powercalc_msgService',
-  'app_analysis_powercalc_algorithms',
+module.exports = class PowerCalcMainCtrl extends BaseCtrl
+  @inject 'app_analysis_powerCalc_msgService',
+  'app_analysis_powerCalc_algorithms',
   '$timeout',
   '$scope'
 
@@ -13,8 +13,8 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
     @powerAnalysis = require 'powercalc'
     @distribution = require 'distributome'
-    @msgService = @app_analysis_powercalc_msgService
-    @algorithmService = @app_analysis_powercalc_algorithms
+    @msgService = @app_analysis_powerCalc_msgService
+    @algorithmService = @app_analysis_powerCalc_algorithms
 
     @title = 'Power Calculator Module'
     #algorithm type
@@ -28,7 +28,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @populations = {}
     @deployed = false
     @chosenCols = []
-    @comp_agents = []
+    @compAgents = []
     @agent = ""
     @params = {}
     @brokenCalc = false
@@ -60,21 +60,21 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cimean_click()
     @cimean_submit()
 
-    #variables needed for OnePGUI only   
-    @OnePGUI_nn = 1   
-    @OnePGUI_p0=null    
-    @OnePGUI_p=null   
-    @OnePGUI_ssize=null   
-    @OnePGUI_power=null   
-    @OnePGUI_maxp0=1.0    
-    @OnePGUI_maxp=1.0   
-    @OnePGUI_maxssize=77    
-    @OnePGUI_maxpower=1.0   
-    @OnePGUI_alpha=0.02   
-    @OnePGUI_help=false   
-    @OnePGUI_altt_value = 1   
-    @OnePGUI_method_value = 1   
-    @OnePGUI_click()    
+    #variables needed for OnePGUI only
+    @OnePGUI_nn = 1
+    @OnePGUI_p0=null
+    @OnePGUI_p=null
+    @OnePGUI_ssize=null
+    @OnePGUI_power=null
+    @OnePGUI_maxp0=1.0
+    @OnePGUI_maxp=1.0
+    @OnePGUI_maxssize=77
+    @OnePGUI_maxpower=1.0
+    @OnePGUI_alpha=0.02
+    @OnePGUI_help=false
+    @OnePGUI_altt_value = 1
+    @OnePGUI_method_value = 1
+    @OnePGUI_click()
     @OnePGUI_submit()
 
     #variables needed for Pilot only
@@ -198,6 +198,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       else
         @cfap_submit("1",id,"")
     return
+
   cfap_valiad: (evt) ->
     id = evt.currentTarget.id
     data = evt.currentTarget.value
@@ -208,8 +209,10 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     else
       return false
     return
+
   cfap_presubmit: (id, key, evt) ->
     @cfap_submit(id, key, evt.target.value)
+
   cfap_click: () ->
     $('#nui').slider(
       animate: 'slow'
@@ -250,6 +253,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         return
     )
     return
+
   cfap_submit: (id, key, value) ->
     a = @powerAnalysis.cfap(id, key, value);
     if a.isFinite == 1
@@ -289,6 +293,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     console.log(key)
     @cfap_submit '1', sliderId, key
     return
+
   cfap_show_help: () ->
     # @render_mathjax()
     #console.log(@cfap_help)
@@ -312,6 +317,7 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
       else
         @cimean_submit("1",'isFinite',"")
     return
+
   cimean_click: () ->
     $( "#sgnui" ).slider(
       value:@cimean_signa
@@ -362,10 +368,12 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
         @cimean_submit '1', 'conf', ui.value
         return
     )
+
   cimean_presubmit: (id, key, evt) ->
     value = evt.currentTarget.value
     #console.log(evt.currentTarget.value)
     @cimean_submit(id, key, value)
+
   cimean_submit: (id, key, value) ->
     b = @powerAnalysis.CImean(id, key, value)
     if b.isFinite == 1
@@ -395,12 +403,14 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
     @cimean_conf_level = b.conf
     @cimean_click()
     return
+
   cimean_changeSlider: (sliderId, evt) ->
     #console.log("changeSlider hit")
     key = evt.target.value
     #console.log(key)
     @cimean_submit '1', sliderId, key
     return
+
   cimean_show_help: () ->
     #console.log(@cfap_help)
     if (@cimean_help == true)
@@ -535,159 +545,141 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
   #functions for OneTGUI only
   oneTestRetrieve: () ->
     @params = @algorithmService.getParamsByName(@selectedAlgorithm)
-    @oneTestn = @params.n
-    @oneTestnMax = @params.nMax
-    @oneTestmean = parseFloat(@params.mean.toPrecision(4))
-    @oneTestmean0 = parseFloat(@params.mean0.toPrecision(4))
-    @oneTestmeanMax = parseFloat(@params.meanMax.toPrecision(4))
-    @oneTestmean0Max = parseFloat(@params.mean0Max.toPrecision(4))
-    @oneTestsigma = parseFloat(@params.sigma.toPrecision(4))
-    @oneTestsigmaMax = parseFloat(@params.sigmaMax.toPrecision(4))
-    @oneTestpower = parseFloat(@params.power.toPrecision(4))
-    @oneTestt = parseFloat(@params.t.toPrecision(4))
-    @oneTestpvalue = parseFloat(@params.pvl.toPrecision(4))
-    @oneTestmode = @params.mode
-    @comp_agents = @params.comp
-    @oneTestmodes = ["Two Tailed", "One Tailed"]
+    @oneTestN = @params.n
+    @oneTestNMax = @params.nMax
+    @oneTestMean = parseFloat(@params.mean.toPrecision(4))
+    @oneTestMean0 = parseFloat(@params.mean0.toPrecision(4))
+    @oneTestMeanMax = parseFloat(@params.meanMax.toPrecision(4))
+    @oneTestMean0Max = parseFloat(@params.mean0Max.toPrecision(4))
+    @oneTestStDev = parseFloat(@params.sigma.toPrecision(4))
+    @oneTestSigmaMax = parseFloat(@params.sigmaMax.toPrecision(4))
+    @oneTestPower = parseFloat(@params.power.toPrecision(4))
+    @oneTestT = parseFloat(@params.t.toPrecision(4))
+    @oneTestPvalue = parseFloat(@params.pvl.toPrecision(4))
+    @oneTestMode = @params.mode
+    @compAgents = @params.comp
+    @oneTestModes = ["Two Tailed", "One Tailed"]
     @oneTestClick()
-    if (@oneTestn is Infinity)
+    if (@oneTestN is Infinity)
       @brokenCalc = true
       return
     @oneTestGraph()
     return
+
   oneTestSync: () ->
-    @params.n = @oneTestn
-    @params.nMax = @oneTestnMax
-    @params.mean = @oneTestmean
-    @params.mean0 = @oneTestmean0
-    @params.meanMax = @oneTestmeanMax
-    @params.sigma = @oneTestsigma
-    @params.sigmaMax = @oneTestsigmaMax
-    @params.power = @oneTestpower
-    @params.mode = @oneTestmode
+    @params.n = @oneTestN
+    @params.nMax = @oneTestNMax
+    @params.mean = @oneTestMean
+    @params.mean0 = @oneTestMean0
+    @params.meanMax = @oneTestMeanMax
+    @params.sigma = @oneTestStDev
+    @params.sigmaMax = @oneTestSigmaMax
+    @params.power = @oneTestPower
+    @params.mode = @oneTestMode
     @syncData(@params)
+    @loadData()
     return
-  oneTestPower: () ->
-    @params.power = @oneTestpower
-    @params.mode = @oneTestmode
+
+  oneTestCalcPower: () ->
+    @params.power = @oneTestPower
+    @params.mode = @oneTestMode
     @syncPower(@params)
+    @loadData()
     return
+
   oneTestPress: (evt) ->
     name = evt.target.name
     key = evt.which or evt.keyCode
     if key is 13
-      if name is "oneTestpower"
-        @oneTestPower()
+      if name is "oneTestPower"
+        @oneTestCalcPower()
       else
         @oneTestSync()
     return
-  oneTestClick: () ->
-    $( "#oneTestSigmaUI" ).slider(
-      value: @oneTestsigma,
-      min: 0,
-      max: @oneTestsigmaMax,
-      range: 'min',
-      step: 0.001,
-      slide: ( event, ui ) =>
-        $( "#oneTestSigmaV" ).val( ui.value );
-        @oneTestsigma = ui.value
-        @oneTestSync()
-        return
-    )
-    $( "#oneTestSigmaV" ).val(@oneTestsigma);
 
-    $( "#oneTestNUI" ).slider(
-      value: @oneTestn,
-      min: 0,
-      max: @oneTestnMax,
+  oneTestClick: () ->
+
+    # slider elements
+    oneTestNUI = $("#oneTestNUI")
+    oneTestMean0UI = $("#oneTestMean0UI")
+    oneTestMeanUI = $("#oneTestMeanUI")
+    oneTestStDevUI= $("#oneTestStDevUI")
+    oneTestPowerUI = $("#oneTestPowerUI")
+
+    oneTestNUI.slider(
+      value: @oneTestN,
+      min: 2,
+      max: @oneTestNMax,
       range: "min",
       step: 1,
-      slide: ( event, ui ) =>
-        $( "#oneTestNV" ).val( ui.value );
-        @oneTestn = ui.value
+      slide: (event, ui) =>
+        @oneTestN = ui.value
         @oneTestSync()
-        return
     )
-    $( "#oneTestNV" ).val( @oneTestn.toFixed(0) );
 
-    $( "#oneTestMeanUI" ).slider(
-      value: @oneTestmean,
+    oneTestMean0UI.slider(
+      value: @oneTestMean0,
       min: 0,
-      max: @oneTestmeanMax,
+      max: @oneTestMean0Max,
       range: "min",
       step: 0.001,
-      slide: ( event, ui ) =>
-        $( "#oneTestMeanV" ).val( ui.value );
-        @oneTestmean = ui.value
+      slide: (event, ui) =>
+        @oneTestMean0 = ui.value
         @oneTestSync()
-        return
     )
-    $( "#oneTestMeanV" ).val( @oneTestmean );
 
-    $( "#oneTestMean0UI" ).slider(
-      value: @oneTestmean0,
+    oneTestMeanUI.slider(
+      value: @oneTestMean,
       min: 0,
-      max: @oneTestmean0Max,
+      max: @oneTestMeanMax,
       range: "min",
       step: 0.001,
-      slide: ( event, ui ) =>
-        $( "#oneTestmean0V" ).val( ui.value );
-        @oneTestmean0 = ui.value
+      slide: (event, ui) =>
+        @oneTestMean = ui.value
         @oneTestSync()
-        return
     )
-    $( "#oneTestmean0V" ).val( @oneTestmean0 );
 
-    $( "#oneTestPowerUI" ).slider(
-      value: @oneTestpower,
+    oneTestStDevUI.slider(
+      value: @oneTestStDev,
+      min: 0,
+      max: @oneTestSigmaMax,
+      range: 'min',
+      step: 0.001,
+      slide: (event, ui) =>
+        @oneTestStDev = ui.value
+        @oneTestSync()
+    )
+
+    oneTestPowerUI.slider(
+      value: @oneTestPower,
       min: 0.0001,
-      max: 0.9999,
+      max: 0.2,
       range: "min",
       step: 0.0001,
-      slide:  ( event, ui ) =>
-        $( "#oneTestPowerV" ).val( ui.value );
-        @oneTestpower = ui.value
-        @oneTestPower()
-        return
+      slide:  (event, ui) =>
+        @oneTestPower = ui.value
+        @oneTestCalcPower()
     )
-    $( "#oneTestPowerV" ).val( @oneTestpower );
-    $( "#oneTestTV" ).val( @oneTestt );
-    $( "#oneTestPValueV" ).val( @oneTestpvalue );
+
     # enable or disable slider
+    sliders = [oneTestNUI, oneTestMeanUI, oneTestStDevUI, oneTestPowerUI]
+
     if @deployed is true
-      $("#oneTestSigmaUI").slider("disable")
-      $('#oneTestSigmaUI').find('.ui-slider-handle').hide();
-      $("#oneTestNUI").slider("disable")
-      $('#oneTestNUI').find('.ui-slider-handle').hide();
-      $("#oneTestPowerUI").slider("disable")
-      $('#oneTestPowerUI').find('.ui-slider-handle').hide();
-      $("#oneTestMeanUI").slider("disable")
-      $('#oneTestMeanUI').find('.ui-slider-handle').hide();
-      $("#oneTestNDisp").text("(" + @comp_agents + "): ")
-      $("#oneTestSigmaDisp").text("(" + @comp_agents + "): ")
-      $("#oneTestMeanDisp").text("(" + @comp_agents + "): ")
+      for sl in sliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
     else
-      $("#oneTestSigmaUI").slider("enable")
-      $('#oneTestSigmaUI').find('.ui-slider-handle').show();
-      $("#oneTestNUI").slider("enable")
-      $('#oneTestNUI').find('.ui-slider-handle').show();
-      $("#oneTestPowerUI").slider("enable")
-      $('#oneTestPowerUI').find('.ui-slider-handle').show();
-      $("#oneTestMeanUI").slider("enable")
-      $('#oneTestMeanUI').find('.ui-slider-handle').show();
-      $("#oneTestNDisp").text(": ")
-      $("#oneTestSigmaDisp").text(": ")
-      $("#oneTestMeanDisp").text(": ")
-    return
+      for sl in sliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+
   oneTestReset: () ->
     @reset()
+
   oneTestGraph:() ->
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5
-
-
-  
 
   #functions for Pilot only
   Pilot_click: () ->
@@ -1026,197 +1018,171 @@ module.exports = class PowercalcMainCtrl extends BaseCtrl
 
   twoTestRetrieve: () ->
     @params = @algorithmService.getParamsByName(@selectedAlgorithm)
-    @twoTestn1 = @params.n1
-    @twoTestn2 = @params.n2
-    @twoTestmaxn = @params.nMax
-    @twoTestmean1 = parseFloat(@params.mean1.toPrecision(4))
-    @twoTestmean2 = parseFloat(@params.mean2.toPrecision(4))
-    @twoTestmeanMax = parseFloat(@params.meanMax.toPrecision(4))
-    @twoTestsigma1 = parseFloat(@params.sigma1.toPrecision(4))
-    @twoTestsigma2 = parseFloat(@params.sigma2.toPrecision(4))
-    @twoTestsigmaMax = parseFloat(@params.sigmaMax.toPrecision(4))
-    @twoTestpower = parseFloat(@params.power.toPrecision(4))
-    @twoTestt = parseFloat(@params.t.toPrecision(4))
-    @twoTestpvalue = parseFloat(@params.pvl.toPrecision(4))
-    @twoTestmode = @params.mode
-    @comp_agents = @params.comp
-    @twoTestmodes = ["Two Tailed", "One Tailed"]
+    @twoTestN1 = @params.n1
+    @twoTestN2 = @params.n2
+    @twoTestMaxN = @params.nMax
+    @twoTestMean1 = parseFloat(@params.mean1.toPrecision(4))
+    @twoTestMean2 = parseFloat(@params.mean2.toPrecision(4))
+    @twoTestMeanMax = parseFloat(@params.meanMax.toPrecision(4))
+    @twoTestStDev1 = parseFloat(@params.sigma1.toPrecision(4))
+    @twoTestStDev2 = parseFloat(@params.sigma2.toPrecision(4))
+    @twoTestStDevMax = parseFloat(@params.sigmaMax.toPrecision(4))
+    @twoTestPower = parseFloat(@params.power.toPrecision(4))
+    @twoTestT = parseFloat(@params.t.toPrecision(4))
+    @twoTestPvalue = parseFloat(@params.pvl.toPrecision(4))
+    @twoTestMode = @params.mode
+    @compAgents = @params.comp
+    @twoTestModes = ["Two Tailed", "One Tailed"]
     @twoTestClick()
-    if (@twoTestn2 is Infinity) or (@twoTestn1 is Infinity)
+    if (@twoTestN2 is Infinity) or (@twoTestN1 is Infinity)
       @brokenCalc = true
       return
     @twoTestGraph()
     return
+
   twoTestSync: () ->
-    @params.n1 = @twoTestn1
-    @params.n2 = @twoTestn2
-    @params.nMax = @twoTestmaxn
-    @params.mean1 = @twoTestmean1
-    @params.mean2 = @twoTestmean2
-    @params.meanMax = @twoTestmeanMax
-    @params.sigma1 = @twoTestsigma1
-    @params.sigma2 = @twoTestsigma2
-    @params.sigmaMax = @twoTestsigmaMax
-    @params.power = @twoTestpower
-    @params.mode = @twoTestmode
+    @params.n1 = @twoTestN1
+    @params.n2 = @twoTestN2
+    @params.nMax = @twoTestMaxN
+    @params.mean1 = @twoTestMean1
+    @params.mean2 = @twoTestMean2
+    @params.meanMax = @twoTestMeanMax
+    @params.sigma1 = @twoTestStDev1
+    @params.sigma2 = @twoTestStDev2
+    @params.sigmaMax = @twoTestStDevMax
+    @params.power = @twoTestPower
+    @params.mode = @twoTestMode
     @syncData(@params)
+    @loadData()
     return
-  twoTestPower: () ->
-    @params.power = @twoTestpower
-    @params.mode = @twoTestmode
+
+  twoTestCalcPower: () ->
+    @params.power = @twoTestPower
+    @params.mode = @twoTestMode
     @syncPower(@params)
+    @loadData()
     return
+
   twoTestPress: (evt) ->
     name = evt.target.name
     key = evt.which or evt.keyCode
     if key is 13
-      if name is "twoTestpower"
-        @twoTestPower()
-        return
+      if name is "twoTestPower"
+        @twoTestCalcPower()
       else
         @twoTestSync()
-        return
+    return
+
   twoTestClick: () ->
-    $( "#twoTestsigma1ui" ).slider(
-      value: @twoTestsigma1,
-      min: 0,
-      max: @twoTestsigmaMax,
-      range: 'min',
-      step: 0.01,
-      slide: ( event, ui ) =>
-        $( "#twoTestsigma1_v" ).val( ui.value );
-        @twoTestsigma1 = ui.value
-        @twoTestSync()
-        return
-    )
-    $( "#twoTestsigma1_v" ).val( @twoTestsigma1);
-    $( "#twoTestsigma2ui" ).slider(
-      value:@twoTestsigma2,
-      min: 0,
-      max: @twoTestsigmaMax,
-      range: "min",
-      step: 0.01,
-      slide: ( event, ui ) =>
-        $( "#twoTestsigma2_v" ).val( ui.value );
-        @twoTestsigma2 = ui.value
-        @twoTestSync()
-        return
-    )
-    $( "#twoTestsigma2_v" ).val(@twoTestsigma2);
 
-    $( "#twoTestn1ui" ).slider(
-      value:@twoTestn1,
-      min: 0,
-      max: @twoTestmaxn,
+    # select slider elements
+    twoTestN1UI = $("#twoTestN1UI")
+    twoTestN2UI = $("#twoTestN2UI")
+    twoTestMean1UI = $("#twoTestMean1UI")
+    twoTestMean2UI = $("#twoTestMean2UI")
+    twoTestStDev1UI = $("#twoTestStDev1UI")
+    twoTestStDev2UI = $("#twoTestStDev2UI")
+    twoTestPowerUI = $("#twoTestPowerUI")
+
+    twoTestN1UI.slider(
+      value: @twoTestN1,
+      min: 2,
+      max: @twoTestMaxN,
       range: "min",
       step: 1,
-      slide: ( event, ui ) =>
-        $( "#twoTestn1_v" ).val( ui.value );
-        @twoTestn1 = ui.value
+      slide: (event, ui) =>
+        @twoTestN1 = ui.value
         @twoTestSync()
-        return
     )
-    $( "#twoTestn1_v" ).val( @twoTestn1 );
-    $( "#twoTestn2ui" ).slider(
-      value:@twoTestn2,
-      min: 0,
-      max: @twoTestmaxn,
+
+    twoTestN2UI.slider(
+      value: @twoTestN2,
+      min: 2,
+      max: @twoTestMaxN,
       range: "min",
       step: 1,
-      slide: ( event, ui ) =>
-        $( "#twoTestn2_v" ).val( ui.value );
-        @twoTestn2 = ui.value
+      slide: (event, ui) =>
+        @twoTestN2 = ui.value
         @twoTestSync()
-        return
     )
-    $( "#twoTestn2_v" ).val( @twoTestn2 );
 
-    $( "#twoTestmean1ui" ).slider(
-      value:@twoTestmean1,
+    twoTestMean1UI.slider(
+      value: @twoTestMean1,
       min: 0,
-      max: @twoTestmeanMax,
+      max: @twoTestMeanMax,
       range: "min",
       step: 0.01,
-      slide: ( event, ui ) =>
-        $( "#twoTestmean1_v" ).val( ui.value );
-        @twoTestmean1 = ui.value
+      slide: (event, ui) =>
+        @twoTestMean1 = ui.value
         @twoTestSync()
-        return
     )
-    $( "#twoTestmean1_v" ).val( @twoTestmean1);
-    $( "#twoTestmean2ui" ).slider(
-      value:@twoTestmean2,
+
+    twoTestMean2UI.slider(
+      value: @twoTestMean2,
       min: 0,
-      max: @twoTestmeanMax,
+      max: @twoTestMeanMax,
       range: "min",
       step: 0.01,
-      slide: ( event, ui ) =>
-        $( "#twoTestmean2_v" ).val( ui.value );
-        @twoTestmean2 = ui.value
+      slide: (event, ui) =>
+        @twoTestMean2 = ui.value
         @twoTestSync()
-        return
     )
-    $( "#twoTestmean2_v" ).val( @twoTestmean2);
-    $( "#twoTestpowerui" ).slider(
-      value:@twoTestpower,
+
+    twoTestStDev1UI.slider(
+      value: @twoTestStDev1,
+      min: 0,
+      max: @twoTestMeanMax,
+      range: "min",
+      step: 0.01,
+      slide: (event, ui) =>
+        @twoTestStDev1 = ui.value
+        @twoTestSync()
+    )
+
+    twoTestStDev2UI.slider(
+      value: @twoTestStDev2,
+      min: 0,
+      max: @twoTestMeanMax,
+      range: "min",
+      step: 0.01,
+      slide: (event, ui) =>
+        @twoTestStDev2 = ui.value
+        @twoTestSync()
+    )
+
+    twoTestPowerUI.slider(
+      value: @twoTestPower,
       min: 0.0001,
       max: 0.9999,
       range: "min",
       step: 0.0001,
-      slide:  ( event, ui ) =>
-        $( "#twoTestpower_v" ).val( ui.value );
-        @twoTestpower = ui.value
-        @twoTestPower()
-        return
+      slide: (event, ui) =>
+        @twoTestPower = ui.value
+        @twoTestCalcPower()
     )
-    $( "#twoTestpower_v" ).val( @twoTestpower);
-    $( "#twoTestt_v" ).val( @twoTestt );
-    $( "#twoTestpvalue_v" ).val( @twoTestpvalue );
-    # enable or disable slider
+
+    # enable or disable sliders
+    sliders = [
+      twoTestN1UI,
+      twoTestN2UI,
+      twoTestMean1UI,
+      twoTestMean2UI,
+      twoTestStDev1UI,
+      twoTestStDev1UI
+      ]
+
     if @deployed is true
-      $("#twoTestsigma1ui").slider("disable")
-      $('#twoTestsigma1ui').find('.ui-slider-handle').hide();
-      $("#twoTestsigma2ui").slider("disable")
-      $('#twoTestsigma2ui').find('.ui-slider-handle').hide();
-      $("#twoTestn1ui").slider("disable")
-      $('#twoTestn1ui').find('.ui-slider-handle').hide();
-      $("#twoTestn2ui").slider("disable")
-      $('#twoTestn2ui').find('.ui-slider-handle').hide();
-      $("#twoTestpowerui").slider("disable")
-      $('#twoTestpowerui').find('.ui-slider-handle').hide();
-      $("#twoTestmean1ui").slider("disable")
-      $('#twoTestmean1ui').find('.ui-slider-handle').hide();
-      $("#twoTestmean2ui").slider("disable")
-      $('#twoTestmean2ui').find('.ui-slider-handle').hide();
-      $("#psigma1i").text("(" + @comp_agents[0] + "): ")
-      $("#psigma2i").text("(" + @comp_agents[1] + "): ")
-      $("#pn1i").text("(" + @comp_agents[0] + "): ")
-      $("#pn2i").text("(" + @comp_agents[1] + "): ")
-      $("#pmean1i").text("(" + @comp_agents[0] + "): ")
-      $("#pmean2i").text("(" + @comp_agents[1] + "): ")
+      for sl in sliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
     else
-      $("#twoTestsigma1ui").slider("enable")
-      $('#twoTestsigma1ui').find('.ui-slider-handle').show();
-      $("#twoTestsigma2ui").slider("enable")
-      $('#twoTestsigma2ui').find('.ui-slider-handle').show();
-      $("#twoTestn1ui").slider("enable")
-      $('#twoTestn1ui').find('.ui-slider-handle').show();
-      $("#twoTestn2ui").slider("enable")
-      $('#twoTestn2ui').find('.ui-slider-handle').show();
-      $("#twoTestpowerui").slider("enable")
-      $('#twoTestpowerui').find('.ui-slider-handle').show();
-      $("#twoTestmean1ui").slider("enable")
-      $('#twoTestmean1ui').find('.ui-slider-handle').show();
-      $("#twoTestmean2ui").slider("enable")
-      $('#twoTestmean2ui').find('.ui-slider-handle').show();
-      $("#psigma1i").text("1: ")
-      $("#psigma2i").text("2: ")
-      $("#pn1i").text("1: ")
-      $("#pn2i").text("2: ")
-      $("#pmean1i").text("1: ")
-      $("#pmean2i").text("2: ")
+      for sl in sliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+
   twoTestReset: () ->
     @reset()
+
   twoTestGraph:() ->
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,

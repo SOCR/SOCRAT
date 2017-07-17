@@ -9,72 +9,75 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 
-module.exports = class PowerCalc_TwoTGUI extends BaseService
-  @inject 'app_analysis_powercalc_msgService',
+module.exports = class PowerCalcTwoTGUI extends BaseService
+  @inject 'app_analysis_powerCalc_msgService',
     '$timeout'
 
   initialize: ->
+
+    # dependecies
+    @distribution = require 'distributome'
+    @msgService = @app_analysis_powerCalc_msgService
+
     @distanceFromMean = 5
     @SIGNIFICANT = 5
     @populations = null
-    @distribution = require 'distributome'
-    @msgService = @app_analysis_powercalc_msgService
     @name = 'Two-sample t test (general case)'
     #variables needed for twoTest
-    @twoTest = @app_analysis_powercalc_twoTest
-    @twoTestn1 = 10
-    @twoTestn2 = 10
-    @twoTestmaxn1 = 20
-    @twoTestmaxn2 = 20
-    @twoTestmaxn = 20
-    @twoTestmean1 = 10
-    @twoTestmean2 = 10
-    @twoTestmeanMax1 = 20
-    @twoTestmeanMax2 = 20
-    @twoTestmeanMax = 20
-    @twoTestsigma1 = 20
-    @twoTestsigma2 = 20
-    @twoTestsigmaMax1 = 40
-    @twoTestsigmaMax2 = 40
-    @twoTestsigmaMax = 40
-    @twoTestalpha = 0.010
-    @twoTestpower = 0
-    @twoTestpowerMax = 1
-    @twoTestt = 0
-    @twoTestpvalue = 0
-    @comp_agents = []
-    @twoTestmode = "Two Tailed"
-    @twoTestmodes = ["Two Tailed", "One Tailed"]
+    @twoTest = @app_analysis_powerCalc_twoTest
+    @twoTestN1 = 10
+    @twoTestN2 = 10
+    @twoTestMaxN1 = 20
+    @twoTestMaxN2 = 20
+    @twoTestMaxN = 20
+    @twoTestMean1 = 10
+    @twoTestMean2 = 10
+    @twoTestMeanMax1 = 20
+    @twoTestMeanMax2 = 20
+    @twoTestMeanMax = 20
+    @twoTestSigma1 = 20
+    @twoTestSigma2 = 20
+    @twoTestSigmaMax1 = 40
+    @twoTestSigmaMax2 = 40
+    @twoTestSigmaMax = 40
+    @twoTestAlpha = 0.010
+    @twoTestPower = 0
+    @twoTestPowerMax = 1
+    @twoTestT = 0
+    @twoTestPvalue = 0
+    @compAgents = []
+    @twoTestMode = "Two Tailed"
+    @twoTestModes = ["Two Tailed", "One Tailed"]
 
     #data to observe
     @parameters =
-      n1: @twoTestn1
-      n2: @twoTestn2
-      nMax: @twoTestmaxn
-      mean1: @twoTestmean1
-      mean2: @twoTestmean2
-      meanMax: @twoTestmeanMax
-      sigma1: @twoTestsigma1
-      sigma2: @twoTestsigma2
-      sigmaMax: @twoTestsigmaMax
-      power: @twoTestpower
-      t: @twoTestt
-      pvl: @twoTestpvalue
-      comp: @comp_agents
-      mode: @twoTestmode
+      n1: @twoTestN1
+      n2: @twoTestN2
+      nMax: @twoTestMaxN
+      mean1: @twoTestMean1
+      mean2: @twoTestMean2
+      meanMax: @twoTestMeanMax
+      sigma1: @twoTestSigma1
+      sigma2: @twoTestSigma2
+      sigmaMax: @twoTestSigmaMax
+      power: @twoTestPower
+      t: @twoTestT
+      pvl: @twoTestPvalue
+      comp: @compAgents
+      mode: @twoTestMode
 
     @twoTestUpdate()
 
   saveData: (data) ->
     @populations = data.populations
     if (data.chosenCol.length is 2)
-      @comp_agents = data.chosenCol
+      @compAgents = data.chosenCol
     else
-      @comp_agents = data.chosenVar
+      @compAgents = data.chosenVar
     @twoTestReceiveData()
 
   setAlpha: (alphaIn) ->
-    @twoTestalpha = alphaIn
+    @twoTestAlpha = alphaIn
     @twoTestUpdate()
     @twoTestCheckRange()
     return
@@ -84,137 +87,140 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
 
   getParams: () ->
     @parameters =
-      n1: @twoTestn1
-      n2: @twoTestn2
-      nMax: @twoTestmaxn
-      mean1: @twoTestmean1
-      mean2: @twoTestmean2
-      meanMax: @twoTestmeanMax
-      sigma1: @twoTestsigma1
-      sigma2: @twoTestsigma2
-      sigmaMax: @twoTestsigmaMax
-      power: @twoTestpower
-      t: @twoTestt
-      pvl: @twoTestpvalue
-      comp: @comp_agents
-      mode: @twoTestmode
+      n1: @twoTestN1
+      n2: @twoTestN2
+      nMax: @twoTestMaxN
+      mean1: @twoTestMean1
+      mean2: @twoTestMean2
+      meanMax: @twoTestMeanMax
+      sigma1: @twoTestSigma1
+      sigma2: @twoTestSigma2
+      sigmaMax: @twoTestSigmaMax
+      power: @twoTestPower
+      t: @twoTestT
+      pvl: @twoTestPvalue
+      comp: @compAgents
+      mode: @twoTestMode
 
   setParams: (newParams) ->
-    @twoTestn1 = newParams.n1
-    @twoTestn2 = newParams.n2
-    @twoTestmaxn = newParams.nMax
-    @twoTestmean1 = newParams.mean1
-    @twoTestmean2 = newParams.mean2
-    @twoTestmeanMax = newParams.meanMax
-    @twoTestsigma1 = newParams.sigma1
-    @twoTestsigma2 = newParams.sigma2
-    @twoTestsigmaMax = newParams.sigmaMax
-    @twoTestpower = newParams.power
-    @twoTestmode = newParams.mode
+    @twoTestN1 = newParams.n1
+    @twoTestN2 = newParams.n2
+    @twoTestMaxN = newParams.nMax
+    @twoTestMean1 = newParams.mean1
+    @twoTestMean2 = newParams.mean2
+    @twoTestMeanMax = newParams.meanMax
+    @twoTestSigma1 = newParams.sigma1
+    @twoTestSigma2 = newParams.sigma2
+    @twoTestSigmaMax = newParams.sigmaMax
+    @twoTestPower = newParams.power
+    @twoTestMode = newParams.mode
     @twoTestUpdate()
     return
 
   savePower: (newParams) ->
-    @twoTestpower = newParams.power
-    @twoTestmode = newParams.mode
+    @twoTestPower = newParams.power
+    @twoTestMode = newParams.mode
     @twoTestPowerTon()
     return
 
   reset: () ->
-    @twoTestn1 = 10
-    @twoTestn2 = 10
-    @twoTestmaxn1 = 20
-    @twoTestmaxn2 = 20
-    @twoTestmaxn = 20
-    @twoTestmean1 = 10
-    @twoTestmean2 = 10
-    @twoTestmeanMax1 = 20
-    @twoTestmeanMax2 = 20
-    @twoTestmeanMax = 20
-    @twoTestsigma1 = 20
-    @twoTestsigma2 = 20
-    @twoTestsigmaMax1 = 40
-    @twoTestsigmaMax2 = 40
-    @twoTestsigmaMax = 40
-    @twoTestalpha = 0.010
-    @twoTestpower = 0
-    @twoTestpowerMax = 1
-    @twoTestt = 0
-    @twoTestpvalue = 0
-    @comp_agents = []
-    @twoTestmode = "Two Tailed"
+    @twoTestN1 = 10
+    @twoTestN2 = 10
+    @twoTestMaxN1 = 20
+    @twoTestMaxN2 = 20
+    @twoTestMaxN = 20
+    @twoTestMean1 = 10
+    @twoTestMean2 = 10
+    @twoTestMeanMax1 = 20
+    @twoTestMeanMax2 = 20
+    @twoTestMeanMax = 20
+    @twoTestSigma1 = 20
+    @twoTestSigma2 = 20
+    @twoTestSigmaMax1 = 40
+    @twoTestSigmaMax2 = 40
+    @twoTestSigmaMax = 40
+    @twoTestAlpha = 0.010
+    @twoTestPower = 0
+    @twoTestPowerMax = 1
+    @twoTestT = 0
+    @twoTestPvalue = 0
+    @compAgents = []
+    @twoTestMode = "Two Tailed"
     @twoTestUpdate()
     return
 
   twoTestReceiveData: () ->
     item1 = Object.keys(@populations)[0]
     item2 = Object.keys(@populations)[1]
-    @twoTestn1 = @populations[item1].length
-    @twoTestn2 = @populations[item2].length
-    @twoTestmean1 = @getMean(@getSum(@populations[item1]),@populations[item1].length)
-    @twoTestmean2 = @getMean(@getSum(@populations[item2]),@populations[item2].length)
-    twoTestvariance1 = @getVariance(@populations[item1], @twoTestmean1)
-    twoTestvariance2 = @getVariance(@populations[item2], @twoTestmean2)
-    @twoTestsigma1 = Math.sqrt(twoTestvariance1)
-    @twoTestsigma2 = Math.sqrt(twoTestvariance2)
+    @twoTestN1 = @populations[item1].length
+    @twoTestN2 = @populations[item2].length
+    @twoTestMean1 = @getMean(@getSum(@populations[item1]),@populations[item1].length)
+    @twoTestMean2 = @getMean(@getSum(@populations[item2]),@populations[item2].length)
+    twoTestvariance1 = @getVariance(@populations[item1], @twoTestMean1)
+    twoTestvariance2 = @getVariance(@populations[item2], @twoTestMean2)
+    @twoTestSigma1 = Math.sqrt(twoTestvariance1)
+    @twoTestSigma2 = Math.sqrt(twoTestvariance2)
     @twoTestCheckRange()
     @twoTestUpdate()
     return
 
   twoTestCheckRange:() ->
-    @twoTestmaxn1 = Math.max(@twoTestn1, @twoTestmaxn1)
-    @twoTestmaxn2 = Math.max(@twoTestn2, @twoTestmaxn2)
-    @twoTestmaxn = Math.max(@twoTestmaxn1, @twoTestmaxn2)
-    @twoTestmeanMax1 = Math.max(@twoTestmean1, @twoTestmeanMax1)
-    @twoTestmeanMax2 = Math.max(@twoTestmean2, @twoTestmeanMax2)
-    @twoTestmeanMax = Math.max(@twoTestmeanMax1, @twoTestmeanMax2)
-    @twoTestsigmaMax1 = Math.max(@twoTestsigma1, @twoTestsigmaMax1)
-    @twoTestsigmaMax2 = Math.max(@twoTestsigma2, @twoTestsigmaMax2)
-    @twoTestsigmaMax = Math.max(@twoTestsigmaMax1, @twoTestsigmaMax2)
+    @twoTestMaxN1 = Math.max(@twoTestN1, @twoTestMaxN1)
+    @twoTestMaxN2 = Math.max(@twoTestN2, @twoTestMaxN2)
+    @twoTestMaxN = Math.max(@twoTestMaxN1, @twoTestMaxN2)
+    @twoTestMeanMax1 = Math.max(@twoTestMean1, @twoTestMeanMax1)
+    @twoTestMeanMax2 = Math.max(@twoTestMean2, @twoTestMeanMax2)
+    @twoTestMeanMax = Math.max(@twoTestMeanMax1, @twoTestMeanMax2)
+    @twoTestSigmaMax1 = Math.max(@twoTestSigma1, @twoTestSigmaMax1)
+    @twoTestSigmaMax2 = Math.max(@twoTestSigma2, @twoTestSigmaMax2)
+    @twoTestSigmaMax = Math.max(@twoTestSigmaMax1, @twoTestSigmaMax2)
 
   twoTestUpdate: () ->
-    twoTestvar1 = Math.pow(@twoTestsigma1,2)
-    twoTestvar2 = Math.pow(@twoTestsigma2,2)
-    kappa = @twoTestn1 / @twoTestn2
+    twoTestvar1 = Math.pow(@twoTestSigma1,2)
+    twoTestvar2 = Math.pow(@twoTestSigma2,2)
+    kappa = @twoTestN1 / @twoTestN2
     # calculate power using different modes
-    if @twoTestmode is "Two Tailed"
-      z = (@twoTestmean1 - @twoTestmean2) / (Math.sqrt(twoTestvar1 + twoTestvar2) * Math.sqrt((1+(1 / kappa)) / @twoTestn2))
-      @twoTestpower = @distribution.pnorm(z-@distribution.qnorm(1-@twoTestalpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@twoTestalpha/2))
-      @parameters.power = @twoTestpower
+    if @twoTestMode is "Two Tailed"
+      z = (@twoTestMean1 - @twoTestMean2) / (Math.sqrt(twoTestvar1 + twoTestvar2) * Math.sqrt((1+(1 / kappa)) / @twoTestN2))
+      @twoTestPower = @distribution.pnorm(z-@distribution.qnorm(1-@twoTestAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@twoTestAlpha/2))
+      @parameters.power = @twoTestPower
     else
-      z = (@twoTestmean1 - @twoTestmean2) / Math.sqrt(twoTestvar1 + twoTestvar2 / kappa) * Math.sqrt(@twoTestn1)
-      @twoTestpower = @distribution.pnorm(z-@distribution.qnorm(1-@twoTestalpha))
-      @parameters.power = @twoTestpower
+      z = (@twoTestMean1 - @twoTestMean2) / Math.sqrt(twoTestvar1 + twoTestvar2 / kappa) * Math.sqrt(@twoTestN1)
+      @twoTestPower = @distribution.pnorm(z-@distribution.qnorm(1-@twoTestAlpha))
+      @parameters.power = @twoTestPower
     @twoTestTTest()
     @twoTestCheckRange()
     return
 
   twoTestPowerTon: () ->
-    kappa = @twoTestn1 / @twoTestn2
-    stdv = Math.sqrt(Math.pow(@twoTestsigma1,2) + Math.pow(@twoTestsigma2,2))
-    twoTestvar1 = Math.pow(@twoTestsigma1,2)
-    twoTestvar2 = Math.pow(@twoTestsigma2,2)
+    kappa = @twoTestN1 / @twoTestN2
+    stdv = Math.sqrt(Math.pow(@twoTestSigma1,2) + Math.pow(@twoTestSigma2,2))
+    twoTestvar1 = Math.pow(@twoTestSigma1,2)
+    twoTestvar2 = Math.pow(@twoTestSigma2,2)
     # calculate n1 or n2 from power based on different mdoes
-    if @twoTestmode is "Two Tailed"
-      @twoTestn2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@twoTestalpha / 2)+@distribution.qnorm(@twoTestpower))/(@twoTestmean1-@twoTestmean2),2)
-      @twoTestn2 = Math.ceil(@twoTestn2)
-      @twoTestmaxn2 = Math.max(@twoTestmaxn2, @twoTestn2)
+    if @twoTestMode is "Two Tailed"
+      @twoTestN2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@twoTestAlpha / 2)+@distribution.qnorm(@twoTestPower))/(@twoTestMean1-@twoTestMean2),2)
+      @twoTestN2 = Math.round(@twoTestN2)
+      @twoTestMaxN2 = Math.max(@twoTestMaxN2, @twoTestN2)
       # @parameters.n2 = @twoTestn2
     else
-      @twoTestn1=(twoTestvar1 + twoTestvar2 / kappa) * Math.pow((@distribution.qnorm(1-@twoTestalpha)+@distribution.qnorm(@twoTestpower))/(@twoTestmean1-@twoTestmean2),2)
-      @twoTestn1 = Math.ceil(@twoTestn1)
-      @twoTestmaxn2 = Math.max(@twoTestmaxn1, @twoTestn1)
+      @twoTestN1=(twoTestvar1 + twoTestvar2 / kappa) * Math.pow((@distribution.qnorm(1-@twoTestAlpha)+@distribution.qnorm(@twoTestPower))/(@twoTestMean1-@twoTestMean2),2)
+      @twoTestN1 = Math.round(@twoTestN1)
+      @twoTestMaxN2 = Math.max(@twoTestMaxN1, @twoTestN1)
       # @parameters.n1 = @twoTestn1
     @twoTestCheckRange()
-    #@twoTestGraph()
+    @twoTestTTest()
     return
 
   twoTestTTest: () ->
-    v1 = Math.pow(@twoTestsigma1,2) / @twoTestn1
-    v2 = Math.pow(@twoTestsigma2,2) / @twoTestn2
-    df =  Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@twoTestn1 - 1.0) + Math.pow(v2,2) / (@twoTestn2 - 1.0))
-    @twoTestt = @tdistr(df, 1-@twoTestalpha)
-    @twoTestpvalue = @tprob(df, @twoTestt)
+    v1 = Math.pow(@twoTestSigma1,2) / @twoTestN1
+    v2 = Math.pow(@twoTestSigma2,2) / @twoTestN2
+    df =  Math.round(Math.pow((v1 + v2),2) / (Math.pow(v1,2) / (@twoTestN1 - 1.0) + Math.pow(v2,2) / (@twoTestN2 - 1.0)))
+    @twoTestT = (@twoTestMean1 - @twoTestMean2) / (Math.sqrt(v1 + v2))
+    @twoTestPvalue = 1 - @tProb(df, @twoTestT)
+    @twoTestPvalue *= 2 if @twoTestMode is 'Two Tailed'
+    @twoTestPvalue = Math.max(0, @twoTestPvalue)
+    @twoTestPvalue = Math.min(1, @twoTestPvalue)
 
   extract: (data, variable) ->
     tmp = []
@@ -280,11 +286,11 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     return values
 
   getChartData: () ->
-    mean1 = @twoTestmean1
-    stdDev1 = @twoTestsigma1
-    mean2 = @twoTestmean2
-    stdDev2 = @twoTestsigma2
-    alpha = @twoTestalpha
+    mean1 = @twoTestMean1
+    stdDev1 = @twoTestSigma1
+    mean2 = @twoTestMean2
+    stdDev2 = @twoTestSigma2
+    alpha = @twoTestAlpha
 
     rightBound = Math.max(@getRightBound(mean1, stdDev1), @getRightBound(mean2, stdDev2))
     leftBound = Math.min(@getLeftBound(mean1, stdDev1), @getLeftBound(mean2, stdDev2))
@@ -306,28 +312,33 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
       bounds: bounds
     }
 
-  tprob: ($n, $x) ->
+  tProb: ($n, $x) ->
     if $n <= 0
       throw 'Invalid n: $n\n'
       ### degree of freedom ###
-    @precisionString @subtprob($n - 0, $x - 0)
+    @precisionString @subTProb($n - 0, $x - 0)
+
   integer: ($i) ->
     if $i > 0
       Math.floor $i
     else
       Math.ceil $i
+
   precisionString: ($x) ->
     if $x
       @roundToPrecision $x, @precision($x)
     else
       '0'
+
   roundToPrecision: ($x, $p) ->
     $x = $x * 10 ** $p
     $x = Math.round($x)
     $x / 10 ** $p
+
   precision: ($x) ->
     Math.abs @integer(@log10(Math.abs($x)) - @SIGNIFICANT)
-  subtprob: ($n, $x) ->
+
+  subTProb: ($n, $x) ->
     $a = undefined
     $b = undefined
     $w = Math.atan2($x / Math.sqrt($n), 1)
@@ -347,6 +358,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
 
   log10: ($n) ->
     Math.log($n) / Math.log(10)
+
   max: () ->
     $max = arguments[0]
     $i = 0
@@ -355,20 +367,22 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
         $max = arguments[$i]
       $i++
     $max
-  tdistr: ($n, $p) ->
+
+  tDistr: ($n, $p) ->
     if $n <= 0
       throw 'Invalid n: $n\n'
     if $p <= 0 or $p >= 1
       throw 'Invalid p: $p\n'
-    @precisionString @subt($n - 0, $p - 0)
-  subt: ($n, $p) ->
+    @precisionString @subT($n - 0, $p - 0)
+
+  subT: ($n, $p) ->
     if $p >= 1 or $p <= 0
       throw 'Invalid p: $p\n'
     if $p == 0.5
       return 0
     else if $p < 0.5
-      return -@subt($n, 1 - $p)
-    $u = @subu($p)
+      return -@subT($n, 1 - $p)
+    $u = @subU($p)
     $u2 = $u ** 2
     $a = ($u2 + 1) / 4
     $b = ((5 * $u2 + 16) * $u2 + 3) / 96
@@ -379,7 +393,7 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
     if $n <= @log10($p) ** 2 + 3
       $round = undefined
       loop
-        $p1 = @subtprob($n, $x)
+        $p1 = @subTProb($n, $x)
         $n1 = $n + 1
         $delta = ($p1 - $p) / Math.exp(($n1 * Math.log($n1 / ($n + $x * $x)) + Math.log($n / $n1 / 2 / Math.PI) - 1 + (1 / $n1 - (1 / $n)) / 6) / 2)
         $x += $delta
@@ -387,7 +401,8 @@ module.exports = class PowerCalc_TwoTGUI extends BaseService
         unless $x and $round != 0
           break
     $x
-  subu: ($p) ->
+
+  subU: ($p) ->
     $y = -Math.log(4 * $p * (1 - $p))
     $x = Math.sqrt($y * (1.570796288 + $y * (.03706987906 + $y * (-.8364353589e-3 + $y * (-.2250947176e-3 + $y * (.6841218299e-5 + $y * (0.5824238515e-5 + $y * (-.104527497e-5 + $y * (.8360937017e-7 + $y * (-.3231081277e-8 + $y * (.3657763036e-10 + $y * .6936233982e-12)))))))))))
     if $p > .5
