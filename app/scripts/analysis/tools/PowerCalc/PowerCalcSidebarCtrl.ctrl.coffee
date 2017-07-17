@@ -250,7 +250,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			step: 0.001
 			slide: (event, ui) =>
 				@tTestAlpha = ui.value
-				@msgService.broadcast 'powercalc:onetwoTestalpha',
+				@msgService.broadcast 'powercalc:alpha',
 					alpha_in: @tTestAlpha
 		)
 

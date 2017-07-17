@@ -16,6 +16,7 @@ module.exports = powerCalc = new Module
       'app_analysis_powerCalc_dataService': require 'scripts/analysis/tools/PowerCalc/PowerCalcDataService.service.coffee'
       'app_analysis_powerCalc_twoTest': require 'scripts/analysis/tools/PowerCalc/PowerCalcTwoTGUI.service.coffee'
       'app_analysis_powerCalc_oneTest': require 'scripts/analysis/tools/PowerCalc/PowerCalcOneTGUI.service.coffee'
+      'app_analysis_powerCalc_oneProp': require 'scripts/analysis/tools/PowerCalc/PowerCalcOneProp.service.coffee'
 
     controllers:
       'powerCalcMainCtrl': require 'scripts/analysis/tools/PowerCalc/PowerCalcMainCtrl.ctrl.coffee'

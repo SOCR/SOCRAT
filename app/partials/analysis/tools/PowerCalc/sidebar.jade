@@ -11,7 +11,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
           ng-change="sidebar.updateAlgControls()"
         )
       .form-group(
-        ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'")
+        ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test' ||" + "sidebar.selectedAlgorithm == 'Test of One Proportion'")
         .row.form-inline.bootstrap-switch-square
           label
             span.glyphicon.glyphicon-question-sign(
@@ -96,3 +96,6 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         ng-options="col for col in sidebar.vars"
         ng-change="sidebar.run(sidebar.df)"
         )
+
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of One Proportion' && sidebar.deployed")
+      legend Data
