@@ -145,7 +145,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     else if (@selectedAlgorithm is "One-Sample (or Paired) t Test")
       @oneTestRetrieve()
       return
-    else if (@selectedAlgorithm is "One-Sample (or Paired) t Test")
+    else if (@selectedAlgorithm is "Test of One Proportion")
       @onePropRetrieve()
       return
     else 
@@ -421,7 +421,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @compAgents = @params.comp
     @onePropModes = ["Two Sided", "One Sided"]
     @onePropClick()
-    # @onePropGraph()
+    @onePropGraph()
     return
 
   onePropSync: () ->
@@ -438,7 +438,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     return
 
   onePropPress: (evt) ->
-    ame = evt.target.name
+    name = evt.target.name
     key = evt.which or evt.keyCode
     if key is 13
       if name is "onePropPower"
@@ -450,10 +450,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
   onePropClick: () ->
     #slider elements
     onePropPUI = $("#onePropPUI")
-    onePropP0IO = $("#onePropP0UI")
+    onePropP0UI = $("#onePropP0UI")
     onePropNUI = $("#onePropNUI")
     onePropPowerUI = $("#onePropPowerUI")
-    onePropSliders = [onePropPUI, onePropP0IO, onePropNUI, onePropPowerUI]
+    onePropSliders = [onePropPUI, onePropP0UI, onePropNUI, onePropPowerUI]
 
     onePropPUI.slider(
       value: @onePropP,
@@ -514,10 +514,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @reset()
     return
 
-  # onePropGraph: () ->
-  #   chartData = @algorithmService.getChartData @selectedAlgorithm
-  #   @$timeout => @chartData = chartData,
-  #   5
+  onePropGraph: () ->
+    chartData = @algorithmService.getChartData @selectedAlgorithm
+    @$timeout => @chartData = chartData,
+    5
 
 
   #functions for OneTGUI only

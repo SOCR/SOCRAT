@@ -39,7 +39,7 @@ module.exports = class PowerCalcOneProp extends BaseService
     #data to observe
     @parameters =
       p: @onePropP
-      p0: @onePropO0
+      p0: @onePropP0
       pMax: @onePropPMax
       n: @onePropN
       nMax: @onePropNMax
@@ -52,13 +52,14 @@ module.exports = class PowerCalcOneProp extends BaseService
     @onePropUpdate()
 
   saveData: (data) ->
-    @populations = data.populations
-    lab = data.chosenlab
-    if (lab is "none") or (lab is null)
-      @compAgents = data.chosenCol
-    else
-      @compAgents = data.chosenVar
-    @onePropReceiveData()
+    # @populations = data.populations
+    # lab = data.chosenlab
+    # if (lab is "none") or (lab is null)
+    #   @compAgents = data.chosenCol
+    # else
+    #   @compAgents = data.chosenVar
+    # @onePropReceiveData()
+    return
 
   setAlpha: (alphaIn) ->
     @onePropAlpha = alphaIn
@@ -71,7 +72,7 @@ module.exports = class PowerCalcOneProp extends BaseService
   getParams: () ->
     @parameters =
       p: @onePropP
-      p0: @onePropO0
+      p0: @onePropP0
       pMax: @onePropPMax
       n: @onePropN
       nMax: @onePropNMax
@@ -91,7 +92,7 @@ module.exports = class PowerCalcOneProp extends BaseService
 
   savePower: (newParams) ->
     @onePropPower = newParams.power
-    @onePropMode = newParams.mode
+    @mode = newParams.mode
     @onePropPowerTon()
     return
 
@@ -105,19 +106,18 @@ module.exports = class PowerCalcOneProp extends BaseService
     @onePropAlpha = 0.010
     @onePropT = 0
     @onePropPvalue = 0
-    @mode = 'One Sided'
+    @mode = 'Two Sided'
     @compAgents = ''
-    @onePropMode = "Two Sided"
     @onePropUpdate()
     return
 
-  oneTestReceiveData: () ->
-    item = Object.keys(@populations)[0]
-    @onePropN = @populations[item].length
-    # TODO: additional variables need to be calculated
-    @onePropCheckRange()
-    @onePropUpdate()
-    return
+  # onePropReceiveData: () ->
+  #   item = Object.keys(@populations)[0]
+  #   @onePropN = @populations[item].length
+  #   # TODO: additional variables need to be calculated
+  #   @onePropCheckRange()
+  #   @onePropUpdate()
+  #   return
 
   onePropCheckRange:() ->
     @onePropNMax = Math.max(@onePropN, @onePropNMax)
@@ -126,7 +126,7 @@ module.exports = class PowerCalcOneProp extends BaseService
 
   onePropUpdate: () ->
     z=(@onePropP-@onePropP0) / Math.sqrt(@onePropP*(1-@onePropP)/@onePropN)
-    if @onePropMode is "Two Sided"
+    if @mode is "Two Sided"
       @onePropPower=@distribution.pnorm(z-@distribution.qnorm(1-@onePropAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@OnePropAlpha/2))
     else
       @onePropPower=@distribution.pnorm(Math.sqrt(@onePropP0*(1-@onePropP0) / @onePropP / (1-@onePropP))*(Math.abs(z)-@distribution.qnorm(1-@onePropAlpha)))
@@ -136,7 +136,7 @@ module.exports = class PowerCalcOneProp extends BaseService
 
   onePropPowerTon: () ->
     # calculate n1 or n2 from power based on different mdoes
-    if @onePropMode is "Two Sided"
+    if @mode is "Two Sided"
       @onePropN = @onePropP*(1-@onePropP)*Math.pow(((@distribution.qnorm(1-@onePropAlpha / 2)+@distribution.qnorm(@onePropPower))/(@onePropP-@onePropP0)),2)
     else
       @onePropN = @onePropP0*(1-@onePropP0)*Math.pow(((@distribution.qnorm(1-@onePropAlpha)+@distribution.qnorm(@onePropAlpha)*Math.sqrt(@onePropP*(1-@onrPropP)/ @onePropP0/ (1-@onePropP0)))/(@onePropP-@onePropP0)),2)
@@ -181,9 +181,9 @@ module.exports = class PowerCalcOneProp extends BaseService
     valueSum / numberOfOccurrences
 
   getChartData: () ->
-    mean = @oneTestMean
-    stdDev = @oneTestStDev
-    alpha = @oneTestAlpha
+    mean = 0
+    stdDev = Math.sqrt(@onePropP0*(1-@onePropP0) / @onePropP / (1-@onePropP))
+    alpha = @onePropAlpha
 
     rightBound = @getRightBound(mean, stdDev)
     leftBound =  @getLeftBound(mean, stdDev)

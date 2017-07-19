@@ -10,9 +10,8 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
           ng-options="method for method in sidebar.algorithms"
           ng-change="sidebar.updateAlgControls()"
         )
-      .form-group(
-        ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test' ||" + "sidebar.selectedAlgorithm == 'Test of One Proportion'")
-        .row.form-inline.bootstrap-switch-square
+      .form-group
+        .row.form-inline.bootstrap-switch-square(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'")
           label
             span.glyphicon.glyphicon-question-sign(
             aria-hidden="true"
@@ -27,7 +26,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
             ng-model="sidebar.deployed"
             ng-change="sidebar.change_mode()"
           )
-        .row.form-inline(ng-show="!sidebar.deployed")
+        .row.form-inline(ng-show="!sidebar.deployed && sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion'")
           label
             span.glyphicon.glyphicon-question-sign(
             aria-hidden="true"
@@ -38,6 +37,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
             input.form-control.input-sm.flat(
               ng-model="sidebar.tTestAlpha"
               ng-keypress="sidebar.changeValue($event)"
+              ng-click="sidebar.slidebar()"
               type="number"
               name='alpha'
               step="0.001"

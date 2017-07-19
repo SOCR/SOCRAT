@@ -181,7 +181,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
                 step="0.0001"
                 name='onePropPower'
                 )
-              #oneTestPowerUI
+              #onePropPowerUI
         h6(
         ng-show="mainArea.brokenCalc"
         style="color:red;"
@@ -251,26 +251,26 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               step="1"
               name='onePropN'
               )
-            #onePropN
-        .form-group
-          .row.form-inline
-            label
-              span.glyphicon.glyphicon-question-sign(
-              aria-hidden="true"
-              uib-tooltip="test statistics value"
-              tooltip-placement="left"
-              ) &nbsp;
-              | t-score: &nbsp;
-              b {{mainArea.onePropT}}
-          .row.form-inline
-            label
-              span.glyphicon.glyphicon-question-sign(
-              aria-hidden="true"
-              uib-tooltip="p-value"
-              tooltip-placement="left"
-              ) &nbsp;
-              | p-value: &nbsp;
-              b {{mainArea.onePropPvalue}}
+            #onePropNUI
+        //- .form-group
+        //-   .row.form-inline
+        //-     label
+        //-       span.glyphicon.glyphicon-question-sign(
+        //-       aria-hidden="true"
+        //-       uib-tooltip="test statistics value"
+        //-       tooltip-placement="left"
+        //-       ) &nbsp;
+        //-       | t-score: &nbsp;
+        //-       b {{mainArea.onePropT}}
+        //-   .row.form-inline
+        //-     label
+        //-       span.glyphicon.glyphicon-question-sign(
+        //-       aria-hidden="true"
+        //-       uib-tooltip="p-value"
+        //-       tooltip-placement="left"
+        //-       ) &nbsp;
+        //-       | p-value: &nbsp;
+        //-       b {{mainArea.onePropPvalue}}
   div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
     .row
       .col-md-8

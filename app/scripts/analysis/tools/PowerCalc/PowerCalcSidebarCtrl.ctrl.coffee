@@ -258,6 +258,5 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
     name = evt.target.name
     key = evt.which or evt.keyCode
     if key is 13
-      @tTestAlpha = parseFloat(val)
-    @slidebar()
+    	@slidebar()
     return
