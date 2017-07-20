@@ -521,6 +521,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     return
 
   onePropGraph: () ->
+    @barChartData = null
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @barChartData = chartData,
     5
@@ -662,6 +663,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @reset()
 
   oneTestGraph:() ->
+    @chartData = null
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5
@@ -1169,6 +1171,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @reset()
 
   twoTestGraph:() ->
+    @chartData = null
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5

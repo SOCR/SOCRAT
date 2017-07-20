@@ -145,56 +145,9 @@ module.exports = class PowerCalcOneProp extends BaseService
     # @oneTestPvalue = Math.min(1, @oneTestPvalue)
     return 0
 
-  getRightBound: (middle,step) ->
-    return middle + step * @distanceFromMean
-
-  getLeftBound: (middle,step) ->
-    return middle - step * @distanceFromMean
-
-  getVariance: (values, mean) ->
-    temp = 0
-    numberOfValues = values.length
-    while( numberOfValues--)
-      temp += Math.pow( (parseInt(values[numberOfValues]) - mean), 2 )
-    return temp / values.length
-
-  getSum: (values) ->
-    values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
-
-  getGaussianFunctionPoints: (mean, std, leftBound, rightBound) ->
-    data = []
-    for i in [leftBound...rightBound]
-      data.push
-        x: i
-        y: (1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * Math.pow(std, 2))))
-    data
-
-  getMean: (valueSum, numberOfOccurrences) ->
-    valueSum / numberOfOccurrences
 
   getChartData: () ->
-    mean = 0
-    stdDev = Math.sqrt(@onePropP0*(1-@onePropP0) / @onePropP / (1-@onePropP))
-    alpha = @onePropAlpha
-
-    rightBound = @getRightBound(mean, stdDev)
-    leftBound =  @getLeftBound(mean, stdDev)
-    bottomBound = 0
-    topBound = 1 / (stdDev * Math.sqrt(Math.PI * 2))
-    gaussianCurveData = @getGaussianFunctionPoints(mean, stdDev, leftBound, rightBound)
-
-    bounds =
-      left: leftBound
-      right: rightBound
-      top: topBound
-      bottom: bottomBound
-
-    data = [gaussianCurveData]
-
-    return {
-      data: data
-      bounds: bounds
-    }
+    return [@onePropP]
 
   tProb: ($n, $x) ->
     if $n <= 0

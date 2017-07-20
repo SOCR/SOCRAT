@@ -25,6 +25,11 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
           drawNormalCurve(newChartData)
       , on
 
+      scope.$watch 'mainArea.barChartData', (newChartData) =>
+        if newChartData
+          drawBarGraph(newChartData)
+      , on
+
       twoTestLegend = () ->
         if scope.mainArea.deployed
           $("#displayLegend0").text(scope.mainArea.compAgents[0]+": "+scope.mainArea.twoTestMean1)
@@ -44,6 +49,62 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
         else
           $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestMean)
           $("#displayLegend0").css("background-color","aquamarine")
+
+      drawBarGraph = (newChartData) ->
+
+        # setting up frame
+        proportion = newChartData
+        padding = 50
+        width = 500 - MARGIN.left - MARGIN.right
+        height = 500 - MARGIN.top - MARGIN.bottom
+        container = d3.select(elem[0])
+        container.select('svg').remove()
+        svg = container.append('svg')
+          .attr('width', width + MARGIN.left + MARGIN.right)
+          .attr('height', height + MARGIN.top + MARGIN.bottom)
+        _graph = svg.append('g')
+          .attr('transform', 'translate(' + MARGIN.left + ',' + MARGIN.top + ')')
+
+        # draw axises
+        x = d3.scale.linear().range([ padding, width - padding ])
+        y = d3.scale.linear().range([ height - padding, padding ])
+        y.domain([0,1])
+        xAxis = d3.svg.axis().scale(x).orient('bottom')
+          .tickFormat("")
+        yAxis = d3.svg.axis().scale(y).orient('left')
+        #x-axis
+        _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + (width - padding) + ')')
+          .call xAxis
+        #y-axis
+        _graph.append('g')
+          .attr('class', 'y axis')
+          .attr('transform', 'translate(' + padding + ',0)' )
+          .call yAxis
+          .style('font-size', '16px')
+        #adjust width
+        _graph.selectAll('.x.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '3px'})
+        _graph.selectAll('.y.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '3px'})
+
+        # create bar elements
+        if proportion.length is 1
+          barWidth = 0.3*(width-padding)
+          barHeight = 430*(proportion*0.835)
+          barX = width/2 - 70
+          barY = 430 - barHeight
+
+          svg.selectAll("rect")
+           .data([proportion[0]])
+           .enter()
+           .append("rect")
+           .attr("x", barX)
+           .attr("y", barY)
+           .attr("width", barWidth)
+           .attr("height", barHeight)
+           .attr('fill', 'steelblue')
 
       drawNormalCurve = (newChartData) ->
 

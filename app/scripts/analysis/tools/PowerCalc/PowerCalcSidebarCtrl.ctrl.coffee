@@ -195,8 +195,11 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			if index is -1
 				return
 
+			if (@chosenLabel is "none") or (@chosenLabel is null)
+				return
+
 			#extract data from container to population
-			size = @container[@chosenVar].length
+			size = @container[@chosenVars].length
 			totalSize = data.data.length
 			proportion = size/totalSize
 
