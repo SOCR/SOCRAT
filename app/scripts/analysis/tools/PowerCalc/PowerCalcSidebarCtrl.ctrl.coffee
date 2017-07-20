@@ -127,7 +127,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 				#check if index if -1
 				if index is -1
-#					console.log -1
 					return
 
 				#extract data from container to population
@@ -136,7 +135,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 					@populations[elt] = []
 					for row in @container[elt]
 						@populations[elt].push(row[index])
-#				console.log @populations
 
 			else
 
@@ -170,9 +168,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 				#check if index if -1
 				if index is -1
-#					console.log -1
 					return
-
 				#extract data from container to population
 				@populations = {}
 				@populations[@chosenVars] = []
@@ -189,6 +185,23 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 			@msgService.broadcast 'powercalc:onetwoTestdata',
 				populations:@populations
+				chosenCol:@chosenCols
+				chosenVar:@chosenVars
+				chosenlab:@chosenLabel
+		else if (@selectedAlgorithm is 'Test of One Proportion')
+			#extract index if col
+			index = data.header.indexOf(@chosenCols)
+			#check if index if -1
+			if index is -1
+				return
+
+			#extract data from container to population
+			size = @container[@chosenVar].length
+			totalSize = data.data.length
+			proportion = size/totalSize
+
+			@msgService.broadcast 'powercalc:onetwoPropdata',
+				prop:proportion
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel

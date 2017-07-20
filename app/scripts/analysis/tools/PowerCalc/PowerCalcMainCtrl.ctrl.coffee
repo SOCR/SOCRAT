@@ -35,6 +35,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
     # initialize data for plotting
     @chartData = null
+    @barChartData = null
 
     #variables needed for cfap only
     @cfap_nn = 1
@@ -120,9 +121,14 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @loadData()
       MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
-   #receive data
+    #receive data
     @$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
       @populations = data.populations
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @loadData()
+
+    @$scope.$on 'powercalc:onetwoPropdata', (event, data)=>
+      @populations = data.prop
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
@@ -516,7 +522,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
   onePropGraph: () ->
     chartData = @algorithmService.getChartData @selectedAlgorithm
-    @$timeout => @chartData = chartData,
+    @$timeout => @barChartData = chartData,
     5
 
 

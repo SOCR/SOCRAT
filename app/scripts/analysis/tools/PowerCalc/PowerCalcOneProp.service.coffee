@@ -52,13 +52,9 @@ module.exports = class PowerCalcOneProp extends BaseService
     @onePropUpdate()
 
   saveData: (data) ->
-    # @populations = data.populations
-    # lab = data.chosenlab
-    # if (lab is "none") or (lab is null)
-    #   @compAgents = data.chosenCol
-    # else
-    #   @compAgents = data.chosenVar
-    # @onePropReceiveData()
+    @onePropP = data.prop
+    @compAgents = data.chosenVar
+    @onePropReceiveData()
     return
 
   setAlpha: (alphaIn) ->
@@ -111,13 +107,9 @@ module.exports = class PowerCalcOneProp extends BaseService
     @onePropUpdate()
     return
 
-  # onePropReceiveData: () ->
-  #   item = Object.keys(@populations)[0]
-  #   @onePropN = @populations[item].length
-  #   # TODO: additional variables need to be calculated
-  #   @onePropCheckRange()
-  #   @onePropUpdate()
-  #   return
+  onePropReceiveData: () ->
+    @onePropUpdate()
+    return
 
   onePropCheckRange:() ->
     @onePropNMax = Math.max(@onePropN, @onePropNMax)

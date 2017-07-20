@@ -10,8 +10,8 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
           ng-options="method for method in sidebar.algorithms"
           ng-change="sidebar.updateAlgControls()"
         )
-      .form-group
-        .row.form-inline.bootstrap-switch-square(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'")
+      .form-group(ng-show="!sidebar.deployed && sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion'")
+        .row.form-inline.bootstrap-switch-square
           label
             span.glyphicon.glyphicon-question-sign(
             aria-hidden="true"
@@ -26,7 +26,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
             ng-model="sidebar.deployed"
             ng-change="sidebar.change_mode()"
           )
-        .row.form-inline(ng-show="!sidebar.deployed && sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion'")
+        .row.form-inline
           label
             span.glyphicon.glyphicon-question-sign(
             aria-hidden="true"
@@ -99,3 +99,24 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
 
     fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of One Proportion' && sidebar.deployed")
       legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenCols"
+        ng-options="col for col in sidebar.categoricalCols"
+        ng-change="sidebar.run(sidebar.df)"
+        )
+      .form-group
+        label Labels &nbsp;
+        select.form-control(
+          ng-model="sidebar.chosenLabel"
+          ng-options="col for col in sidebar.labelCol"
+          ng-change="sidebar.updateVar(sidebar.df)"
+        )
+      .form-group
+        label Categories
+        select.form-control(
+        ng-model="sidebar.chosenVars"
+        ng-options="col for col in sidebar.vars"
+        ng-change="sidebar.run(sidebar.df)"
+        )
