@@ -77,6 +77,9 @@ module.exports =
         'transform?vega/scripts/strip-schema.js',
         'transform?browserify-versionify'
       ]
+    ,
+      test: /[\/\\]vega-embed\.js$/
+      loader: 'imports?vg=vega!imports?vl=vega-lite'
    ]
 
   resolve:
