@@ -1,19 +1,17 @@
 ## SOCRAT: [SOCR](http://socr.umich.edu) Analytics Toolbox
 
-A scalable and highly flexible HTML5/JS platform to build and run in-browser applications for interactive data analysis and visualization.
+A Dynamic Web Toolbox for Interactive Data Processing, Analysis, and Visualization
 
 * [Web site](http://socr.umich.edu)
-* [Relevant publications](#motivation)
+* [Relevant publications](#publications)
 * [Issue-tracking and project management](https://github.com/SOCR/SOCRAT-issues)
 * [Contribution guidelines](https://github.com/SOCR/SOCRAT/blob/master/CONTRIBUTE.md)
 * **Note: project is under development, new features are in pending Pull Requests, unit tests currently are not passing, bugs are possible**
 
-[![Build Status](https://travis-ci.org/SOCR/SOCRAT.svg?branch=master)](https://travis-ci.org/SOCR/SOCRAT)
-[![Dependency Status](https://gemnasium.com/SOCR/SOCRAT.png?branch=master)](https://gemnasium.com/SOCR/SOCRAT)
-
 Installation
 ------------
-In case you wish to create your own module or contribute to the project, follow these steps to setup your environment.
+In case you wish to run SOCRAT locally, or create your own module, or contribute
+to the project, follow these steps to setup your environment.
 
 First, install [Node.js](http://nodejs.org/) if you haven't yet. `npm` is the package manager for `Node.js` and comes bundled with it.
 
@@ -26,22 +24,29 @@ Clone the repository:
     $> git clone https://github.com/SOCR/SOCRAT.git
     $> cd SOCRAT
 
-Switch to the `dev` branch to see latest changes or to contribute to the project, :
+Switch to the `dev` branch to see latest changes or to contribute to the project:
 
     $> git checkout dev
     $> git pull
 
-Now, lets install all the dependencies:
+Now, install all the dependencies:
 
     $> npm install
 
-This will install all the dependencies mentioned in package.json files.
+After that build the project and start the web-server:
 
-Start the development server and see the application running at `localhost:8080`:
+    $> npm run build
+    $> node server.js
+
+Now you shoule be able to access SOCRAT at `localhost:3000`.
+
+Start the development server with:
 
     $> npm run serve
 
-See how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contrubition instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
+You will see the application running at `localhost:8080` and the page will live
+reload on saved changes in source code.
+Also see how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contrubition instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
 
 Motivation
 --------------
@@ -54,7 +59,10 @@ For more details see the publication list below.
 
 Publications
 ------
-1. Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017, 6 pages. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
+
+If you find our work useful, please cite our paper:
+
+Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017, 6 pages. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
 
 Technologies/Packages
 ----------------
@@ -79,7 +87,7 @@ Copyright and License
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013-2016 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2017 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License
