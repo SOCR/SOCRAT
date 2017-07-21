@@ -48,8 +48,6 @@ module.exports = class GetDataInputCache extends BaseService
       -> console.log 'handsontable data updated to db',
       data,
       deferred
-      console.log('whaaattssssaaappp')
-      console.log(data)
       fullData = data
 
   setData: (data) ->

@@ -53,7 +53,7 @@ module.exports = class GetDataHistogramDir extends BaseDirective
             .domain(d3.extent(cardinalityData.map (d)->
               d.count
             )).range([height, 0])
-            console.log xScale.rangeBand(),yScale.domain(), yScale.range()
+            # console.log xScale.rangeBand(),yScale.domain(), yScale.range()
             bar = svg.selectAll('g')
             .data(cardinalityData)
             .enter()
