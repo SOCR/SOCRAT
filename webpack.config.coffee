@@ -11,7 +11,7 @@ module.exports =
 
   # The entry point
   entry: [
-    path.resolve "#{appRoot}", "app.coffee"
+    path.resolve "#{appRoot}", "app.coffee",
   ]
 
   output:
@@ -21,6 +21,8 @@ module.exports =
 
   devServer: {
     hot: true,
+    host: '0.0.0.0',
+    port: 8080,
   }
 
   module:
