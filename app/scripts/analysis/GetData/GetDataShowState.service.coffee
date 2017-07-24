@@ -15,25 +15,25 @@ module.exports = class GetDataShowState extends BaseService
     @options = [
         key: "grid",
         label: "Data Grid",
-        enabled:true
+        enabled: true
       ,
         key: "socrData",
         label: "SOCR datasets",
-        enabled:true
+        enabled: true
       ,
         key: "worldBank",
         label:"WORLDBANK datasets",
-        enabled:true
-      , 
+        enabled: true
+      ,
         key: "generate",
         label:"Generate datasets",
-        enabled:true
+        enabled: false
       ,
         key: "jsonParse",
         label:"JSON datasets",
-        enabled:true
+        enabled: true
     ]
-  
+
   getOptions: ->
     @options
 
