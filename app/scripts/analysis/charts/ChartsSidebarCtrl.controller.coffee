@@ -35,6 +35,11 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @xCol = null
     @yCol = null
     @zCol = null
+    @rCol = null
+    @originalXCols = null
+    @originalYCols = null
+    @originalZCols = null
+    @originalRCols = null
     @labelCol = null
 
     @stream = false
@@ -86,39 +91,107 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     colData = d3.transpose(data.data)
     @categoricalCols = @categoricalCols.filter (x, i) =>
       @uniqueVals(colData[@cols.indexOf(x)]).length < @maxColors
+
+    # Determine a list of variables that has more than 20 unique values
+    # This list will be excluded from zCols if zLabel is color
+    forbiddenVarIdx = []
+    if @selectedGraph.zLabel is "Color"
+
+      VarForChecking = []
+      # VarForChecking only includes the variable idx that has the same
+      # data type as Color variable, which defined in ChartsList.service.coffee
+
+      for typeIdx in [0..data.types.length-1] by 1
+        if data.types[typeIdx] == 'string' or data.types[typeIdx] == 'integer'
+          VarForChecking.push(typeIdx)
+
+      VarForChecking.map((idx) ->
+        colorValueSet = new Set()
+        for i in [0..data.data.length-1] by 1
+          colorValueSet.add(data.data[i][idx])
+        if colorValueSet.size > 20
+          forbiddenVarIdx.push(idx)
+      )
+    # end if
+
     if @selectedGraph.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
       @xCol = @xCols[0]
+    @originalXCols = @xCols
+
     if @selectedGraph.y
-      @yCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.y)
+      @yCols = []
+      for col, idx in @cols when data.types[idx] in @selectedGraph.y
+        @yCols.push(col)
+      @yCols.push("None")
+      # Initialize the y variable
       for yCol in @yCols
         if yCol isnt @xCol
           @yCol = yCol
           break
+    @originalYCols = @yCols
+
     if @selectedGraph.z
-      @zCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.z)
-      for zCol in @zCols
-        if zCol not in [@xCol, @yCol]
-          @zCol = zCol
-          break
+      @zCols = []
+      @zCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.z
+        # if the variable idx is not in forbiddenVarIdx, put col in zCols list
+        if $.inArray(idx, forbiddenVarIdx) is -1
+          @zCols.push(col)
+      # Initialize the z variable
+      @zCol = "None"
+    @originalZCols = @zCols
+
+    if @selectedGraph.r
+      @rCols = []
+      @rCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.r
+        @rCols.push(col)
+      # Initialize the z variable
+      @rCol = "None"
+    @originalRCols = @rCols
+
     @$timeout =>
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
     if @selectedGraph.x
-      [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
-      [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
-      data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
+      [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
+      [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
+      data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
+
+      # Remove the variables that are already chosen for one field
+      # isX is a boolean. This is used to determine if to include 'None' or not
+      removeFromList = (variables, list) ->
+        newList = []
+        if list
+          for e in list
+            if e == 'None' or $.inArray(e, variables) is -1 # e is not in the chosen variables
+              newList.push(e)
+        return newList
+
+      #@xCols = removeFromList([@yCol, @zCol, @rCol], @originalXCols)
+      #@yCols = removeFromList([@xCol, @zCol, @rCol], @originalYCols)
+      #@zCols = removeFromList([@xCol, @yCol, @rCol], @originalZCols)
+      #@rCols = removeFromList([@xCol, @yCol, @zCol], @originalRCols)
+
+      @xCols = removeFromList([@yCol], @originalXCols)
+      @yCols = removeFromList([@xCol], @originalYCols)
+
       labels =
-        xLab:
-          value: @xCol
-          type: xType
-        yLab:
-          value: @yCol
-          type: yType
-        zLab:
-          value: @zCol
-          type: zType
+          xLab:
+            value: @xCol
+            type: xType
+          yLab:
+            value: @yCol
+            type: yType
+          zLab:
+            value: @zCol
+            type: zType
+          rLab:
+            value: @rCol
+            type: rType
+
     # if trellis plot
     else if @chosenCols.length > 1
       if @labelCol

@@ -95,6 +95,7 @@ module.exports = class ChartsDir extends BaseDirective
               x: row[0]
               y: row[1]
               z: row[2]
+              r: row[3]
 
             ranges =
               xMin: if labels? and numerics.includes(labels.xLab.type) then d3.min(data, (d) -> parseFloat(d.x)) else null
@@ -107,9 +108,9 @@ module.exports = class ChartsDir extends BaseDirective
 
             switch scheme.name
               when 'Bar Graph'
-                @bar.drawBar(width,height,data,_graph,labels)
+                @bar.drawBar(width,height,data,_graph,labels,ranges)
               when 'Bubble Chart'
-                @bubble.drawBubble(ranges,width,height,_graph,data,labels,container)
+                @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
               when 'Histogram'
                 @histogram.drawHist(_graph,data,container,labels,width,height,ranges)
               when 'Ring Chart'
