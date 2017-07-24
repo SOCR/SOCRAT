@@ -19,12 +19,6 @@ module.exports =
     filename: 'socrat.js'
     chunkFilename: "[id].socrat.js"
 
-  devServer: {
-    hot: true,
-    host: 'localhost',
-    port: 8080
-  }
-
   module:
     loaders: [
       test: /\.jsx?$/
