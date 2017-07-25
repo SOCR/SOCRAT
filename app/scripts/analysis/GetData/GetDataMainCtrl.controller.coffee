@@ -35,7 +35,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @maxRows = 1000
     @DATA_TYPES = @dataService.getDataTypes()
     @states = @showStateService.getOptionKeys()
-    
+
     @WBDatasets = [
         "name":"Out of School Children rate",
         "key": "2.4_OOSC.RATE",
@@ -53,9 +53,9 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     @dataType = @DATA_TYPES.FLAT if @DATA_TYPES.FLAT?
     @socrDatasets = @socrData.getNames()
     @socrdataset = @socrDatasets[0]
-    
+
     @colHeadersLabels = ['A', 'B', 'C', 'D', 'E']
-    
+
     @colStats     = []
     @colHistograms = []
     @colStatsTooltipHTML = []
@@ -70,7 +70,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
 
     @customHeaderRenderer = (colIndex, th) =>
       if @colHeadersLabels[colIndex]? && colIndex!=false
-        
+
         @colStatsTooltipHTML[colIndex] = @colStatsToolTipHTMLGenerator colIndex
 
         # Tooltip position "right" for the first 2 columns
@@ -84,7 +84,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         )(@$scope)
         ## Code to place tooltip on <span> inside <th>
         # angular.element(th.querySelector('span')).append @$compile('<span uib-tooltip="Tesasdajkdasjkdbasjkdbasjkbdaskjdbt" tooltip-trigger="mouseenter" tooltip-placement="right">'+ @colHeadersLabels[colIndex]+'</span>')(@$rootScope)
-        
+
         ## Code to place tooltip on <th> by replacing a new <th>
         # angular.element(th).replaceWith @$compile(
         #   "<th uib-tooltip-html='mainArea.tooltip' tooltip-trigger='mouseenter' tooltip-placement='right'><div class='relative'><span class='colHeader columnSorting'>"+@colHeadersLabels[colIndex]+"</span></div></th>"
@@ -92,7 +92,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       else
         # "<span uib-popover='Test' popover-trigger='focus'> "+ @colHeadersLabels[colIndex]+"</span>"
         ""
-    
+
     @file = null
     @interface = {}
 
@@ -150,7 +150,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     # adding listeners
     @$scope.$on 'getData:updateShowState', (obj, data) =>
       @stateService.set data
-      console.log @showState
+      # console.log @showState
       # all data are flat, except for arbitrary JSON files
       @dataType = @DATA_TYPES.FLAT if data in @states.filter (x) -> x isnt 'jsonParse'
 
@@ -171,8 +171,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   ## Other instance methods
 
   formatNumber: (i) ->
-    return Math.round(i * 100)/100; 
-    
+    return Math.round(i * 100)/100;
+
   checkDataSize: (nRows, nCols) ->
     if nRows and nCols and nRows * nCols > @LARGE_DATA_SIZE
         @largeData = true
@@ -219,7 +219,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           for k,v of newDataFrame.types
             colValues = @dataAdaptor.getColValues newDataFrame,k
             @colHistograms[ newDataFrame.header.indexOf(k) ] = colValues.data
-            
+
             ## Code to get histogram values from Datalib
             # ((newDataFrame,k)=>
             #   @dataService.getHistogram @dataAdaptor.getColValues newDataFrame,k
@@ -229,8 +229,8 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
             #   )
             # )(newDataFrame, k)
         )
-        
-        
+
+
   ###
   @param {Object} - instance of DataFrame
   @desc -
@@ -238,7 +238,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
   passReceivedData: (dataFrame) ->
     if not @dataAdaptor.isValidDataFrame dataFrame
       throw Error "invalid data frame"
-    
+
     # @todo: This transformation should be happening in dataAdaptor.toDataFrame
     # need to check if handsontable can render arrayOfObjects
     newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
@@ -318,7 +318,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           # parse to unnamed array
           dataResults = @d3.csv.parseRows dataResults
           headers = dataResults.shift()
-          
+
           @dataAdaptor.toDataFrame dataResults, headers
           .then( (dataFrame)=>
             @passReceivedData dataFrame

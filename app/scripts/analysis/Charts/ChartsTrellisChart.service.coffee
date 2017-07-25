@@ -23,6 +23,8 @@ module.exports = class ChartsTrellisChart extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
     @scatterPlot = @app_analysis_charts_scatterPlot
 
+    @ve = require 'vega-embed'
+
   drawTrellis: (width, height, data, _graph, labels, container) ->
 
     mark = "point"
@@ -229,7 +231,7 @@ module.exports = class ChartsTrellisChart extends BaseService
       ]
     }
 
-    vg.embed '#vis', vSpec, (error, result) ->
+    @ve '#vis', vSpec, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec
       # result.view is the View, which resides under the '#vis' element
       return

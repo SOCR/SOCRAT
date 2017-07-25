@@ -19,10 +19,6 @@ module.exports =
     filename: 'socrat.js'
     chunkFilename: "[id].socrat.js"
 
-  devServer: {
-    hot: true,
-  }
-
   module:
     loaders: [
       test: /\.jsx?$/
@@ -77,6 +73,9 @@ module.exports =
         'transform?vega/scripts/strip-schema.js',
         'transform?browserify-versionify'
       ]
+    ,
+      test: /[\/\\]vega-embed\.js$/
+      loader: 'imports?vg=vega!imports?vl=vega-lite'
    ]
 
   resolve:

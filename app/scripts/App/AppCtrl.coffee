@@ -6,9 +6,12 @@ appControllers = angular.module 'app_controllers'
 
 module.extend = class AppCtrl extends BaseCtrl
   @register appControllers
-  @inject '$scope', '$location', '$resource', '$rootScope'
+  @inject '$scope', '$location', '$resource', '$rootScope', 'AppVersion'
 
   initialize: ->
+
+    # app version
+    @version = @AppVersion.version
 
     # create a list of modules for Tools tab dropdown
     @menu = []
