@@ -1,18 +1,17 @@
 ## SOCRAT: [SOCR](http://socr.umich.edu) Analytics Toolbox
 
-A scalable and highly flexible HTML5/JS platform to build and run in-browser applications for interactive data analysis and visualization.
+A Dynamic Web Toolbox for Interactive Data Processing, Analysis, and Visualization
 
 * [Web site](http://socr.umich.edu)
+* [Relevant publications](#publications)
 * [Issue-tracking and project management](https://github.com/SOCR/SOCRAT-issues)
 * [Contribution guidelines](https://github.com/SOCR/SOCRAT/blob/master/CONTRIBUTE.md)
-* **Note: project is under active development, unit tests currently are not passing, bugs are possible**
-
-[![Build Status](https://travis-ci.org/SOCR/SOCRAT.svg?branch=master)](https://travis-ci.org/SOCR/SOCRAT)
-[![Dependency Status](https://gemnasium.com/SOCR/SOCRAT.png?branch=master)](https://gemnasium.com/SOCR/SOCRAT)
+* **Note: project is under development, new features are in pending Pull Requests, unit tests currently are not passing, bugs are possible**
 
 Installation
 ------------
-In case you wish to create your own module or contribute to the project, follow these steps to setup your environment.
+In case you wish to run SOCRAT locally, or create your own module, or contribute
+to the project, follow these steps to setup your environment.
 
 First, install [Node.js](http://nodejs.org/) if you haven't yet. `npm` is the package manager for `Node.js` and comes bundled with it.
 
@@ -24,42 +23,56 @@ Clone the repository:
 
     $> git clone https://github.com/SOCR/SOCRAT.git
     $> cd SOCRAT
-    
-If you're interested in latest changes or want to contribute to the project, switch to the `dev` branch:
+
+Switch to the `dev` branch to see latest changes or to contribute to the project:
 
     $> git checkout dev
     $> git pull
 
-Now, lets install all the dependencies:
+Now, install all the dependencies:
 
     $> npm install
 
-This will install all the dependencies mentioned in package.json files.
+After that build the project and start the web-server:
 
-Start the development server and see the application running at `localhost:8080`:
+    $> npm run build
+    $> node server.js
+
+Now you shoule be able to access SOCRAT at `localhost:3000`.
+
+Start the development server with:
 
     $> npm run serve
 
+You will see the application running at `localhost:8080` and the page will live
+reload on saved changes in source code.
+Also see how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contrubition instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
 
-Motivation 
+Motivation
 --------------
-[SOCR](http://socr.umich.edu), Statistics Online Computational Resource has a huge user base who constantly access the educational data present and java tools which use these data to aid in understanding statistics.
-As far as the technology is concerned, currently all the applications are written in `java` and are presented as java applets. The reach of these applications is bottlenecked by technology.
+The modern web is a successful platform for large scale interactive web applications, including visualizations. Statistics Online Computational Resource ([SOCR](http://socr.umich.edu)) provides a
+web-based collection of tools for interactive modeling and visual data analysis that has a large user base. However, most of SOCR applets eventually became practically unavailable to end users as new versions of browsers disabled Java by default as a response to numerous vulnerability reports.
+Thus, we designed an open-source platform to build Statistics Online Computational Resource
+Analytical Toolbox (SOCRAT). Platform design defines: (1) a specification for an architecture for building VA applications with multi-level modularity, and (2) methods for optimizing module
+interaction, re-usage, and extension. SOCRAT relies on this platform for integration of a number of data management, analysis, and visualization modules into an easily customizable web application including interfaces for merging third-party components. This ability allows SOCRAT to balance expressive, interactive and processing capabilities, efficiency, compatibility, and accessibility. Multi-level modularity and declarative specifications enable easy customizations of the application, for instance, for a specific project. Online demo demonstrates how SOCRAT can be used for data input, display, and storage, with interactive visualization and analysis.
+For more details see the publication list below.
 
-Goal
+Publications
 ------
-The world is going the HTML5 way. Browsers are becoming more powerful. 
-We intend to create a toolbox which will serve users on all platforms. We are primarily using `CoffeeScript` (compiles to `JavaScript`) for all the computations and presentation. Given the fact that today’s browsers have powerful javaScript engines (`v8`, `SpiderMonkey`), we perform all the calculations on the browser with no server dependency. File management, database, computation will be performed inside the browser.
 
- Technologies/Packages
+If you find our work useful, please cite our paper:
+
+Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017, 6 pages. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
+
+Technologies/Packages
 ----------------
  [`CoffeeScript`](http://coffeescript.org/)
  [`Jade`](http://jade-lang.com/)
  [`Less`](http://lesscss.org/)
- [`Webpack`](https://webpack.github.io/) 
+ [`Webpack`](https://webpack.github.io/)
  [`Node.js`](http://nodejs.org/)
 
- Dependencies
+Dependencies
 --------------
  [`Bootstrap`](http://getbootstrap.com/)
  [`jQuery`](https://jquery.com/)
@@ -69,12 +82,12 @@ We intend to create a toolbox which will serve users on all platforms. We are pr
  [`jStat`](https://jstat.github.io/)
  [`Wrangler`](http://vis.stanford.edu/wrangler/)
 
-Copyright and License 
+Copyright and License
 ----------------------
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013-2016 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2017 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License

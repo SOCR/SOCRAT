@@ -1,33 +1,11 @@
 div(ng-controller="GetDataSidebarCtrl as sidebar")
-  legend Data inputs
+  legend Inputs
   div.list-group
+    
     a#getDataGrid.list-group-item(
-      href=""
-      ng-click="sidebar.show('grid')"
-      ng-class="{active: sidebar.selected == 'getDataGrid'}")
-      | Interactive spreadsheet
-    a#getDataSocrData.list-group-item(
-      href=""
-      ng-click="sidebar.show('socrData')"
-      ng-class="{active: sidebar.selected == 'getDataSocrData'}")
-      | Load SOCR dataset
-    a#getDataWorldBank.list-group-item(
-      href=""
-      ng-click="sidebar.show('worldBank')"
-      ng-class="{active: sidebar.selected == 'getDataWorldBank'}")
-      | Load data from WorldBank
-    a#getDataGenerate.list-group-item(
-      href=""
-      ng-click="sidebar.show('generate')"
-      ng-class="{active: sidebar.selected == 'getDataGenerate'}")
-      | Use data generator
-    a#getDataJson.list-group-item(
-      href=""
-      ng-click="sidebar.show('jsonParse')"
-      ng-class="{active: sidebar.selected == 'getDataJson'}")
-      | Parse JSON file by URL
-    a#getDataSocrPage.list-group-item.disabled(
-      href=""
-      ng-click="sidebar.save()"
-      ng-class="{active: sidebar.selected == 'getDataSocrPage'}")
-      | Parse SOCR Data page by URL
+      style="cursor:pointer",
+      ng-repeat="option in sidebar.options",
+      ng-click="sidebar.show(option.key)",
+      ng-show="option.enabled",
+      ng-class="sidebar.selected == option.key?'active':''")
+      | {{option.label}}
