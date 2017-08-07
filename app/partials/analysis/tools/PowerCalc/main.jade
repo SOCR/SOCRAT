@@ -252,25 +252,143 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               name='onePropN'
               )
             #onePropNUI
-        //- .form-group
-        //-   .row.form-inline
-        //-     label
-        //-       span.glyphicon.glyphicon-question-sign(
-        //-       aria-hidden="true"
-        //-       uib-tooltip="test statistics value"
-        //-       tooltip-placement="left"
-        //-       ) &nbsp;
-        //-       | t-score: &nbsp;
-        //-       b {{mainArea.onePropT}}
-        //-   .row.form-inline
-        //-     label
-        //-       span.glyphicon.glyphicon-question-sign(
-        //-       aria-hidden="true"
-        //-       uib-tooltip="p-value"
-        //-       tooltip-placement="left"
-        //-       ) &nbsp;
-        //-       | p-value: &nbsp;
-        //-       b {{mainArea.onePropPvalue}}
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | t-score: &nbsp;
+              b {{mainArea.onePropT}}
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="p-value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | p-value: &nbsp;
+              b {{mainArea.onePropPvalue}}
+  div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
+    .row
+      .col-md-8
+        h6 Test of Two Proportions &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This calculator is useful for tests about whether the proportions for two samples are different."
+            tooltip-placement="bottom"
+          )
+        power-calc-viz
+        .row
+          .col-md-6
+            .form-inline
+              label Power: &nbsp
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.twoPropPower"
+                ng-click="mainArea.twoPropCalcPower()"
+                ng-keypress="mainArea.twoPropPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.0001"
+                name='twoPropPower'
+                )
+              #twoPropPowerUI
+        h6(
+        ng-show="mainArea.brokenCalc"
+        style="color:red;"
+        ) &nbsp;&nbsp;An error occurred. Press Reset to resume default settings.
+      .col-md-4
+        .form-group
+          .row.form-inline
+            label Mode: &nbsp;
+            select.form-control(
+            ng-model="mainArea.twoPropMode"
+            ng-change="mainArea.twoPropSync()"
+            ng-options="mode for mode in mainArea.twoPropModes"
+            )
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample proportion 1"
+              tooltip-placement="left"
+              ) &nbsp;
+              | P&nbsp;
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropP1"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='twoPropP1'
+              )
+            #twoPropP1UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample proportion 2"
+              tooltip-placement="left"
+              ) &nbsp;
+              | P
+              sub 2
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropP2"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='twoPropP2'
+              )
+            #twoPropP2UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample size 1"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropN1"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoPropN1'
+              )
+            #twoPropN1UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample size 2"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N
+              sub 2
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropN2"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoPropN2'
+              )
+            #twoPropN2UI
   div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
     .row
       .col-md-8

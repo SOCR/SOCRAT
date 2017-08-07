@@ -3,13 +3,13 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
-  @name: app_analysis_powercalc_oneProp
+  @name: app_analysis_powercalc_twoProp
   @type: service
-  @desc: Performs one sample proportion test
+  @desc: Performs two sample proportion test
 ###
 
 
-module.exports = class PowerCalcOneProp extends BaseService
+module.exports = class PowerCalcTwoProp extends BaseService
   @inject 'app_analysis_powerCalc_msgService',
     '$timeout'
 
@@ -19,48 +19,52 @@ module.exports = class PowerCalcOneProp extends BaseService
     @populations = null
     @distribution = require 'distributome'
     @msgService = @app_analysis_powerCalc_msgService
-    @name = 'Test of One Proportion'
+    @name = 'Test of Two Proportions'
 
     #variables needed globally
-    @onePropP = 0.5
-    @onePropP0 = 0.5
-    @onePropPMax = 1
-    @onePropN = 50
-    @onePropNMax = 100
-    @onePropPower = 0
-    @onePropAlpha = 0.010
-    @onePropT = 0
-    @onePropPvalue = 0
-    @compAgents = ''
+    @twoPropP1 = 0.5
+    @twoPropP2 = 0.49
+    @twoPropPMax = 1
+    @twoPropN1 = 50
+    @twoPropN2 = 50
+    @twoPropNMax = 100
+    @twoPropPower = 0
+    @twoPropAlpha = 0.010
+    @twoPropT = 0
+    @twoPropPvalue = 0
+    @compAgents = []
     @mode = 'One Sided'
     @modes = ['One Sided', 'Two Sided']
 
 
     #data to observe
     @parameters =
-      p: @onePropP
-      p0: @onePropP0
-      pMax: @onePropPMax
-      n: @onePropN
-      nMax: @onePropNMax
-      power: @onePropPower
-      t: @onePropT
-      pvl: @onePropPvalue
+      p1: @twoPropP1
+      p2: @twoPropP2
+      pMax: @twoPropPMax
+      n1: @twoPropN1
+      n2: @twoPropN2
+      nMax: @twoPropNMax
+      power: @twoPropPower
+      t: @twoPropT
+      pvl: @twoPropPvalue
       comp: @compAgents
       mode: @mode
 
-    @onePropUpdate()
+    @twoPropUpdate()
 
   saveData: (data) ->
-    @onePropP = data.prop
-    @onePropN = data.n
+    @twoPropP1 = data.prop1
+    @twoPropP2 = data.prop2
+    @twoPropN1 = data.n1
+    @twoPeopN2 = data.n2
     @compAgents = data.chosenVar
-    @onePropReceiveData()
+    @twoPropReceiveData()
     return
 
   setAlpha: (alphaIn) ->
-    @onePropAlpha = alphaIn
-    @onePropUpdate()
+    @twoPropAlpha = alphaIn
+    @twoPropUpdate()
     return
 
   getName: () ->
@@ -68,87 +72,90 @@ module.exports = class PowerCalcOneProp extends BaseService
 
   getParams: () ->
     @parameters =
-      p: @onePropP
-      p0: @onePropP0
-      pMax: @onePropPMax
-      n: @onePropN
-      nMax: @onePropNMax
-      power: @onePropPower
-      t: @onePropT
-      pvl: @onePropPvalue
+      p1: @twoPropP1
+      p2: @twoPropP2
+      pMax: @twoPropPMax
+      n1: @twoPropN1
+      n2: @twoPropN2
+      nMax: @twoPropNMax
+      power: @twoPropPower
+      t: @twoPropT
+      pvl: @twoPropPvalue
       comp: @compAgents
       mode: @mode
 
   setParams: (newParams) ->
-    @onePropP = newParams.p
-    @onePropP0 = newParams.p0
-    @onePropN = newParams.n
+    @twoPropP1 = newParams.p1
+    @twoPropP2 = newParams.p2
+    @twoPropN1 = newParams.n1
+    @twoPropN2 = newParams.n2
     @mode = newParams.mode
-    @onePropUpdate()
+    @twoPropUpdate()
     return
 
   savePower: (newParams) ->
-    @onePropPower = newParams.power
+    @twoPropPower = newParams.power
     @mode = newParams.mode
-    @onePropPowerTon()
+    @twoPropPowerTon()
     return
 
   reset: () ->
-    @onePropP = 0.5
-    @onePropP0 = 0.5
-    @onePropPMax = 1
-    @onePropN = 50
-    @onePropNMax = 100
-    @onePropPower = 0
-    @onePropAlpha = 0.010
-    @onePropT = 0
-    @onePropPvalue = 0
-    @mode = 'Two Sided'
-    @compAgents = ''
-    @onePropUpdate()
+    @twoPropP1 = 0.5
+    @twoPropP2 = 0.49
+    @twoPropPMax = 1
+    @twoPropN1 = 50
+    @twoPropN2 = 50
+    @twoPropNMax = 100
+    @twoPropPower = 0
+    @twoPropAlpha = 0.010
+    @twoPropT = 0
+    @twoPropPvalue = 0
+    @compAgents = []
+    @mode = 'One Sided'
+    @twoPropUpdate()
     return
 
-  onePropReceiveData: () ->
-    @onePropUpdate()
+  twoPropReceiveData: () ->
+    @twoPropUpdate()
     return
 
-  onePropCheckRange:() ->
-    @onePropNMax = Math.max(@onePropN, @onePropNMax)
-    @onePropPMax = Math.max(@onePropP, @onePropP0, @onePropPMax)
+  twoPropCheckRange:() ->
+    @twoPropNMax = Math.max(@twoPropN1, @twoPropN2, @twoPropNMax)
     return
 
-  onePropUpdate: () ->
-    z=(@onePropP-@onePropP0) / Math.sqrt(@onePropP*(1-@onePropP)/@onePropN)
+  twoPropUpdate: () ->
+    kappa = @twoPropN1 / @twoPropN2
+    z=(@twoPropP1-@twoPropP2) / Math.sqrt(@twoPropP1*(1-@twoPropP1) / @twoPropN2 / kappa+@twoPropP2*(1-@twoPropP2) / @twoPropN2)
     if @mode is "Two Sided"
-      @onePropPower=@distribution.pnorm(z-@distribution.qnorm(1-@onePropAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@OnePropAlpha/2))
+      @twoPropPower=@distribution.pnorm(z-@distribution.qnorm(1-@twoPropAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@twoPropAlpha/2))
     else
-      @onePropPower=@distribution.pnorm(Math.sqrt(@onePropP0*(1-@onePropP0) / @onePropP / (1-@onePropP))*(Math.abs(z)-@distribution.qnorm(1-@onePropAlpha)))
-    @onePropTTest()
-    @onePropCheckRange()
+      @twoPropPower=@distribution.pnorm(Math.abs(z)-@distribution.qnorm(1-@twoPropAlpha))
+    @twoPropTTest()
+    @twoPropCheckRange()
     return
 
-  onePropPowerTon: () ->
+  twoPropPowerTon: () ->
     # calculate n1 or n2 from power based on different mdoes
+    kappa = 1
     if @mode is "Two Sided"
-      @onePropN = @onePropP*(1-@onePropP)*Math.pow(((@distribution.qnorm(1-@onePropAlpha / 2)+@distribution.qnorm(@onePropPower))/(@onePropP-@onePropP0)),2)
+      @twoPropN2=(@twoPropP1*(1-@twoPropP1) / kappa + @twoPropP2*(1-@twoPropP2))*Math.pow(((@distribution.qnorm(1-@twoPropAlpha / 2) + @distribution.qnorm(@twoPropPower))/(@twoPropP1-@twoPropP2)),2)
     else
-      @onePropN = @onePropP0*(1-@onePropP0)*Math.pow(((@distribution.qnorm(1-@onePropAlpha)+@distribution.qnorm(@onePropAlpha)*Math.sqrt(@onePropP*(1-@onrPropP)/ @onePropP0/ (1-@onePropP0)))/(@onePropP-@onePropP0)),2)
-    @onePropTTest()
-    @onePropCheckRange()
+      @twoPropN2=(@twoPropP1*(1-@twoPropP1) / kappa + @twoPropP2*(1-@twoPropP2))*Math.pow(((@distribution.qnorm(1-@twoPropAlpha) + @distribution.qnorm(@twoPropPower))/(@twoPropP1-@twoPropP2)),2)
+    @twoPropTTest()
+    @twoPropCheckRange()
     return
 
-  onePropTTest: () ->
-    df = Math.round(@onePropN - 1)
-    @onePropT = (@onePropP-@onePropP0) / Math.sqrt(@onePropP*(1-@onePropP)/@onePropN)
-    @onePropPvalue = 1 - @tProb(df, @onePropT)
-    @onePropPvalue *= 2 if @mode is 'Two Sided'
-    @onePropPvalue = Math.max(0, @onePropPvalue)
-    @onePropPvalue = Math.min(1, @onePropPvalue)
-    return 0
+  twoPropTTest: () ->
+    # @twoPropT = (@twoPropP1-@twoPropP2) / Math.sqrt(@twoPropP1*(1-@twoPropP1) / @twoPropN2 / kappa+@twoPropP2*(1-@twoPropP2) / @twoPropN2)
+    # @twoTestPvalue = 1 - @tProb(df, @twoTestT)
+    # @twoTestPvalue *= 2 if @twoTestMode is 'Two Tailed'
+    # @twoTestPvalue = Math.max(0, @twoTestPvalue)
+    # @twoTestPvalue = Math.min(1, @twoTestPvalue)
+    return
 
 
   getChartData: () ->
-    return [@onePropP]
+    return [@twoPropP1, @twoPropP2]
 
   tProb: ($n, $x) ->
     if $n <= 0

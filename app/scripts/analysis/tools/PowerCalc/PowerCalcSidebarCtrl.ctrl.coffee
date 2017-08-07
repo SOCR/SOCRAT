@@ -17,15 +17,16 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		# choose algorithms
 		@algorithms = ['Select',
-		 'CI for One Proportion',
-		 'CI for One Mean',
-		 'Test of One Proportion',
-		 'One-Sample (or Paired) t Test',
-		 'Pilot Study',
-		 'R-square (multiple correlation)',
-		 'Generic chi-square test',
-		 'Power of a Simple Poisson Test',
-		 'Two-sample t test (general case)']
+		'CI for One Proportion',
+		'CI for One Mean',
+		'Test of One Proportion',
+		'Test of Two Proportions',
+		'Pilot Study',
+		'R-square (multiple correlation)',
+		'Generic chi-square test',
+		'Power of a Simple Poisson Test',
+		'Two-sample t test (general case)',
+		'One-Sample (or Paired) t Test',]
 		@powercalcRunning = off
 		@algParams = null
 		@selectedAlgorithm = @algorithms[9]
@@ -189,6 +190,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
 		else if (@selectedAlgorithm is 'Test of One Proportion')
+			if @chosenCols is null
+				return
 			#extract index if col
 			index = data.header.indexOf(@chosenCols)
 			#check if index if -1
@@ -203,11 +206,44 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			totalSize = data.data.length
 			proportion = size/totalSize
 
-			@msgService.broadcast 'powercalc:onetwoPropdata',
+			@msgService.broadcast 'powercalc:onePropdata',
 				prop:proportion
+				n:size
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
+
+		else if (@selectedAlgorithm is 'Test of Two Proportions')
+			if @chosenCols is null
+				return
+
+			#extract index if col
+			index = data.header.indexOf(@chosenCols)
+			#check if index if -1
+			if index is -1
+				return
+
+			if (@chosenLabel is "none") or (@chosenLabel is null)
+				return
+
+			if (@chosenVars.length isnt 2)
+				return
+
+			size1 = @container[@chosenVars[0]].length
+			size2 = @container[@chosenVars[1]].length
+			totalSize = data.data.length
+			prop1 = size1/totalSize
+			prop2 = size2/totalSize
+
+			@msgService.broadcast 'powercalc:twoPropdata',
+				prop1:prop1
+				prop2:prop2
+				n1:size1
+				n2:size2
+				chosenCol:@chosenCols
+				chosenVar:@chosenVars
+				chosenlab:@chosenLabel
+
 
 	updateAlgControls: () ->
 		#update algorithm method in local and broadcast to main control

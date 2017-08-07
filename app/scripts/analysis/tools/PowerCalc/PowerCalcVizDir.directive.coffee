@@ -30,26 +30,6 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
           drawBarGraph(newChartData)
       , on
 
-      twoTestLegend = () ->
-        if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.compAgents[0]+": "+scope.mainArea.twoTestMean1)
-          $("#displayLegend1").text(scope.mainArea.compAgents[1]+": "+scope.mainArea.twoTestMean2)
-          $("#displayLegend0").css("background-color","aquamarine")
-          $("#displayLegend1").css("background-color","chocolate")
-        else
-          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestMean1)
-          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestMean2)
-          $("#displayLegend0").css("background-color","aquamarine")
-          $("#displayLegend1").css("background-color","chocolate")
-
-      oneTestLegend = () ->
-        if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.compAgents+": "+scope.mainArea.twoTestMean1)
-          $("#displayLegend0").css("background-color","aquamarine")
-        else
-          $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestMean)
-          $("#displayLegend0").css("background-color","aquamarine")
-
       drawBarGraph = (newChartData) ->
 
         # setting up frame
@@ -90,21 +70,18 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '3px'})
 
         # create bar elements
-        if proportion.length is 1
-          barWidth = 0.3*(width-padding)
-          barHeight = 430*(proportion*0.835)
-          barX = width/2 - 70
-          barY = 430 - barHeight
-
-          svg.selectAll("rect")
-           .data([proportion[0]])
-           .enter()
-           .append("rect")
-           .attr("x", barX)
-           .attr("y", barY)
-           .attr("width", barWidth)
-           .attr("height", barHeight)
-           .attr('fill', 'steelblue')
+        colorContainer = d3.scale.category10()
+        barWidth = 0.15*(width-padding)
+        svg.selectAll("rect")
+         .data(proportion)
+         .enter()
+         .append("rect")
+         .attr("x", (d) -> 130 + proportion.indexOf(d) * 90 )
+         .attr("y", (d) -> 430 - 430*(d*0.835))
+         .attr("width", barWidth)
+         .attr("height", (d) -> 430*(d*0.835))
+         .attr('fill', (d) -> colorContainer(proportion.indexOf(d)))
+         .style('opacity', 0.75)
 
       drawNormalCurve = (newChartData) ->
 
@@ -173,18 +150,4 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
         _graph.selectAll('.y.axis path')
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-
-        for datum, i in data
-          # # display lengend
-          svg.append('text')
-            .attr('id', 'displayLegend'+i)
-            .attr('x', xScale(bounds.right * 0.8))
-            .attr('y', yScale(bounds.top * (0.9- i*0.05)))
-            .style('text-anchor', 'middle')
-          .attr('fill', color(i))
-
-        if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
-          twoTestLegend()
-        else if scope.mainArea.selectedAlgorithm is 'One-Sample (or Paired) t Test'
-          oneTestLegend()
         return

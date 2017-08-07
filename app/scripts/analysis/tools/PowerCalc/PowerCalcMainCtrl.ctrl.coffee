@@ -127,8 +127,11 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
-    @$scope.$on 'powercalc:onetwoPropdata', (event, data)=>
-      @populations = data.prop
+    @$scope.$on 'powercalc:onePropdata', (event, data)=>
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @loadData()
+
+    @$scope.$on 'powercalc:twoPropdata', (event, data)=>
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
@@ -154,7 +157,9 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     else if (@selectedAlgorithm is "Test of One Proportion")
       @onePropRetrieve()
       return
-    else 
+    else if (@selectedAlgorithm is "Test of Two Proportions")
+      @twoPropRetrieve()
+    else
       return
 
   update_algo: (evt) ->
@@ -459,7 +464,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     onePropP0UI = $("#onePropP0UI")
     onePropNUI = $("#onePropNUI")
     onePropPowerUI = $("#onePropPowerUI")
-    onePropSliders = [onePropPUI, onePropP0UI, onePropNUI, onePropPowerUI]
+    onePropSliders = [onePropPUI, onePropNUI, onePropPowerUI]
 
     onePropPUI.slider(
       value: @onePropP,
@@ -502,7 +507,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       step: 0.001,
       slide: (event, ui) =>
         @onePropPower = ui.value
-        @onePropSync()
+        @onePropCalcPower()
     )
 
     if @deployed is true
@@ -525,6 +530,133 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @barChartData = chartData,
     5
+
+  #twoProp
+  twoPropRetrieve: () ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @twoPropP1 = parseFloat(@params.p1.toPrecision(4))
+    @twoPropP2 = parseFloat(@params.p2.toPrecision(4))
+    @twoPropN1 = @params.n1
+    @twoPropN2 = @params.n2
+    @twoPropNMax = @params.nMax
+    @twoPropPower = parseFloat(@params.power.toPrecision(4))
+    @twoPropMode = @params.mode
+    @compAgents = @params.comp
+    @twoPropModes = ["Two Sided", "One Sided"]
+    @twoPropClick()
+    @twoPropGraph()
+    return
+
+  twoPropSync: () ->
+    @params.n1 = @twoPropN1
+    @params.n2 = @twoPropN2
+    @params.p1 = @twoPropP1
+    @params.p2 = @twoPropP2
+    @params.mode = @twoPropMode
+    @syncData(@params)
+    return
+
+  twoPropCalcPower: () ->
+    @params.power = @twoPropPower
+    @params.mode = @twoPropMode
+    @syncPower(@params)
+    return
+
+  twoPropPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "twoPropPower"
+        @twoPropCalcPower()
+      else
+        @twoPropSync()
+    return
+
+  twoPropClick: () ->
+    #slider elements
+    twoPropP1UI = $("#twoPropP1UI")
+    twoPropP2UI = $("#twoPropP2UI")
+    twoPropN1UI = $("#twoPropN1UI")
+    twoPropN2UI = $("#twoPropN2UI")
+    twoPropPowerUI = $("#twoPropPowerUI")
+    twoPropSlidersToDisable = [twoPropP1UI, twoPropP2UI, twoPropN1UI, twoPropN2UI]
+
+    twoPropP1UI.slider(
+      value: @twoPropP1,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @twoPropP1 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropP2UI.slider(
+      value: @twoPropP2,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @twoPropP2 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropN1UI.slider(
+      value: @twoPropN1,
+      min: 0,
+      max: @twoPropNMax,
+      range: "min",
+      step: 1,
+      slide: (event, ui) =>
+        @twoPropN1 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropN2UI.slider(
+      value: @twoPropN1,
+      min: 0,
+      max: @twoPropNMax,
+      range: "min",
+      step: 1,
+      slide: (event, ui) =>
+        @twoPropN2 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropPowerUI.slider(
+      value: @twoPropPower,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @twoPropPower = ui.value
+        @twoPropCalcPower()
+    )
+
+    if @deployed is true
+      for sl in twoPropSlidersToDisable
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
+    else
+      for sl in twoPropSlidersToDisable
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+    return
+
+  twoPropReset: () ->
+    @reset()
+    return
+
+  twoPropGraph: () ->
+    @barChartData = null
+    chartData = @algorithmService.getChartData @selectedAlgorithm
+    @$timeout => @barChartData = chartData,
+    5
+
+
 
 
   #functions for OneTGUI only
