@@ -65,9 +65,9 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
           .style('font-size', '16px')
         #adjust width
         _graph.selectAll('.x.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '3px'})
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
         _graph.selectAll('.y.axis path')
-        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '3px'})
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
 
         # create bar elements
         colorContainer = d3.scale.category10()
