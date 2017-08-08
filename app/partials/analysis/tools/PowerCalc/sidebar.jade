@@ -100,21 +100,14 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
     fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of One Proportion' && sidebar.deployed")
       legend Data
       .form-group
-        label Columns
-        select.form-control(
-        ng-model="sidebar.chosenCols"
-        ng-options="col for col in sidebar.categoricalCols"
-        ng-change="sidebar.run(sidebar.df)"
-        )
-      .form-group
-        label Labels &nbsp;
+        label Category &nbsp;
         select.form-control(
           ng-model="sidebar.chosenLabel"
           ng-options="col for col in sidebar.labelCol"
           ng-change="sidebar.updateVar(sidebar.df)"
         )
       .form-group
-        label Categories
+        label Subcategory
         select.form-control(
         ng-model="sidebar.chosenVars"
         ng-options="col for col in sidebar.vars"
