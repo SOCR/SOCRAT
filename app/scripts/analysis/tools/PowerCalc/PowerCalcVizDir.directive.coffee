@@ -76,12 +76,20 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
          .data(proportion)
          .enter()
          .append("rect")
-         .attr("x", (d) -> 130 + proportion.indexOf(d) * 90 )
+         .attr("x", (d,i) -> 130 + i * 90 )
          .attr("y", (d) -> 430 - 430*(d*0.835))
          .attr("width", barWidth)
          .attr("height", (d) -> 430*(d*0.835))
-         .attr('fill', (d) -> colorContainer(proportion.indexOf(d)))
+         .attr('fill', (d,i) -> colorContainer(i))
          .style('opacity', 0.75)
+        
+        labX = 40
+        for lab in scope.mainArea.compAgents
+          svg.append("text")
+           .attr("class", "label")
+           .attr("y", 450)
+           .attr("x", labX += 90)
+           .text(lab)
 
       drawNormalCurve = (newChartData) ->
 

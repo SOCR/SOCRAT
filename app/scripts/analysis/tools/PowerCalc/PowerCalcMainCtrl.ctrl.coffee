@@ -429,10 +429,13 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @onePropT = parseFloat(@params.t.toPrecision(4))
     @onePropPvalue = parseFloat(@params.pvl.toPrecision(4))
     @onePropMode = @params.mode
-    @compAgents = @params.comp
     @onePropModes = ["Two Sided", "One Sided"]
     @onePropClick()
     @onePropGraph()
+    if (@deployed)
+      @compAgents = [@params.comp]
+    else 
+      @compAgents = ["Sample"]
     return
 
   onePropSync: () ->
@@ -541,7 +544,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @twoPropNMax = @params.nMax
     @twoPropPower = parseFloat(@params.power.toPrecision(4))
     @twoPropMode = @params.mode
-    @compAgents = @params.comp
+    if (@deployed)
+      @compAgents = @params.comp
+    else 
+      @compAgents = ["Sample1", "Sample2"]
     @twoPropModes = ["Two Sided", "One Sided"]
     @twoPropClick()
     @twoPropGraph()

@@ -190,14 +190,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
 		else if (@selectedAlgorithm is 'Test of One Proportion')
-			if @chosenCols is null
-				return
-			#extract index if col
-			index = data.header.indexOf(@chosenCols)
-			#check if index if -1
-			if index is -1
-				return
 
+			# check if valid category
 			if (@chosenLabel is "none") or (@chosenLabel is null)
 				return
 
@@ -209,7 +203,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@msgService.broadcast 'powercalc:onePropdata',
 				prop:proportion
 				n:size
-				chosenCol:@chosenCols
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
 

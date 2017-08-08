@@ -23,7 +23,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
 
     #variables needed globally
     @twoPropP1 = 0.5
-    @twoPropP2 = 0.49
+    @twoPropP2 = 0.5
     @twoPropPMax = 1
     @twoPropN1 = 50
     @twoPropN2 = 50
