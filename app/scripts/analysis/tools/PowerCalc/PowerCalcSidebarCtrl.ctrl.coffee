@@ -29,7 +29,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		'One-Sample (or Paired) t Test',]
 		@powercalcRunning = off
 		@algParams = null
-		@selectedAlgorithm = @algorithms[9]
+		@selectedAlgorithm = @algorithms[3]
 		@DATA_TYPES = @dataService.getDataTypes()
 
 		# set up data and algorithm-agnostic controls
@@ -63,15 +63,27 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@valid = false
 
 		@tTestAlpha = 0.010
+		@thresh1 = 0
+		@thresh2 = 0
 
 		@deployed = false
-		$("#toggle_switch").bootstrapSwitch();
+		@precise = false
+		@preciseModes = ["larger", "smaller", "equal"]
+		@preciseMode = "larger"
+		$("#toggle_switch").bootstrapSwitch()
+		$("#togglePrecise").bootstrapSwitch()
 
-		#if the switch is toggled, change mode
+		# data-driven mode toggle
 		$("#toggle_switch").on 'switchChange.bootstrapSwitch', () =>
 			@deployed = !@deployed
 			@msgService.broadcast 'powercalc:change_mode',
 				deploy: @deployed
+
+		#if the switch is toggled, change mode
+		$("#togglePrecise").on 'switchChange.bootstrapSwitch', () =>
+			@precise = !@precise
+			# @msgService.broadcast 'powercalc:change_mode',
+			# 	deploy: @deployed
 
 		@slidebar()
 
@@ -184,25 +196,41 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				for row in data.data
 					@populations[@chosenCols].push(row[index1])
 
+
 			@msgService.broadcast 'powercalc:onetwoTestdata',
 				populations:@populations
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
 		else if (@selectedAlgorithm is 'Test of One Proportion')
-
-			# check if valid category
-			if (@chosenLabel is "none") or (@chosenLabel is null)
+			if @chosenCols is null
 				return
 
-			#extract data from container to population
-			size = @container[@chosenVars].length
+			#extract index if col
+			index = data.header.indexOf(@chosenCols)
+			#check if index if -1
+			if index is -1
+				return
+
+			size = 0
+			# check if valid category
+			if (@chosenLabel is "none") or (@chosenLabel is null)
+				if @precise then size = @runPrecise(data.data, index, 0, false)[0]
+				else size = data.data.length
+			else 
+				if @precise then size = @runPrecise(@container[@chosenVars], index, 0, false)[0]
+				else size = @container[@chosenVars].length
+
+			#calculate
 			totalSize = data.data.length
+			if size is 0
+				size = 1
 			proportion = size/totalSize
 
 			@msgService.broadcast 'powercalc:onePropdata',
 				prop:proportion
-				n:size
+				size:size
+				chosenCol:@chosenCols
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
 
@@ -236,6 +264,28 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				chosenCol:@chosenCols
 				chosenVar:@chosenVars
 				chosenlab:@chosenLabel
+
+	runPrecise: (data, index1, index2, isTwoProp) ->
+		if not isTwoProp
+			temp = []
+			switch @preciseMode
+				when "larger"
+					for x in data
+						if x[index1] > @thresh1
+							temp.push(x)
+				when "smaller"
+					for x in data
+						console.log x[index1] < @thresh1
+						if x[index1] < @thresh1
+							temp.push(x)
+				when "equal"
+					for x in data
+						if x[index1] is @thresh1
+							temp.push(x)
+			return [temp.length]
+		else 
+			#TODO
+			return [0, 0]
 
 
 	updateAlgControls: () ->
@@ -285,7 +335,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			# 	dataPoints: @df
 
 	slidebar: () ->
-
 		$("#tTestAlphaUI").slider(
 			min: 0.001
 			max: 0.200
@@ -299,9 +348,15 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 					alpha_in: @tTestAlpha
 		)
 
-  changeValue: (evt) ->
-    name = evt.target.name
-    key = evt.which or evt.keyCode
-    if key is 13
-    	@slidebar()
-    return
+	changeValue: (evt) ->
+		name = evt.target.name
+		key = evt.which or evt.keyCode
+		if key is 13
+			@slidebar()
+		return
+
+	precisePress: (evt) ->
+		key = evt.which or evt.keyCode
+		if key is 13
+			@run(@df)
+		return

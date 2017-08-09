@@ -18,7 +18,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
     @title = 'Power Calculator Module'
     #algorithm type
-    @selectedAlgorithm = "Two-sample t test (general case)"
+    @selectedAlgorithm = "Test of One Proportion"
     @SIGNIFICANT = 5
     @data = []
     @dataType = ''

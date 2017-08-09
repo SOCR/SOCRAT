@@ -53,8 +53,11 @@ module.exports = class PowerCalcOneProp extends BaseService
 
   saveData: (data) ->
     @onePropP = data.prop
-    @onePropN = data.n
-    @compAgents = data.chosenVar
+    @onePropN = data.size
+    if (data.chosenlab is "none") or (data.chosenlab is null)
+      @compAgents = data.chosenCol
+    else
+      @compAgents = data.chosenVar
     @onePropReceiveData()
     return
 
@@ -151,7 +154,7 @@ module.exports = class PowerCalcOneProp extends BaseService
     return [@onePropP]
 
   tProb: ($n, $x) ->
-    if $n <= 0
+    if $n < 0
       throw 'Invalid n: $n\n'
       ### degree of freedom ###
     @precisionString @subTProb($n - 0, $x - 0)

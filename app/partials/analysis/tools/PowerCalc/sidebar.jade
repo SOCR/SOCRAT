@@ -10,7 +10,10 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
           ng-options="method for method in sidebar.algorithms"
           ng-change="sidebar.updateAlgControls()"
         )
-      .form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ "sidebar.selectedAlgorithm == 'Test of Two Proportions'")
+      .form-group(
+      ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ "sidebar.selectedAlgorithm == 'Test of Two Proportions'"
+      ng-disabled="sidebar.deployed"
+      )
         .row.form-inline.bootstrap-switch-square
           label
             span.glyphicon.glyphicon-question-sign(
@@ -60,6 +63,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         select.form-control(
           ng-disabled="!sidebar.valid"
           ng-model="sidebar.chosenLabel"
+          ng-init="sidebar.chosenLabel = sidebar.labelCol[0]"
           ng-options="col for col in sidebar.labelCol"
           ng-change="sidebar.updateVar(sidebar.df)"
         )
@@ -83,14 +87,15 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         ng-change="sidebar.run(sidebar.df)"
         )
       .form-group
-        label Labels &nbsp;
+        label Category &nbsp;
         select.form-control(
           ng-model="sidebar.chosenLabel"
+          ng-init="sidebar.chosenLabel = sidebar.labelCol[0]"
           ng-options="col for col in sidebar.labelCol"
           ng-change="sidebar.updateVar(sidebar.df)"
         )
       .form-group
-        label Categories
+        label Subcategory
         select.form-control(
         ng-model="sidebar.chosenVars"
         ng-options="col for col in sidebar.vars"
@@ -98,7 +103,51 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         )
 
     fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of One Proportion' && sidebar.deployed")
-      legend Data
+      .form-group.bootstrap-switch-square
+        label
+          //- span.glyphicon.glyphicon-question-sign(
+          //- aria-hidden="true"
+          //- uib-tooltip="Change Precision"
+          //- tooltip-placement="right"
+          //- ) &nbsp;
+          | Precise Mode&nbsp;
+        input(
+          type="checkbox"
+          data-toggle="switch"
+          id="togglePrecise"
+          ng-model="sidebar.precise"
+        )
+      fieldset(ng-show="sidebar.precise")
+        .form-group
+          label Threshold &nbsp;
+          select.form-control(
+            ng-model="sidebar.preciseMode"
+            ng-init="sidebar.preciseMode = 'larger'"
+            ng-options="mode for mode in sidebar.preciseModes"
+            ng-change="sidebar.run(sidebar.df)"
+          )
+        .form-group
+          label
+            //- span.glyphicon.glyphicon-question-sign(
+            //- aria-hidden="true"
+            //- uib-tooltip="thresh"
+            //- tooltip-placement="right"
+            //- )
+            input.form-control.input-sm.flat(
+              ng-model="sidebar.thresh1"
+              ng-click="sidebar.run(sidebar.df)"
+              ng-keypress="sidebar.precisePress($event)"
+              type="number"
+              step="1"
+            )
+      h5 Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenCols"
+        ng-options="col for col in sidebar.categoricalCols"
+        ng-change="sidebar.run(sidebar.df)"
+        )
       .form-group
         label Category &nbsp;
         select.form-control(
@@ -113,7 +162,6 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         ng-options="col for col in sidebar.vars"
         ng-change="sidebar.run(sidebar.df)"
         )
-
     fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of Two Proportions' && sidebar.deployed")
       legend Data
       .form-group
@@ -127,6 +175,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         label Labels &nbsp;
         select.form-control(
           ng-model="sidebar.chosenLabel"
+          ng-init="sidebar.chosenLabel = sidebar.labelCol[0]"
           ng-options="col for col in sidebar.labelCol"
           ng-change="sidebar.updateVar(sidebar.df)"
         )
