@@ -54,10 +54,7 @@ module.exports = class PowerCalcOneProp extends BaseService
   saveData: (data) ->
     @onePropP = data.prop
     @onePropN = data.size
-    if (data.chosenlab is "none") or (data.chosenlab is null)
-      @compAgents = data.chosenCol
-    else
-      @compAgents = data.chosenVar
+    @compAgents = data.target
     @onePropReceiveData()
     return
 

@@ -25,7 +25,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @dataPoints = null
     @means = null
     @assignments = null
-    @populations = {}
     @deployed = false
     @chosenCols = []
     @compAgents = []
@@ -123,7 +122,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
     #receive data
     @$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
-      @populations = data.populations
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
@@ -1293,7 +1291,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       twoTestMean1UI,
       twoTestMean2UI,
       twoTestStDev1UI,
-      twoTestStDev1UI
+      twoTestStDev2UI,
+      twoTestPowerUI
       ]
 
     if @deployed is true
