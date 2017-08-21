@@ -138,161 +138,141 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 	run: () ->
 		if (@selectedAlgorithm is 'Two-sample t test (general case)')
-			@populations = {}
-			if @chosenColsTwo.length is 1
-				$("#twoTestCat").prop("disabled", false)
-				$("#twoTestSubCat").prop("disabled", false)
-			else
-				$("#twoTestCat").prop("disabled", true)
-				$("#twoTestSubCat").prop("disabled", true)
-				@chosenCats = "none"
-				@subCategoricalCols = []
-
-			# compare two different Variables, calculate sepaerately
-			if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-				# check num of chosenCol is one
-				if @chosenColsTwo.length isnt 1
-					return
-				# check num of chosenSubCats is two
-				if @chosenSubCatsTwo.length isnt 2
-					return
-
-				# update comparison targets
-				if not @equalList(@curTarget, @chosenSubCatsTwo)
-					@curTarget = @chosenSubCatsTwo
-					@newTarget = true
-
-				#extract index if col
-				index = @df.header.indexOf(@chosenColsTwo[0])
-
-				#extract data from container to population
-				for elt in @chosenSubCatsTwo
-					@populations[elt] = []
-					for row in @container[elt]
-						@populations[elt].push(row[index])
-
-			else
-
-				if @chosenColsTwo.length isnt 2
-					return
-
-				# update comparison targets
-				if not @equalList(@curTarget, @chosenColsTwo)
-					@curTarget = @chosenColsTwo
-					@newTarget = true
-
-				# extract data from data to population
-				index1 = @df.header.indexOf(@chosenColsTwo[0])
-				index2 = @df.header.indexOf(@chosenColsTwo[1])
-				@populations[@chosenColsTwo[0]] = []
-				@populations[@chosenColsTwo[1]] = []
-				for row in @df.data
-					@populations[@chosenColsTwo[0]].push(row[index1])
-					@populations[@chosenColsTwo[1]].push(row[index2])
-
-			@msgService.broadcast 'powercalc:onetwoTestdata',
-				popl: @populations
-				target: @curTarget
-
-
+			@twoTest()
 		else if (@selectedAlgorithm is 'One-Sample (or Paired) t Test')
-			@populations = {}
-			# if compare two different Variables, calculate separately
-			if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-
-				#extract index if col
-				index = @df.header.indexOf(@chosenColsOne)
-
-				if not @equalList(@curTarget, [@chosenSubCatsOne])
-					@curTarget = @chosenSubCatsOne
-					@newTarget = true
-
-				#extract data from container to population
-				@populations[@chosenSubCatsOne] = []
-				for row in @container[@chosenSubCatsOne]
-					@populations[@chosenSubCatsOne].push(row[index])
-
-			else
-				# extract data from data to population
-				index1 = @df.header.indexOf(@chosenColsOne)
-				@populations[@chosenColsOne] = []
-				for row in @df.data
-					@populations[@chosenColsOne].push(row[index1])
-
-
-			@msgService.broadcast 'powercalc:onetwoTestdata',
-				popl: @populations
-				target: @curTarget
-
+			@oneTest()
 		else if (@selectedAlgorithm is 'Test of One Proportion')
-			if @chosenCols is null
+			@oneProp()
+
+	twoTest: ()->
+		@populations = {}
+		if @chosenColsTwo.length is 1
+			$("#twoTestCat").prop("disabled", false)
+			$("#twoTestSubCat").prop("disabled", false)
+		else
+			$("#twoTestCat").prop("disabled", true)
+			$("#twoTestSubCat").prop("disabled", true)
+			@chosenCats = "none"
+			@subCategoricalCols = []
+
+		# compare two different Variables, calculate sepaerately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+			# check num of chosenCol is one
+			if @chosenColsTwo.length isnt 1
 				return
+			# check num of chosenSubCats is two
+			if @chosenSubCatsTwo.length isnt 2
+				return
+
+			# update comparison targets
+			if not @equalList(@curTarget, @chosenSubCatsTwo)
+				@curTarget = @chosenSubCatsTwo
+				@newTarget = true
+
+			#extract index if col
+			index = @df.header.indexOf(@chosenColsTwo[0])
+
+			#extract data from container to population
+			for elt in @chosenSubCatsTwo
+				@populations[elt] = []
+				for row in @container[elt]
+					@populations[elt].push(row[index])
+
+		else
+
+			if @chosenColsTwo.length isnt 2
+				return
+
+			# update comparison targets
+			if not @equalList(@curTarget, @chosenColsTwo)
+				@curTarget = @chosenColsTwo
+				@newTarget = true
+
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsTwo[0])
+			index2 = @df.header.indexOf(@chosenColsTwo[1])
+			@populations[@chosenColsTwo[0]] = []
+			@populations[@chosenColsTwo[1]] = []
+			for row in @df.data
+				@populations[@chosenColsTwo[0]].push(row[index1])
+				@populations[@chosenColsTwo[1]].push(row[index2])
+
+		@msgService.broadcast 'powercalc:onetwoTestdata',
+			popl: @populations
+			target: @curTarget
+
+	oneTest: () ->
+		@populations = {}
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
 
 			#extract index if col
 			index = @df.header.indexOf(@chosenColsOne)
-			size = 0
 
-			# calculate size
-			if (@chosenCats is "none") or (@chosenCats is undefined)
-				# update comparison target
-				if not @equalList(@curTarget, [@chosenColsOne])
-					@curTarget = @chosenColsOne
-					@newTarget = true
+			if not @equalList(@curTarget, [@chosenSubCatsOne])
+				@curTarget = @chosenSubCatsOne
+				@newTarget = true
 
-				@findMinMax(@df.data, index, -1, false)
+			#extract data from container to population
+			@populations[@chosenSubCatsOne] = []
+			for row in @container[@chosenSubCatsOne]
+				@populations[@chosenSubCatsOne].push(row[index])
 
-				if @threshMode then size = @runThresh(@df.data, index, -1, false)[0]
-				else size = @df.data.length
+		else
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsOne)
+			@populations[@chosenColsOne] = []
+			for row in @df.data
+				@populations[@chosenColsOne].push(row[index1])
 
-			else 
-				# update comparison target
-				if not @equalList(@curTarget, [@chosenSubCatsOne])
-					@curTarget = @chosenSubCatsOne
-					@newTarget = true
 
-				if @threshMode then size = @runThresh(@container[@chosenSubCatsOne], index, 0, false)[0]
-				else size = @container[@chosenSubCatsOne].length
+		@msgService.broadcast 'powercalc:onetwoTestdata',
+			popl: @populations
+			target: @curTarget
 
-			#calculate
-			totalSize = @df.data.length
-			if size is 0 then size = 1
-			proportion = size/totalSize
+	oneProp: () ->
+		if @chosenCols is null
+				return
 
-			@msgService.broadcast 'powercalc:onePropdata',
-				prop: proportion
-				size: size
-				target: @curTarget
+		#extract index if col
+		index = @df.header.indexOf(@chosenColsOne)
+		size = 0
 
-		# else if (@selectedAlgorithm is 'Test of Two Proportions')
-		# 	if @chosenCols is null
-		# 		return
+		if index is -1
+			return
 
-		# 	#extract index if col
-		# 	index = data.header.indexOf(@chosenCols)
-		# 	#check if index if -1
-		# 	if index is -1
-		# 		return
+		# calculate size
+		if (@chosenCats is "none") or (@chosenCats is undefined)
+			# update comparison target
+			if not @equalList(@curTarget, [@chosenColsOne])
+				@curTarget = @chosenColsOne
+				@newTarget = true
 
-		# 	if (@chosenLabel is "none") or (@chosenLabel is null)
-		# 		return
+			@findMinMax(@df.data, index, -1, false)
 
-		# 	if (@chosenVars.length isnt 2)
-		# 		return
+			if @threshMode then size = @runThresh(@df.data, index, -1, false)[0]
+			else size = @df.data.length
 
-		# 	size1 = @container[@chosenVars[0]].length
-		# 	size2 = @container[@chosenVars[1]].length
-		# 	totalSize = data.data.length
-		# 	prop1 = size1/totalSize
-		# 	prop2 = size2/totalSize
+		else 
+			# update comparison target
+			if not @equalList(@curTarget, [@chosenSubCatsOne])
+				@curTarget = @chosenSubCatsOne
+				@newTarget = true
 
-		# 	@msgService.broadcast 'powercalc:twoPropdata',
-		# 		prop1:prop1
-		# 		prop2:prop2
-		# 		n1:size1
-		# 		n2:size2
-		# 		chosenCol:@chosenCols
-		# 		chosenVar:@chosenVars
-		# 		chosenlab:@chosenLabel
+			if @threshMode then size = @runThresh(@container[@chosenSubCatsOne], index, 0, false)[0]
+			else size = @container[@chosenSubCatsOne].length
+
+		#calculate
+		totalSize = @df.data.length
+		if size is 0 then size = 1
+		proportion = size/totalSize
+
+		@msgService.broadcast 'powercalc:onePropdata',
+			prop: proportion
+			size: size
+			target: @curTarget
+
+
 
 	findMinMax: (data, index1, index2, isTwo) ->
 		if @newTarget
