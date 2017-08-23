@@ -244,7 +244,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		# calculate size
 		if (@chosenCats is "none") or (@chosenCats is undefined)
 			# update comparison target
-			if not @equalList(@curTarget, [@chosenColsOne])
+			if not @equalList([@curTarget], [@chosenColsOne])
 				@curTarget = @chosenColsOne
 				@newTarget = true
 
@@ -255,10 +255,11 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		else 
 			# update comparison target
-			if not @equalList(@curTarget, [@chosenSubCatsOne])
+			if not @equalList([@curTarget], [@chosenSubCatsOne])
 				@curTarget = @chosenSubCatsOne
 				@newTarget = true
 
+			@findMinMax(@container[@chosenSubCatsOne], index, -1, false)
 			if @threshMode then size = @runThresh(@container[@chosenSubCatsOne], index, 0, false)[0]
 			else size = @container[@chosenSubCatsOne].length
 
@@ -291,6 +292,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 						@MinMax[0]["min"] = i
 					if i > @MinMax[0]["max"]
 						@MinMax[0]["max"] = i
+			@thresh=@MinMax[0]["min"]
 		@slider()
 
 
@@ -331,7 +333,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		$("#onePropThreshUI").slider(
 			min: @MinMax[0]["min"]
 			max: @MinMax[0]["max"]
-			value: @thresh1
+			value: @thresh
 			orientation: "horizontal"
 			range: "min"
 			step: 0.1
@@ -352,6 +354,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 	# compare if list a is same as list b
 	# return false when not equal
 	equalList: (a, b) ->
+		console.log (a.length+ ":"+ b.length)
 		if (a.length isnt b.length) then return false
 		i = 0
 		for item in a
