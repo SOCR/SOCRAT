@@ -18,6 +18,7 @@ module.exports = class PowerCalcOneProp extends BaseService
     @SIGNIFICANT = 5
     @populations = null
     @distribution = require 'distributome'
+    @jstats = require 'jstat'
     @msgService = @app_analysis_powerCalc_msgService
     @name = 'Test of One Proportion'
 
@@ -29,7 +30,7 @@ module.exports = class PowerCalcOneProp extends BaseService
     @onePropNMax = 100
     @onePropPower = 0
     @onePropAlpha = 0.010
-    @onePropT = 0
+    @onePropZ = 0
     @onePropPvalue = 0
     @compAgents = ''
     @mode = 'One Sided'
@@ -44,7 +45,7 @@ module.exports = class PowerCalcOneProp extends BaseService
       n: @onePropN
       nMax: @onePropNMax
       power: @onePropPower
-      t: @onePropT
+      z: @onePropZ
       pvl: @onePropPvalue
       comp: @compAgents
       mode: @mode
@@ -74,7 +75,7 @@ module.exports = class PowerCalcOneProp extends BaseService
       n: @onePropN
       nMax: @onePropNMax
       power: @onePropPower
-      t: @onePropT
+      z: @onePropZ
       pvl: @onePropPvalue
       comp: @compAgents
       mode: @mode
@@ -101,7 +102,7 @@ module.exports = class PowerCalcOneProp extends BaseService
     @onePropNMax = 100
     @onePropPower = 0
     @onePropAlpha = 0.010
-    @onePropT = 0
+    @onePropZ = 0
     @onePropPvalue = 0
     @mode = 'Two Sided'
     @compAgents = ''
@@ -118,12 +119,13 @@ module.exports = class PowerCalcOneProp extends BaseService
     return
 
   onePropUpdate: () ->
-    z=(@onePropP-@onePropP0) / Math.sqrt(@onePropP*(1-@onePropP)/@onePropN)
     if @mode is "Two Sided"
-      @onePropPower=@distribution.pnorm(z-@distribution.qnorm(1-@onePropAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@OnePropAlpha/2))
+      @onePropZ = Math.abs((@onePropP-@onePropP0) / Math.sqrt((@onePropP*(1-@onePropP))/@onePropN))
+      @onePropPower=@distribution.pnorm(@onePropZ-@distribution.qnorm(1-@onePropAlpha/2))+@distribution.pnorm(-@onePropZ-@distribution.qnorm(1-@OnePropAlpha/2))
     else
-      @onePropPower=@distribution.pnorm(Math.sqrt(@onePropP0*(1-@onePropP0) / @onePropP / (1-@onePropP))*(Math.abs(z)-@distribution.qnorm(1-@onePropAlpha)))
-    @onePropTTest()
+      @onePropZ = Math.abs((@onePropP-@onePropP0) / Math.sqrt(@onePropP0*(1-@onePropP0)/@onePropN))
+      @onePropPower=@distribution.pnorm(Math.sqrt(@onePropP0*(1-@onePropP0) / @onePropP / (1-@onePropP))*(Math.abs(@onePropZ)-@distribution.qnorm(1-@onePropAlpha)))
+    @onePropPV()
     @onePropCheckRange()
     return
 
@@ -133,19 +135,16 @@ module.exports = class PowerCalcOneProp extends BaseService
       @onePropN = @onePropP*(1-@onePropP)*Math.pow(((@distribution.qnorm(1-@onePropAlpha / 2)+@distribution.qnorm(@onePropPower))/(@onePropP-@onePropP0)),2)
     else
       @onePropN = @onePropP0*(1-@onePropP0)*Math.pow(((@distribution.qnorm(1-@onePropAlpha)+@distribution.qnorm(@onePropAlpha)*Math.sqrt(@onePropP*(1-@onrPropP)/ @onePropP0/ (1-@onePropP0)))/(@onePropP-@onePropP0)),2)
-    @onePropTTest()
+    @onePropPV()
     @onePropCheckRange()
     return
 
-  onePropTTest: () ->
-    df = Math.round(@onePropN - 1)
-    @onePropT = (@onePropP-@onePropP0) / Math.sqrt(@onePropP*(1-@onePropP)/@onePropN)
-    @onePropPvalue = 1 - @tProb(df, @onePropT)
+  onePropPV: () ->
+    @onePropPvalue = 1 - @getP(@onePropZ)
     @onePropPvalue *= 2 if @mode is 'Two Sided'
     @onePropPvalue = Math.max(0, @onePropPvalue)
     @onePropPvalue = Math.min(1, @onePropPvalue)
     return 0
-
 
   getChartData: () ->
     return [@onePropP]
@@ -246,3 +245,22 @@ module.exports = class PowerCalcOneProp extends BaseService
     if $p > .5
       $x = -$x
     $x
+
+
+  getP: (z) ->
+    if z < -6.5
+      return 0.0
+    if z > 6.5
+      return 1.0
+    factK = 1
+    sum = 0
+    term = 1
+    k = 0
+    loopStop = Math.exp(-23)
+    while Math.abs(term) > loopStop
+      term = .3989422804 * (-1) ** k * z ** k / (2 * k + 1) / 2 ** k * z ** (k + 1) / factK
+      sum += term
+      k++
+      factK *= k
+    sum += 0.5
+    return sum
