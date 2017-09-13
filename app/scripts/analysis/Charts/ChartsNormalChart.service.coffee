@@ -88,11 +88,6 @@ module.exports = class ChartsNormalChart extends BaseService
       toolTipElement.style('display', 'none')
       toolTipElement.innerHTML = " "
 
-<<<<<<< HEAD:app/scripts/analysis/charts/ChartsNormalChart.service.coffee
-    console.log @extract(data, "x")
-    console.log("here")
-=======
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454:app/scripts/analysis/Charts/ChartsNormalChart.service.coffee
     sample = @sort(@getRandomValueArray(@extract(data,"x")))
     sum = @getSum(sample)
     min = sample[0]

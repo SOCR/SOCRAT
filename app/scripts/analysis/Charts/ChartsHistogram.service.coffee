@@ -6,10 +6,6 @@ module.exports = class ChartsHistogram extends BaseService
 
   initialize: ->
 
-<<<<<<< HEAD:app/scripts/analysis/charts/ChartsHistogram.service.coffee
-  plotHist: (bins, container, arr, _graph, gdata, x, height, width, data) ->
-    console.log("Plotting histogram")
-=======
   @median = null;
   @mean = null;
   getMedian: (arr) ->
@@ -31,13 +27,10 @@ module.exports = class ChartsHistogram extends BaseService
 
 #    tooltip
     $('#tooltip').remove();
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454:app/scripts/analysis/Charts/ChartsHistogram.service.coffee
     # slider
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
     dataHist = d3.layout.histogram().bins(bins)(arr)
-<<<<<<< HEAD:app/scripts/analysis/charts/ChartsHistogram.service.coffee
-=======
     console.log dataHist #array for each bin, each array has all data points
 
     #create array of objects that store mean and median of each set
@@ -50,7 +43,6 @@ module.exports = class ChartsHistogram extends BaseService
     xMean = (d, i) -> stats[i].mean
     xMedian = (d, i) -> stats[i].median
     xLength = (d, i) -> dataHist[i].length
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454:app/scripts/analysis/Charts/ChartsHistogram.service.coffee
 
     _graph.selectAll('g').remove()
     _graph.select('.x axis').remove()
@@ -60,16 +52,6 @@ module.exports = class ChartsHistogram extends BaseService
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])
 
-<<<<<<< HEAD:app/scripts/analysis/charts/ChartsHistogram.service.coffee
-    console.log "bins"
-    console.log bins
-    console.log "arr"
-    console.log arr
-    console.log "data"
-    console.log data
-
-=======
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454:app/scripts/analysis/Charts/ChartsHistogram.service.coffee
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
     y.domain([0, (d3.max dataHist.map (i) -> i.length)])
 
@@ -192,13 +174,9 @@ module.exports = class ChartsHistogram extends BaseService
     $slider = $("#slider")
     bins = 5
     arr = data.map (d) -> parseFloat d.x
-<<<<<<< HEAD:app/scripts/analysis/charts/ChartsHistogram.service.coffee
-    @plotHist bins, container, arr, _graph, gdata, x, height, width, data
-=======
     median = @getMedian(arr)
     mean = @getMean(arr)
     @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454:app/scripts/analysis/Charts/ChartsHistogram.service.coffee
 
     if $slider.length > 0
       $slider.slider(

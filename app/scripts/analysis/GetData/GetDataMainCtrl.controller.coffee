@@ -202,52 +202,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-<<<<<<< HEAD
-        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
-        @checkDataSize data.nRows, data.nCols
-        @inputCache.setData data
-
-  passReceivedData: (data) ->
-    if data.dataType is @DATA_TYPES.NESTED
-      @dataType = @DATA_TYPES.NESTED
-      @checkDataSize data.nRows, data.nCols
-      # save to db
-      @inputCache.setData data
-    else
-      # default data type is 2d 'flat' table
-      data.dataType = @DATA_TYPES.FLAT
-      @dataType = @DATA_TYPES.FLAT
-
-      # update table
-      @$timeout =>
-        @colHeaders = data.header
-        @tableData = data.data
-        console.log 'ht updated'
-
-  # available SOCR Datasets
-  socrDatasets: [
-    id: 'IRIS'
-    name: 'Iris Flower Dataset'
-  ,
-    id: 'KNEE_PAIN'
-    name: 'Simulated SOCR Knee Pain Centroid Location Data'
-  ,
-    id: 'CURVEDNESS_AD'
-    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
-  ,
-    id: 'PCV_SPECIES'
-    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
-  ,
-    id: 'TURKIYE_STUDENT_EVAL'
-    name: 'Turkiye Student Evaluation Data Set'
-
-  ,
-    id: 'FAITHFUL'
-    name: 'Old Faithful dataset'
-  ]
-
-  getWB: ->
-=======
         @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
         .then( (dataFrame)=>
           @checkDataSize dataFrame.nRows, dataFrame.nCols
@@ -309,7 +263,6 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
             @colHeadersLabels = dataFrame.header
 
   getWBDataset: ->
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454
     # default value
     if @size is undefined
       @size = 100
@@ -353,23 +306,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       throw err
     )
 
-<<<<<<< HEAD
-  getSocrData: ->
-    switch @socrdataset.id
-      when 'IRIS' then url = 'datasets/iris.csv'
-      when 'FAITHFUL' then url = 'datasets/oldfaithful.csv'
-      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
-      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
-      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
-      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
-      # default option
-      else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
-=======
   getSocrDataset: ->
     url = @socrData.getUrlByName @socrdataset.id
     # default option
     url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ' unless url
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454
 
     # TODO: replace d3 with datalib
     @d3.text url,

@@ -16,11 +16,8 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-<<<<<<< HEAD
         'socrat_analysis_mymodule'
-=======
         'app_analysis_powercalc'
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -34,9 +31,7 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-<<<<<<< HEAD
         'socrat_analysis_mymodule',
-=======
         'app_analysis_powercalc'
       ]
     ,
@@ -82,7 +77,6 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability'
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454
       ]
     #    ,
     #      msgFrom: 'upload csv'
@@ -107,11 +101,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-<<<<<<< HEAD
-        'socrat_analysis_mymodule'
-=======
         'app_analysis_powercalc'
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -124,11 +114,8 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-<<<<<<< HEAD
         'socrat_analysis_mymodule'
-=======
         'app_analysis_powercalc'
->>>>>>> e6fbc84d70a275c27cbdd45ba0c1cd21981ed454
       ]
     ]
 
