@@ -1,0 +1,18 @@
+{
+        "version": "0.2.0",
+        "configurations": [
+            
+            {
+                "name": "(lldb) Launch",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "${workspaceRoot}/assemble.c",
+                "args": ["test1.as" , "progam.mc"],
+                "stopAtEntry": false,
+                "cwd": "${workspaceRoot}",
+                "environment": [],
+                "externalConsole": true,
+                "MIMode": "lldb"
+            }
+        ]
+    }

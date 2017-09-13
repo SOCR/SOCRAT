@@ -47,5 +47,3 @@ module.exports = class AppSidebarCtrl extends BaseCtrl
       'col-md-1'
     else
       'col-md-3'
-
-
