@@ -1,16 +1,11 @@
 'use strict'
 
-### Sevices ###
+BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-services = angular.module('app_services', [])
+appServices = angular.module 'app_services'
 
-services.factory 'version', -> "v0.1.5-alpha.2"
+module.exports = class AppVersion extends BaseService
+  @register appServices
 
-#services.config([
-#  ()->
-#    console.log "config block of app.services module"
-#])
-#
-#services.run([ ()->
-#  console.log "run block of app.services "
-#])
+  initialize: ->
+    @version = '0.1.8'
