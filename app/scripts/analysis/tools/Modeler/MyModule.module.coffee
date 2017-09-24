@@ -29,7 +29,7 @@ module.exports = modeler = new Module
       'ModelerSidebarCtrl': require 'scripts/analysis/tools/Modeler/ModelerSidebarCtrl.ctrl.coffee'
 
     directives:
-      'modelerdir': require 'scripts/analysis/tools/Modeler/ModelerDir.directive.coffee'
+      'modelerdir': require 'scripts/analysis/tools/Modeler/ModelerVizDir.directive.coffee'
 
 
   state:

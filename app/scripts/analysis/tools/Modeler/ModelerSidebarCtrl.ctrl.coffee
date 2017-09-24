@@ -68,15 +68,16 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
     #@algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
   parseData: (data) ->
+    df = data
     @dataService.inferDataTypes data, (resp) =>
-      if resp and resp.dataFrame and resp.dataFrame.data
-        @dataFrame = resp.dataFrame
-        @updateSidebarControls()
-        @updateDataPoints()
+      if resp? and resp.dataFrame? and resp.dataFrame.data?
+        for type, idx in df.types
+          df.types[idx] = resp.dataFrame.data[idx]
+        @dataFrame = df
+        @updateSidebarControls(df)
+        @updateDataPoints(df)
 
   updateSidebarControls: (data=@dataFrame) ->
-    console.log("calling update sidebar")
-    console.log(data)
     @cols = data.header
     console.log("selected dist" + @selectedDistributions.name)
     if @selectedDistributions.x

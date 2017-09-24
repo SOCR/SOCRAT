@@ -10,6 +10,7 @@ module.exports = class ModelerDir extends BaseDirective
     'socrat_analysis_modeler_getParams'
 
   initialize: ->
+
     console.log("initalizing modeler dir")
     #@normal = @socrat_modeler_distribution_normal
     @histogram = @socrat_analysis_modeler_hist
@@ -24,7 +25,7 @@ module.exports = class ModelerDir extends BaseDirective
       data = null
       _graph = null
       container = null
-      gdata = null
+      labels = null
       ranges = null
 
       numerics = ['integer', 'number']
@@ -44,45 +45,50 @@ module.exports = class ModelerDir extends BaseDirective
             $(this).prepend(segment.repeat(amount - 2))
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
-        console.log("New data points recognized:" )
-        console.log(newChartData)
-        if newChartData
-          gdata = newChartData.labels
+
+        if newChartData and newChartData.dataPoints
           data = newChartData.dataPoints
-          scheme = newChartData.distribution
-
-          data = data.map (row) ->
-            x: row[0]
-            y: row[1]
-            z: row[2]
-
+          labels = newChartData.labels
+          scheme = newChartData.graph
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
 
           svg = container.append('svg')
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          svg.select("#remove").remove()
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          #svg.select("#remove").remove()
 
           _graph = svg.append('g')
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+          # trellis chart is called differently
+          #if scheme.name is 'Trellis Chart' and newChartData.labels
+          #  @trellis.drawTrellis(width, height, data, _graph, labels, container)
+          # standard charts
+          
+          data = data.map (row) ->
+            x: row[0]
+            y: row[1]
+            z: row[2]
+            r: row[3]
 
           ranges =
-            xMin: if gdata.xLab.type in numerics then d3.min(data, (d) -> parseFloat(d.x)) else null
-            yMin: if gdata.yLab.type in numerics then d3.min(data, (d) -> parseFloat(d.y)) else null
-            zMin: if gdata.zLab.type in numerics then d3.min(data, (d) -> parseFloat(d.z)) else null
+            xMin: if labels? and numerics.includes(labels.xLab.type) then d3.min(data, (d) -> parseFloat(d.x)) else null
+            yMin: if labels? and numerics.includes(labels.yLab.type) then d3.min(data, (d) -> parseFloat(d.y)) else null
+            zMin: if labels? and numerics.includes(labels.zLab.type) then d3.min(data, (d) -> parseFloat(d.z)) else null
 
-            xMax: if gdata.xLab.type in numerics then d3.max(data, (d) -> parseFloat(d.x)) else null
-            yMax: if gdata.yLab.type in numerics then d3.max(data, (d) -> parseFloat(d.y)) else null
-            zMax: if gdata.zLab.type in numerics then d3.max(data, (d) -> parseFloat(d.z)) else null
-
+            xMax: if labels? and numerics.includes(labels.xLab.type) then d3.max(data, (d) -> parseFloat(d.x)) else null
+            yMax: if labels? and numerics.includes(labels.yLab.type) then d3.max(data, (d) -> parseFloat(d.y)) else null
+            zMax: if labels? and numerics.includes(labels.zLab.type) then d3.max(data, (d) -> parseFloat(d.z)) else null
 
           console.log("Mean")
           console.log("Printing Histogram")
 
 
-          @histogram.drawHist(_graph,data,container,gdata,width,height,ranges)
+          @histogram.drawHist(_graph,data,container,labels,width,height,ranges)
+          
+          #case for each distribution
           switch scheme.name
             when 'Histogram'
               @histogram.drawHist(_graph,data,container,gdata,width,height,ranges)

@@ -17,3 +17,8 @@ module.exports = class NormalDist extends BaseService
     @name = 'Normal Distribution Modeler'
 
 
+  getName: () ->
+    return @name
+
+   
+
