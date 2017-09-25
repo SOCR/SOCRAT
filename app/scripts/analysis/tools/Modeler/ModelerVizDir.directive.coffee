@@ -7,12 +7,13 @@ BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class ModelerDir extends BaseDirective
   @inject 'socrat_analysis_modeler_hist',
-    'socrat_analysis_modeler_getParams'
+    'socrat_analysis_modeler_getParams',
+    'socrat_modeler_distribution_normal'
 
   initialize: ->
 
     console.log("initalizing modeler dir")
-    #@normal = @socrat_modeler_distribution_normal
+    @normal = @socrat_modeler_distribution_normal
     @histogram = @socrat_analysis_modeler_hist
     @getParams = @socrat_analysis_modeler_getParams
     @restrict = 'E'
@@ -89,11 +90,19 @@ module.exports = class ModelerDir extends BaseDirective
           @histogram.drawHist(_graph,data,container,labels,width,height,ranges)
           
           #case for each distribution
+          ###
           switch scheme.name
             when 'Histogram'
               @histogram.drawHist(_graph,data,container,gdata,width,height,ranges)
+          ###
 
 
 
 
+
+
+      scope.$watch 'mainArea.modelData', (data) =>
+        console.log("Plotting Model Data");
+        console.log(data)
+        @getParams.drawNormalCurve(data, width, height, _graph)
 

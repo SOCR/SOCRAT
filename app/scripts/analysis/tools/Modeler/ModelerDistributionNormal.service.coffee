@@ -14,11 +14,15 @@ module.exports = class NormalDist extends BaseService
   initialize: () ->
 
 
-    @name = 'Normal Distribution Modeler'
+    @name = 'Normal'
 
 
   getName: () ->
     return @name
 
+
+  getChartData: (data) ->
+    data = data.dataPoints
+    
    
 

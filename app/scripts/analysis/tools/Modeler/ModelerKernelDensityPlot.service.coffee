@@ -13,9 +13,17 @@ module.exports = class KernelDensityPlot extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
 
   initialize: () ->
+    @name = 'kernelDensity'
     @getParams = @socrat_analysis_modeler_getParams
 
 
+  getName: () ->
+    return @name
+
+
+  getChartData: (data) ->
+    data = data.dataPoints
+    
 
   kernelDensityEstimator = (kernel, x) ->
   (sample) ->
