@@ -22,10 +22,10 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
     # TODO: look for workaround https://github.com/angular/angular.js/issues/13960
     try
       $('.socrat-reliability-metric').each (idx, el) =>
-        console.log el
+        # console.log el
         try
           $(el).attr("uib-collapse", "mainArea.showMetric['#{@metrics[idx]}']")
-        console.log $(el).attr()
+        # console.log $(el).attr()
     catch e
       console.log 'ERROR' + e
 
@@ -65,5 +65,3 @@ module.exports = class ReliabilityMainCtrl extends BaseCtrl
     else if typeof res is 'string'
       @result = res
     else @result = 'ERROR'
-
-

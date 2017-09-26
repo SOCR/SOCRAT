@@ -66,17 +66,20 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   updateDataPoints: (data=null, means=null, labels=null) ->
     if data
+      trueLabels = null
       if @labelCol
+        trueLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
         @uniqueLabels =
           num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
           labelCol: @labelCol
-      xCol = data.header.indexOf @xCol
-      yCol = data.header.indexOf @yCol
-      data = ([row[xCol], row[yCol]] for row in data.data)
+      xCol = data.header.indexOf @xCol unless !@xCol?
+      yCol = data.header.indexOf @yCol unless !@yCol?
+      data = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
     @msgService.broadcast 'cluster:updateDataPoints',
       dataPoints: data
       means: means
       labels: labels
+      trueLabels: trueLabels
 
   # update data-driven sidebar controls
   updateSidebarControls: (data) ->
@@ -89,7 +92,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       colData = d3.transpose(data.data)
       @categoricalCols = @categoricalCols.filter (x, i) =>
         @uniqueVals(colData[@cols.indexOf(x)]).length < maxK
-    [@xCol, @yCol, ..., lastCol] = @numericalCols
+#    [@xCol, @yCol, ..., lastCol] = @numericalCols
     @clusterRunning = off
     if @labelCol
       @uniqueLabels =
@@ -97,6 +100,20 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         labelCol: @labelCol
     @$timeout =>
       @updateDataPoints data
+
+  updateChosenCols: () ->
+    axis = [@xCol, @yCol]
+    presentCols = ([name, idx] for name, idx in @chosenCols when name in axis)
+    # if current X and Y are not among selected anymore
+    switch presentCols.length
+      when 0
+        @xCol = if @chosenCols.length > 0 then @chosenCols[0] else null
+        @yCol = if @chosenCols.length > 1 then @chosenCols[1] else null
+      when 1
+        upd = if @chosenCols.length > 1 then @chosenCols.find (e, i) -> i isnt presentCols[0][1] else null
+        [@xCol, @yCol] = axis.map (c) -> if c isnt presentCols[0][0] then upd else c
+
+    @updateDataPoints @dataFrame
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
@@ -131,8 +148,9 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
     if @chosenCols.length > 1
 
-      xCol = data.header.indexOf @xCol
-      yCol = data.header.indexOf @yCol
+      # get indices of feats to visualize in array of chosen
+      xCol = @chosenCols.indexOf @xCol
+      yCol = @chosenCols.indexOf @yCol
       chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
 
       # if usage of labels is on
@@ -159,9 +177,13 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   parseData: (data) ->
     @dataService.inferDataTypes data, (resp) =>
-      if resp and resp.dataFrame
-        @updateSidebarControls(resp.dataFrame)
-        @updateDataPoints(resp.dataFrame)
+      if resp? and resp.dataFrame? and resp.dataFrame.data?
+        df = @dataFrame
+        # update data types with inferred
+        for type, idx in df.types
+         df.types[idx] = resp.dataFrame.data[idx]
+        @updateSidebarControls(df)
+        @updateDataPoints(df)
         @ready = on
 
   ## Interface method to run clustering
@@ -191,5 +213,3 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
   reset: ->
     @algorithmsService.reset @selectedAlgorithm
     @updateDataPoints(@dataFrame, null, null)
-
-

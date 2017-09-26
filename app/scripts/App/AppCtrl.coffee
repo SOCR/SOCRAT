@@ -6,9 +6,12 @@ appControllers = angular.module 'app_controllers'
 
 module.extend = class AppCtrl extends BaseCtrl
   @register appControllers
-  @inject '$scope', '$location', '$resource', '$rootScope'
+  @inject '$scope', '$location', '$resource', '$rootScope', 'AppVersion'
 
   initialize: ->
+
+    # app version
+    @version = @AppVersion.version
 
     # create a list of modules for Tools tab dropdown
     @menu = []
@@ -45,7 +48,6 @@ module.extend = class AppCtrl extends BaseCtrl
   # uses the url to determine if the selected
   #  menu item should have the class active
   getClass: (id) ->
-    console.log id
     if @activeNavId.substring(0, id.length) == id
       'active'
     else
