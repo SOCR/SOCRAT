@@ -69,11 +69,8 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @twoTestUpdate()
 
   saveData: (data) ->
-    @populations = data.populations
-    if (data.chosenCol.length is 2)
-      @compAgents = data.chosenCol
-    else
-      @compAgents = data.chosenVar
+    @populations = data.popl
+    @compAgents = data.target
     @twoTestReceiveData()
 
   setAlpha: (alphaIn) ->
