@@ -202,67 +202,64 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if @dataLoadedFromDb
         @dataLoadedFromDb = false
       else
-        @dataAdaptor.toDataFrame @tableData, @colHeadersLabels
-        .then( (dataFrame)=>
-          @checkDataSize dataFrame.nRows, dataFrame.nCols
-          @inputCache.setData dataFrame
+        data = @dataAdaptor.toDataFrame @tableData, @colHeaders
+        @checkDataSize data.nRows, data.nCols
+        @inputCache.setData data
 
-          # @todo: This transformation should be happening in dataAdaptor.toDataFrame
-          # need to check if handsontable can render arrayOfObjects
-          newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
-          newDataFrame = @dataAdaptor.enforceTypes newDataFrame
-          @dataService.getSummary newDataFrame
-          .then (resp)=>
-            if resp? and resp.dataFrame? and resp.dataFrame.data?
-              @colStats = resp.dataFrame.data
+  passReceivedData: (data) ->
+    if data.dataType is @DATA_TYPES.NESTED
+      @dataType = @DATA_TYPES.NESTED
+      @checkDataSize data.nRows, data.nCols
+      # save to db
+      @inputCache.setData data
+    else
+      # default data type is 2d 'flat' table
+      data.dataType = @DATA_TYPES.FLAT
+      @dataType = @DATA_TYPES.FLAT
 
-          for k,v of newDataFrame.types
-            colValues = @dataAdaptor.getColValues newDataFrame,k
-            @colHistograms[ newDataFrame.header.indexOf(k) ] = colValues.data
+      # update table
+      @$timeout =>
+        @colHeaders = data.header
+        @tableData = data.data
+        console.log 'ht updated'
 
-            ## Code to get histogram values from Datalib
-            # ((newDataFrame,k)=>
-            #   @dataService.getHistogram @dataAdaptor.getColValues newDataFrame,k
-            #   .then( (res)=>
-            #     @colHistograms[ newDataFrame.header.indexOf(k)] = res.dataFrame.data
-            #     console.log "HISTOGRAM VALUES",@colHistograms
-            #   )
-            # )(newDataFrame, k)
-        )
+  # available SOCR Datasets
+  socrDatasets: [
+    id: 'IRIS'
+    name: 'Iris Flower Dataset'
+  ,
+    id: 'KNEE_PAIN'
+    name: 'Simulated SOCR Knee Pain Centroid Location Data'
+  ,
+    id: 'CURVEDNESS_AD'
+    name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
+  ,
+    id: 'PCV_SPECIES'
+    name: 'Neuroimaging study of Prefrontal Cortex Volume across Species'
+  ,
+    id: 'TURKIYE_STUDENT_EVAL'
+    name: 'Turkiye Student Evaluation Data Set'
+  ,
+    id: 'ANTARCTIC_ICE_THICKNESS'
+    name: 'Antarctic Ice Thickness'
+  ,
+    id: 'BASEBALL_PLAYERS'
+    name: 'Baseball Players'
+  ,
+    id: 'CALIFORNIA_OZONE'
+    name: 'California Ozone'
+  ,
+    id: 'CALIFORNIA_OZONE_POLLUTION'
+    name: 'California Ozone Pollution'
+  ,
+    id: 'US_OZONE_POLLUTION'
+    name: 'US Ozone Pollution'
+  ,
+    id: 'COUNTRIES_RANKINGS'
+    name: 'Countries Rankings'
+  ]
 
-
-  ###
-  @param {Object} - instance of DataFrame
-  @desc -
-  ###
-  passReceivedData: (dataFrame) ->
-    if not @dataAdaptor.isValidDataFrame dataFrame
-      throw Error "invalid data frame"
-
-    # @todo: This transformation should be happening in dataAdaptor.toDataFrame
-    # need to check if handsontable can render arrayOfObjects
-    newDataFrame = @dataAdaptor.transformArraysToObject dataFrame
-    newDataFrame = @dataAdaptor.enforceTypes newDataFrame
-    @dataService.getSummary newDataFrame
-    .then (resp) =>
-      if resp? and resp.dataFrame? and resp.dataFrame.data?
-        @colStats = resp.dataFrame.data
-        if dataFrame.dataType is @DATA_TYPES.NESTED
-          @dataType = @DATA_TYPES.NESTED
-          @checkDataSize dataFrame.nRows, dataFrame.nCols
-          # save to db
-          @inputCache.setData dataFrame
-        else
-          # default data type is 2d 'flat' table
-          dataFrame.dataType = @DATA_TYPES.FLAT
-          @dataType = @DATA_TYPES.FLAT
-          # update table
-          @inputCache.setData dataFrame
-          @$timeout =>
-            @tableData = dataFrame.data
-            @colHeadersLabels = dataFrame.header
-
-  getWBDataset: ->
+  getWB: ->
     # default value
     if @size is undefined
       @size = 100
@@ -306,10 +303,22 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       throw err
     )
 
-  getSocrDataset: ->
-    url = @socrData.getUrlByName @socrdataset.id
-    # default option
-    url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ' unless url
+
+  getSocrData: ->
+    switch @socrdataset.id
+      when 'IRIS' then url = 'datasets/iris.csv'
+      when 'KNEE_PAIN' then url = 'datasets/knee_pain_data.csv'
+      when 'CURVEDNESS_AD' then url='datasets/Global_Cortical_Surface_Curvedness_AD_NC_MCI.csv'
+      when 'PCV_SPECIES' then url='datasets/Prefrontal_Cortex_Volume_across_Species.csv'
+      when 'TURKIYE_STUDENT_EVAL' then url='datasets/Turkiye_Student_Evaluation_Data_Set.csv'
+      when 'ANTARCTIC_ICE_THICKNESS' then url = 'datasets/Antarctic_Ice_Thickness.csv'
+      when 'BASEBALL_PLAYERS' then url = 'datasets/Baseball_Players.csv'
+      when 'CALIFORNIA_OZONE' then url = 'datasets/California_Ozone.csv'
+      when 'CALIFORNIA_OZONE_POLLUTION' then url = 'datasets/California_Ozone_Pollution.csv'
+      when 'US_OZONE_POLLUTION' then url = 'datasets/US_Ozone_Pollution.csv'
+      when 'COUNTRIES_RANKINGS' then url = 'datasets/Countries_Rankings.csv'
+      # default option
+      else url = 'https://www.googledrive.com/host//0BzJubeARG-hsMnFQLTB3eEx4aTQ'
 
     # TODO: replace d3 with datalib
     @d3.text url,

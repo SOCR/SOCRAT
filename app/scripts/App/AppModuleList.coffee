@@ -42,6 +42,8 @@ module.exports = class AppModuleList
     Tools: [
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
+      require 'scripts/analysis/tools/MyModule/MyModule.module.coffee'
+    ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
     ,
       require 'scripts/analysis/tools/PowerCalc/PowerCalc.module.coffee'
