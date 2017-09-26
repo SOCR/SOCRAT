@@ -3,11 +3,16 @@
   nav.navbar.navbar-inverse.navbar-static-top.socrat-navbar-menu
     .container
       .navbar-header
-        button.navbar-toggle(type='button', data-toggle='collapse', data-target='.analysis-toolbar')
+        button.navbar-toggle(
+          type='button'
+          data-toggle='collapse'
+          data-target='.analysis-toolbar'
+        )
           span.icon-bar
           span.icon-bar
           span.icon-bar
         a(href='/').navbar-brand SOCRAT
+          span(style="font-size:14px") v{{app.version}}
       .navbar-collapse.analysis-toolbar
         menubar
         notification
