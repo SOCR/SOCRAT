@@ -1,0 +1,98 @@
+div(ng-controller="powerCalcSidebarCtrl as sidebar")
+  form
+    legend Parameters &nbsp;
+      .form-group
+        label(
+          style=''
+        ) Calculator &nbsp;
+        select.form-control(
+          ng-model="sidebar.selectedAlgorithm"
+          ng-options="method for method in sidebar.algorithms"
+          ng-change="sidebar.updateAlgControls()"
+        )
+      .form-group(
+        ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'")
+        .row.form-inline.bootstrap-switch-square
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="load data from db"
+            tooltip-placement="right"
+            ) &nbsp;
+            | Use data&nbsp;
+          input(
+            type="checkbox"
+            data-toggle="switch"
+            id="toggle_switch"
+            ng-model="sidebar.deployed"
+            ng-change="sidebar.change_mode()"
+          )
+        .row.form-inline(ng-show="!sidebar.deployed")
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="confidence level"
+            tooltip-placement="right"
+            ) &nbsp;
+            | α&nbsp;&nbsp;
+            input.form-control.input-sm.flat(
+              ng-model="sidebar.tTestAlpha"
+              ng-keypress="sidebar.changeValue($event)"
+              type="number"
+              name='alpha'
+              step="0.001"
+            )
+          #tTestAlphaUI
+
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' && sidebar.deployed")
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        multiple
+        ng-model="sidebar.chosenCols"
+        ng-options="col for col in sidebar.categoricalCols"
+        ng-change="sidebar.run(sidebar.df)"
+        )
+      .form-group
+        label Labels &nbsp;
+        //- show data header column names
+        select.form-control(
+          ng-disabled="!sidebar.valid"
+          ng-model="sidebar.chosenLabel"
+          ng-options="col for col in sidebar.labelCol"
+          ng-change="sidebar.updateVar(sidebar.df)"
+        )
+      .form-group
+        label Categories
+        select.form-control(
+        multiple
+        ng-disabled="!sidebar.valid"
+        ng-model="sidebar.chosenVars"
+        ng-options="col for col in sidebar.vars"
+        ng-change="sidebar.run(sidebar.df)"
+        )
+
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test' && sidebar.deployed")
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenCols"
+        ng-options="col for col in sidebar.categoricalCols"
+        ng-change="sidebar.run(sidebar.df)"
+        )
+      .form-group
+        label Labels &nbsp;
+        select.form-control(
+          ng-model="sidebar.chosenLabel"
+          ng-options="col for col in sidebar.labelCol"
+          ng-change="sidebar.updateVar(sidebar.df)"
+        )
+      .form-group
+        label Categories
+        select.form-control(
+        ng-model="sidebar.chosenVars"
+        ng-options="col for col in sidebar.vars"
+        ng-change="sidebar.run(sidebar.df)"
+        )

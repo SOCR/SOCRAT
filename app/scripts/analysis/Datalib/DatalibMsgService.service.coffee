@@ -19,7 +19,6 @@ module.exports = class DatalibMsgService extends BaseModuleMessageService
     @addOutMsg msg + '_res'
 
   updateMessageMap: (msgs) ->
-    console.log msgs
     @publish @msgList.outgoing[0],
       -> console.log('updated Core message map'),
       scope: @msgList.scope

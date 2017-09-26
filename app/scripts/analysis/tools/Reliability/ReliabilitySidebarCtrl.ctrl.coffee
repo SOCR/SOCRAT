@@ -36,6 +36,7 @@ module.exports = class ReliabilitySidebarCtrl extends BaseCtrl
         @dataType = @DATA_TYPES.FLAT
         # send update to main ctrl
         @msgService.broadcast 'reliability:updateDataType', obj.dataFrame.dataType
+        @dataFrame = obj.dataFrame
         # parse dataFrame
         @parseData obj
       else
@@ -75,8 +76,11 @@ module.exports = class ReliabilitySidebarCtrl extends BaseCtrl
 
   parseData: (obj) ->
     @dataService.inferDataTypes obj.dataFrame, (resp) =>
-      if resp and resp.dataFrame
-        @dataFrame = resp.dataFrame
+      if resp and resp.dataFrame and resp.dataFrame.data
+        # update data types with inferred
+        for type, idx in @dataFrame.types
+          @dataFrame.types[idx] = resp.dataFrame.data[idx]
+        # get only integer columns
         cols = @dataFrame.header
         @intCols = (col for col, idx in cols when @dataFrame.types[idx] is 'integer')
         res = @processData @dataFrame

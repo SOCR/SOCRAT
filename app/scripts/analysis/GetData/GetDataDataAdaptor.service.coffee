@@ -8,10 +8,11 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class GetDataDataAdaptor extends BaseService
-  @inject 'app_analysis_getData_msgService'
+  @inject 'app_analysis_getData_msgService','app_analysis_getData_dataService'
 
   initialize: ->
     @eventManager = @app_analysis_getData_msgService
+    @dataService = @app_analysis_getData_dataService
     @DATA_TYPES = @eventManager.getSupportedDataTypes()
 
   # https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
@@ -54,13 +55,40 @@ module.exports = class GetDataDataAdaptor extends BaseService
       for i in [0...tableData[0]-1]
         header.push(i)
 
-    dataFrame =
-      header: header
-      nRows: tableData.length
-      nCols: header.length
-      data: tableData
-      dataType: @DATA_TYPES.FLAT
-      purpose: 'json'
+    #generating types for all columns
+    tempDF =
+        header: header
+        nRows: tableData.length
+        nCols: header.length
+        data: tableData
+        dataType: @DATA_TYPES.FLAT
+        purpose: 'json' 
+    newDataFrame = @transformArraysToObject tempDF
+    @dataService.inferTypes newDataFrame
+    .then( (typesObj) =>
+      dataFrame =
+        header: header
+        nRows: tableData.length
+        nCols: header.length
+        data: tableData
+        dataType: @DATA_TYPES.FLAT
+        types: typesObj.dataFrame.data
+        purpose: 'json'  
+    )
+
+  ###
+    @param dataFrame {Object}
+    @param colName {String}
+    @return dataFrame {Object}
+  ###
+  getColValues : (dataFrame, colName) ->
+    result = []
+    if @isValidDataFrame(dataFrame)? and colName?
+      dataFrame.data.forEach (row)->
+        result.push row[colName]
+
+      result
+    return Object.assign {}, dataFrame, {data:result}
 
   getHeaders : (data)->
     _col = []
@@ -204,6 +232,16 @@ module.exports = class GetDataDataAdaptor extends BaseService
             data
         else false
 
+  enforceTypes: (dataFrame, types=null) ->
+    types = types || dataFrame.types
+    if types? and dataFrame?    
+      Object.keys(types).forEach (type)=>
+        dataFrame.data.forEach (dataRow)=>
+          switch types[type]
+            when "number" then dataRow[type] = parseFloat dataRow[type]
+
+            when "boolean" then dataRow[type] = ( dataRow[type] == 'true')
+    dataFrame
 
   transformArraysToObject: (dataFrame) ->
     # hacking the dataFrame to return Array of Objects
