@@ -104,13 +104,14 @@ module.exports = class ModelerDir extends BaseDirective
       scope.$watch 'mainArea.modelData', (data) =>
         console.log("Plotting Model Data");
         console.log(data.dataPoints)
-        data=data.dataPoints
+        distribution = data.distribution
+        data= data.dataPoints
         data = data.map (row) ->
             x: row[0]
             y: row[1]
             z: row[2]
             r: row[3]
-        switch data.distribution 
+        switch distribution.name 
           when 'Normal'
             @getParams.drawNormalCurve(data, width, height, _graph)
           when 'Kernel'

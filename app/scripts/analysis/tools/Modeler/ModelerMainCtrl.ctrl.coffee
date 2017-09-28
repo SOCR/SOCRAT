@@ -44,5 +44,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @chartData = data
       console.log("distribution:" + data.distribution.name)
 
-
-
+    else
+      data.dataPoints = Array(10).fill(Math.floor(Math.random() * 9));
+      @chartData = data
