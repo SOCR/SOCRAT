@@ -119,6 +119,10 @@ module.exports = class GetParams extends BaseService
       variance: variance
       median: median
       standardDev: standardDerivation
+      leftBound: leftBound
+      rightBound: rightBound
+      topBound: topBound
+      bottomBound: bottomBound
 
 
 

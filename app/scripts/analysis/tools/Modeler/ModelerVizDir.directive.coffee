@@ -101,18 +101,67 @@ module.exports = class ModelerDir extends BaseDirective
 
 
 
-      scope.$watch 'mainArea.modelData', (data) =>
+      scope.$watch 'mainArea.modelData', (modelData) =>
         console.log("Plotting Model Data");
-        console.log(data.dataPoints)
-        distribution = data.distribution
-        data= data.dataPoints
+        #console.log(data.dataPoints)
+        #distribution = data.distribution
+        ###
+        data= modelData.dataPoints
         data = data.map (row) ->
             x: row[0]
             y: row[1]
             z: row[2]
             r: row[3]
+        ###
+        leftBound = modelData.stats.leftBound
+        rightBound = modelData.stats.rightBound
+        topBound = modelData.stats.topBound
+        bottomBound = modelData.stats.bottomBound
+        curveData = modelData.curveData
+        
+        padding = 50
+        xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
+        yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
+
+        xAxis = d3.svg.axis().ticks(20)
+          .scale(xScale)
+
+        yAxis = d3.svg.axis()
+          .scale(yScale)
+          .ticks(12)
+          .tickPadding(0)
+          .orient("right")
+
+        lineGen = d3.svg.line()
+          .x (d) -> xScale(d.x)
+          .y (d) -> yScale(d.y)
+          .interpolate("basis")
+
+        console.log("printing gaussian curve data")
+        console.log(curveData)
+
+
+        _graph.append('svg:path')
+          .attr('d', lineGen(curveData))
+          .data([curveData])
+          .attr('stroke', 'black')
+          .attr('stroke-width', 1.5)
+          .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
+          .on('mouseout', (d) -> hideToolTip())
+          .attr('fill', "none")
+
+
+        ###
         switch distribution.name 
           when 'Normal'
-            @getParams.drawNormalCurve(data, width, height, _graph)
+            drawCurve(data, width, height, _graph);
           when 'Kernel'
-            drawCurve(modelData);
+            drawCurve(data, width, height, _graph);
+        ###
+
+
+
+
+      drawCurve(modelData, width, height, _graph) ->
+
+        

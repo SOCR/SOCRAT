@@ -37,13 +37,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     if data.dataPoints?
       console.log("updatating chartData")
       console.log(data)
-      @stats = @getParams.getParams(data)
+      #@stats = @getParams.getParams(data)
       @distribution = data.distribution
-      #@modelData = @router.getChartData(@distribution.name, data )
-      @modelData = data
+      @modelData = @router.getChartData(@distribution.name, data )
+      #@modelData = data
       @chartData = data
       console.log("distribution:" + data.distribution.name)
 
-    else
-      data.dataPoints = Array(10).fill(Math.floor(Math.random() * 9));
-      @chartData = data
+    
