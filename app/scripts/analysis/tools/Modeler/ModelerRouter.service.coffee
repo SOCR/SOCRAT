@@ -11,8 +11,8 @@ module.exports = class ModelerRouter extends BaseModuleDataService
   initialize: ->
     @msgManager = @app_analysis_powerCalc_msgService
     @Normal = @socrat_modeler_distribution_normal
-    @kernelDensity = @socrat_analysis_modeler_kernel_density_plotter
-    @models = [@Normal, @kernelDensity]
+    @Kernel = @socrat_analysis_modeler_kernel_density_plotter
+    @models = [@Normal, @Kernel]
 
   ############
 

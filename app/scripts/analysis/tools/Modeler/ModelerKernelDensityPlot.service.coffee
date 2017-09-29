@@ -13,7 +13,7 @@ module.exports = class KernelDensityPlot extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
 
   initialize: () ->
-    @name = 'kernelDensity'
+    @name = 'Kernel'
     @getParams = @socrat_analysis_modeler_getParams
 
 
@@ -22,10 +22,24 @@ module.exports = class KernelDensityPlot extends BaseService
 
 
   getChartData: (data) ->
-    data = data.dataPoints
+    console.log("Getting Kernel Density Data")
+    #data = data.dataPoints
+    bandwith = 5
+
+    ####need to remove
+    margin = {top: 10, right: 40, bottom: 50, left:80}
+    width = 750 - margin.left - margin.right
+
+    ##
+    data.stats = @getParams.getParams(data)
+    xScale = d3.scale.linear().domain([data.stats.leftBound, data.stats.rightBound]).range([0, width])
+    kde = @kernelDensityEstimator(@epanechnikovKernel(bandwith), xScale.ticks(100));
+    console.log("printing kde(data))")
+    console.log(kde(data.dataPoints))
+    data.curveData = kde(dataPoints)
     
 
-  kernelDensityEstimator = (kernel, x) ->
+  kernelDensityEstimator: (kernel, x) ->
   (sample) ->
     x.map (x) ->
       {
