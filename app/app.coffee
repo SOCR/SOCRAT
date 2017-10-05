@@ -33,6 +33,7 @@ require 'vega-embed/vega-embed.js'
 require 'compassql'
 
 # create app-level modules
+angular.module 'app_services', []
 angular.module 'app_controllers', []
 angular.module 'app_directives', []
 

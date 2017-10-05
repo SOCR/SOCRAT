@@ -1,22 +1,23 @@
 div(ng-controller='GetDataMainCtrl as mainArea')
-  h4 Get Data
 
   form.socrData(uib-collapse="mainArea.showState.socrData")
-    legend SOCR Datasets
-    div.form-group
-      select.form-control(
+    div(style="display:inline-flex")
+      select.form-control.input-md(
         ng-model="mainArea.socrdataset",
         ng-options="item as item.name for item in mainArea.socrDatasets track by item.id")
-    button.btn.btn-primary(ng-click="mainArea.getSocrData()") Load
+      button.btn.btn-primary(ng-click="mainArea.getSocrDataset()") Load
+      button.btn.btn-info(ng-click="mainArea.openSocrDescription()") Description &nbsp;
+        span.fui-export
 
   div.worldBank(uib-collapse="mainArea.showState.worldBank")
-    h3 WorldBank Data
-    span Size:
-      input(type="text",class="input-mini", ng-model="mainArea.size")
-      select(style="width:100%;margin:0px", ng-model="mainArea.option")
-        option(value='4.2_BASIC.EDU.SPENDING') Education Spending
-        option(value='2.4_OOSC.RATE') Out of School Children rate
-      button.btn.btn-primary(ng-click="mainArea.getWB()") Load
+    div(style="display:inline-flex")
+      input(type="text",class="form-control input-md", placeholder="Rows", ng-model="mainArea.size")
+      input(type="text",class="form-control input-md", placeholder="Start Year", ng-model="mainArea.startYear")
+      input(type="text",class="form-control input-md", placeholder="End Year", ng-model="mainArea.endYear")
+      select(style="height:36px", ng-model="mainArea.option")
+          option(ng-repeat="dataset in mainArea.WBDatasets", value="{{dataset.key}}") {{ dataset.name }}
+      button(style="margin-left:20px", ng-click="mainArea.getWBDataset()").btn.btn-primary Load
+
 
   div.generate(uib-collapse="mainArea.showState.generate")
     ul.nav.nav-pills.nav-stacked.disabled
@@ -32,13 +33,10 @@ div(ng-controller='GetDataMainCtrl as mainArea')
         a The Beta Distribution Experiment
 
   form.jsonUrl(uib-collapse="mainArea.showState.jsonParse")
-    legend Enter URL to parse JSON file
-    div.form-group
-      label(for="getDataJsonUrlInput").sr-only Enter URL
-      div.btn-group.btn-group-justified(role="group")
-        input#getDataJsonUrlInput(type='text', placeholder='URL to JSON ...', ng-model="jsonUrl").form-control
-        span#getDataJsonUrlClear(ng-click="mainArea.jsonUrl=''").glyphicon.glyphicon-remove-circle
-    button.btn.btn-primary(ng-click="mainArea.getJsonByUrl()") Parse
+    div.form-group(style="display:inline-flex")
+      input(type="text",class="form-control input-lg", placeholder="URL", ng-model="mainArea.jsonURL.url")
+      input(type="text",class="form-control input-lg", placeholder="JSON dataset array path", ng-model="mainArea.jsonURL.dataPath")
+    button.btn.btn-primary(ng-click="mainArea.getJsonURLDataset()") Parse
 
   div.form-inline(ng-hide="!mainArea.largeData")
     br
@@ -50,13 +48,16 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       | &nbsp;
     button.btn.btn-primary.btn-sm(type="submit" ng-click="mainArea.subsampleData()") Subsample
 
+  hr
+
   div.getdata-dragndrop(
     ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}"
-    getdatadragndrop="[text/csv, text/tsv]"
+    getdatadragndrop=""
     file="mainArea.file"
     max-file-size="50"
   )
-    legend Copy-paste data or drag-and-drop CSV file
+    p(style="text-align:center") 
+      i *Copy-paste data or drag-and-drop CSV file.
     div.hot-scroll-container(ng-class="{'vis-hidden': mainArea.dataType != mainArea.DATA_TYPES.FLAT}")
       hot-table(
       purpose="json"
@@ -65,8 +66,22 @@ div(ng-controller='GetDataMainCtrl as mainArea')
       datarows="mainArea.tableData"
       column-sorting="true"
       sort-indicator="true"
-      manual-column-resize="true"
+      manual-column-resize="true" 
       )
-  br
+    table(style="width:calc(100% - 50px);overflow:auto;margin-left:50px")
+      tr
+        td(ng-repeat="(colName,data) in mainArea.colHistograms")
+          colhistogram(col-name="{{colName}}") 
+    table(style="width:calc(100% - 50px);overflow:auto;margin-left:50px")
+      tr        
+        td(ng-repeat="stat in mainArea.colStats",style="font-size:11px")
+          span Type:{{ stat.type }}, Distinct:{{ stat.distinct }} 
+          br
+          span Mean:{{ mainArea.formatNumber(stat.mean) }}, SD:{{ mainArea.formatNumber(stat.stdev) }}
+          br
+          span Min:{{ mainArea.formatNumber(stat.min) }}, Max:{{ mainArea.formatNumber(stat.max) }}
+          br
+          span Median: {{ mainArea.formatNumber(stat.median) }}
+
   div.lead.bg-danger(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.NESTED")
     | Visual representation of hierarchical data currently is not available.

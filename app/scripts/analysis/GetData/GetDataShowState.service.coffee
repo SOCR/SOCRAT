@@ -12,6 +12,34 @@ module.exports = class GetDataShowState extends BaseService
   initialize: ->
     @obj = null
     @scope = null
+    @options = [
+        key: "grid",
+        label: "Data Grid",
+        enabled: true
+      ,
+        key: "socrData",
+        label: "SOCR datasets",
+        enabled: true
+      ,
+        key: "worldBank",
+        label:"WORLDBANK datasets",
+        enabled: true
+      ,
+        key: "generate",
+        label:"Generate datasets",
+        enabled: false
+      ,
+        key: "jsonParse",
+        label:"JSON datasets",
+        enabled: true
+    ]
+
+  getOptions: ->
+    @options
+
+  getOptionKeys: ->
+    @options.map (option)->
+      option.key
 
   create: (obj, scope) ->
     if arguments.length is 0
