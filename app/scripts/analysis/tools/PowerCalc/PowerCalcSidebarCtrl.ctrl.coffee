@@ -17,6 +17,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		# all alglorithms
 		@algorithms = ['Select',
 		'CI for One Proportion',
+		'DAHEE',
 		'CI for One Mean',
 		'Test of One Proportion',
 		'Test of Two Proportions',
@@ -25,7 +26,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		'Generic chi-square test',
 		'Power of a Simple Poisson Test',
 		'Two-sample t test (general case)',
-		'One-Sample (or Paired) t Test',]
+		'One-Sample (or Paired) t Test']
 		@selectedAlgorithm = @algorithms[3]
 
 		# set up data and algorithm-agnostic controls
@@ -122,6 +123,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 						@categoricalCols.push(@df.header[id])
 					id += 1
 
+
 	# called when update category
 	update: () ->
 		index = @df.header.indexOf(@chosenCats)
@@ -143,6 +145,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneTest()
 		else if (@selectedAlgorithm is 'Test of One Proportion')
 			@oneProp()
+		else if (@selectedAlgorithm is 'DAHEE')
+			@oneColumn()
 
 	twoTest: ()->
 		@populations = {}
@@ -199,7 +203,31 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
-			target: @curTarget
+	
+
+	######create filter!
+	# oneColumn : ()->
+	# 	one_column = []
+ # 		for a in @df.data
+ # 		    one_column.push(a[0])
+ # 	# # randomly select one column
+ # 	# 	idx_column = Math.floor(Math.random() * (length(@df.data[0]) - 0 + 1)) + 0
+ # 	# 	for a in @df.data
+ # 	# 		one_column.push a[idx_column]
+ 		
+ # 		console.log one_column
+
+
+ # 		@msgService.broadcast 'powercalc:oneColumndata',
+	# 		popl: one_column
+	oneColumn: () ->
+		console.log 'run oneColumn'
+		one_column = []
+		for a in @df.data
+			one_column.push(a[0])
+
+	
+
 
 	oneTest: () ->
 		@populations = {}
@@ -224,7 +252,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@populations[@chosenColsOne] = []
 			for row in @df.data
 				@populations[@chosenColsOne].push(row[index1])
-
 
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations

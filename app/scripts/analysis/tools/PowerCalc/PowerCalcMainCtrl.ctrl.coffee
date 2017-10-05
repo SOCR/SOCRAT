@@ -133,6 +133,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
+    @$scope.$on 'powercalc:oneColumndata', (event, data) =>
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @loadData()
+
     @$scope.$on 'powercalc:alpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
       @loadData()
@@ -141,9 +145,11 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @deployed=data.deploy
       @loadData()
 
-
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
+
+ 
+
 
   loadData: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
@@ -157,6 +163,9 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       return
     else if (@selectedAlgorithm is "Test of Two Proportions")
       @twoPropRetrieve()
+      return
+    else if (@selectedAlgorithm is "DAHEE")
+      @
     else
       return
 
