@@ -36,9 +36,13 @@ module.exports = class ModelerHist extends BaseService
     # slider
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
-    dataHist = d3.layout.histogram().bins(bins)(arr)
-    console.log dataHist #array for each bin, each array has all data points
+    
+    
+    dataHist = d3.layout.histogram().frequency(false).bins(bins)(arr)
 
+
+    sizeOfData = arr.length
+    console.log dataHist #array for each bin, each array has all data points
     #create array of objects that store mean and median of each set
     stats = []
     for a in dataHist
@@ -59,7 +63,7 @@ module.exports = class ModelerHist extends BaseService
     y = d3.scale.linear().range([ height - padding, padding ])
 
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-    y.domain([0, (d3.max dataHist.map (i) -> i.length)])
+    y.domain([0, (d3.max dataHist.map (i) -> i.length)/ sizeOfData   ])
 
     yAxis = d3.svg.axis().scale(y).orient("left")
     xAxis = d3.svg.axis().scale(x).orient("bottom")
@@ -126,7 +130,7 @@ module.exports = class ModelerHist extends BaseService
     .attr('x', (d) -> x d.x)
     .attr('y', (d) -> y d.y)
     .attr('width', rect_width)
-    .attr('height', (d) -> Math.abs(height - y d.y) - padding)
+    .attr('height', (d) -> Math.abs(height - (y( d.y)) ) - padding)
     .attr("stroke", "white")
     .attr("stroke-width", 1)
     .style('fill', getColor(0))
@@ -172,7 +176,7 @@ module.exports = class ModelerHist extends BaseService
     .attr('fill', 'black')
     .attr('text-anchor', 'middle')
     .attr('z-index', 1)
-    .text (d) -> d.y
+    .text (d) -> d3.format(".2f")(d.y)
 
     ##@gauss.drawKernelDensityEst(data, width, height, _graph, xAxis, yAxis, y, x)
 
