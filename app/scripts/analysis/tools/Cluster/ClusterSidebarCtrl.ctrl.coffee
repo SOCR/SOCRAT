@@ -27,7 +27,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @algParams = null
     # TODO: allow user control of delay
     @iterDelay = 750
-
+    @dataStandardization = off
     # dataset-specific
     @dataFrame = null
     @dataType = null
@@ -174,6 +174,34 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         acc: acc
 
     else false
+
+  average = (data) ->
+    sum = data.reduce(((sum, value) ->
+      sum + value
+      ), 0)
+    avg = sum / data.length
+    avg
+
+  standardDeviation = (values) ->
+    avg = average(values)
+    squareDiffs = values.map((value) ->
+      diff = value - avg
+      sqrDiff = diff * diff
+      sqrDiff
+    )
+    avgSquareDiff = average(squareDiffs)
+    stdDev = Math.sqrt(avgSquareDiff)
+    stdDev
+
+  standardizeData: () ->
+    data = @dataFrame.data
+    for row in data
+      rowAvg = average(row)
+      rowStd = standardDeviation(row)
+      for num in data
+        num = (num - rowAvg) / rowStd
+      data
+
 
   parseData: (data) ->
     @dataService.inferDataTypes data, (resp) =>
