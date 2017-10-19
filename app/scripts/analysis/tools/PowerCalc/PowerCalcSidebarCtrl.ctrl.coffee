@@ -146,7 +146,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		else if (@selectedAlgorithm is 'Test of One Proportion')
 			@oneProp()
 		else if (@selectedAlgorithm is 'DAHEE')
-			@oneColumn()
+			@numDic()
 
 	twoTest: ()->
 		@populations = {}
@@ -205,57 +205,57 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			popl: @populations
 	
 
-	######create filter!
-	# oneColumn : ()->
-	# 	one_column = []
- # 		for a in @df.data
- # 		    one_column.push(a[0])
- # 	# # randomly select one column
- # 	# 	idx_column = Math.floor(Math.random() * (length(@df.data[0]) - 0 + 1)) + 0
- # 	# 	for a in @df.data
- # 	# 		one_column.push a[idx_column]
- 		
- # 		console.log one_column
-
-
- # 		@msgService.broadcast 'powercalc:oneColumndata',
-	# 		popl: one_column
-	oneColumn: () ->
-		console.log 'run oneColumn'
-		one_column = []
-		for a in @df.data
-			one_column.push(a[0])
-
-	
-
-
-	oneTest: () ->
+	####create filter!
+	numDic: () ->
 		@populations = {}
 		# if compare two different Variables, calculate separately
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
 
 			#extract index if col
-			index = @df.header.indexOf(@chosenColsOne)
+			index = @df.types.indexOf('string')
+			for subcat in @subCategoricalCols
+				n=0
+				for row in @df.data
+					if row[index] == subcat
+						n = n+1
+				@populations[subcat] = n	
 
-			if not @equalList(@curTarget, [@chosenSubCatsOne])
-				@curTarget = @chosenSubCatsOne
-				@newTarget = true
 
-			#extract data from container to population
-			@populations[@chosenSubCatsOne] = []
-			for row in @container[@chosenSubCatsOne]
-				@populations[@chosenSubCatsOne].push(row[index])
-
-		else
-			# extract data from data to population
-			index1 = @df.header.indexOf(@chosenColsOne)
-			@populations[@chosenColsOne] = []
-			for row in @df.data
-				@populations[@chosenColsOne].push(row[index1])
-
-		@msgService.broadcast 'powercalc:onetwoTestdata',
+		@msgService.broadcast 'powercalc:daheeData',
 			popl: @populations
-			target: @curTarget
+
+	
+
+
+	# oneTest: () ->
+	# 	@populations = {}
+
+	# 	# if compare two different Variables, calculate separately
+	# 	if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+
+	# 		#extract index if col
+	# 		index = @df.header.indexOf(@chosenColsOne)
+
+	# 		if not @equalList(@curTarget, [@chosenSubCatsOne])
+	# 			@curTarget = @chosenSubCatsOne
+	# 			@newTarget = true
+
+	# 		#extract data from container to population
+	# 		@populations[@chosenSubCatsOne] = []
+	# 		for row in @container[@chosenSubCatsOne]
+	# 			@populations[@chosenSubCatsOne].push(row[index])
+
+	# 	else
+	# 		# extract data from data to population
+	# 		index1 = @df.header.indexOf(@chosenColsOne)
+	# 		@populations[@chosenColsOne] = []
+	# 		for row in @df.data
+	# 			@populations[@chosenColsOne].push(row[index1])
+
+	# 	@msgService.broadcast 'powercalc:onetwoTestdata',
+	# 		popl: @populations
+	# 		target: @curTarget
+
 
 	oneProp: () ->
 		if @chosenCols is null

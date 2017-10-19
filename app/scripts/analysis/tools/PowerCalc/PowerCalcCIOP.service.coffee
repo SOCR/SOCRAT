@@ -14,7 +14,13 @@ module.exports = class PowerCalcCIOP extends BaseService
     '$timeout'
 
   initialize: ->
-   
-    @msgService = @app_analysis_powerCalc_msgService
-   	@name = 'DAHEE'
-   	@samplesize = n
+   console.log "dahee service initialized!!"
+   @msgService = @app_analysis_powerCalc_msgService
+   @name = 'DAHEE'
+
+   # TODO: add data
+
+  getName: () ->
+   return @name
+
+   # TODO: add getParams

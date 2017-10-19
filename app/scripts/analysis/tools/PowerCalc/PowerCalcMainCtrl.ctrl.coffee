@@ -130,10 +130,12 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @loadData()
 
     @$scope.$on 'powercalc:twoPropdata', (event, data)=>
+      console.log "why mine!!!!"
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
-    @$scope.$on 'powercalc:oneColumndata', (event, data) =>
+    @$scope.$on 'powercalc:daheeData', (event, data) =>
+      console.log 'receiving dahee'
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
@@ -165,7 +167,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @twoPropRetrieve()
       return
     else if (@selectedAlgorithm is "DAHEE")
-      @
+      @daheeRetrieve()
     else
       return
 
@@ -423,7 +425,11 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       $('#cimeanH').val "Hide Help"
     @cimean_help = !@cimean_help;
     return
-
+    
+  ####Dahee 
+  daheeRetrieve:() ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    
   #OneProp function only
   onePropRetrieve: () ->
     @params = @algorithmService.getParamsByName(@selectedAlgorithm)
