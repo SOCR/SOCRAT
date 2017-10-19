@@ -619,7 +619,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     )
 
     twoPropN2UI.slider(
-      value: @twoPropN1,
+      value: @twoPropN2,
       min: 0,
       max: @twoPropNMax,
       range: "min",
