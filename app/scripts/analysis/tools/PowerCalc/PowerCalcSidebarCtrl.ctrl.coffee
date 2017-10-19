@@ -10,6 +10,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 	'$timeout'
 
 	initialize: ->
+		# initialing all modules
 		@dataService = @app_analysis_powerCalc_dataService
 		@msgService = @app_analysis_powerCalc_msgService
 		@algorithmsService = @app_analysis_powerCalc_algorithms
@@ -26,12 +27,11 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		'Power of a Simple Poisson Test',
 		'Two-sample t test (general case)',
 		'One-Sample (or Paired) t Test',]
+		# select first calculator
 		@selectedAlgorithm = @algorithms[3]
 
 		# set up data and algorithm-agnostic controls
 		@DATA_TYPES = @dataService.getDataTypes()
-
-		# data
 		@dataFrame = null
 		@dataType = null
 		@numericalCols = []
@@ -40,16 +40,14 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@labelCol = ["none"]
 		@df = null
 
-		# running conditions
-		@newTarget = true
-		@curTarget = ["",""]
-
 		# pre-processed data container
-		@container = {} # {a:[], b:[]}
+		@container = {} # {name1:[#,#,#,#,#,#....], name2:[#,#,#,#,#,#,#,#.....]}
 		@MinMax = [{"min": 0, "max": 1}, {"min": 0, "max": 1}]
 		@populations = {}
 
-		# sidebar variables
+		# sidebar variables needed to process data
+		@newTarget = true
+		@curTarget = ["",""]
 		@chosenColsOne = null
 		@chosenColsTwo = []
 		@chosenCats = null
@@ -60,7 +58,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@thresh1 = 0
 		@thresh2 = 0
 
-		# mode
+		# modes 
 		@deployed = false
 		@threshMode = false
 		@threshTypeModes = ["larger", "smaller", "equal"]
@@ -79,6 +77,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		# initialize slider
 		@slider()
 
+		# receive raw data
 		@dataService.getData().then (obj) =>
 			if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
 				if @dataType isnt obj.dataFrame.dataType
@@ -95,14 +94,19 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				# TODO: add processing for nested object
 				console.log 'NESTED DATASET'
 
+		# receive updated algorithm broadcasted from mainArea
 		@$scope.$on 'powercalc:updateAlgorithm_back', (event, data)=>
 			@selectedAlgorithm = data
 
+	# Once the algorithm is updated, braodcast to mainArea
 	updateAlgControls: () ->
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
 
+	# called right after receiving the raw data
+	# categorize data types into numeric or names
+	# No need to modify this method unless permitted
 	parseData: () ->
 		@dataService.inferDataTypes @df, (resp) =>
 			if resp? and resp.dataFrame? and resp.dataFrame.data?
@@ -111,7 +115,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				for type, idx in @df.types
 					@df.types[idx] = resp.dataFrame.data[idx]
 
-				# update columns
+				# if the column is numeric, append the header name to @numericalCols
+				# if the column is string, append the header name to @categoricalCols
 				@numericalCols = []
 				@categoricalCols = ["none"]
 				id = 0
@@ -122,7 +127,9 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 						@categoricalCols.push(@df.header[id])
 					id += 1
 
-	# called when update category
+	# called when sidebar updates variables
+	# 1. update categories and its subcategories
+	# 2. push all the related data into its own category
 	update: () ->
 		index = @df.header.indexOf(@chosenCats)
 		@container = {}
@@ -136,6 +143,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 			@container[row[index]].push(row)
 
+	# boradcast data to mainArea once called
 	run: () ->
 		if (@selectedAlgorithm is 'Two-sample t test (general case)')
 			@twoTest()
@@ -143,6 +151,9 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneTest()
 		else if (@selectedAlgorithm is 'Test of One Proportion')
 			@oneProp()
+		else if (@selectedAlgorithm is 'Test of Two Proportions')
+			@twoProp()
+		return
 
 	twoTest: ()->
 		@populations = {}
@@ -273,6 +284,89 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			size: size
 			target: @curTarget
 
+	twoProp:() ->
+		@populations={}
+		size1 = 0
+		size2 = 0
+		if @chosenColsTwo.length is 1
+			$("#twoPropCat").prop("disabled", false)
+			$("#twoPropSubCat").prop("disabled", false)
+		else
+			$("#twoPropCat").prop("disabled", true)
+			$("#twoPropSubCat").prop("disabled", true)
+			@chosenCats = "none"
+			@subCategoricalCols = []
+
+		# calculate size
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+			console.log (@chosenCats isnt "none")
+			# check num of chosenCol is one
+			if @chosenColsTwo.length isnt 1
+				return
+			# check num of chosenSubCats is two
+			if @chosenSubCatsTwo.length isnt 2
+				return
+
+			# update comparison targets
+			if not @equalList(@curTarget, @chosenSubCatsTwo)
+				@curTarget = @chosenSubCatsTwo
+				@newTarget = true
+
+			#@findMinMax(@df.data, index, -1, false)
+
+			#extract index if col
+			index = @df.header.indexOf(@chosenColsTwo[0])
+
+			#extract data from container to population
+			for elt in @chosenSubCatsTwo
+				@populations[elt] = []
+				for row in @container[elt]
+					@populations[elt].push(row[index])
+
+			size1 = @populations[@chosenSubCatsTwo[0]].length
+			size2 = @populations[@chosenSubCatsTwo[1]].length
+			# if @threshMode then size = @runThresh(@df.data, index, -1, false)[0]
+			# else size = @df.data.length
+
+		else 
+			# check if the # of chosen cols is 2
+			if @chosenColsTwo.length isnt 2
+				return
+
+
+			# check and update comparison targets to avoid recomputation
+			if not @equalList(@curTarget, @chosenColsTwo)
+				@curTarget = @chosenColsTwo
+				@newTarget = true
+
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsTwo[0])
+			index2 = @df.header.indexOf(@chosenColsTwo[1])
+			@populations[@chosenColsTwo[0]] = []
+			@populations[@chosenColsTwo[1]] = []
+			for row in @df.data
+				@populations[@chosenColsTwo[0]].push(row[index1])
+				@populations[@chosenColsTwo[1]].push(row[index2])
+
+			size1 = @populations[@chosenColsTwo[0]].length
+			size2 = @populations[@chosenColsTwo[1]].length
+
+
+		# calculate, avoid dividung by zero
+		totalSize = @df.data.length
+		if size1 is 0 then size1 = 1
+		if size2 is 0 then size2 = 1
+		proportion1 = size1/totalSize
+		proportion2 = size2/totalSize
+
+		@msgService.broadcast 'powercalc:twoPropdata',
+			prop1: proportion1
+			prop2: proportion2
+			size1: size1
+			size2: size2
+			target: @curTarget
+
+		console.log @curTarget
 
 
 	findMinMax: (data, index1, index2, isTwo) ->

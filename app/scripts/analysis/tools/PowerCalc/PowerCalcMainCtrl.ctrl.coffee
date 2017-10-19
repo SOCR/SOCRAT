@@ -122,7 +122,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
     #receive data
     @$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
-      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @algorithmService.passDataByName(@selectedAlgorithm, data) 
       @loadData()
 
     @$scope.$on 'powercalc:onePropdata', (event, data)=>
