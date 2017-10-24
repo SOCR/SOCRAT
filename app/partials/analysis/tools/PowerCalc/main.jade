@@ -29,9 +29,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
     h4 <b>Two-sample t test (general case)</b>
     p <b><i>This dialog provides for power analysis of a two-sample t test or a two-sample t test of equivalence.  If the "equal SDs" box is checked, then the pooled t test is used; otherwise, the calculations are based on the Satterthwaite approximation </i></b>
     input(type='button' style='font-size:20px; margin-bottom:80px' value='Two-sample t test (general case)' ng-click='mainArea.update_algo($event)')
-  div(ng-show='mainArea.selectedAlgorithm == "DAHEE"')
-    h3 CI with datadriven mode by DAHEE
-
+ 
   div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
     h3 CI for One Proportion
     p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
@@ -273,6 +271,47 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               ) &nbsp;
               | p-value: &nbsp;
               b {{mainArea.onePropPvalue}}
+  div(ng-show='mainArea.selectedAlgorithm == "DAHEE"')
+    .row
+      .col-md-8
+        h6 Confidence interval for a population proportion &nbsp;
+          span.glyphicon.glyphicon-search(
+            aria-hidden="true"
+            uib-tooltip="dahee calulator page"
+            tooltip-placement="right")  
+        .col-md-4   
+          .form-group
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="whatever"
+                tooltip-placement="left"
+                ) &nbsp;
+                | P&nbsp;
+                sub s
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.sampleproportion"
+                ng-click="mainArea.daheeSync()"
+                ng-keypress="mainArea.daheePress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.001"
+                name='dahee'
+                )
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | sample size: &nbsp;
+              b {{mainArea.samplesize}}
+  
+
   div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
     .row
       .col-md-8

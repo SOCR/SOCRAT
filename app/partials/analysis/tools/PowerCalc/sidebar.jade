@@ -183,3 +183,29 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         ng-options="col for col in sidebar.subCategoricalCols"
         ng-change="sidebar.run()"
         )
+    //- fieldset(ng-show="sidebar.selectedAlgorithm == 'DAHEE' && sidebar.deployed")
+    //-   legend Data
+    //-   .form-group
+    //-     label Columns
+    //-     select.form-control(
+    //-     multiple
+    //-     ng-model="sidebar.chosenColsOne"
+    //-     ng-options="col for col in sidebar.numericalCols"
+    //-     ng-change="sidebar.run()"
+    //-     )
+    //-   .form-group
+    //-     label Category &nbsp;
+    //-     select.form-control(
+    //-       ng-model="sidebar.chosenCats"
+    //-       ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
+    //-       ng-options="col for col in sidebar.categoricalCols"
+    //-       ng-change="sidebar.update()"
+    //-     )
+    //-   .form-group
+    //-     label SubCategories
+    //-     select.form-control(
+    //-     multiple
+    //-     ng-model="sidebar.chosenSubCatsTwo"
+    //-     ng-options="col for col in sidebar.subCategoricalCols"
+    //-     ng-change="sidebar.run()"
+    //-     )

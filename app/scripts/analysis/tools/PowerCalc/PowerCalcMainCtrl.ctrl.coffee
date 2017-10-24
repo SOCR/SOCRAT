@@ -429,6 +429,32 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
   ####Dahee 
   daheeRetrieve:() ->
     @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @sampleproportion = @params.p
+    @success = @params.n
+    @samplesize = @params.t
+    @zscore = @params.z
+    @upbound = @params.u
+    @lowbound = @params.l
+    @confinterval =@params.ci
+
+  daheeSync: () ->
+    @params.sampleproportion = @sampleproportion
+    @params.n = @success
+    @syncData(@params)
+
+  daheePower: () ->
+    @syncPower(@params)
+    return
+
+  daheePress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "dahee"
+        @daheePower()
+      else
+        @daheeSync()
+    return
     
   #OneProp function only
   onePropRetrieve: () ->

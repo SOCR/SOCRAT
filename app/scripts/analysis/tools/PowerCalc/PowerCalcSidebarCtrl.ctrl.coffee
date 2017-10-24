@@ -103,6 +103,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
+		@numDic()
 
 	parseData: () ->
 		@dataService.inferDataTypes @df, (resp) =>
@@ -207,54 +208,60 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 	####create filter!
 	numDic: () ->
+		console.log @df
 		@populations = {}
+		@subCategoricalCols = ["setosa",'versicolor','virginica']
 		# if compare two different Variables, calculate separately
-		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-
-			#extract index if col
-			index = @df.types.indexOf('string')
-			for subcat in @subCategoricalCols
-				n=0
-				for row in @df.data
-					if row[index] == subcat
-						n = n+1
-				@populations[subcat] = n	
-
+		# if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+		@curTarget =  "setosa"
+		#extract index if col
+		index = @df.types.indexOf('string')
+		for subcat in @subCategoricalCols
+			n=0
+			for row in @df.data
+				if row[index] == subcat
+					n = n+1
+			@populations[subcat] = n	
+		
+		console.log @populations
 
 		@msgService.broadcast 'powercalc:daheeData',
 			popl: @populations
+			target: @curTarget
 
 	
 
 
-	# oneTest: () ->
-	# 	@populations = {}
+	oneTest: () ->
+		@populations = {}
 
-	# 	# if compare two different Variables, calculate separately
-	# 	if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
 
-	# 		#extract index if col
-	# 		index = @df.header.indexOf(@chosenColsOne)
+			#extract index if col
+			index = @df.header.indexOf(@chosenColsOne)
 
-	# 		if not @equalList(@curTarget, [@chosenSubCatsOne])
-	# 			@curTarget = @chosenSubCatsOne
-	# 			@newTarget = true
+			if not @equalList(@curTarget, [@chosenSubCatsOne])
+				@curTarget = @chosenSubCatsOne
+				@newTarget = true
 
-	# 		#extract data from container to population
-	# 		@populations[@chosenSubCatsOne] = []
-	# 		for row in @container[@chosenSubCatsOne]
-	# 			@populations[@chosenSubCatsOne].push(row[index])
+			#extract data from container to population
+			@populations[@chosenSubCatsOne] = []
+			for row in @container[@chosenSubCatsOne]
+				@populations[@chosenSubCatsOne].push(row[index])
 
-	# 	else
-	# 		# extract data from data to population
-	# 		index1 = @df.header.indexOf(@chosenColsOne)
-	# 		@populations[@chosenColsOne] = []
-	# 		for row in @df.data
-	# 			@populations[@chosenColsOne].push(row[index1])
+		else
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsOne)
+			@populations[@chosenColsOne] = []
+			for row in @df.data
+				@populations[@chosenColsOne].push(row[index1])
 
-	# 	@msgService.broadcast 'powercalc:onetwoTestdata',
-	# 		popl: @populations
-	# 		target: @curTarget
+		console.log @populations
+		console.log @curTarget
+		@msgService.broadcast 'powercalc:onetwoTestdata',
+			popl: @populations
+			target: @curTarget
 
 
 	oneProp: () ->
