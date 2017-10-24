@@ -158,6 +158,57 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         )
 
     fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of Two Proportions' && sidebar.deployed")
+      .form-group.bootstrap-switch-square
+        label
+          | Threshold Mode&nbsp;
+        input(
+          type="checkbox"
+          data-toggle="switch"
+          id="twoPropToggleThresh"
+          ng-model="sidebar.threshMode"
+        )
+      fieldset(ng-show="sidebar.threshMode")
+        .form-group
+          label Threshold &nbsp;
+          select.form-control(
+            ng-model="sidebar.threshTypeMode"
+            ng-init="sidebar.preciseMode = 'larger'"
+            ng-options="mode for mode in sidebar.threshTypeModes"
+            ng-change="sidebar.run()"
+          )
+        .form-group
+          .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="threshhold"
+            tooltip-placement="right"
+            ) &nbsp;
+            | Threshold1&nbsp;&nbsp;
+            input.form-control.input-sm.flat(
+              disabled
+              ng-model="sidebar.twoPropThresh1"
+              ng-keypress="sidebar.changeValue($event)"
+              type="number"
+              name='thresh'
+             )
+          #twoPropThresh1UI
+          .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="threshhold"
+            tooltip-placement="right"
+            ) &nbsp;
+            | Threshold2&nbsp;&nbsp;
+            input.form-control.input-sm.flat(
+              disabled
+              ng-model="sidebar.twoPropThresh2"
+              ng-keypress="sidebar.changeValue($event)"
+              type="number"
+              name='thresh'
+             )
+          #twoPropThresh2UI
       legend Data
       .form-group
         label Columns

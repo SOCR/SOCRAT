@@ -55,8 +55,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@chosenSubCatsTwo = []
 		@alpha = 0.01
 		@thresh = 0
-		@thresh1 = 0
-		@thresh2 = 0
+		@twoPropThresh1 = 0
+		@twoPropThresh2 = 0
 
 		# modes 
 		@deployed = false
@@ -65,6 +65,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@threshTypeMode = "larger"
 		$("#toggleDataDriven").bootstrapSwitch()
 		$("#toggleThresh").bootstrapSwitch()
+		$("#twoPropToggleThresh").bootstrapSwitch()
 		# data-driven mode toggle
 		$("#toggleDataDriven").on 'switchChange.bootstrapSwitch', () =>
 			@deployed = !@deployed
@@ -73,6 +74,9 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		# thresh mode toggle
 		$("#toggleThresh").on 'switchChange.bootstrapSwitch', () =>
 			@threshMode = !@threshMode
+		$("#twoPropToggleThresh").on 'switchChange.bootstrapSwitch', () =>
+			@threshMode = !@threshMode
+
 
 		# initialize slider
 		@slider()
@@ -261,7 +265,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 			@findMinMax(@df.data, index, -1, false)
 
-			if @threshMode then size = @runThresh(@df.data, index, -1, false)[0]
+			if @threshMode then size = @runThresh(@df.data, -1, index, -1, false)[0]
 			else size = @df.data.length
 
 		else 
@@ -271,7 +275,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@newTarget = true
 
 			@findMinMax(@container[@chosenSubCatsOne], index, -1, false)
-			if @threshMode then size = @runThresh(@container[@chosenSubCatsOne], index, 0, false)[0]
+			if @threshMode then size = @runThresh(@container[@chosenSubCatsOne], -1, index, 0, false)[0]
 			else size = @container[@chosenSubCatsOne].length
 
 		#calculate
@@ -299,7 +303,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		# calculate size
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-			console.log (@chosenCats isnt "none")
 			# check num of chosenCol is one
 			if @chosenColsTwo.length isnt 1
 				return
@@ -318,15 +321,35 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			index = @df.header.indexOf(@chosenColsTwo[0])
 
 			#extract data from container to population
-			for elt in @chosenSubCatsTwo
-				@populations[elt] = []
-				for row in @container[elt]
-					@populations[elt].push(row[index])
+			# for elt in @chosenSubCatsTwo
+			# 	@populations[elt] = []
+			# 	for row in @container[elt]
+			# 		@populations[elt].push(row[index])
+			@populations[@chosenSubCatsTwo[0]]=[]
+			@populations[@chosenSubCatsTwo[1]]=[]
+			@MinMax = [
+				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}, 
+				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}
+				]
+			for row in @container[@chosenSubCatsTwo[0]]
+				@MinMax[0]["min"] = Math.min(@MinMax[0]["min"], row[index])
+				@MinMax[0]["max"] = Math.max(@MinMax[0]["max"], row[index])
+				@populations[@chosenSubCatsTwo[0]].push(row[index])
+			for row in @container[@chosenSubCatsTwo[1]]
+				@MinMax[1]["min"] = Math.min(@MinMax[1]["min"], row[index])
+				@MinMax[1]["max"] = Math.max(@MinMax[1]["max"], row[index])
+				@populations[@chosenSubCatsTwo[1]].push(row[index])
 
-			size1 = @populations[@chosenSubCatsTwo[0]].length
-			size2 = @populations[@chosenSubCatsTwo[1]].length
-			# if @threshMode then size = @runThresh(@df.data, index, -1, false)[0]
-			# else size = @df.data.length
+			@slider()
+
+			if @threshMode
+				threshes = @runThresh(@container[@chosenSubCatsTwo[0]], @container[@chosenSubCatsTwo[1]], index, index, true)
+				size1 = threshes[0]
+				size2 = threshes[1]
+			else
+				size1 = @populations[@chosenSubCatsTwo[0]].length
+				size2 = @populations[@chosenSubCatsTwo[1]].length
+
 
 		else 
 			# check if the # of chosen cols is 2
@@ -344,12 +367,29 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			index2 = @df.header.indexOf(@chosenColsTwo[1])
 			@populations[@chosenColsTwo[0]] = []
 			@populations[@chosenColsTwo[1]] = []
+			@MinMax = [
+					{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}, 
+					{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}
+				]
 			for row in @df.data
+				@MinMax[0]["min"] = Math.min(@MinMax[0]["min"], row[index1])
+				@MinMax[1]["min"] = Math.min(@MinMax[1]["min"], row[index2])
+				@MinMax[0]["max"] = Math.max(@MinMax[0]["max"], row[index1])
+				@MinMax[1]["max"] = Math.max(@MinMax[1]["max"], row[index2])
 				@populations[@chosenColsTwo[0]].push(row[index1])
 				@populations[@chosenColsTwo[1]].push(row[index2])
 
-			size1 = @populations[@chosenColsTwo[0]].length
-			size2 = @populations[@chosenColsTwo[1]].length
+			@slider()
+
+			if @threshMode
+				threshes = @runThresh(@df.data, @df.data, index1, index2, true)
+				size1 = threshes[0]
+				size2 = threshes[1]
+			else
+				size1 = @populations[@chosenColsTwo[0]].length
+				size2 = @populations[@chosenColsTwo[1]].length
+
+			# console.log size1
 
 
 		# calculate, avoid dividung by zero
@@ -365,8 +405,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			size1: size1
 			size2: size2
 			target: @curTarget
-
-		console.log @curTarget
 
 
 	findMinMax: (data, index1, index2, isTwo) ->
@@ -390,23 +428,46 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@slider()
 
 
-	runThresh: (data, index1, index2, isTwo) ->
+	runThresh: (data1, data2, index1, index2, isTwo) ->
 		if isTwo
-			# TODO
-			return [0,0]
+			temp1 = 0
+			temp2 = 0
+			switch @threshTypeMode
+				when "larger"
+					for x in data1
+						if parseFloat(x[index1]) > @twoPropThresh1
+							temp1 += 1
+					for y in data2
+						if parseFloat(y[index2]) > @twoPropThresh2
+							temp2 += 1
+				when "smaller"
+					for x in data1
+						if parseFloat(x[index1]) < @twoPropThresh1
+							temp1 += 1
+					for y in data2
+						if parseFloat(y[index2]) < @twoPropThresh2
+							temp2 += 1
+				when "equal"
+					for x in data1
+						if parseFloat(x[index1]) is @twoPropThresh1
+							temp1 += 1
+					for y in data2
+						if parseFloat(y[index2]) is @twoPropThresh2
+							temp2 += 1
+			return [temp1, temp2]
 		else
 			temp = 0
 			switch @threshTypeMode
 				when "larger"
-					for x in data
+					for x in data1
 						if parseFloat(x[index1]) > @thresh
 							temp += 1
 				when "smaller"
-					for x in data
+					for x in data1
 						if parseFloat(x[index1]) < @thresh
 							temp += 1
 				when "equal"
-					for x in data
+					for x in data1
 						if parseFloat(x[index1]) is @thresh
 							temp += 1
 			return [temp]
@@ -433,6 +494,30 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			step: 0.1
 			slide: (event, ui) =>
 				@thresh = ui.value
+				@run()
+				return
+		)
+		$("#twoPropThresh1UI").slider(
+			min: @MinMax[0]["min"]
+			max: @MinMax[0]["max"]
+			value: @twoPropThresh1
+			orientation: "horizontal"
+			range: "min"
+			step: 0.1
+			slide: (event, ui) =>
+				@twoPropThresh1 = ui.value
+				@run()
+				return
+		)
+		$("#twoPropThresh2UI").slider(
+			min: @MinMax[1]["min"]
+			max: @MinMax[1]["max"]
+			value: @twoPropThresh2
+			orientation: "horizontal"
+			range: "min"
+			step: 0.1
+			slide: (event, ui) =>
+				@twoPropThresh2 = ui.value
 				@run()
 				return
 		)
