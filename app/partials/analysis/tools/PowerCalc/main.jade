@@ -308,8 +308,38 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               uib-tooltip="test statistics value"
               tooltip-placement="left"
               ) &nbsp;
-              | sample size: &nbsp;
+              | total sample: &nbsp;
               b {{mainArea.samplesize}}
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | target sample: &nbsp;
+              b {{mainArea.success}}
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | lower bound: &nbsp;
+              b {{mainArea.lowbound}}
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | upper bound: &nbsp;
+              b {{mainArea.upbound}}
   
 
   div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')

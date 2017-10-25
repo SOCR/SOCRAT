@@ -103,7 +103,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
-		@numDic()
 
 	parseData: () ->
 		@dataService.inferDataTypes @df, (resp) =>
@@ -206,35 +205,34 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			popl: @populations
 	
 
-	####create filter!
+	# ####create filter!
 	numDic: () ->
-		console.log @df
+		console.log @container
 		@populations = {}
-		@subCategoricalCols = ["setosa",'versicolor','virginica']
-		# if compare two different Variables, calculate separately
-		# if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-		@curTarget =  "setosa"
-		#extract index if col
-		index = @df.types.indexOf('string')
-		for subcat in @subCategoricalCols
-			n=0
-			for row in @df.data
-				if row[index] == subcat
-					n = n+1
-			@populations[subcat] = n	
-		
-		console.log @populations
+		@samplesize = @df.data.length
 
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+			if not @equalList(@curTarget, [@chosenSubCatsOne])
+				@curTarget = @chosenSubCatsOne
+				@newTarget = true
+			#extract data from container to population
+			for subcat in Object.keys(@container)
+				@populations[subcat] = @container[subcat].length
+
+		console.log @populations
+		console.log @curTarget
 		@msgService.broadcast 'powercalc:daheeData',
 			popl: @populations
+			total : @samplesize
 			target: @curTarget
-
 	
 
 
 	oneTest: () ->
 		@populations = {}
-
+		console.log @curTarget
+		console.log @newTarget
 		# if compare two different Variables, calculate separately
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
 
@@ -257,8 +255,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			for row in @df.data
 				@populations[@chosenColsOne].push(row[index1])
 
-		console.log @populations
-		console.log @curTarget
+	
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
 			target: @curTarget

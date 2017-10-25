@@ -26,23 +26,24 @@ module.exports = class PowerCalcCIOP extends BaseService
    @lowbound = 0
    @confinterval = [] 
    @ciAlpha = 0.05
-   @clevel = 0.95
    @populations = {}
 
    @parameter = 
       p: @sampleproportion
-      n: @success
       t: @samplesize
+      n: @success
       z: @zscore
       u: @upbound
       l: @lowbound
       ci: @confinterval
+      a: @ciAlpha
 
 
 
   saveData: (data) ->
     @populations = data.popl
     @compAgents= data.target
+    @samplesize = data.total
     @daheeReceiveData()
     return
 
@@ -54,11 +55,13 @@ module.exports = class PowerCalcCIOP extends BaseService
   getParams: () ->
     @parameter = 
       p: @sampleproportion
+      t: @samplesize
       n: @success
       z: @zscore
       u: @upbound
       l: @lowbound
-      ci : @confinterval
+      ci: @confinterval
+      a: @ciAlpha
     return @parameter
 
 
@@ -70,6 +73,7 @@ module.exports = class PowerCalcCIOP extends BaseService
     @upbound = newParams.u
     @lowbound = newParams.l
     @confinterval =newParams.ci
+    @ciAlpha = newParams.a
     return
 
   # savePower: (newParams) ->
@@ -78,11 +82,9 @@ module.exports = class PowerCalcCIOP extends BaseService
   #   return
 
   daheeReceiveData: () ->
-    totalnumber = 0
-    for i in Object.keys(@populaions)
-      totalnumber=totalnumber + @populations[i]
+    console.log 'receiving done'
     @success = @populations[@compAgents]
-    @samplesize = totalnumber
+    @samplesize = @samplesize
     @sampleproportion = @success/@samplesize
     @daheeUpdate()
     return
@@ -92,19 +94,19 @@ module.exports = class PowerCalcCIOP extends BaseService
     @daheeUpdate()
     return
 
-  reset: () ->
-    @sampleproportion = 0
-    @success = 0
-    @zscore = 1.96
-    @upbound = 0
-    @lowbound = 0
-    @confint = []
-    @daheeUpdate() 
-    return
+  # reset: () ->
+  #   @sampleproportion = 0
+  #   @success = 0
+  #   @zscore = 1.96
+  #   @upbound = 0
+  #   @lowbound = 0
+  #   @confint = []
+  #   @daheeUpdate() 
+  #   return
 
   daheeUpdate:() ->
-    @upbound = @sampleproportion+@zscore*sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
-    @lowbound = @sampleproportion-@zscore*sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
+    @upbound = @sampleproportion+@zscore*Math.sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
+    @lowbound = @sampleproportion-@zscore*Math.sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
     @confinterval = [@lowbound, @upbound]
 
 

@@ -429,13 +429,14 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
   ####Dahee 
   daheeRetrieve:() ->
     @params = @algorithmService.getParamsByName(@selectedAlgorithm)
-    @sampleproportion = @params.p
+    @sampleproportion = parseFloat(@params.p.toPrecision(4))
     @success = @params.n
     @samplesize = @params.t
     @zscore = @params.z
-    @upbound = @params.u
-    @lowbound = @params.l
+    @upbound = parseFloat(@params.u.toPrecision(4))
+    @lowbound = parseFloat(@params.l.toPrecision(4))
     @confinterval =@params.ci
+    @ciAlpha =  @params.a
 
   daheeSync: () ->
     @params.sampleproportion = @sampleproportion
