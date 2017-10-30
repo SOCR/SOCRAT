@@ -13,6 +13,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@dataService = @app_analysis_powerCalc_dataService
 		@msgService = @app_analysis_powerCalc_msgService
 		@algorithmsService = @app_analysis_powerCalc_algorithms
+		
 
 		# all alglorithms
 		@algorithms = ['Select',
@@ -60,6 +61,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@thresh = 0
 		@thresh1 = 0
 		@thresh2 = 0
+		@jstat = require('jStat').jStat
 
 		# mode
 		@deployed = false
@@ -103,6 +105,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
+		console.log @jstat.tci(0.53, 0.95, 0.015, 1148)
 
 	parseData: () ->
 		@dataService.inferDataTypes @df, (resp) =>
@@ -213,26 +216,22 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		# if compare two different Variables, calculate separately
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-			if not @equalList(@curTarget, [@chosenSubCatsOne])
-				@curTarget = @chosenSubCatsOne
-				@newTarget = true
+			@
 			#extract data from container to population
 			for subcat in Object.keys(@container)
 				@populations[subcat] = @container[subcat].length
 
 		console.log @populations
-		console.log @curTarget
+		console.log @chosenSubCatsOne[0]
 		@msgService.broadcast 'powercalc:daheeData',
 			popl: @populations
 			total : @samplesize
-			target: @curTarget
+			target: @chosenSubCatsOne
 	
 
 
 	oneTest: () ->
 		@populations = {}
-		console.log @curTarget
-		console.log @newTarget
 		# if compare two different Variables, calculate separately
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
 

@@ -10,7 +10,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
           ng-options="method for method in sidebar.algorithms"
           ng-change="sidebar.updateAlgControls()"
         )
-      .form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ "sidebar.selectedAlgorithm == 'Test of Two Proportions'" + "sidebar.selectedAlgorithm == 'DAHEE' ||" ng-disabled="sidebar.deployed")
+      .form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ "sidebar.selectedAlgorithm == 'Test of Two Proportions'" + "|| sidebar.selectedAlgorithm == 'DAHEE'" ng-disabled="sidebar.deployed")
         .row.form-inline.bootstrap-switch-square
           label
             span.glyphicon.glyphicon-question-sign(
@@ -197,7 +197,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         label SubCategories
         select.form-control(
         multiple
-        ng-model="sidebar.chosenSubCatsTwo"
+        ng-model="sidebar.chosenSubCatsOne"
         ng-options="col for col in sidebar.subCategoricalCols"
         ng-change="sidebar.run()"
         )

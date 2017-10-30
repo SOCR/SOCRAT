@@ -437,25 +437,26 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @lowbound = parseFloat(@params.l.toPrecision(4))
     @confinterval =@params.ci
     @ciAlpha =  @params.a
+    @standarddev = @params.sd
 
   daheeSync: () ->
     @params.sampleproportion = @sampleproportion
     @params.n = @success
     @syncData(@params)
 
-  daheePower: () ->
-    @syncPower(@params)
-    return
+  # daheePower: () ->
+  #   @syncPower(@params)
+  #   return
 
-  daheePress: (evt) ->
-    name = evt.target.name
-    key = evt.which or evt.keyCode
-    if key is 13
-      if name is "dahee"
-        @daheePower()
-      else
-        @daheeSync()
-    return
+  # daheePress: (evt) ->
+  #   name = evt.target.name
+  #   key = evt.which or evt.keyCode
+  #   if key is 13
+  #     if name is "dahee"
+  #       @daheePower()
+  #     else
+  #       @daheeSync()
+  #   return
     
   #OneProp function only
   onePropRetrieve: () ->

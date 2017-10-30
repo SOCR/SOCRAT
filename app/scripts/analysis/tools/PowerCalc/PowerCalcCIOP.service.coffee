@@ -15,6 +15,7 @@ module.exports = class PowerCalcCIOP extends BaseService
 
   initialize: ->
    @msgService = @app_analysis_powerCalc_msgService
+   @jstat = require('jStat').jStat
    @name = 'DAHEE'
    @populations = null
    @compAgents=[]
@@ -22,11 +23,13 @@ module.exports = class PowerCalcCIOP extends BaseService
    @success =20
    @samplesize = 100
    @zscore = 1.96
-   @upbound = 0
-   @lowbound = 0
-   @confinterval = [] 
-   @ciAlpha = 0.05
+
+   @confinterval = [0,1] 
+   @upbound = @confinterval[1]
+   @lowbound = @confinterval[0]
+   @ciAlpha = 0.95
    @populations = {}
+   @standarddev = 0.3
 
    @parameter = 
       p: @sampleproportion
@@ -37,6 +40,7 @@ module.exports = class PowerCalcCIOP extends BaseService
       l: @lowbound
       ci: @confinterval
       a: @ciAlpha
+      sd: @standarddev
 
 
 
@@ -47,33 +51,45 @@ module.exports = class PowerCalcCIOP extends BaseService
     @daheeReceiveData()
     return
 
-
   getName: () ->
    return @name
-
 
   getParams: () ->
     @parameter = 
       p: @sampleproportion
       t: @samplesize
       n: @success
-      z: @zscore
       u: @upbound
       l: @lowbound
       ci: @confinterval
       a: @ciAlpha
+      sd: @standarddev
     return @parameter
-
 
   setParams: (newParams) ->
     @sampleproportion = newParams.p
     @success = newParams.n
     @samplesize = newParams.t
-    @zscore = newParams.z
     @upbound = newParams.u
     @lowbound = newParams.l
     @confinterval =newParams.ci
     @ciAlpha = newParams.a
+    @standarddev = newParams.sd
+    return
+   
+  daheeReceiveData: () ->
+    console.log 'receiving done'
+    @success = @populations[@compAgents]
+    @samplesize = @samplesize
+    @sampleproportion = @success/@samplesize
+    @standarddev = Math.sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
+    @confinterval = @jstat.tci(@sampleproportion, 0.90, @standarddev, @samplesize)
+    @upbound = @confinterval[1]
+    @lowbound = @confinterval[0]
+    return
+
+  setAlpha: (alphaIn) ->
+    @ciAlpha = alphaIn
     return
 
   # savePower: (newParams) ->
@@ -81,32 +97,5 @@ module.exports = class PowerCalcCIOP extends BaseService
   #   @onePropPowerTon()
   #   return
 
-  daheeReceiveData: () ->
-    console.log 'receiving done'
-    @success = @populations[@compAgents]
-    @samplesize = @samplesize
-    @sampleproportion = @success/@samplesize
-    @daheeUpdate()
-    return
-
-  setAlpha: (alphaIn) ->
-    @ciAlpha = alphaIn
-    @daheeUpdate()
-    return
-
-  # reset: () ->
-  #   @sampleproportion = 0
-  #   @success = 0
-  #   @zscore = 1.96
-  #   @upbound = 0
-  #   @lowbound = 0
-  #   @confint = []
-  #   @daheeUpdate() 
-  #   return
-
-  daheeUpdate:() ->
-    @upbound = @sampleproportion+@zscore*Math.sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
-    @lowbound = @sampleproportion-@zscore*Math.sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
-    @confinterval = [@lowbound, @upbound]
 
 
