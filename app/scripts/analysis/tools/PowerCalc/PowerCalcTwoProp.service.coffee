@@ -57,7 +57,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
     @twoPropP1 = data.prop1
     @twoPropP2 = data.prop2
     @twoPropN1 = data.size1
-    @twoPeopN2 = data.size2
+    @twoPropN2 = data.size2
     @compAgents = data.target
     @twoPropReceiveData()
     return
