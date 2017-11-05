@@ -113,6 +113,7 @@ module.exports = class ModelerDir extends BaseDirective
             z: row[2]
             r: row[3]
         ###
+        
         leftBound = modelData.stats.leftBound
         rightBound = modelData.stats.rightBound
         topBound = modelData.stats.topBound
@@ -120,9 +121,13 @@ module.exports = class ModelerDir extends BaseDirective
         curveData = modelData.curveData
         
         padding = 50
-        xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
-        yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
+        #xScale = d3.scale.linear().range([0, width]).domain([modelData.xMin, modelData.xMax])
+        #yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
+        xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.xMin, modelData.xMax])
+        yScale = d3.scale.linear().range([height - padding, padding]).domain([bottomBound, topBound])
 
+        #x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
+        #y.domain([0, (d3.max dataHist.map (i) -> i.length)])
         xAxis = d3.svg.axis().ticks(20)
           .scale(xScale)
 
@@ -139,29 +144,50 @@ module.exports = class ModelerDir extends BaseDirective
 
         console.log("printing gaussian curve data")
         console.log(curveData)
-
-
-        _graph.append('svg:path')
-          .attr('d', lineGen(curveData))
-          .data([curveData])
+        '''
+        if modelData.distribution.name == 'Kernel'
+          console.log("plotting for kernel")
+          _graph.append('svg:path')
+          .datum(curveData)
+          .attr("class", "line")
+          .attr('d', lineGen)
           .attr('stroke', 'black')
           .attr('stroke-width', 1.5)
-          .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
-          .on('mouseout', (d) -> hideToolTip())
           .attr('fill', "none")
 
+        else 
+        '''
+        _graph.append('svg:path')
+        .attr('d', lineGen(curveData))
+        .data([curveData])
+        .attr('stroke', 'black')
+        .attr('stroke-width', 1.5)
+        .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
+        .on('mouseout', (d) -> hideToolTip())
+        .attr('fill', "none")
 
-        ###
-        switch distribution.name 
-          when 'Normal'
-            drawCurve(data, width, height, _graph);
-          when 'Kernel'
-            drawCurve(data, width, height, _graph);
-        ###
 
 
+      '''
+        if @distribution.name == 'Laplace'
+            @container.append('div').attr('id', 'laplace_slider')
+            $slider = $("#laplace_slider")
+            if $slider.length > 0
+            $slider.slider(
+              min: 1
+              max: 10
+              value: 5
+              orientation: "horizontal"
+              range: "min"
+              change: ->
+            ).addSliderSegments($slider.slider("option").max)
+            $slider.on "slidechange", (event, ui) =>
+              b = parseInt ui.value
+    #      tooltip.html()
+              modelData = @
+        '''
 
 
-      drawCurve(modelData, width, height, _graph) ->
+    
 
         

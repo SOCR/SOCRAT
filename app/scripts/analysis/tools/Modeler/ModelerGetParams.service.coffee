@@ -35,7 +35,7 @@ module.exports = class GetParams extends BaseService
 
   getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
     data = []
-    for i in [leftBound...rightBound] by 1
+    for i in [leftBound...rightBound] by .2
       data.push
         x: i
         y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
@@ -123,6 +123,8 @@ module.exports = class GetParams extends BaseService
       rightBound: rightBound
       topBound: topBound
       bottomBound: bottomBound
+      xMin: min
+      xMax: max
 
 
 

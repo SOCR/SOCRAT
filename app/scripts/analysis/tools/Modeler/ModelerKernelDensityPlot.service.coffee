@@ -32,28 +32,60 @@ module.exports = class KernelDensityPlot extends BaseService
 
     ##
     data.stats = @getParams.getParams(data)
-    xScale = d3.scale.linear().domain([data.stats.leftBound, data.stats.rightBound]).range([0, width])
-    kde = @kernelDensityEstimator(@epanechnikovKernel(bandwith), xScale.ticks(100));
-    console.log("printing kde(data))")
-    console.log(kde(data.dataPoints))
-    data.curveData = kde(dataPoints)
+    xScale = d3.scale.linear().domain([data.stats.xMin, data.stats.xMax]).range([0, width])
+    kde = @kernelDensityEstimator(@epanechnikovKernel(bandwith), xScale.ticks(18));
+    console.log("printing kde data ")
+    toKDE = data.dataPoints.map (d) ->
+      return d[0]
+    data.curveData = kde(toKDE)
+    console.log(data.stats.xMin)
+    console.log(data.stats.xMax)
+    console.log( data.curveData)
+    return data
     
 
   kernelDensityEstimator: (kernel, x) ->
-  (sample) ->
-    x.map (x) ->
-      {
-        x: x
-        y: d3.mean(sample, (v) ->
-          kernel x - v
-        )
-      }
+    (sample) ->
+      x.map (x) ->
+        {
+          x: x
+          y: d3.mean(sample, (v) ->
+            kernel x - v
+          )
+        }
 
   epanechnikovKernel: (scale) ->
     (u) ->
       if Math.abs(u /= scale) <= 1 then .75 * (1 - (u * u)) / scale else 0
 
 
+  uniform: (scale) ->
+    (u) ->
+      if Math.abs(u /= scale) <= 1 then .5
+
+  triangular: (scale) ->
+    (u) ->
+      if Math.abs(u /= scale) <= 1 then 1 - Math.abs(u)
+
+  quartic: (scale) ->
+    (u) ->
+      if Math.abs(u /= scale) <= 1 then (15/16) * (1-(u*u))*(1-(u*u)) else 0
+
+  ''''
+  triweight: (scale) ->
+    (u) ->
+      if Math.abs(u /= scale) <= 1 then (35/32) * (1-(u*u))*(1-(u*u)*(1-(u*u)) else 0    
+
+
+  gaussian: (scale) ->
+    (u) ->
+      if Math.abs(u /= scale) <= 1 then 1 / (Math.sqrt(2*Math.PI) * Math.exp(-.5 * u* U)) 
+
+
+  cosine : (scale) ->
+    (u) ->
+      if Math.abs(u /= scale) <= 1 then Math.PI / 4 * Math.cos(Math.PI /2 * u)
+  '''
   drawKernelDensityEst: (data, width, height, _graph) ->
     console.log("datafrom kde")
     console.log(data)
@@ -105,8 +137,10 @@ module.exports = class KernelDensityPlot extends BaseService
 
     kde = @kernelDensityEstimator(@epanechnikovKernel(bandwith), xScale.ticks(100));
     console.log("printing kde(data))")
-    console.log(kde(data))
-    kde_curve_data = kde(data)
+    
+
+
+   
     #console.log("appending graph")
     '''
     _graph.append('svg:path')

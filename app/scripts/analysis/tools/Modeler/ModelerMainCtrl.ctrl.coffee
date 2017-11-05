@@ -43,5 +43,3 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       #@modelData = data
       @chartData = data
       console.log("distribution:" + data.distribution.name)
-
-    

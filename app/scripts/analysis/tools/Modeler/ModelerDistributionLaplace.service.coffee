@@ -9,18 +9,31 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
 
-module.exports = class NormalDist extends BaseService
+module.exports = class LaplaceDist extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
     @getParams = @socrat_analysis_modeler_getParams
 
-    @name = 'Normal'
-
+    @name = 'Laplace'
+    @u = 0
+    @b = 1
 
   getName: () ->
     return @name
 
-
+  pdf: (u, b, x) ->
+    return (1 / (2*b))*Math.exp(-(Math.abs(x-u)/b))
+    
+  
+  getLaplaceDistribution: (leftBound, rightBound, u, b) ->
+    data = []
+    for i in [leftBound...rightBound] by .2
+      data.push
+        x: i
+        y: @pdf(u, b, i)
+    console.log(data)
+    data
+  
   getChartData: (data) ->
     histData = data.dataPoints
     histData = histData.map (row) ->
@@ -32,14 +45,10 @@ module.exports = class NormalDist extends BaseService
     data.stats = stats
     data.xMin = d3.min(histData, (d)->parseFloat d.x)
     data.xMax = d3.max(histData, (d)->parseFloat d.x)
-    data.curveData = @getParams.getGaussianFunctionPoints(stats.standardDev, stats.mean, stats.variance, data.xMin , data.xMax)
-    console.log("hist")
-    console.log(histData)
-    console.log("xMin")
-
-    console.log(data.xMin)
-
+    data.curveData = @getLaplaceDistribution(data.xMin, data.xMax, data.stats.mean , @b)
+    console.log(data.curveData)
     
     return data
 
 
+  

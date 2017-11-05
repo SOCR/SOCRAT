@@ -17,16 +17,16 @@ module.exports = class DistList extends BaseService
       xLabel: "Add x"
 
     ,
-      name: 'Binomial'
+      name: 'Maxwell-Boltzman'
       value: 1
       x: ['integer', 'number']
       y: false
       z: false
-      message: "Choose an x variable and a y variable."
+      message: "Maxwell Boltzman distribution."
       xLabel: "Add x"
 
     ,
-      name: 'Poisson'
+      name: 'Cauchy'
       value: 2
       x: ['integer', 'number']
       y: false
@@ -34,12 +34,12 @@ module.exports = class DistList extends BaseService
       message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
       xLabel: ""
     ,
-      name: 'Polynomial'
+      name: 'Laplace'
       value: 2
       x: ['integer', 'number']
       y: false
       z: false
-      message: "This class Designs a simple polynomial model fitting curve"
+      message: "This class Designs a simple Laplace model fitting curve"
       xLabel: ""
     ,
     
@@ -50,10 +50,7 @@ module.exports = class DistList extends BaseService
       z: false
       message: "This class Designs a simple polynomial model fitting curve"
       xLabel: ""
-  
-
-
-
+      #kernels ['uniform', 'triangular', 'epanechnikov', 'quartic', 'triweight', 'gaussian', 'cosine']
     ]
 
 

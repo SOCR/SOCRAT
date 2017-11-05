@@ -33,6 +33,26 @@ div(ng-controller="ModelerSidebarCtrl as sidebar")
         )
 
 
+    
+    //fieldset(ng-show="sidebar.selectedDistributions == 'Kernel")
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenKernel"
+        ng-options="col for col in sidebar.Kernels"
+        ng-change="sidebar.updateDataPoints()"
+        )
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
   //-
     form
       legend Parameters &nbsp;

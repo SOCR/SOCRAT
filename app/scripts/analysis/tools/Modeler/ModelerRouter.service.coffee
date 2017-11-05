@@ -5,14 +5,22 @@ BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffe
 module.exports = class ModelerRouter extends BaseModuleDataService
   @inject 'app_analysis_powerCalc_msgService',
     'socrat_modeler_distribution_normal',
+    'socrat_modeler_distribution_laplace',
+    'socrat_modeler_distribution_cauchy',
+    'socrat_modeler_distribution_maxwell_boltzman'
+
     'socrat_analysis_modeler_kernel_density_plotter',
+
     '$interval'
 
   initialize: ->
     @msgManager = @app_analysis_powerCalc_msgService
     @Normal = @socrat_modeler_distribution_normal
     @Kernel = @socrat_analysis_modeler_kernel_density_plotter
-    @models = [@Normal, @Kernel]
+    @Laplace = @socrat_modeler_distribution_laplace
+    @Cauchy = @socrat_modeler_distribution_cauchy
+    @MaxwellBoltzman = @socrat_modeler_distribution_maxwell_boltzman
+    @models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman]
 
   ############
 
@@ -21,8 +29,8 @@ module.exports = class ModelerRouter extends BaseModuleDataService
   getParamsByName: (modelName) ->
     (model.getParams() for model in @models when modelName is model.getName()).shift()
 
-  getChartData: (modelName, dataIn) ->
-    (model.getChartData(dataIn) for model in @models when modelName is model.getName()).shift()
+  getChartData: (modelName, dataIn, options = null) ->
+    (model.getChartData(dataIn, options) for model in @models when modelName is model.getName()).shift()
 
   setParamsByName: (modelName, dataIn) ->
     (model.setParams(dataIn) for model in @models when modelName is model.getName()).shift()
