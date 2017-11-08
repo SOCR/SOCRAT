@@ -25,25 +25,71 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
           drawNormalCurve(newChartData)
       , on
 
-      twoTestLegend = () ->
-        if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.compAgents[0]+": "+scope.mainArea.twoTestMean1)
-          $("#displayLegend1").text(scope.mainArea.compAgents[1]+": "+scope.mainArea.twoTestMean2)
-          $("#displayLegend0").css("background-color","aquamarine")
-          $("#displayLegend1").css("background-color","chocolate")
-        else
-          $("#displayLegend0").text("Sample1: " + scope.mainArea.twoTestMean1)
-          $("#displayLegend1").text("Sample2: " + scope.mainArea.twoTestMean2)
-          $("#displayLegend0").css("background-color","aquamarine")
-          $("#displayLegend1").css("background-color","chocolate")
+      scope.$watch 'mainArea.barChartData', (newChartData) =>
+        if newChartData
+          drawBarGraph(newChartData)
+      , on
 
-      oneTestLegend = () ->
-        if scope.mainArea.deployed
-          $("#displayLegend0").text(scope.mainArea.compAgents+": "+scope.mainArea.twoTestMean1)
-          $("#displayLegend0").css("background-color","aquamarine")
-        else
-          $("#displayLegend0").text("Sample: " + scope.mainArea.oneTestMean)
-          $("#displayLegend0").css("background-color","aquamarine")
+      drawBarGraph = (newChartData) ->
+
+        # setting up frame
+        proportion = newChartData
+        padding = 50
+        width = 500 - MARGIN.left - MARGIN.right
+        height = 500 - MARGIN.top - MARGIN.bottom
+        container = d3.select(elem[0])
+        container.select('svg').remove()
+        svg = container.append('svg')
+          .attr('width', width + MARGIN.left + MARGIN.right)
+          .attr('height', height + MARGIN.top + MARGIN.bottom)
+        _graph = svg.append('g')
+          .attr('transform', 'translate(' + MARGIN.left + ',' + MARGIN.top + ')')
+
+        # draw axises
+        x = d3.scale.linear().range([ padding, width - padding ])
+        y = d3.scale.linear().range([ height - padding, padding ])
+        y.domain([0,1])
+        xAxis = d3.svg.axis().scale(x).orient('bottom')
+          .tickFormat("")
+        yAxis = d3.svg.axis().scale(y).orient('left')
+        #x-axis
+        _graph.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + (width - padding) + ')')
+          .call xAxis
+        #y-axis
+        _graph.append('g')
+          .attr('class', 'y axis')
+          .attr('transform', 'translate(' + padding + ',0)' )
+          .call yAxis
+          .style('font-size', '16px')
+        #adjust width
+        _graph.selectAll('.x.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        _graph.selectAll('.y.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+
+        # create bar elements
+        colorContainer = d3.scale.category10()
+        barWidth = 0.15*(width-padding)
+        svg.selectAll("rect")
+         .data(proportion)
+         .enter()
+         .append("rect")
+         .attr("x", (d,i) -> 130 + i * 90 )
+         .attr("y", (d) -> 430 - 430*(d*0.835))
+         .attr("width", barWidth)
+         .attr("height", (d) -> 430*(d*0.835))
+         .attr('fill', (d,i) -> colorContainer(i))
+         .style('opacity', 0.75)
+        
+        labX = 40
+        for lab in scope.mainArea.compAgents
+          svg.append("text")
+           .attr("class", "label")
+           .attr("y", 450)
+           .attr("x", labX += 90)
+           .text(lab)
 
       drawNormalCurve = (newChartData) ->
 
@@ -112,18 +158,4 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
         _graph.selectAll('.y.axis path')
         .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-
-        for datum, i in data
-          # # display lengend
-          svg.append('text')
-            .attr('id', 'displayLegend'+i)
-            .attr('x', xScale(bounds.right * 0.8))
-            .attr('y', yScale(bounds.top * (0.9- i*0.05)))
-            .style('text-anchor', 'middle')
-          .attr('fill', color(i))
-
-        if scope.mainArea.selectedAlgorithm is 'Two-sample t test (general case)'
-          twoTestLegend()
-        else if scope.mainArea.selectedAlgorithm is 'One-Sample (or Paired) t Test'
-          oneTestLegend()
         return

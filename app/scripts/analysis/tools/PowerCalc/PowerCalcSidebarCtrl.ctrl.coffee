@@ -10,69 +10,77 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 	'$timeout'
 
 	initialize: ->
-		console.log("sidebar initialized")
 		@dataService = @app_analysis_powerCalc_dataService
 		@msgService = @app_analysis_powerCalc_msgService
 		@algorithmsService = @app_analysis_powerCalc_algorithms
+		
 
-		# choose algorithms
+		# all alglorithms
 		@algorithms = ['Select',
-		 'CI for One Proportion',
-		 'CI for One Mean',
-		 'Test of One Proportion',
-		 'One-Sample (or Paired) t Test',
-		 'Pilot Study',
-		 'R-square (multiple correlation)',
-		 'Generic chi-square test',
-		 'Power of a Simple Poisson Test',
-		 'Two-sample t test (general case)']
-		@powercalcRunning = off
-		@algParams = null
-		@selectedAlgorithm = @algorithms[9]
-		@DATA_TYPES = @dataService.getDataTypes()
+		'CI for One Proportion',
+		'DAHEE',
+		'CI for One Mean',
+		'Test of One Proportion',
+		'Test of Two Proportions',
+		'Pilot Study',
+		'R-square (multiple correlation)',
+		'Generic chi-square test',
+		'Power of a Simple Poisson Test',
+		'Two-sample t test (general case)',
+		'One-Sample (or Paired) t Test']
+		@selectedAlgorithm = @algorithms[3]
 
 		# set up data and algorithm-agnostic controls
-		@useLabels = off
-		@reportAccuracy = on
-		@clusterRunning = off
-		@ready = off
-		@running = 'hidden'
-		@uniqueLabels =
-		  labelCol: null
-		  num: null
-		@algParams = null
+		@DATA_TYPES = @dataService.getDataTypes()
 
-		# dataset
+		# data
 		@dataFrame = null
 		@dataType = null
-		@cols = []
-		@chosenCols = []
-		@chosenVars = []
 		@numericalCols = []
 		@categoricalCols = []
-		@populations = {}
-		@container = {}
-		@xCol = null
-		@yCol = null
-		@Zcol = null
+		@subCategoricalCols = []
 		@labelCol = ["none"]
-		@vars = []
-		@chosenLabel = null
 		@df = null
-		@valid = false
 
-		@tTestAlpha = 0.010
+		# running conditions
+		@newTarget = true
+		@curTarget = ["",""]
 
+		# pre-processed data container
+		@container = {} # {a:[], b:[]}
+		@MinMax = [{"min": 0, "max": 1}, {"min": 0, "max": 1}]
+		@populations = {}
+
+		# sidebar variables
+		@chosenColsOne = null
+		@chosenColsTwo = []
+		@chosenCats = null
+		@chosenSubCatsOne = []
+		@chosenSubCatsTwo = []
+		@alpha = 0.01
+		@thresh = 0
+		@thresh1 = 0
+		@thresh2 = 0
+		@jstat = require('jStat').jStat
+
+		# mode
 		@deployed = false
-		$("#toggle_switch").bootstrapSwitch();
-
-		#if the switch is toggled, change mode
-		$("#toggle_switch").on 'switchChange.bootstrapSwitch', () =>
+		@threshMode = false
+		@threshTypeModes = ["larger", "smaller", "equal"]
+		@threshTypeMode = "larger"
+		$("#toggleDataDriven").bootstrapSwitch()
+		$("#toggleThresh").bootstrapSwitch()
+		# data-driven mode toggle
+		$("#toggleDataDriven").on 'switchChange.bootstrapSwitch', () =>
 			@deployed = !@deployed
 			@msgService.broadcast 'powercalc:change_mode',
 				deploy: @deployed
+		# thresh mode toggle
+		$("#toggleThresh").on 'switchChange.bootstrapSwitch', () =>
+			@threshMode = !@threshMode
 
-		@slidebar()
+		# initialize slider
+		@slider()
 
 		@dataService.getData().then (obj) =>
 			if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
@@ -84,6 +92,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				# make local copy of data
 				@dataFrame = obj.dataFrame
 				# parse dataFrame
+				@df = obj.dataFrame
 				@parseData obj.dataFrame
 			else
 				# TODO: add processing for nested object
@@ -92,132 +101,14 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@$scope.$on 'powercalc:updateAlgorithm_back', (event, data)=>
 			@selectedAlgorithm = data
 
-	loadData: () ->
-		@msgService.broadcast 'powercalc:loadData',
-			populations:@populations
-			chosenCol:@chosenCols
-			chosenVar:@chosenVars
-			chosenlab:@chosenLabel
-
-		# if data selected meets specified creteria, run the caculation
-	run: (data) ->
-		if (@selectedAlgorithm is 'Two-sample t test (general case)')
-			if @chosenCols.length is 1
-				@valid = true
-			else
-				@valid = false
-				@chosenLabel = "none"
-				@vars = []
-			# if compare two different Variables, calculate sepaerately
-			if (@chosenLabel isnt "none") and (@chosenLabel isnt null)
-				# check num of chosenCol is one
-				if @chosenCols.length isnt 1
-					#console.log(@chosenCols.length)
-					#window.alert("Must one and only one Col")
-					return
-
-				# check num of chosenVar is two
-				if @chosenVars.length isnt 2
-					#console.log(@chosenVars.length)
-					#window.alert("Must two and only two Vars")
-					return
-
-				#extract index if col
-				index = data.header.indexOf(@chosenCols[0])
-
-				#check if index if -1
-				if index is -1
-#					console.log -1
-					return
-
-				#extract data from container to population
-				@populations = {}
-				for elt in @chosenVars
-					@populations[elt] = []
-					for row in @container[elt]
-						@populations[elt].push(row[index])
-#				console.log @populations
-
-			else
-
-				# check num of chosenCol is two
-				if @chosenCols.length isnt 2
-					#console.log(@chosenCols.length)
-					#window.alert("Must two and only two Col")
-					return
-
-				# extract data from data to population
-				index1 = data.header.indexOf(@chosenCols[0])
-				index2 = data.header.indexOf(@chosenCols[1])
-				@populations = {}
-				@populations[@chosenCols[0]] = []
-				@populations[@chosenCols[1]] = []
-				for row in data.data
-					@populations[@chosenCols[0]].push(row[index1])
-					@populations[@chosenCols[1]].push(row[index2])
-
-			@msgService.broadcast 'powercalc:onetwoTestdata',
-				populations:@populations
-				chosenCol:@chosenCols
-				chosenVar:@chosenVars
-				chosenlab:@chosenLabel
-		else if (@selectedAlgorithm is 'One-Sample (or Paired) t Test')
-			# if compare two different Variables, calculate separately
-			if (@chosenLabel isnt "none") and (@chosenLabel isnt null)
-
-				#extract index if col
-				index = data.header.indexOf(@chosenCols)
-
-				#check if index if -1
-				if index is -1
-#					console.log -1
-					return
-
-				#extract data from container to population
-				@populations = {}
-				@populations[@chosenVars] = []
-				for row in @container[@chosenVars]
-					@populations[@chosenVars].push(row[index])
-
-			else
-				# extract data from data to population
-				index1 = data.header.indexOf(@chosenCols)
-				@populations = {}
-				@populations[@chosenCols] = []
-				for row in data.data
-					@populations[@chosenCols].push(row[index1])
-
-			@msgService.broadcast 'powercalc:onetwoTestdata',
-				populations:@populations
-				chosenCol:@chosenCols
-				chosenVar:@chosenVars
-				chosenlab:@chosenLabel
-
 	updateAlgControls: () ->
-		#update algorithm method in local and broadcast to main control
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
+		console.log @jstat.tci(0.53, 0.95, 0.015, 1148)
 
-	updateVar: (data) ->
-		index = data.header.indexOf(@chosenLabel)
-		@vars = []
-		@container = []
-		if index isnt -1
-			for row in data.data
-				if row[index] not of @container
-					@container[row[index]] = []
-
-				if row[index] not in @vars
-					@vars.push(row[index])
-
-				@container[row[index]].push(row)
-
-	uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
-
-	parseData: (data) ->
-		@df = data
-		@dataService.inferDataTypes data, (resp) =>
+	parseData: () ->
+		@dataService.inferDataTypes @df, (resp) =>
 			if resp? and resp.dataFrame? and resp.dataFrame.data?
 
 				#update data types
@@ -225,39 +116,289 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 					@df.types[idx] = resp.dataFrame.data[idx]
 
 				# update columns
-				@categoricalCols = []
-				@labelCol = ["none"]
+				@numericalCols = []
+				@categoricalCols = ["none"]
 				id = 0
 				for header in @df.types
 					if header in ["number", "integer"]
-						@categoricalCols.push(@df.header[id])
+						@numericalCols.push(@df.header[id])
 					else if header in ["string"]
-						@labelCol.push(@df.header[id])
+						@categoricalCols.push(@df.header[id])
 					id += 1
-			# @updateDataPoints(@df)
 
-			# @msgService.broadcast 'powercalc:updateDataPoints',
-			# 	dataPoints: @df
 
-	slidebar: () ->
+	# called when update category
+	update: () ->
+		index = @df.header.indexOf(@chosenCats)
+		@container = {}
+		@subCategoricalCols = []
+		for row in @df.data
+			if row[index] not of @container
+				@container[row[index]] = []
 
-		$("#tTestAlphaUI").slider(
+			if row[index] not in @subCategoricalCols
+				@subCategoricalCols.push(row[index])
+
+			@container[row[index]].push(row)
+
+	run: () ->
+		if (@selectedAlgorithm is 'Two-sample t test (general case)')
+			@twoTest()
+		else if (@selectedAlgorithm is 'One-Sample (or Paired) t Test')
+			@oneTest()
+		else if (@selectedAlgorithm is 'Test of One Proportion')
+			@oneProp()
+		else if (@selectedAlgorithm is 'DAHEE')
+			@numDic()
+
+	twoTest: ()->
+		@populations = {}
+		if @chosenColsTwo.length is 1
+			$("#twoTestCat").prop("disabled", false)
+			$("#twoTestSubCat").prop("disabled", false)
+		else
+			$("#twoTestCat").prop("disabled", true)
+			$("#twoTestSubCat").prop("disabled", true)
+			@chosenCats = "none"
+			@subCategoricalCols = []
+
+		# compare two different Variables, calculate sepaerately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+			# check num of chosenCol is one
+			if @chosenColsTwo.length isnt 1
+				return
+			# check num of chosenSubCats is two
+			if @chosenSubCatsTwo.length isnt 2
+				return
+
+			# update comparison targets
+			if not @equalList(@curTarget, @chosenSubCatsTwo)
+				@curTarget = @chosenSubCatsTwo
+				@newTarget = true
+
+			#extract index if col
+			index = @df.header.indexOf(@chosenColsTwo[0])
+
+			#extract data from container to population
+			for elt in @chosenSubCatsTwo
+				@populations[elt] = []
+				for row in @container[elt]
+					@populations[elt].push(row[index])
+
+		else
+
+			if @chosenColsTwo.length isnt 2
+				return
+
+			# update comparison targets
+			if not @equalList(@curTarget, @chosenColsTwo)
+				@curTarget = @chosenColsTwo
+				@newTarget = true
+
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsTwo[0])
+			index2 = @df.header.indexOf(@chosenColsTwo[1])
+			@populations[@chosenColsTwo[0]] = []
+			@populations[@chosenColsTwo[1]] = []
+			for row in @df.data
+				@populations[@chosenColsTwo[0]].push(row[index1])
+				@populations[@chosenColsTwo[1]].push(row[index2])
+
+		@msgService.broadcast 'powercalc:onetwoTestdata',
+			popl: @populations
+	
+
+	# ####create filter!
+	numDic: () ->
+		console.log @container
+		@populations = {}
+		@samplesize = @df.data.length
+
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+			@
+			#extract data from container to population
+			for subcat in Object.keys(@container)
+				@populations[subcat] = @container[subcat].length
+
+		console.log @populations
+		console.log @chosenSubCatsOne[0]
+		@msgService.broadcast 'powercalc:daheeData',
+			popl: @populations
+			total : @samplesize
+			target: @chosenSubCatsOne
+	
+
+
+	oneTest: () ->
+		@populations = {}
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+
+			#extract index if col
+			index = @df.header.indexOf(@chosenColsOne)
+
+			if not @equalList(@curTarget, [@chosenSubCatsOne])
+				@curTarget = @chosenSubCatsOne
+				@newTarget = true
+
+			#extract data from container to population
+			@populations[@chosenSubCatsOne] = []
+			for row in @container[@chosenSubCatsOne]
+				@populations[@chosenSubCatsOne].push(row[index])
+
+		else
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsOne)
+			@populations[@chosenColsOne] = []
+			for row in @df.data
+				@populations[@chosenColsOne].push(row[index1])
+
+	
+		@msgService.broadcast 'powercalc:onetwoTestdata',
+			popl: @populations
+			target: @curTarget
+
+
+	oneProp: () ->
+		if @chosenCols is null
+				return
+
+		#extract index if col
+		index = @df.header.indexOf(@chosenColsOne)
+		size = 0
+
+		if index is -1
+			return
+
+		# calculate size
+		if (@chosenCats is "none") or (@chosenCats is undefined)
+			# update comparison target
+			if not @equalList([@curTarget], [@chosenColsOne])
+				@curTarget = @chosenColsOne
+				@newTarget = true
+
+			@findMinMax(@df.data, index, -1, false)
+
+			if @threshMode then size = @runThresh(@df.data, index, -1, false)[0]
+			else size = @df.data.length
+
+		else 
+			# update comparison target
+			if not @equalList([@curTarget], [@chosenSubCatsOne])
+				@curTarget = @chosenSubCatsOne
+				@newTarget = true
+
+			@findMinMax(@container[@chosenSubCatsOne], index, -1, false)
+			if @threshMode then size = @runThresh(@container[@chosenSubCatsOne], index, 0, false)[0]
+			else size = @container[@chosenSubCatsOne].length
+
+		#calculate
+		totalSize = @df.data.length
+		if size is 0 then size = 1
+		proportion = size/totalSize
+
+		@msgService.broadcast 'powercalc:onePropdata',
+			prop: proportion
+			size: size
+			target: @curTarget
+
+
+
+	findMinMax: (data, index1, index2, isTwo) ->
+		if @newTarget
+			@newTarget = false
+			@MinMax = [
+				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}, 
+				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}
+			]
+			if isTwo
+				# TODO
+				return
+			else 
+				for row in data
+					i = parseFloat(row[index1])
+					if i < @MinMax[0]["min"]
+						@MinMax[0]["min"] = i
+					if i > @MinMax[0]["max"]
+						@MinMax[0]["max"] = i
+			@thresh=@MinMax[0]["min"]
+		@slider()
+
+
+	runThresh: (data, index1, index2, isTwo) ->
+		if isTwo
+			# TODO
+			return [0,0]
+		else
+			temp = 0
+			switch @threshTypeMode
+				when "larger"
+					for x in data
+						if parseFloat(x[index1]) > @thresh
+							temp += 1
+				when "smaller"
+					for x in data
+						if parseFloat(x[index1]) < @thresh
+							temp += 1
+				when "equal"
+					for x in data
+						if parseFloat(x[index1]) is @thresh
+							temp += 1
+			return [temp]
+
+	slider: ->
+		$("#alphaUI").slider(
 			min: 0.001
 			max: 0.200
-			value: @tTestAlpha
+			value: @alpha
 			orientation: "horizontal"
 			range: "min"
 			step: 0.001
 			slide: (event, ui) =>
-				@tTestAlpha = ui.value
-				@msgService.broadcast 'powercalc:onetwoTestalpha',
-					alpha_in: @tTestAlpha
+				@alpha = ui.value
+				@msgService.broadcast 'powercalc:alpha',
+					alpha_in: @alpha
+		)
+		$("#onePropThreshUI").slider(
+			min: @MinMax[0]["min"]
+			max: @MinMax[0]["max"]
+			value: @thresh
+			orientation: "horizontal"
+			range: "min"
+			step: 0.1
+			slide: (event, ui) =>
+				@thresh = ui.value
+				@run()
+				return
 		)
 
-  changeValue: (evt) ->
-    name = evt.target.name
-    key = evt.which or evt.keyCode
-    if key is 13
-      @tTestAlpha = parseFloat(val)
-    @slidebar()
-    return
+	changeValue: (evt) ->
+		name = evt.target.name
+		key = evt.which or evt.keyCode
+		if key is 13
+			@slider()
+			@run()
+		return
+
+	# compare if list a is same as list b
+	# return false when not equal
+	equalList: (a, b) ->
+		console.log (a.length+ ":"+ b.length)
+		if (a.length isnt b.length) then return false
+		i = 0
+		for item in a
+			if b[0] isnt item then return false
+			i+=1
+		return true
+
+
+
+
+
+
+
+
+
+
+

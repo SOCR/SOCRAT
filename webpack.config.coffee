@@ -11,7 +11,7 @@ module.exports =
 
   # The entry point
   entry: [
-    path.resolve "#{appRoot}", "app.coffee"
+    path.resolve "#{appRoot}", "app.coffee",
   ]
 
   devtool: 'inline-source-map'
@@ -20,6 +20,12 @@ module.exports =
     path: path.resolve ".", "_build"
     filename: 'socrat.js'
     chunkFilename: "[id].socrat.js"
+
+  devServer: {
+    hot: true,
+    host: '127.0.0.1',
+    port: 8080
+  }
 
   module:
     loaders: [
