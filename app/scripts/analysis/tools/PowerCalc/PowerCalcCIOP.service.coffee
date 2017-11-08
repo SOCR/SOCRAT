@@ -83,12 +83,11 @@ module.exports = class PowerCalcCIOP extends BaseService
     return
    
   daheeReceiveData: () ->
-    console.log 'receiving done'
     @success = @populations[@compAgents]
     @samplesize = @samplesize
     @sampleproportion = @success/@samplesize
     @cilevel = 1- @ciAlpha
-    @standarddev = Math.sqrt((@sampleproportion*(1-@sampleproportion))/(@samplesize-df)
+    @standarddev = Math.sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
     @confinterval = @jstat.tci(@sampleproportion, @ciAlpha, @standarddev, @samplesize)
     @upbound = @confinterval[1]
     @lowbound = @confinterval[0]
