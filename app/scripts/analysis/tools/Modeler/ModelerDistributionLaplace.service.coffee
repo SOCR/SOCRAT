@@ -34,18 +34,8 @@ module.exports = class LaplaceDist extends BaseService
     console.log(data)
     data
   
-  getChartData: (data) ->
-    histData = data.dataPoints
-    histData = histData.map (row) ->
-            x: row[0]
-            y: row[1]
-            z: row[2]
-            r: row[3]
-    stats = @getParams.getParams(data)
-    data.stats = stats
-    data.xMin = d3.min(histData, (d)->parseFloat d.x)
-    data.xMax = d3.max(histData, (d)->parseFloat d.x)
-    data.curveData = @getLaplaceDistribution(data.xMin, data.xMax, data.stats.mean , @b)
+  getChartData: (params) ->
+    data.curveData = @getLaplaceDistribution(params.xMin, params.xMax, params.stats.mean , @b)
     console.log(data.curveData)
     
     return data

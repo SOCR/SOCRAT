@@ -29,8 +29,8 @@ module.exports = class ModelerRouter extends BaseModuleDataService
   getParamsByName: (modelName) ->
     (model.getParams() for model in @models when modelName is model.getName()).shift()
 
-  getChartData: (modelName, dataIn, options = null) ->
-    (model.getChartData(dataIn, options) for model in @models when modelName is model.getName()).shift()
+  getChartData: (modelName, params) ->
+    (model.getChartData(params) for model in @models when modelName is model.getName()).shift()
 
   setParamsByName: (modelName, dataIn) ->
     (model.setParams(dataIn) for model in @models when modelName is model.getName()).shift()

@@ -113,17 +113,21 @@ module.exports = class ModelerDir extends BaseDirective
             z: row[2]
             r: row[3]
         ###
+        container = d3.select(elem[0])
+        container.select('path').remove()
+
+
         
-        leftBound = modelData.stats.leftBound
-        rightBound = modelData.stats.rightBound
-        topBound = modelData.stats.topBound
-        bottomBound = modelData.stats.bottomBound
-        curveData = modelData.curveData
+        leftBound = modelData.stats.stats.leftBound
+        rightBound = modelData.stats.stats.rightBound
+        topBound = modelData.stats.stats.topBound
+        bottomBound = modelData.stats.stats.bottomBound
+        curveData = modelData
         
         padding = 50
         #xScale = d3.scale.linear().range([0, width]).domain([modelData.xMin, modelData.xMax])
         #yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
-        xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.xMin, modelData.xMax])
+        xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.stats.xMin, modelData.stats.xMax])
         yScale = d3.scale.linear().range([height - padding, padding]).domain([bottomBound, topBound])
 
         #x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])

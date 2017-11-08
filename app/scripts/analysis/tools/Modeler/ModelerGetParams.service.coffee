@@ -105,7 +105,7 @@ module.exports = class GetParams extends BaseService
     leftBound = @getLeftBound(mean,standardDerivation)
     bottomBound = 0
     topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
-    gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
+    #gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
     radiusCoef = 5
 
 

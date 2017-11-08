@@ -40,21 +40,14 @@ module.exports = class CauchyDist extends BaseService
     console.log(data)
     data
   
-  getChartData: (data, b) ->
-    histData = data.dataPoints
-    histData = histData.map (row) ->
-            x: row[0]
-            y: row[1]
-            z: row[2]
-            r: row[3]
-    stats = @getParams.getParams(data)
-    data.stats = stats
-    data.xMin = d3.min(histData, (d)->parseFloat d.x)
-    data.xMax = d3.max(histData, (d)->parseFloat d.x)
-    data.curveData = @getCauchyDistribution(data.xMin, data.xMax, data.stats.mean , @gamma)
-    console.log(data.curveData)
+  getChartData: (params) ->
+    if params.stats.gamma == undefined
+      params.stats.gamma = .75
+
+    curveData = @getCauchyDistribution(params.xMin, params.xMax, params.stats.mean , params.stats.gamma)
+    console.log(curveData)
     
-    return data
+    return curveData
 
 
   

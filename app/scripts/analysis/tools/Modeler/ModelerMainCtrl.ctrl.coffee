@@ -19,8 +19,14 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @assignments = null
     @distribution = 'Normal'
     @stats = null
-    @modelData = null;
+    @modelData = {}
+    @params = {}
     @getParams = @socrat_analysis_modeler_getParams
+    #@gMean = 0
+    #@gVariance =0
+    #@gstandardDev = null
+
+
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
       #@showresults = off if @showresults is on
@@ -38,8 +44,32 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       console.log("updatating chartData")
       console.log(data)
       #@stats = @getParams.getParams(data)
-      @distribution = data.distribution
-      @modelData = @router.getChartData(@distribution.name, data )
-      #@modelData = data
+      @distribution = data.distribution.name
+      console.log("distribution is : " + @distribution)
+      histData = data.dataPoints
+      histData = histData.map (row) ->
+            x: row[0]
+            y: row[1]
+            z: row[2]
+            r: row[3]
+      @stats  = @getParams.getParams(data)
+      @params.stats = @stats
+      @params.xMin = d3.min(histData, (d)->parseFloat d.x)
+      @params.xMax = d3.max(histData, (d)->parseFloat d.x)
+      @modelData = @router.getChartData(@distribution, @params )
+      @modelData.stats = @params
+
       @chartData = data
-      console.log("distribution:" + data.distribution.name)
+
+
+
+  updateModelData: () ->
+    console.log("Updating Model Data from Sliders")
+
+    #@params.stats.mean = parseFloat(@gMean.toPrecision(4))
+    #@params.stats.standardDev = parseFloat(@gstandardDev.toPrecision(4))
+    #@params.stats.variance = parseFloat(@gVariance.toPrecision(4))
+
+
+    @modelData = @router.getChartData(@distribution, @params )
+    @modelData.stats = @params
