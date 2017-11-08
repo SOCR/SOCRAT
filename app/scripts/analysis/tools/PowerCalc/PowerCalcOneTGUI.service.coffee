@@ -58,12 +58,8 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @oneTestUpdate()
 
   saveData: (data) ->
-    @populations = data.populations
-    lab = data.chosenlab
-    if (lab is "none") or (lab is null)
-      @compAgents = data.chosenCol
-    else
-      @compAgents = data.chosenVar
+    @populations = data.popl
+    @compAgents = data.target
     @oneTestReceiveData()
 
   setAlpha: (alphaIn) ->
