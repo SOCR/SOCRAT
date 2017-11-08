@@ -27,9 +27,10 @@ module.exports = class PowerCalcCIOP extends BaseService
    @confinterval = [0,1] 
    @upbound = @confinterval[1]
    @lowbound = @confinterval[0]
-   @ciAlpha = 0.95
+   @ciAlpha = 0.05
    @populations = {}
-   @standarddev = 0.3
+   @standarddev = 0
+   @cilevel = 0.95
 
    @parameter = 
       p: @sampleproportion
@@ -41,10 +42,12 @@ module.exports = class PowerCalcCIOP extends BaseService
       ci: @confinterval
       a: @ciAlpha
       sd: @standarddev
+      cl: @cilevel
 
 
 
   saveData: (data) ->
+    console.log 'saveData in service'
     @populations = data.popl
     @compAgents= data.target
     @samplesize = data.total
@@ -64,6 +67,7 @@ module.exports = class PowerCalcCIOP extends BaseService
       ci: @confinterval
       a: @ciAlpha
       sd: @standarddev
+      cl: @cilevel
     return @parameter
 
   setParams: (newParams) ->
@@ -75,6 +79,7 @@ module.exports = class PowerCalcCIOP extends BaseService
     @confinterval =newParams.ci
     @ciAlpha = newParams.a
     @standarddev = newParams.sd
+    @cilevel = newParams.cl
     return
    
   daheeReceiveData: () ->
@@ -82,8 +87,9 @@ module.exports = class PowerCalcCIOP extends BaseService
     @success = @populations[@compAgents]
     @samplesize = @samplesize
     @sampleproportion = @success/@samplesize
-    @standarddev = Math.sqrt((@sampleproportion*(1-@sampleproportion))/@samplesize)
-    @confinterval = @jstat.tci(@sampleproportion, 0.90, @standarddev, @samplesize)
+    @cilevel = 1- @ciAlpha
+    @standarddev = Math.sqrt((@sampleproportion*(1-@sampleproportion))/(@samplesize-df)
+    @confinterval = @jstat.tci(@sampleproportion, @ciAlpha, @standarddev, @samplesize)
     @upbound = @confinterval[1]
     @lowbound = @confinterval[0]
     return

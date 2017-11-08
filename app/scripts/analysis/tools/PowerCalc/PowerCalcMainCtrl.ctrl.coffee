@@ -130,12 +130,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @loadData()
 
     @$scope.$on 'powercalc:twoPropdata', (event, data)=>
-      console.log "why mine!!!!"
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
     @$scope.$on 'powercalc:daheeData', (event, data) =>
-      console.log 'receiving dahee'
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
@@ -438,6 +436,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @confinterval =@params.ci
     @ciAlpha =  @params.a
     @standarddev = @params.sd
+    @cilevel = 1.0 - @ciAlpha
 
   daheeSync: () ->
     @params.sampleproportion = @sampleproportion

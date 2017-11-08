@@ -340,6 +340,14 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               ) &nbsp;
               | upper bound: &nbsp;
               b {{mainArea.upbound}}
+        .form-group
+          .row.form-inline
+            label
+              | Interpretation: &nbsp;
+              b We are {{mainArea.cilevel}}% confident that the true value of {{mainArea.sampleproportion}} lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
+
+
+              
   
 
   div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
