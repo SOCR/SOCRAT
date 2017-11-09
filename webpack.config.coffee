@@ -14,6 +14,8 @@ module.exports =
     path.resolve "#{appRoot}", "app.coffee"
   ]
 
+  devtool: 'inline-source-map'
+
   output:
     path: path.resolve ".", "_build"
     filename: 'socrat.js'
