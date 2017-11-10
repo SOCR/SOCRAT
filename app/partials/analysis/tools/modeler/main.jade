@@ -7,11 +7,11 @@ div(ng-controller="ModelerMainCtrl as mainArea")
   //div(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT")
 
   //div.row-fluid
-      
+
 
 
   div(ng-show='mainArea.distribution == "Normal"')
-  
+
     .row
       .col-md-8
         h6 Normal Distribution Modeler &nbsp;
@@ -78,6 +78,57 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               name='NormalVariance'
               )
             #NormalVariance
+  div(ng-show='mainArea.distribution == "LogNormal"')
+
+    .row
+      .col-md-8
+        h6 LogNormal Distribution Modeler &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This modeler plots a LogNormal distribution."
+          tooltip-placement="bottom"
+          )
+        modelerdir
+      .col-md-4
+        .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="Mean of the dataset"
+            tooltip-placement="left"
+            ) &nbsp;
+            | μ
+            sub 1
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            string-to-number
+            ng-model="mainArea.params.stats.mean"
+            ng-click="mainArea.updateModelData()"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='LogNormalMean'
+            )
+          #LogNormalMean
+        .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="Standard Deviation of the sample"
+            tooltip-placement="left"
+            ) &nbsp;
+            | σ
+            sub 1
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.params.stats.standardDev"
+            ng-click="mainArea.updateModelData()"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='LogNormalStDev'
+            )
+          #LogNormalStDev
 
   div(ng-show='mainArea.distribution == "Cauchy"')
     .row
@@ -229,7 +280,36 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               name='ExponentialGamma'
               )
             #ExponentialGamma
-           
+
+  div(ng-show='mainArea.distribution == "ChiSquared"')
+    .row
+      .col-md-8
+        h6 ChiSquared Distribution Modeler &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This modeler plots a ChiSquared distribution."
+          tooltip-placement="bottom"
+          )
+        modelerdir
+      .col-md-4
+        .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="K Parameter"
+            tooltip-placement="left"
+            ) &nbsp;
+            | k
+            input.form-control.input-sm.flat(
+            string-to-number
+            ng-model="mainArea.params.stats.k"
+            ng-click="mainArea.updateModelData()"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='ChiSquared'
+            )
+          #ChiSquared
 
   div(ng-show='mainArea.distribution == "Laplace"')
     .row
@@ -282,7 +362,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               )
             #LaplaceGamma
 
-      
+
 
   div.row-fluid
     h4 Parameters

@@ -58,9 +58,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
       @modelData = @router.getChartData(@distribution, @params )
+      console.log(@distribution)
+      console.log(@params)
       @modelData.stats = @params
 
-      
+
 
 
 
