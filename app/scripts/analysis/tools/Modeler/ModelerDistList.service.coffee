@@ -42,6 +42,22 @@ module.exports = class DistList extends BaseService
       message: "This class Designs a simple Laplace model fitting curve"
       xLabel: ""
     ,
+      name: 'Binomial'
+      value: 2
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class Designs a simple Binomail model fitting curve"
+      xLabel: ""
+    ,
+      name: 'Exponential'
+      value: 2
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class Designs a simple Exponential model fitting curve"
+      xLabel: ""
+    ,
     
       name: 'Kernel'
       value: 2
@@ -51,6 +67,7 @@ module.exports = class DistList extends BaseService
       message: "This class Designs a simple polynomial model fitting curve"
       xLabel: ""
       #kernels ['uniform', 'triangular', 'epanechnikov', 'quartic', 'triweight', 'gaussian', 'cosine']
+
     ]
 
 

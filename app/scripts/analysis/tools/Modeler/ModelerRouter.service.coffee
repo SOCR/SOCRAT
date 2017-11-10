@@ -7,10 +7,10 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     'socrat_modeler_distribution_normal',
     'socrat_modeler_distribution_laplace',
     'socrat_modeler_distribution_cauchy',
-    'socrat_modeler_distribution_maxwell_boltzman'
-
+    'socrat_modeler_distribution_maxwell_boltzman',
+    'socrat_modeler_distribution_binomial',
     'socrat_analysis_modeler_kernel_density_plotter',
-
+    'socrat_modeler_distribution_exponential',
     '$interval'
 
   initialize: ->
@@ -20,7 +20,9 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @Laplace = @socrat_modeler_distribution_laplace
     @Cauchy = @socrat_modeler_distribution_cauchy
     @MaxwellBoltzman = @socrat_modeler_distribution_maxwell_boltzman
-    @models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman]
+    @Binomial = @socrat_modeler_distribution_binomial
+    @Exponential =@socrat_modeler_distribution_exponential
+    @models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
 
   ############
 

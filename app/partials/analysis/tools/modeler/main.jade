@@ -149,7 +149,140 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               name='CauchyGamma'
               )
             #CauchyGamma
-          
+
+  div(ng-show='mainArea.distribution == "Binomial"')
+    .row
+      .col-md-8
+        h6 Binomial Distribution Modeler &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This modeler plots a Binomial distribution."
+          tooltip-placement="bottom"
+          )
+        modelerdir
+      .col-md-4
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="N Parameter"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N
+              input.form-control.input-sm.flat(
+              string-to-number
+              ng-model="mainArea.params.stats.n"
+              ng-click="mainArea.updateModelData()"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='BinomialN'
+              )
+            #BinomialN
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="P"
+              tooltip-placement="left"
+              ) &nbsp;
+              | b
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.params.stats.p"
+              ng-click="mainArea.updateModelData()"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='BinomialP'
+              )
+            #BinomialP
+
+
+  div(ng-show='mainArea.distribution == "Exponential"')
+    .row
+      .col-md-8
+        h6 Binomial Distribution Modeler &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This modeler plots a Binomial distribution."
+          tooltip-placement="bottom"
+          )
+        modelerdir
+      .col-md-4
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="Gamma Parameter"
+              tooltip-placement="left"
+              ) &nbsp;
+              | Gamma
+              input.form-control.input-sm.flat(
+              string-to-number
+              ng-model="mainArea.params.stats.gamma"
+              ng-click="mainArea.updateModelData()"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='ExponentialGamma'
+              )
+            #ExponentialGamma
+           
+
+  div(ng-show='mainArea.distribution == "Laplace"')
+    .row
+      .col-md-8
+        h6 Laplace Distribution Modeler &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This modeler plots a Laplce distribution."
+          tooltip-placement="bottom"
+          )
+        modelerdir
+      .col-md-4
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="Location Parameter"
+              tooltip-placement="left"
+              ) &nbsp;
+              | Location
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              string-to-number
+              ng-model="mainArea.params.stats.location"
+              ng-click="mainArea.updateModelData()"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='LaplaceLocation'
+              )
+            #LaplaceLocation
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="Scale of the sample"
+              tooltip-placement="left"
+              ) &nbsp;
+              | b
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.params.stats.scale"
+              ng-click="mainArea.updateModelData()"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='LaplaceGamma'
+              )
+            #LaplaceGamma
+
+      
 
   div.row-fluid
     h4 Parameters

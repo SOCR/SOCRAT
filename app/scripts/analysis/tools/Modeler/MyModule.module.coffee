@@ -16,6 +16,8 @@ module.exports = modeler = new Module
       'socrat_modeler_distribution_laplace': require 'scripts/analysis/tools/Modeler/ModelerDistributionLaplace.service.coffee'
       'socrat_modeler_distribution_cauchy': require 'scripts/analysis/tools/Modeler/ModelerDistributionCauchy.service.coffee'
       'socrat_modeler_distribution_maxwell_boltzman': require 'scripts/analysis/tools/Modeler/ModelerDistributionMaxwellBoltzman.service.coffee'
+      'socrat_modeler_distribution_binomial': require 'scripts/analysis/tools/Modeler/ModelerDistributionBinomial.service.coffee'
+      'socrat_modeler_distribution_exponential': require 'scripts/analysis/tools/Modeler/ModelerDistributionExponential.service.coffee'
 
       'socrat_analysis_modeler_dist_list': require 'scripts/analysis/tools/Modeler/ModelerDistList.service.coffee'
       #'socrat_analysis_modeler_hist': require 'scripts/analysis/charts/ChartsHistogram.service.coffee'

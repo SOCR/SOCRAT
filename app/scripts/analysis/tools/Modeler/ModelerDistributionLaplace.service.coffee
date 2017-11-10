@@ -35,10 +35,8 @@ module.exports = class LaplaceDist extends BaseService
     data
   
   getChartData: (params) ->
-    data.curveData = @getLaplaceDistribution(params.xMin, params.xMax, params.stats.mean , @b)
-    console.log(data.curveData)
-    
-    return data
+    curveData = @getLaplaceDistribution(params.xMin, params.xMax, params.stats.mean , @b)    
+    return curveData
 
 
   

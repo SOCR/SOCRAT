@@ -9,36 +9,34 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
 
-module.exports = class CauchyDist extends BaseService
+module.exports = class ExpDist extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
     @getParams = @socrat_analysis_modeler_getParams
 
-    @name = 'Cauchy'
+    @name = 'Exponential'
     @gamma = .75
-    @locationParam = null
 
   getName: () ->
     return @name
 
-  cauchy: (locationParam, gamma, x) ->
-    return 1 / (Math.PI * gamma *(1 +( Math.pow((x - locationParam) / gamma ,2))))
+  pdf: (gamma, x) ->
+    return gamma * Math.pow(Math.E, -1*gamma*x)
     
   
-  getCauchyDistribution: (leftBound, rightBound, locationParam, gamma) ->
+  getDistribution: (leftBound, rightBound, gamma) ->
     data = []
     for i in [leftBound...rightBound] by .2
       data.push
         x: i
-        y: @cauchy(locationParam, gamma, i)
-    console.log(data)
+        y: @pdf(gamma, i)
     data
   
   getChartData: (params) ->
     if params.stats.gamma == undefined
-      params.stats.gamma = .75
+      params.stats.gamma = .5
 
-    curveData = @getCauchyDistribution(params.xMin, params.xMax, params.stats.mean , params.stats.gamma)
+    curveData = @getDistribution(params.xMin, params.xMax, params.stats.gamma)
     console.log(curveData)
     
     return curveData
