@@ -23,6 +23,10 @@ module.exports = class NormalDist extends BaseService
 
   getChartData: (params) ->
     
+
+
+
+    
     curveData = @getParams.getGaussianFunctionPoints(params.stats.standardDev, params.stats.mean, params.stats.variance, params.xMin , params.xMax)
     return curveData
 

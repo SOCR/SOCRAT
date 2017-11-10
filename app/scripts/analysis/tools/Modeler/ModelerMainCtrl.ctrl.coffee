@@ -46,6 +46,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       #@stats = @getParams.getParams(data)
       @distribution = data.distribution.name
       console.log("distribution is : " + @distribution)
+      @chartData = data
       histData = data.dataPoints
       histData = histData.map (row) ->
             x: row[0]
@@ -59,7 +60,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @modelData = @router.getChartData(@distribution, @params )
       @modelData.stats = @params
 
-      @chartData = data
+      
 
 
 
