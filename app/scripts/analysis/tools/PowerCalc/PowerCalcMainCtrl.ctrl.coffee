@@ -612,7 +612,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       max: @oneTestNMax,
       range: "min",
       step: 1,
-      slide: (event, ui) =>
+      slide: (eventoneTestSync, ui) =>
         @oneTestN = ui.value
         @oneTestSync()
     )
