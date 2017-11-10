@@ -63,6 +63,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@threshMode = false
 		@threshTypeModes = ["larger", "smaller", "equal"]
 		@threshTypeMode = "larger"
+		@threshTypeMode1 = "larger"
+		@threshTypeMode2 = "larger"
 		$("#toggleDataDriven").bootstrapSwitch()
 		$("#toggleThresh").bootstrapSwitch()
 		$("#twoPropToggleThresh").bootstrapSwitch()
@@ -432,25 +434,29 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		if isTwo
 			temp1 = 0
 			temp2 = 0
-			switch @threshTypeMode
+			switch @threshTypeMode1
 				when "larger"
 					for x in data1
 						if parseFloat(x[index1]) > @twoPropThresh1
 							temp1 += 1
-					for y in data2
-						if parseFloat(y[index2]) > @twoPropThresh2
-							temp2 += 1
 				when "smaller"
 					for x in data1
 						if parseFloat(x[index1]) < @twoPropThresh1
 							temp1 += 1
-					for y in data2
-						if parseFloat(y[index2]) < @twoPropThresh2
-							temp2 += 1
 				when "equal"
 					for x in data1
 						if parseFloat(x[index1]) is @twoPropThresh1
 							temp1 += 1
+			switch @threshTypeMode2
+				when "larger"
+					for y in data2
+						if parseFloat(y[index2]) > @twoPropThresh2
+							temp2 += 1
+				when "smaller"
+					for y in data2
+						if parseFloat(y[index2]) < @twoPropThresh2
+							temp2 += 1
+				when "equal"
 					for y in data2
 						if parseFloat(y[index2]) is @twoPropThresh2
 							temp2 += 1

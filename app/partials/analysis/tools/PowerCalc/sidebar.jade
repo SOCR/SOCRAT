@@ -169,9 +169,9 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         )
       fieldset(ng-show="sidebar.threshMode")
         .form-group
-          label Threshold &nbsp;
+          label Threshold1 &nbsp;
           select.form-control(
-            ng-model="sidebar.threshTypeMode"
+            ng-model="sidebar.threshTypeMode1"
             ng-init="sidebar.preciseMode = 'larger'"
             ng-options="mode for mode in sidebar.threshTypeModes"
             ng-change="sidebar.run()"
@@ -193,6 +193,15 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
               name='thresh'
              )
           #twoPropThresh1UI
+        .form-group
+          label Threshold2 &nbsp;
+          select.form-control(
+            ng-model="sidebar.threshTypeMode2"
+            ng-init="sidebar.preciseMode = 'larger'"
+            ng-options="mode for mode in sidebar.threshTypeModes"
+            ng-change="sidebar.run()"
+          )
+        .form-group
           .row.form-inline
           label
             span.glyphicon.glyphicon-question-sign(
