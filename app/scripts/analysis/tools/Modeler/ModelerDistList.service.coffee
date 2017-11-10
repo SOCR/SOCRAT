@@ -66,7 +66,7 @@ module.exports = class DistList extends BaseService
       message: "This class Designs a simple Exponential model fitting curve"
       xLabel: ""
     ,
-      name: 'Chi-Squared'
+      name: 'ChiSquared'
       value: 2
       x: ['integer', 'number']
       y: false
