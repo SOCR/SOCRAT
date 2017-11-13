@@ -25,7 +25,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     #@gMean = 0
     #@gVariance =0
     #@gstandardDev = null
-
+    @loadData()
 
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
@@ -60,17 +60,121 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @modelData = @router.getChartData(@distribution, @params )
       @modelData.stats = @params
 
+      #@router.setParams(@distribution, @params)
+
+      #@loadData()
       
+      
+
 
 
 
   updateModelData: () ->
     console.log("Updating Model Data from Sliders")
-
-    #@params.stats.mean = parseFloat(@gMean.toPrecision(4))
-    #@params.stats.standardDev = parseFloat(@gstandardDev.toPrecision(4))
-    #@params.stats.variance = parseFloat(@gVariance.toPrecision(4))
-
-
     @modelData = @router.getChartData(@distribution, @params )
     @modelData.stats = @params
+
+
+  syncData: (dataIn) ->
+    @router.setParamsByName(@distribution, dataIn)
+    @loadData()
+
+
+  normalRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @NormalStDev = @currParams.standardDev
+    @NormalMean = @currParams.mean
+    @NormalVariance =   @currParams.variance
+
+    @NormalSliders()
+    @updateModelData()
+
+
+
+  loadData: () ->
+    if (@distribution is "Normal")
+      @normalRetrieve()
+      return
+    else if (@distribution is "Laplace")
+      @laplaceRetrieve()
+      return
+    else
+      return
+
+
+  
+  
+  NormalSync: () ->
+    @params.stats.mean = @NormalMean
+    @params.stats.standardDev = @NormalStDev
+    @params.stats.variance = @NormalVariance
+    @syncData(@params)
+    @loadData()
+
+
+  @NormalPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "Normal"
+        @NormalSync()
+
+  NormalSliders: () ->
+
+    # select slider elements
+    nMean = $("#NormalMean")
+    nStDev = $("#NormalStDev")
+    nVariance = $("#NormalVariance")
+    # twoTestMean2UI = $("#twoTestMean2UI")
+    # twoTestStDev1UI = $("#twoTestStDev1UI")
+    # twoTestStDev2UI = $("#twoTestStDev2UI")
+    # twoTestPowerUI = $("#twoTestPowerUI")
+   
+    nMean.slider(
+      value: @NormalMean,
+      min: 0,
+      max: 30,
+      range: "min",
+      step: 1,
+      slide: (event, ui) =>
+        @NormalMean = ui.value
+        @NormalSync()
+    )
+
+    nStDev.slider(
+      value: @NormalStDev,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @NormalStDev = ui.value
+        @NormalSync()
+    )
+
+    nVariance.slider(
+      value: @NormalVariance,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: 0.2,
+      slide: (event, ui) =>
+        @NormalVariance = ui.value
+        @NormalSync()
+    )
+
+    
+
+    # enable or disable sliders
+    sliders = [
+      nMean
+      ]
+
+    if @deployed is true
+      for sl in sliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
+    else
+      for sl in sliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
