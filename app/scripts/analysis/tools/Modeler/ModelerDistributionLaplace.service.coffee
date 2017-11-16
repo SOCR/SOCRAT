@@ -12,11 +12,11 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class LaplaceDist extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
-    @getParams = @socrat_analysis_modeler_getParams
+    #@getParams = @socrat_analysis_modeler_getParams
 
     @name = 'Laplace'
-    @u = 0
-    @b = 1
+    @LaplaceMean = 0
+    @LaplaceScale = 1
 
   getName: () ->
     return @name
@@ -35,8 +35,17 @@ module.exports = class LaplaceDist extends BaseService
     data
   
   getChartData: (params) ->
-    curveData = @getLaplaceDistribution(params.xMin, params.xMax, params.stats.mean , @b)    
+    curveData = @getLaplaceDistribution(params.xMin, params.xMax, @LaplaceMean , @LaplaceScale)    
     return curveData
 
 
+  getParams: () ->
+    params = 
+      mean: @LaplaceMean
+      scale: @LaplaceScale
+
   
+
+  setParams: (newParams) ->
+    @LaplaceMean = newParams.stats.mean
+    @LaplaceScale = newParams.stats.scale

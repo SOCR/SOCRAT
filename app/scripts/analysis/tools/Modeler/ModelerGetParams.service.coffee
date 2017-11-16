@@ -125,6 +125,7 @@ module.exports = class GetParams extends BaseService
       bottomBound: bottomBound
       xMin: min
       xMax: max
+      scale: 1
 
 
 
