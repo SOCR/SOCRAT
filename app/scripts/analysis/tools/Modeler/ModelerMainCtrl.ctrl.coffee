@@ -57,9 +57,12 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @params.stats = @stats
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
-      @modelData = @router.getChartData(@distribution, @params )
-      @modelData.stats = @params
-
+      modelData = @router.getChartData(@distribution, @params )
+      modelData.stats = @params
+      @$timeout => @modelData = modelData,
+      5
+      @syncData(@params)
+      #@loadData()
       #@router.setParams(@distribution, @params)
 
       #@loadData()
@@ -71,8 +74,10 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
   updateModelData: () ->
     console.log("Updating Model Data from Sliders")
-    @modelData = @router.getChartData(@distribution, @params )
-    @modelData.stats = @params
+    modelData = @router.getChartData(@distribution, @params )
+    modelData.stats = @params
+    @$timeout => @modelData = modelData,
+    5
 
 
   syncData: (dataIn) ->
@@ -109,7 +114,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @params.stats.standardDev = @NormalStDev
     @params.stats.variance = @NormalVariance
     @syncData(@params)
-    @loadData()
+    #@loadData()
 
 
   @NormalPress: (evt) ->
@@ -135,7 +140,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       min: 0,
       max: 30,
       range: "min",
-      step: 1,
+      step: .5,
       slide: (event, ui) =>
         @NormalMean = ui.value
         @NormalSync()

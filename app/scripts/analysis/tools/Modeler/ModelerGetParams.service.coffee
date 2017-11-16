@@ -109,10 +109,10 @@ module.exports = class GetParams extends BaseService
     radiusCoef = 5
 
 
-    mean = mean.toFixed(2)
-    variance = variance.toFixed(2)
-    median = median.toFixed(2)
-    standardDerivation = standardDerivation.toFixed(2)
+    mean = parseFloat(mean.toFixed(2))
+    variance = parseFloat(variance.toFixed(2))
+    median = parseFloat(median.toFixed(2))
+    standardDerivation = parseFloat(standardDerivation.toFixed(2))
 
     return stats =
       mean: mean

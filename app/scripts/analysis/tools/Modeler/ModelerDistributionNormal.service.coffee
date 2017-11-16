@@ -39,6 +39,6 @@ module.exports = class NormalDist extends BaseService
 
 
   setParams: (newParams) ->
-    @NormalMean = newParams.stats.mean
-    @NormalStandardDev =newParams.stats.standardDev
-    @NormalVariance = newParams.stats.variance
+    @NormalMean = parseFloat(newParams.stats.mean.toPrecision(4))
+    @NormalStandardDev =parseFloat(newParams.stats.standardDev.toPrecision(4))
+    @NormalVariance = parseFloat(newParams.stats.variance.toPrecision(4))
