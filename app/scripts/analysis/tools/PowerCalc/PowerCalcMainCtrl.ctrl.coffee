@@ -1329,8 +1329,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @CIOMN = @params.n
     @CIOMMean = @params.mean
     @CIOMStDev = @params.sigma
+    @CIOMTScore = @params.t
+    @CIOMLowerBound = @params.lowBound
+    @CIOMUpperBound = @params.upBound
     console.log("mainCtrl retrieve calculated data")
-    console.log("@CIOMStDev: " + @CIOMStDev)
     @CIOMFoo()
 
   CIOMFoo: () ->

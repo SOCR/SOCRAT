@@ -29,6 +29,8 @@ module.exports = class PowerCalcCIOM extends BaseService
     @CIOMStDev = 0
     @CIOMAlpha = 0.95
     @CIOMTScore = 2.262
+    @CIOMLowerBound = 0
+    @CIOMUpperBound = 0
 
     #variables needed for One Test
 #    @oneTestN = 10
@@ -56,6 +58,8 @@ module.exports = class PowerCalcCIOM extends BaseService
       mean: @CIOMMean
       sigma: @CIOMStDev
       t: @CIOMTScore
+      lowBound: @CIOMLowerBound
+      upBound: @CIOMUpperBound
 
     #data to observe
 #    @parameters =
@@ -97,9 +101,11 @@ module.exports = class PowerCalcCIOM extends BaseService
   getParams: () ->
     @parameters =
       n: @CIOMN
-      mean: @CIOMMean
-      sigma: @CIOMStDev
-      t: @CIOMTScore
+      mean: @CIOMMean.toFixed(3)
+      sigma: @CIOMStDev.toFixed(3)
+      t: @CIOMTScore.toFixed(3)
+      lowBound: @CIOMLowerBound.toFixed(3)
+      upBound: @CIOMUpperBound.toFixed(3)
 #
 #  getParams: () ->
 #    @parameters =
@@ -160,6 +166,8 @@ module.exports = class PowerCalcCIOM extends BaseService
     @CIOMVariance = @getVariance(@populations[item], @CIOMMean)
     @CIOMStDev = Math.sqrt(@CIOMVariance)
     @CIOMTScore = Math.abs(@jStat.studentt.inv((1-@CIOMAlpha)*0.5, @CIOMN-1)) # two-tailed
+    @CIOMLowerBound = @CIOMMean - @CIOMStDev*@CIOMTScore
+    @CIOMUpperBound = @CIOMMean + @CIOMStDev*@CIOMTScore
     console.log('CIOM n: ', @CIOMN)
     console.log('CIOM Mean: ', @CIOMMean)
     console.log('CIOM St Deviation: ', @CIOMStDev)

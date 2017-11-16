@@ -166,6 +166,8 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
             p CIOMN: {{mainArea.CIOMN}}
             p CIOMMean: {{mainArea.CIOMMean}}
             p CIOMStDev: {{mainArea.CIOMStDev}}
+            p Confidence Interval: [{{mainArea.CIOMLowerBound}}, {{mainArea.CIOMUpperBound}}]
+            p t-score: {{mainArea.CIOMTScore}}
             // ******************************************* end **************************************
 
   div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
