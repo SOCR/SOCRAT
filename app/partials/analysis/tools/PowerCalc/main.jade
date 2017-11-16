@@ -388,6 +388,25 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               name='twoPropN2'
               )
             #twoPropN2UI
+          .form-group
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                  aria-hidden="true"
+                  uib-tooltip="test statistics value"
+                  tooltip-placement="left"
+                ) &nbsp;
+                | z-score: &nbsp;
+                b {{mainArea.twoPropZ}}
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                  aria-hidden="true"
+                  uib-tooltip="p-value"
+                  tooltip-placement="left"
+                ) &nbsp;
+                | p-value: &nbsp;
+                b {{mainArea.twoPropPValue}}
   div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
     .row
       .col-md-8

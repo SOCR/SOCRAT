@@ -18,6 +18,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
     @SIGNIFICANT = 5
     @populations = null
     @distribution = require 'distributome'
+    @jStat = (require 'jstat').jStat
     @msgService = @app_analysis_powerCalc_msgService
     @name = 'Test of Two Proportions'
 
@@ -30,7 +31,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
     @twoPropNMax = 100
     @twoPropPower = 0
     @twoPropAlpha = 0.010
-    @twoPropT = 0
+    @twoPropZ = 0
     @twoPropPvalue = 0
     @compAgents = []
     @mode = 'One Sided'
@@ -46,7 +47,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
       n2: @twoPropN2
       nMax: @twoPropNMax
       power: @twoPropPower
-      t: @twoPropT
+      z: @twoPropZ
       pvl: @twoPropPvalue
       comp: @compAgents
       mode: @mode
@@ -79,7 +80,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
       n2: @twoPropN2
       nMax: @twoPropNMax
       power: @twoPropPower
-      t: @twoPropT
+      z: @twoPropZ
       pvl: @twoPropPvalue
       comp: @compAgents
       mode: @mode
@@ -108,7 +109,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
     @twoPropNMax = 100
     @twoPropPower = 0
     @twoPropAlpha = 0.010
-    @twoPropT = 0
+    @twoPropZ = 0
     @twoPropPvalue = 0
     @compAgents = []
     @mode = 'One Sided'
@@ -130,7 +131,7 @@ module.exports = class PowerCalcTwoProp extends BaseService
       @twoPropPower=@distribution.pnorm(z-@distribution.qnorm(1-@twoPropAlpha/2))+@distribution.pnorm(-z-@distribution.qnorm(1-@twoPropAlpha/2))
     else
       @twoPropPower=@distribution.pnorm(Math.abs(z)-@distribution.qnorm(1-@twoPropAlpha))
-    @twoPropTTest()
+    @twoPropZTest()
     @twoPropCheckRange()
     return
 
@@ -141,16 +142,17 @@ module.exports = class PowerCalcTwoProp extends BaseService
       @twoPropN2=(@twoPropP1*(1-@twoPropP1) / kappa + @twoPropP2*(1-@twoPropP2))*Math.pow(((@distribution.qnorm(1-@twoPropAlpha / 2) + @distribution.qnorm(@twoPropPower))/(@twoPropP1-@twoPropP2)),2)
     else
       @twoPropN2=(@twoPropP1*(1-@twoPropP1) / kappa + @twoPropP2*(1-@twoPropP2))*Math.pow(((@distribution.qnorm(1-@twoPropAlpha) + @distribution.qnorm(@twoPropPower))/(@twoPropP1-@twoPropP2)),2)
-    @twoPropTTest()
+    @twoPropZTest()
     @twoPropCheckRange()
     return
 
-  twoPropTTest: () ->
-    # @twoPropT = (@twoPropP1-@twoPropP2) / Math.sqrt(@twoPropP1*(1-@twoPropP1) / @twoPropN2 / kappa+@twoPropP2*(1-@twoPropP2) / @twoPropN2)
-    # @twoTestPvalue = 1 - @tProb(df, @twoTestT)
-    # @twoTestPvalue *= 2 if @twoTestMode is 'Two Tailed'
-    # @twoTestPvalue = Math.max(0, @twoTestPvalue)
-    # @twoTestPvalue = Math.min(1, @twoTestPvalue)
+  twoPropZTest: () ->
+    propSuccess = ((@twoPropN1 * @twoPropP1) + (@twoPropN2 * @twoPropP2)) / (@twoPropN1 + @twoPropN2)
+    @twoPropZ = (@twoPropP1 - @twoPropP2 - (0)) / (propSuccess*(1-propSuccess) * Math.sqrt((1/@twoPropN1)+(@twoPropN2)))
+    if @mode is "Two Sided"
+      @twoPropPvalue = @jStat.ztest(@twoPropZ, 2)
+    else 
+      @twoPropPvalue = @jStat.ztest(@twoPropZ, 1)
     return
 
 

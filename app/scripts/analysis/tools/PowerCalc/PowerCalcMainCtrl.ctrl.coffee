@@ -542,6 +542,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @twoPropNMax = @params.nMax
     @twoPropPower = parseFloat(@params.power.toPrecision(4))
     @twoPropMode = @params.mode
+    @twoPropZ = @params.z.toPrecision(4)
+    @twoPropPValue = @params.pvl.toPrecision(4)
     if (@deployed)
       @compAgents = @params.comp
     else 
