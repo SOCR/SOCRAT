@@ -158,6 +158,16 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
             br
             p <b>Graphics</b>
             p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
+          // ********************** show data filtered by sidebarCtrl-CIOM in main area *********************
+          div
+            h4 Data filtered by SidebarCtrl-CIOM
+            p {{mainArea.CIOM_data}}
+            h4 Params calculated by CIOM.service (requested from MainCtrl)
+            p CIOMN: {{mainArea.CIOMN}}
+            p CIOMMean: {{mainArea.CIOMMean}}
+            p CIOMStDev: {{mainArea.CIOMStDev}}
+            // ******************************************* end **************************************
+
   div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
     .row
       .col-md-8

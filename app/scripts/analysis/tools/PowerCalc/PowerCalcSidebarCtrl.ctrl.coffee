@@ -58,7 +58,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@twoPropThresh1 = 0
 		@twoPropThresh2 = 0
 
-		# modes 
+		# modes
 		@deployed = false
 		@threshMode = false
 		@threshTypeModes = ["larger", "smaller", "equal"]
@@ -157,6 +157,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneProp()
 		else if (@selectedAlgorithm is 'Test of Two Proportions')
 			@twoProp()
+  else if (@selectedAlgorithm is 'CI for One Mean')
+      @CIOM()
 		return
 
 	twoTest: ()->
@@ -268,7 +270,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			if @threshMode then size = @runThresh(@df.data, -1, index, -1, false)[0]
 			else size = @df.data.length
 
-		else 
+		else
 			# update comparison target
 			if not @equalList([@curTarget], [@chosenSubCatsOne])
 				@curTarget = @chosenSubCatsOne
@@ -328,7 +330,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@populations[@chosenSubCatsTwo[0]]=[]
 			@populations[@chosenSubCatsTwo[1]]=[]
 			@MinMax = [
-				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}, 
+				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER},
 				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}
 				]
 			for row in @container[@chosenSubCatsTwo[0]]
@@ -351,7 +353,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				size2 = @populations[@chosenSubCatsTwo[1]].length
 
 
-		else 
+		else
 			# check if the # of chosen cols is 2
 			if @chosenColsTwo.length isnt 2
 				return
@@ -368,7 +370,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@populations[@chosenColsTwo[0]] = []
 			@populations[@chosenColsTwo[1]] = []
 			@MinMax = [
-					{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}, 
+					{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER},
 					{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}
 				]
 			for row in @df.data
@@ -406,18 +408,45 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			size2: size2
 			target: @curTarget
 
+    # ********************** add CIOM filter function *********************
+	CIOM: () ->
+		@populations = {}
+
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+
+		  #extract index if col
+		  index = @df.header.indexOf(@chosenColsOne)
+
+		  #extract data from container to population
+		  @populations[@chosenSubCatsOne] = []
+		  for row in @container[@chosenSubCatsOne]
+		    @populations[@chosenSubCatsOne].push(row[index])
+
+		else
+		  # extract data from data to population
+		  index1 = @df.header.indexOf(@chosenColsOne)
+		  @populations[@chosenColsOne] = []
+		  for row in @df.data
+		    @populations[@chosenColsOne].push(row[index1])
+
+		@msgService.broadcast 'powercalc:CIOMdata',
+		  popl: @populations
+
+#******************************** end ********************************
+
 
 	findMinMax: (data, index1, index2, isTwo) ->
 		if @newTarget
 			@newTarget = false
 			@MinMax = [
-				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}, 
+				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER},
 				{"min": Number.MAX_SAFE_INTEGER, "max": Number.MIN_SAFE_INTEGER}
 			]
 			if isTwo
 				# TODO
 				return
-			else 
+			else
 				for row in data
 					i = parseFloat(row[index1])
 					if i < @MinMax[0]["min"]

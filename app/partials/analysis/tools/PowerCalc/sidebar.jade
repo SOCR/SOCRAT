@@ -10,7 +10,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
           ng-options="method for method in sidebar.algorithms"
           ng-change="sidebar.updateAlgControls()"
         )
-      .form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ "sidebar.selectedAlgorithm == 'Test of Two Proportions'" ng-disabled="sidebar.deployed")
+      .form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + "sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ "sidebar.selectedAlgorithm == 'Test of Two Proportions' ||"+ "sidebar.selectedAlgorithm == 'CI for One Mean'" ng-disabled="sidebar.deployed")
         .row.form-inline.bootstrap-switch-square
           label
             span.glyphicon.glyphicon-question-sign(
@@ -96,6 +96,33 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
         ng-options="col for col in sidebar.subCategoricalCols"
         ng-change="sidebar.run()"
         )
+
+    //    *************************** CI for One Mean **************************************
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'CI for One Mean' && sidebar.deployed")
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenColsOne"
+        ng-options="col for col in sidebar.numericalCols"
+        ng-change="sidebar.run()"
+        )
+      .form-group
+        label Category &nbsp;
+        select.form-control(
+        ng-model="sidebar.chosenCats"
+        ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
+        ng-options="col for col in sidebar.categoricalCols"
+        ng-change="sidebar.update()"
+        )
+      .form-group
+        label Subcategory
+        select.form-control(
+        ng-model="sidebar.chosenSubCatsOne"
+        ng-options="col for col in sidebar.subCategoricalCols"
+        ng-change="sidebar.run()"
+        )
+    //    *********************************** CIOM end **************************************
 
     fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of One Proportion' && sidebar.deployed")
       .form-group.bootstrap-switch-square

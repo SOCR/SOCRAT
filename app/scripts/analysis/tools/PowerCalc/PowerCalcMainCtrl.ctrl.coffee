@@ -122,7 +122,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
     #receive data
     @$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
-      @algorithmService.passDataByName(@selectedAlgorithm, data) 
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
     @$scope.$on 'powercalc:onePropdata', (event, data)=>
@@ -133,6 +133,12 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
+    @$scope.$on 'powercalc:CIOMdata', (event, data)=>
+      @CIOM_data = data
+      console.log("Received", @CIOM_data)
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @loadData()
+
     @$scope.$on 'powercalc:alpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
       @loadData()
@@ -140,7 +146,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @$scope.$on 'powercalc:change_mode', (event, data)=>
       @deployed=data.deploy
       @loadData()
-
 
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
@@ -157,6 +162,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       return
     else if (@selectedAlgorithm is "Test of Two Proportions")
       @twoPropRetrieve()
+      return
+    else if (@selectedAlgorithm is "CI for One Mean")
+      @CIOMRetrieve()
+      return
     else
       return
 
@@ -432,7 +441,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @onePropGraph()
     if (@deployed)
       @compAgents = [@params.comp]
-    else 
+    else
       @compAgents = ["Sample"]
     return
 
@@ -544,7 +553,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @twoPropMode = @params.mode
     if (@deployed)
       @compAgents = @params.comp
-    else 
+    else
       @compAgents = ["Sample1", "Sample2"]
     @twoPropModes = ["Two Sided", "One Sided"]
     @twoPropClick()
@@ -1312,3 +1321,18 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5
+
+
+############################### CIOM Retrieve & Sync ###################################
+  CIOMRetrieve: () ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @CIOMN = @params.n
+    @CIOMMean = @params.mean
+    @CIOMStDev = @params.sigma
+    console.log("mainCtrl retrieve calculated data")
+    console.log("@CIOMStDev: " + @CIOMStDev)
+    @CIOMFoo()
+
+  CIOMFoo: () ->
+    console.log("CIOMFoo called...")
+
