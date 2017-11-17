@@ -25,7 +25,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     #@gMean = 0
     #@gVariance =0
     #@gstandardDev = null
-
+    @loadData()
 
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
@@ -62,6 +62,17 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       console.log(@params)
       @modelData.stats = @params
 
+      modelData = @router.getChartData(@distribution, @params )
+      modelData.stats = @params
+      @$timeout => @modelData = modelData,
+      5
+      @syncData(@params)
+      #@loadData()
+      #@router.setParams(@distribution, @params)
+
+      #@loadData()
+
+
 
 
 
@@ -76,3 +87,163 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
     @modelData = @router.getChartData(@distribution, @params )
     @modelData.stats = @params
+    modelData = @router.getChartData(@distribution, @params )
+    modelData.stats = @params
+    @$timeout => @modelData = modelData,
+    5
+
+
+  syncData: (dataIn) ->
+    @router.setParamsByName(@distribution, dataIn)
+    @loadData()
+
+
+
+
+
+  loadData: () ->
+    if (@distribution is "Normal")
+      @normalRetrieve()
+      return
+    else if (@distribution is "Laplace")
+      @laplaceRetrieve()
+      return
+    else
+      return
+
+
+
+
+
+  normalRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @NormalStDev = @currParams.standardDev
+    @NormalMean = @currParams.mean
+    @NormalVariance =   @currParams.variance
+
+    @NormalSliders()
+    @updateModelData()
+
+
+  NormalSync: () ->
+    @params.stats.mean = @NormalMean
+    @params.stats.standardDev = @NormalStDev
+    @params.stats.variance = @NormalVariance
+    @syncData(@params)
+    #@loadData()
+
+
+
+  NormalPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "Normal"
+        @NormalSync()
+
+  NormalSliders: () ->
+
+    # select slider elements
+    nMean = $("#NormalMean")
+    nStDev = $("#NormalStDev")
+    nVariance = $("#NormalVariance")
+    nMean.slider(
+      value: @NormalMean,
+      min: 0,
+      max: 30,
+      range: "min",
+      step: .5,
+      slide: (event, ui) =>
+        @NormalMean = ui.value
+        @NormalSync()
+    )
+
+    nStDev.slider(
+      value: @NormalStDev,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @NormalStDev = ui.value
+        @NormalSync()
+    )
+
+    nVariance.slider(
+      value: @NormalVariance,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: 0.2,
+      slide: (event, ui) =>
+        @NormalVariance = ui.value
+        @NormalSync()
+    )
+    # enable or disable sliders
+    sliders = [
+      nMean, nVariance, nStDev
+      ]
+
+    if @deployed is true
+      for sl in sliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
+    else
+      for sl in sliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+
+
+
+
+
+
+
+  laplaceRetrieve: () ->
+    @currParams = @router.getParamsByName(@distribution)
+    @LaplaceMean = @currParams.mean
+    @LaplaceScale = @currParams.scale
+
+    @LaplaceSliders()
+    @updateModelData()
+
+
+
+  LaplaceSync: () ->
+    @params.stats.mean = @LaplaceMean
+    @params.stats.scale = @LaplaceScale
+    @syncData(@params)
+
+
+  LaplacePress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "Laplace"
+        @LaplaceSync()
+
+  LaplaceSliders: () ->
+    lMean = $("#LaplaceMean")
+    lScale = $("#LaplaceScale")
+
+    lMean.slider(
+      value: @LaplaceMean,
+      min: 0,
+      max: 30,
+      range: "min",
+      step: .5,
+      slide: (event, ui) =>
+        @LaplaceMean = ui.value
+        @LaplaceSync()
+    )
+
+    lScale.slider(
+      value: @LaplaceScale,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @LaplaceScale = ui.value
+        @LaplaceSync()
+    )

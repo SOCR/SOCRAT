@@ -12,9 +12,12 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class NormalDist extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
-    @getParams = @socrat_analysis_modeler_getParams
-
+    @calc = @socrat_analysis_modeler_getParams
+    @NormalMean = 5
+    @NormalStandardDev = 1
+    @NormalVariance = 1
     @name = 'Normal'
+
 
 
   getName: () ->
@@ -23,11 +26,19 @@ module.exports = class NormalDist extends BaseService
 
   getChartData: (params) ->
     
-
-
-
-    
-    curveData = @getParams.getGaussianFunctionPoints(params.stats.standardDev, params.stats.mean, params.stats.variance, params.xMin , params.xMax)
+    curveData = @calc.getGaussianFunctionPoints(@NormalStandardDev, @NormalMean, @NormalVariance, params.xMin , params.xMax)
     return curveData
 
 
+  getParams: () ->
+    params =
+      mean: @NormalMean
+      standardDev: @NormalStandardDev
+      variance: @NormalVariance
+
+
+
+  setParams: (newParams) ->
+    @NormalMean = parseFloat(newParams.stats.mean.toPrecision(4))
+    @NormalStandardDev =parseFloat(newParams.stats.standardDev.toPrecision(4))
+    @NormalVariance = parseFloat(newParams.stats.variance.toPrecision(4))

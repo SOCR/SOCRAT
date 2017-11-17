@@ -26,8 +26,9 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @ChiSquared = @socrat_modeler_distribution_ChiSquared
     @LogNormal= @socrat_modeler_distribution_LogNormal
     @Exponential =@socrat_modeler_distribution_exponential
-    @models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @ChiSquared, @LogNormal, @Exponential ]
 
+    #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
+    @models = [@Normal, @Laplace]
   ############
 
   getNames: -> @models.map (model) -> model.getName()
@@ -38,8 +39,8 @@ module.exports = class ModelerRouter extends BaseModuleDataService
   getChartData: (modelName, params) ->
     (model.getChartData(params) for model in @models when modelName is model.getName()).shift()
 
-  setParamsByName: (modelName, dataIn) ->
-    (model.setParams(dataIn) for model in @models when modelName is model.getName()).shift()
+  setParamsByName: (modelName, params) ->
+    (model.setParams(params) for model in @models when modelName is model.getName()).shift()
 
   passDataByName: (modelName, dataIn) ->
     (model.saveData(dataIn) for model in @models when modelName is model.getName()).shift()

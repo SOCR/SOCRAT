@@ -113,83 +113,84 @@ module.exports = class ModelerDir extends BaseDirective
             z: row[2]
             r: row[3]
         ###
-        container = d3.select(elem[0])
-        container.select('path').remove()
+        if modelData
+          container = d3.select(elem[0])
+          container.selectAll('path').remove()
 
 
-        
-        leftBound = modelData.stats.stats.leftBound
-        rightBound = modelData.stats.stats.rightBound
-        topBound = modelData.stats.stats.topBound
-        bottomBound = modelData.stats.stats.bottomBound
-        curveData = modelData
-        
-        padding = 50
-        #xScale = d3.scale.linear().range([0, width]).domain([modelData.xMin, modelData.xMax])
-        #yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
-        xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.stats.xMin, modelData.stats.xMax])
-        yScale = d3.scale.linear().range([height - padding, padding]).domain([bottomBound, topBound])
+          
+          leftBound = modelData.stats.stats.leftBound
+          rightBound = modelData.stats.stats.rightBound
+          topBound = modelData.stats.stats.topBound
+          bottomBound = modelData.stats.stats.bottomBound
+          curveData = modelData
+          
+          padding = 50
+          #xScale = d3.scale.linear().range([0, width]).domain([modelData.xMin, modelData.xMax])
+          #yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
+          xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.stats.xMin, modelData.stats.xMax])
+          yScale = d3.scale.linear().range([height - padding, padding]).domain([bottomBound, topBound])
 
-        #x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-        #y.domain([0, (d3.max dataHist.map (i) -> i.length)])
-        xAxis = d3.svg.axis().ticks(20)
-          .scale(xScale)
+          #x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
+          #y.domain([0, (d3.max dataHist.map (i) -> i.length)])
+          xAxis = d3.svg.axis().ticks(20)
+            .scale(xScale)
 
-        yAxis = d3.svg.axis()
-          .scale(yScale)
-          .ticks(12)
-          .tickPadding(0)
-          .orient("right")
+          yAxis = d3.svg.axis()
+            .scale(yScale)
+            .ticks(12)
+            .tickPadding(0)
+            .orient("right")
 
-        lineGen = d3.svg.line()
-          .x (d) -> xScale(d.x)
-          .y (d) -> yScale(d.y)
-          .interpolate("basis")
+          lineGen = d3.svg.line()
+            .x (d) -> xScale(d.x)
+            .y (d) -> yScale(d.y)
+            .interpolate("basis")
 
-        console.log("printing gaussian curve data")
-        console.log(curveData)
-        '''
-        if modelData.distribution.name == 'Kernel'
-          console.log("plotting for kernel")
+          console.log("printing gaussian curve data")
+          console.log(curveData)
+          '''
+          if modelData.distribution.name == 'Kernel'
+            console.log("plotting for kernel")
+            _graph.append('svg:path')
+            .datum(curveData)
+            .attr("class", "line")
+            .attr('d', lineGen)
+            .attr('stroke', 'black')
+            .attr('stroke-width', 1.5)
+            .attr('fill', "none")
+
+          else 
+          '''
           _graph.append('svg:path')
-          .datum(curveData)
-          .attr("class", "line")
-          .attr('d', lineGen)
+          .attr('d', lineGen(curveData))
+          .data([curveData])
           .attr('stroke', 'black')
           .attr('stroke-width', 1.5)
+          .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
+          .on('mouseout', (d) -> hideToolTip())
           .attr('fill', "none")
 
-        else 
+
+
         '''
-        _graph.append('svg:path')
-        .attr('d', lineGen(curveData))
-        .data([curveData])
-        .attr('stroke', 'black')
-        .attr('stroke-width', 1.5)
-        .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
-        .on('mouseout', (d) -> hideToolTip())
-        .attr('fill', "none")
-
-
-
-      '''
-        if @distribution.name == 'Laplace'
-            @container.append('div').attr('id', 'laplace_slider')
-            $slider = $("#laplace_slider")
-            if $slider.length > 0
-            $slider.slider(
-              min: 1
-              max: 10
-              value: 5
-              orientation: "horizontal"
-              range: "min"
-              change: ->
-            ).addSliderSegments($slider.slider("option").max)
-            $slider.on "slidechange", (event, ui) =>
-              b = parseInt ui.value
-    #      tooltip.html()
-              modelData = @
-        '''
+          if @distribution.name == 'Laplace'
+              @container.append('div').attr('id', 'laplace_slider')
+              $slider = $("#laplace_slider")
+              if $slider.length > 0
+              $slider.slider(
+                min: 1
+                max: 10
+                value: 5
+                orientation: "horizontal"
+                range: "min"
+                change: ->
+              ).addSliderSegments($slider.slider("option").max)
+              $slider.on "slidechange", (event, ui) =>
+                b = parseInt ui.value
+      #      tooltip.html()
+                modelData = @
+          '''
 
 
     

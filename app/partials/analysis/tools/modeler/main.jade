@@ -34,11 +34,12 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               | &nbsp;
               input.form-control.input-sm.flat(
               string-to-number
-              ng-model="mainArea.params.stats.mean"
-              ng-click="mainArea.updateModelData()"
+              ng-model="mainArea.NormalMean"
+              ng-click="mainArea.NormalSync()"
+              ng-keypress ="mainArea.NormalPress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
-              step="1"
+              step="0.001"
               name='NormalMean'
               )
             #NormalMean
@@ -53,11 +54,12 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               sub 1
               | &nbsp;
               input.form-control.input-sm.flat(
-              ng-model="mainArea.params.stats.standardDev"
-              ng-click="mainArea.updateModelData()"
+              ng-model="mainArea.NormalStDev"
+              ng-click="mainArea.NormalSync()"
+              ng-keypress ="mainArea.NormalPress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
-              step="1"
+              step="0.01"
               name='NormalStDev'
               )
             #NormalStDev
@@ -70,11 +72,12 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               ) &nbsp;
               | variance
               input.form-control.input-sm.flat(
-              ng-model="mainArea.params.stats.variance"
-              ng-click="mainArea.updateModelData()"
+              ng-model="mainArea.NormalVariance"
+              ng-click="mainArea.NormalSync()"
+              ng-keypress ="mainArea.NormalPress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
-              step="1"
+              step="0.01"
               name='NormalVariance'
               )
             #NormalVariance
@@ -334,14 +337,15 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               | &nbsp;
               input.form-control.input-sm.flat(
               string-to-number
-              ng-model="mainArea.params.stats.location"
-              ng-click="mainArea.updateModelData()"
+              ng-model="mainArea.LaplaceMean"
+              ng-click="mainArea.LaplaceSync()"
+              ng-keypress ="mainArea.LaplacePress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"
-              name='LaplaceLocation'
+              name='LaplaceMean'
               )
-            #LaplaceLocation
+            #LaplaceMean
           .row.form-inline
             label
               span.glyphicon.glyphicon-question-sign(
@@ -353,14 +357,15 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               sub 1
               | &nbsp;
               input.form-control.input-sm.flat(
-              ng-model="mainArea.params.stats.scale"
-              ng-click="mainArea.updateModelData()"
+              ng-model="mainArea.LaplaceScale"
+              ng-click="mainArea.LaplaceSync()"
+              ng-keypress ="mainArea.LaplacePress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"
-              name='LaplaceGamma'
+              name='LaplaceScale'
               )
-            #LaplaceGamma
+            #LaplaceScale
 
 
 
