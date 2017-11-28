@@ -12,11 +12,11 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class CauchyDist extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
-    @getParams = @socrat_analysis_modeler_getParams
+    @calc = @socrat_analysis_modeler_getParams
 
     @name = 'Cauchy'
-    @gamma = .75
-    @locationParam = null
+    @CauchyGamma = .75
+    @locationParam = 1
 
   getName: () ->
     return @name
@@ -35,13 +35,17 @@ module.exports = class CauchyDist extends BaseService
     data
   
   getChartData: (params) ->
-    if params.stats.gamma == undefined
-      params.stats.gamma = .75
-
-    curveData = @getCauchyDistribution(params.xMin, params.xMax, params.stats.mean , params.stats.gamma)
+    curveData = @getCauchyDistribution(params.xMin, params.xMax, @locationParam, @CauchyGamma)
     console.log(curveData)
     
     return curveData
 
 
-  
+  getParams: () ->
+    params = 
+      gamma: @CauchyGamma
+      location: @locationParam
+
+  setParams: (newParams) ->
+    @CauchyGamma = newParams.stats.gamma
+    @locationParam = newParams.stats.location
