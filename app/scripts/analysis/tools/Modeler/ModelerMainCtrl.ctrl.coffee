@@ -57,6 +57,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @params.stats = @stats
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
+      @modelData = @router.getChartData(@distribution, @params )
+      console.log(@distribution)
+      console.log(@params)
+      @modelData.stats = @params
+
       modelData = @router.getChartData(@distribution, @params )
       modelData.stats = @params
       @$timeout => @modelData = modelData,
@@ -66,14 +71,22 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       #@router.setParams(@distribution, @params)
 
       #@loadData()
-      
-      
+
+
 
 
 
 
   updateModelData: () ->
     console.log("Updating Model Data from Sliders")
+
+    #@params.stats.mean = parseFloat(@gMean.toPrecision(4))
+    #@params.stats.standardDev = parseFloat(@gstandardDev.toPrecision(4))
+    #@params.stats.variance = parseFloat(@gVariance.toPrecision(4))
+
+
+    @modelData = @router.getChartData(@distribution, @params )
+    @modelData.stats = @params
     modelData = @router.getChartData(@distribution, @params )
     modelData.stats = @params
     @$timeout => @modelData = modelData,
@@ -85,7 +98,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @loadData()
 
 
-  
+
 
 
   loadData: () ->
@@ -97,11 +110,15 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       return
     else if (@distribution is "Cauchy")
       @cauchyRetrieve()
+    else if (@distribution is "ChiSquared")
+      @ChiSquaredRetrieve()
+    else if (@distribution is "LogNormal")
+      @LogNormalRetrieve()
     else
       return
 
 
-  
+
 
 
   normalRetrieve: ()->
@@ -113,7 +130,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @NormalSliders()
     @updateModelData()
 
-  
+
   NormalSync: () ->
     @params.stats.mean = @NormalMean
     @params.stats.standardDev = @NormalStDev
@@ -184,10 +201,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
 
-  
-  
-  
-  
   laplaceRetrieve: () ->
     @currParams = @router.getParamsByName(@distribution)
     @LaplaceMean = @currParams.mean
@@ -195,7 +208,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @LaplaceSliders()
     @updateModelData()
 
-  
+
 
   LaplaceSync: () ->
     @params.stats.mean = @LaplaceMean
@@ -213,7 +226,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
   LaplaceSliders: () ->
     lMean = $("#LaplaceMean")
     lScale = $("#LaplaceScale")
-  
+
     lMean.slider(
       value: @LaplaceMean,
       min: 0,
@@ -235,8 +248,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @LaplaceScale = ui.value
         @LaplaceSync()
     )
-
-
 
 
   cauchyRetrieve: () ->
@@ -270,11 +281,107 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     )
     cGamma.slider(
       value: @CauchyGamma,
+      @CauchyGamma = ui.value
+        @CauchySync()
+    )
+
+  ChiSquaredRetrieve: () ->
+    @currParams = @router.getParamsByName(@distribution)
+    @k = @currParams.mean
+    @ChiSquaredSliders()
+    @updateModelData()
+
+
+
+  ChiSquaredSync: () ->
+    @params.stats.mean = @k
+
+    @syncData(@params)
+
+
+  ChiSquaredPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "ChiSquared"
+        @ChiSquaredSync()
+
+  ChiSquaredSliders: () ->
+    kMean = $("#ChiSquared")
+
+    kMean.slider(
+      value: @k,  
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .5,
+      slide: (event, ui) =>
+        @k  = ui.value
+        @ChiSquaredSync()
+    )
+
+
+
+
+  LogNormalRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @LogNormalStDev = @currParams.standardDev
+    @LogNormalMean = @currParams.mean
+    console.log("in log normal retrieve!!!!!")
+    @LogNormalSliders()
+    @updateModelData()
+
+
+  LogNormalSync: () ->
+    @params.stats.mean = @LogNormalMean
+    @params.stats.standardDev = @LogNormalStDev
+    @syncData(@params)
+
+
+
+
+  LogNormalPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "LogNormal"
+        @LogNormalSync()
+
+  LogNormalSliders: () ->
+    logMean = $("#LogNormalMean")
+    logStDev = $("#LogNormalStDev")
+    logMean.slider(
+      value: @LogNormalMean,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .1,
+      slide: (event, ui) =>
+        @LogNormalMean = ui.value
+        @LogNormalSync()
+    )
+
+    logStDev.slider(
+      value: @LogNormalStDev,
       min: 0,
       max: 10,
       range: "min",
       step: .2,
       slide: (event, ui) =>
-        @CauchyGamma = ui.value
-        @CauchySync()
+        @LogNormalStDev = ui.value
+        @LogNormalSync()
     )
+
+    # enable or disable sliders
+    sliders = [
+      logMean, logStDev
+    ]
+
+    if @deployed is true
+      for s3 in sliders
+        s3.slider("disable")
+        s3.find('.ui-slider-handle').hide()
+    else
+      for s3 in sliders
+        s3.slider("enable")
+        s3.find('.ui-slider-handle').show()

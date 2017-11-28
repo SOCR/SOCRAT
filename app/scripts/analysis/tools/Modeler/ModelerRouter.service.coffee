@@ -10,6 +10,8 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     'socrat_modeler_distribution_maxwell_boltzman',
     'socrat_modeler_distribution_binomial',
     'socrat_analysis_modeler_kernel_density_plotter',
+    'socrat_modeler_distribution_ChiSquared',
+    'socrat_modeler_distribution_LogNormal',
     'socrat_modeler_distribution_exponential',
     '$interval'
 
@@ -21,11 +23,13 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @Cauchy = @socrat_modeler_distribution_cauchy
     @MaxwellBoltzman = @socrat_modeler_distribution_maxwell_boltzman
     @Binomial = @socrat_modeler_distribution_binomial
+    @ChiSquared = @socrat_modeler_distribution_ChiSquared
+    @LogNormal= @socrat_modeler_distribution_LogNormal
     @Exponential =@socrat_modeler_distribution_exponential
-    #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
-    @models = [@Normal, @Laplace, @Cauchy]
-  ############
 
+    #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
+    @models = [@Normal, @Laplace, @ChiSquared, @LogNormal, @Cauchy]
+    
   getNames: -> @models.map (model) -> model.getName()
 
   getParamsByName: (modelName) ->
