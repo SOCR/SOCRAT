@@ -23,7 +23,7 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @Binomial = @socrat_modeler_distribution_binomial
     @Exponential =@socrat_modeler_distribution_exponential
     #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
-    @models = [@Normal, @Laplace]
+    @models = [@Normal, @Laplace, @Cauchy]
   ############
 
   getNames: -> @models.map (model) -> model.getName()

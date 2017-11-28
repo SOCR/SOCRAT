@@ -97,26 +97,6 @@ div(ng-controller="ModelerMainCtrl as mainArea")
             label
               span.glyphicon.glyphicon-question-sign(
               aria-hidden="true"
-              uib-tooltip="Mean of the dataset"
-              tooltip-placement="left"
-              ) &nbsp;
-              | μ
-              sub 1
-              | &nbsp;
-              input.form-control.input-sm.flat(
-              string-to-number
-              ng-model="mainArea.params.stats.mean"
-              ng-click="mainArea.updateModelData()"
-              ng-disabled="mainArea.deployed"
-              type="number"
-              step="1"
-              name='CauchyMean'
-              )
-            #CauchyMean
-          .row.form-inline
-            label
-              span.glyphicon.glyphicon-question-sign(
-              aria-hidden="true"
               uib-tooltip="Location Parameter"
               tooltip-placement="left"
               ) &nbsp;
@@ -125,8 +105,8 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               | &nbsp;
               input.form-control.input-sm.flat(
               string-to-number
-              ng-model="mainArea.params.stats.location"
-              ng-click="mainArea.updateModelData()"
+              ng-model="CauchyLocation"
+              ng-click="mainArea.CauchySync()"
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"
@@ -144,8 +124,8 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               sub 1
               | &nbsp;
               input.form-control.input-sm.flat(
-              ng-model="mainArea.params.stats.gamma"
-              ng-click="mainArea.updateModelData()"
+              ng-model="mainArea.CauchyGamma"
+              ng-click="mainArea.CauchySync()"
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"

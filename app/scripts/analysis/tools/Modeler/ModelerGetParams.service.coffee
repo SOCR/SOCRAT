@@ -126,6 +126,8 @@ module.exports = class GetParams extends BaseService
       xMin: min
       xMax: max
       scale: 1
+      location: 1
+      gamma: 1
 
 
 

@@ -95,6 +95,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     else if (@distribution is "Laplace")
       @laplaceRetrieve()
       return
+    else if (@distribution is "Cauchy")
+      @cauchyRetrieve()
     else
       return
 
@@ -190,7 +192,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @currParams = @router.getParamsByName(@distribution)
     @LaplaceMean = @currParams.mean
     @LaplaceScale = @currParams.scale
-    
     @LaplaceSliders()
     @updateModelData()
 
@@ -233,4 +234,47 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       slide: (event, ui) =>
         @LaplaceScale = ui.value
         @LaplaceSync()
+    )
+
+
+
+
+  cauchyRetrieve: () ->
+    @currParams = @router.getParamsByName(@distribution)
+    @CauchyLocation = @currParams.location
+    @CauchyGamma = @currParams.gamma
+    @CauchySliders()
+    @updateModelData()
+
+  CauchySync: () ->
+    @params.stats.location = @CauchyLocation
+    @params.stats.gammma =  @CauchyGamma
+    @syncData(@params)
+
+
+
+
+  CauchySliders: () ->
+    cLocation = $("#CauchyLocation")
+    cGamma = $("CauchyGamma")
+
+    cLocation.slider(
+      value: @CauchyLocation,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @CauchyLocation = ui.value
+        @CauchySync()
+    )
+    cGamma.slider(
+      value: @CauchyGamma,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @CauchyGamma = ui.value
+        @CauchySync()
     )
