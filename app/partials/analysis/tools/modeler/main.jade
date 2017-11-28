@@ -160,6 +160,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               string-to-number
               ng-model="CauchyLocation"
               ng-click="mainArea.CauchySync()"
+              ng-keypress ="mainArea.CauchyPress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"
@@ -179,6 +180,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               input.form-control.input-sm.flat(
               ng-model="mainArea.CauchyGamma"
               ng-click="mainArea.CauchySync()"
+              ng-keypress ="mainArea.CauchyPress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"

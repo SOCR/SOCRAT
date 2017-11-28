@@ -264,6 +264,12 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
 
+  CauchyPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "Cauchy"
+        @CauchySync()
 
   CauchySliders: () ->
     cLocation = $("#CauchyLocation")
@@ -279,9 +285,17 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @CauchyLocation = ui.value
         @CauchySync()
     )
+
+
+
     cGamma.slider(
       value: @CauchyGamma,
-      @CauchyGamma = ui.value
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @CauchyGamma = ui.value
         @CauchySync()
     )
 
