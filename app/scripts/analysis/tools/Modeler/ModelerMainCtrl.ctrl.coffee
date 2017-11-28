@@ -114,6 +114,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @ChiSquaredRetrieve()
     else if (@distribution is "LogNormal")
       @LogNormalRetrieve()
+    else if (@distribution is "Exponential")
+      @ExponentialRetrieve()
     else
       return
 
@@ -324,7 +326,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     kMean = $("#ChiSquared")
 
     kMean.slider(
-      value: @k,  
+      value: @k,
       min: 0,
       max: 10,
       range: "min",
@@ -334,6 +336,41 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @ChiSquaredSync()
     )
 
+
+  ExponentialRetrieve: () ->
+    @currParams = @router.getParamsByName(@distribution)
+    @gamma = @currParams.gamma
+    @ExponentialSliders()
+    @updateModelData()
+
+
+
+  ExponentialSync: () ->
+    @params.stats.gamma = @gamma
+
+    @syncData(@params)
+
+
+  ExponentialPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "Exponential"
+        @ExponentialSync()
+
+  ExponentialSliders: () ->
+    ExpGam = $("#ExponentialGamma")
+
+    ExpGam.slider(
+      value: @gamma,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .5,
+      slide: (event, ui) =>
+        @gamma  = ui.value
+        @ExponentialSync()
+    )
 
 
 

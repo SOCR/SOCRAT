@@ -241,10 +241,10 @@ div(ng-controller="ModelerMainCtrl as mainArea")
   div(ng-show='mainArea.distribution == "Exponential"')
     .row
       .col-md-8
-        h6 Binomial Distribution Modeler &nbsp;
+        h6 Exponential Distribution Modeler &nbsp;
           span.glyphicon.glyphicon-question-sign(
           aria-hidden="true"
-          uib-tooltip="This modeler plots a Binomial distribution."
+          uib-tooltip="This modeler plots a Exponential distribution."
           tooltip-placement="bottom"
           )
         modelerdir
@@ -257,10 +257,13 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               tooltip-placement="left"
               ) &nbsp;
               | Gamma
+              sub 1
+              | &nbsp;
               input.form-control.input-sm.flat(
               string-to-number
-              ng-model="mainArea.params.stats.gamma"
-              ng-click="mainArea.updateModelData()"
+              ng-model="mainArea.gamma"
+              ng-click="mainArea.ExponentialSync()"
+              ng-keypress ="mainArea.ExponentialPress($event)"
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"
