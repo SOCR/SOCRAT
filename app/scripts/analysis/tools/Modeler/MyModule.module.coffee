@@ -21,6 +21,7 @@ module.exports = modeler = new Module
       'socrat_modeler_distribution_LogNormal': require 'scripts/analysis/tools/Modeler/ModelerDistributionLogNormal.service.coffee'
 
       'socrat_modeler_distribution_exponential': require 'scripts/analysis/tools/Modeler/ModelerDistributionExponential.service.coffee'
+      'socrat_modeler_distribution_Weibull': require 'scripts/analysis/tools/Modeler/ModelerDistributionWeibull.service.coffee'
 
       'socrat_analysis_modeler_dist_list': require 'scripts/analysis/tools/Modeler/ModelerDistList.service.coffee'
       #'socrat_analysis_modeler_hist': require 'scripts/analysis/charts/ChartsHistogram.service.coffee'

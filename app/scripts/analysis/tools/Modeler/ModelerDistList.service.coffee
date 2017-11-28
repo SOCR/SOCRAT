@@ -75,6 +75,15 @@ module.exports = class DistList extends BaseService
       xLabel: ""
     ,
 
+      name: 'Weibull'
+      value: 2
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class Designs a simple Weibull model fitting curve"
+      xLabel: ""
+    ,
+
       name: 'Kernel'
       value: 2
       x: ['integer', 'number']

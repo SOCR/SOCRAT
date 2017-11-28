@@ -12,7 +12,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class ExpDist extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
-    @getParams = @socrat_analysis_modeler_getParams
+#    @getParams = @socrat_analysis_modeler_getParams
 
     @name = 'Exponential'
     @gamma = .75
@@ -22,24 +22,29 @@ module.exports = class ExpDist extends BaseService
 
   pdf: (gamma, x) ->
     return gamma * Math.pow(Math.E, -1*gamma*x)
-    
-  
-  getDistribution: (leftBound, rightBound, gamma) ->
+
+
+  getExponentialDistribution: (leftBound, rightBound, gamma) ->
     data = []
     for i in [leftBound...rightBound] by .2
       data.push
         x: i
         y: @pdf(gamma, i)
     data
-  
-  getChartData: (params) ->
-    if params.stats.gamma == undefined
-      params.stats.gamma = .5
 
-    curveData = @getDistribution(params.xMin, params.xMax, params.stats.gamma)
+  getChartData: (params) ->
+
+    curveData = @getExponentialDistribution(params.xMin, params.xMax, @gamma)
     console.log(curveData)
-    
+
     return curveData
 
+  getParams: () ->
+    params =
+      gamma: @gamma
 
-  
+  setParams: (newParams) ->
+    @gamma = parseFloat(newParams.stats.gamma.toPrecision(4))
+
+
+
