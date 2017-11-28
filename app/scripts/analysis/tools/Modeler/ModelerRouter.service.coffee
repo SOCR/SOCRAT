@@ -28,9 +28,8 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @Exponential =@socrat_modeler_distribution_exponential
 
     #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
-    @models = [@Normal, @Laplace, @ChiSquared, @LogNormal]
-  ############
-
+    @models = [@Normal, @Laplace, @ChiSquared, @LogNormal, @Cauchy]
+    
   getNames: -> @models.map (model) -> model.getName()
 
   getParamsByName: (modelName) ->
