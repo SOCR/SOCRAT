@@ -108,6 +108,10 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     else if (@distribution is "Laplace")
       @laplaceRetrieve()
       return
+    else if (@distribution is "ChiSquared")
+      @ChiSquaredRetrieve()
+    else if (@distribution is "LogNormal")
+      @LogNormalRetrieve()
     else
       return
 
@@ -247,3 +251,109 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @LaplaceScale = ui.value
         @LaplaceSync()
     )
+
+
+
+
+  ChiSquaredRetrieve: () ->
+    @currParams = @router.getParamsByName(@distribution)
+    @k = @currParams.mean
+
+
+    @ChiSquaredSliders()
+    @updateModelData()
+
+
+
+  ChiSquaredSync: () ->
+    @params.stats.mean = @k
+
+    @syncData(@params)
+
+
+  ChiSquaredPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "ChiSquared"
+        @ChiSquaredSync()
+
+  ChiSquaredSliders: () ->
+    kMean = $("#ChiSquared")
+
+    kMean.slider(
+      value: @k,  
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .5,
+      slide: (event, ui) =>
+        @k  = ui.value
+        @ChiSquaredSync()
+    )
+
+
+
+
+  LogNormalRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @LogNormalStDev = @currParams.standardDev
+    @LogNormalMean = @currParams.mean
+    console.log("in log normal retrieve!!!!!")
+    @LogNormalSliders()
+    @updateModelData()
+
+
+  LogNormalSync: () ->
+    @params.stats.mean = @LogNormalMean
+    @params.stats.standardDev = @LogNormalStDev
+    @syncData(@params)
+#@loadData()
+
+
+
+  LogNormalPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "LogNormal"
+        @LogNormalSync()
+
+  LogNormalSliders: () ->
+    logMean = $("#LogNormalMean")
+    logStDev = $("#LogNormalStDev")
+    logMean.slider(
+      value: @LogNormalMean,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .1,
+      slide: (event, ui) =>
+        @LogNormalMean = ui.value
+        @LogNormalSync()
+    )
+
+    logStDev.slider(
+      value: @LogNormalStDev,
+      min: 0,
+      max: 10,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @LogNormalStDev = ui.value
+        @LogNormalSync()
+    )
+
+    # enable or disable sliders
+    sliders = [
+      logMean, logStDev
+    ]
+
+    if @deployed is true
+      for s3 in sliders
+        s3.slider("disable")
+        s3.find('.ui-slider-handle').hide()
+    else
+      for s3 in sliders
+        s3.slider("enable")
+        s3.find('.ui-slider-handle').show()

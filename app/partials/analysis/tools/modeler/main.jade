@@ -97,7 +97,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           label
             span.glyphicon.glyphicon-question-sign(
             aria-hidden="true"
-            uib-tooltip="Mean of the dataset"
+            uib-tooltip="LogMean of the dataset"
             tooltip-placement="left"
             ) &nbsp;
             | μ
@@ -105,8 +105,9 @@ div(ng-controller="ModelerMainCtrl as mainArea")
             | &nbsp;
             input.form-control.input-sm.flat(
             string-to-number
-            ng-model="mainArea.params.stats.mean"
-            ng-click="mainArea.updateModelData()"
+            ng-model="mainArea.LogNormalMean"
+            ng-click="mainArea.LogNormalSync()"
+            ng-keypress ="mainArea.LogNormalPress($event)"
             ng-disabled="mainArea.deployed"
             type="number"
             step="1"
@@ -117,15 +118,16 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           label
             span.glyphicon.glyphicon-question-sign(
             aria-hidden="true"
-            uib-tooltip="Standard Deviation of the sample"
+            uib-tooltip="LogStandard Deviation of the sample"
             tooltip-placement="left"
             ) &nbsp;
             | σ
             sub 1
             | &nbsp;
             input.form-control.input-sm.flat(
-            ng-model="mainArea.params.stats.standardDev"
-            ng-click="mainArea.updateModelData()"
+            ng-model="mainArea.LogNormalStDev"
+            ng-click="mainArea.LogNormalSync()"
+            ng-keypress ="mainArea.LogNormalPress($event)"
             ng-disabled="mainArea.deployed"
             type="number"
             step="1"
@@ -303,10 +305,13 @@ div(ng-controller="ModelerMainCtrl as mainArea")
             tooltip-placement="left"
             ) &nbsp;
             | k
+            sub 1
+            | &nbsp;
             input.form-control.input-sm.flat(
             string-to-number
-            ng-model="mainArea.params.stats.k"
-            ng-click="mainArea.updateModelData()"
+            ng-model="mainArea.k"
+            ng-click="mainArea.ChiSquaredSync()"
+            ng-keypress ="mainArea.ChiSquaredPress($event)"
             ng-disabled="mainArea.deployed"
             type="number"
             step="1"
