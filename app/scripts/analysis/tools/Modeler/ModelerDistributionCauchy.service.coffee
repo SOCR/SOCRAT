@@ -21,23 +21,20 @@ module.exports = class CauchyDist extends BaseService
   getName: () ->
     return @name
 
-  cauchy: (locationParam, gamma, x) ->
-    return 1 / (Math.PI * gamma *(1 +( Math.pow((x - locationParam) / gamma ,2))))
+  cauchy: (l, gamma, x) ->
+    return 1 / (Math.PI * gamma *(1 +( Math.pow((x - l) / gamma ,2))))
     
   
-  getCauchyDistribution: (leftBound, rightBound, locationParam, gamma) ->
+  getCauchyDistribution: (leftBound, rightBound, l, gamma) ->
     data = []
     for i in [leftBound...rightBound] by .2
       data.push
         x: i
-        y: @cauchy(locationParam, gamma, i)
-    console.log(data)
+        y: @cauchy(l, gamma, i)
     data
   
   getChartData: (params) ->
-    curveData = @getCauchyDistribution(params.xMin, params.xMax, @locationParam, @CauchyGamma)
-    console.log(curveData)
-    
+    curveData = @getCauchyDistribution(params.xMin, params.xMax, @locationParam, @CauchyGamma)    
     return curveData
 
 

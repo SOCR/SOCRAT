@@ -109,11 +109,13 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @laplaceRetrieve()
       return
     else if (@distribution is "Cauchy")
-      @cauchyRetrieve()
+      @CauchyRetrieve()
     else if (@distribution is "ChiSquared")
       @ChiSquaredRetrieve()
     else if (@distribution is "LogNormal")
       @LogNormalRetrieve()
+    else if (@distribution is "Maxwell-Boltzman")
+      @MaxBoltRetrieve()
     else
       return
 
@@ -250,7 +252,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     )
 
 
-  cauchyRetrieve: () ->
+  CauchyRetrieve: () ->
     @currParams = @router.getParamsByName(@distribution)
     @CauchyLocation = @currParams.location
     @CauchyGamma = @currParams.gamma
@@ -272,8 +274,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @CauchySync()
 
   CauchySliders: () ->
-    cLocation = $("#CauchyLocation")
-    cGamma = $("CauchyGamma")
+    cLocation = $("#CLocation")
+    cGamma = $("#CGamma")
 
     cLocation.slider(
       value: @CauchyLocation,
@@ -399,3 +401,39 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       for s3 in sliders
         s3.slider("enable")
         s3.find('.ui-slider-handle').show()
+
+
+
+
+  MaxBoltRetrieve: () ->
+      @currParams = @router.getParamsByName(@distribution)
+      @MaxBoltA = @currParams.A
+      @MaxBoltSliders()
+      @updateModelData()
+
+
+
+  MaxBoltSync: () ->
+    @params.stats.A = @MaxBoltA
+    @syncData(@params)
+
+
+  MaxBoltPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "Maxwell-Boltzman"
+        @MaxBoltSync()
+
+  MaxBoltSliders: () ->
+    a = $("#MaxBolt")
+    a.slider(
+      value: @MaxBoltA,
+      min: 0,
+      max: 30,
+      range: "min",
+      step: .2,
+      slide: (event, ui) =>
+        @MaxBoltA = ui.value
+        @MaxBoltSync()
+    )

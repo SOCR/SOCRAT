@@ -141,7 +141,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
         h6 Cauchy Distribution Modeler &nbsp;
           span.glyphicon.glyphicon-question-sign(
           aria-hidden="true"
-          uib-tooltip="This modeler plots a cauchy distribution."
+          uib-tooltip="This modeler plots a Cauchy distribution."
           tooltip-placement="bottom"
           )
         modelerdir
@@ -164,9 +164,9 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"
-              name='CauchyLocation'
+              name='CLocation'
               )
-            #CauchyLocation
+            #CLocation
           .row.form-inline
             label
               span.glyphicon.glyphicon-question-sign(
@@ -184,9 +184,9 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               ng-disabled="mainArea.deployed"
               type="number"
               step="1"
-              name='CauchyGamma'
+              name='CGamma'
               )
-            #CauchyGamma
+            #CGamma
 
   div(ng-show='mainArea.distribution == "Binomial"')
     .row
@@ -353,6 +353,40 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               name='LaplaceScale'
               )
             #LaplaceScale
+
+  div(ng-show='mainArea.distribution == "Maxwell-Boltzman"')
+      .row
+        .col-md-8
+          h6 Maxwell-BoltzMan Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a Maxwell-Boltzman distribution."
+            tooltip-placement="bottom"
+            )
+          modelerdir
+        .col-md-4
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="A of the dataset"
+              tooltip-placement="left"
+              ) &nbsp;
+              | A
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              string-to-number
+              ng-model="mainArea.MaxBoltA"
+              ng-click="mainArea.MaxBoltSync()"
+              ng-keypress ="mainArea.MaxBoltPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='MaxBolt'
+              )
+            #MaxBolt
+       
 
 
 

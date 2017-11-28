@@ -126,8 +126,9 @@ module.exports = class GetParams extends BaseService
       xMin: min
       xMax: max
       scale: 1
-      location: 1
+      location: mean
       gamma: 1
+      A: mean / (2* Math.sqrt(2/ Math.PI)).toFixed(2)
 
 
 

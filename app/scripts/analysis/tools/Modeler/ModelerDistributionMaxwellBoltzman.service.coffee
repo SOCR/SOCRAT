@@ -12,7 +12,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class MaxwellBoltzman extends BaseService
   @inject 'socrat_analysis_modeler_getParams'
   initialize: () ->
-    @getParams = @socrat_analysis_modeler_getParams
+    #@getParams = @socrat_analysis_modeler_getParams
 
     @name = 'Maxwell-Boltzman'
     @a = 1
@@ -32,14 +32,20 @@ module.exports = class MaxwellBoltzman extends BaseService
       data.push
         x: i
         y: @pdf(i, a)
-    console.log(data)
     data
   
   getChartData: (params) ->
-    data.curveData = @getMaxwellBoltzmanDistribution(params.xMin, params.xMax, @a)
-    console.log(data.curveData)
-    
-    return data
+    curveData = @getMaxwellBoltzmanDistribution(params.xMin, params.xMax, @a)
+    return curveData
 
+
+
+  getParams: () ->
+    params = 
+      A: @a
+
+  setParams: (newParams) ->
+    @a = newParams.stats.A
+   
 
   
