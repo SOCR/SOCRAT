@@ -101,6 +101,12 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
 
+  resetGetParams: () ->
+    @stats = @getParams.getParams(@chartData)
+    @params.stats = @stats
+    @syncData(@params)
+
+
   loadData: () ->
     if (@distribution is "Normal")
       @normalRetrieve()

@@ -390,10 +390,25 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               )
             #MaxBolt
        
+  div.form-group
+    .row
+      .row.form-inline
+      button.btn.btn-info(
+                type="submit"
+                aria-label="Reset"
+                ng-click="mainArea.resetGetParams()"
+                uib-tooltip = "Reset the distribution models to the extracted parameters"
+                tooltip-placement="right"
+              )
+                | Reset
 
 
-
+  
+  
+  
+  
   div.row-fluid
+
     h4 Parameters
     ul
       li Mean: {{mainArea.stats.mean}}

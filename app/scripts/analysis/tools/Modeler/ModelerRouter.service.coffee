@@ -13,7 +13,7 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     'socrat_modeler_distribution_ChiSquared',
     'socrat_modeler_distribution_LogNormal',
     'socrat_modeler_distribution_exponential',
-    'socrat_modeler_distribution_Weibull'
+   
     '$interval'
 
   initialize: ->
@@ -27,10 +27,9 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @ChiSquared = @socrat_modeler_distribution_ChiSquared
     @LogNormal= @socrat_modeler_distribution_LogNormal
     @Exponential =@socrat_modeler_distribution_exponential
-    @Weibull =@socrat_modeler_distribution_Weibull
 
     #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
-    @models = [@Normal, @Laplace, @ChiSquared, @MaxwellBoltzman, @LogNormal, @Cauchy, @Exponential, @Weibull]
+    @models = [@Normal, @Laplace, @ChiSquared, @MaxwellBoltzman, @LogNormal, @Cauchy, @Exponential]
 
   getNames: -> @models.map (model) -> model.getName()
 
