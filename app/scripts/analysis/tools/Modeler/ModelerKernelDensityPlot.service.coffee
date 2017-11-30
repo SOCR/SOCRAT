@@ -137,26 +137,7 @@ module.exports = class KernelDensityPlot extends BaseService
 
     kde = @kernelDensityEstimator(@epanechnikovKernel(bandwith), xScale.ticks(100));
     console.log("printing kde(data))")
-    
 
-
-   
-    #console.log("appending graph")
-    '''
-    _graph.append('svg:path')
-      .datum(kde(data))
-      .attr('class', 'line')
-      .attr('d', lineGen)
-      .attr('stroke', 'black')
-      .attr('stroke-width', 1.5)
-      .attr('fill', "none")
-    #mike bostock way
-   _graph.append('svg:path')
-      .datum(kde(data))
-      .attr("class", "line")
-      .attr("d", lineGen);
-
-    '''
 
     #gaussian way
     _graph.append('svg:path')

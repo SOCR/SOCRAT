@@ -42,14 +42,29 @@ module.exports = class ModelerRouter extends BaseModuleDataService
   setParamsByName: (modelName, params) ->
     (model.setParams(params) for model in @models when modelName is model.getName()).shift()
 
-  passDataByName: (modelName, dataIn) ->
-    (model.saveData(dataIn) for model in @models when modelName is model.getName()).shift()
 
-  setPowerByName: (modelName, dataIn) ->
-    (model.savePower(dataIn) for model in @models when modelName is model.getName()).shift()
 
-  passAlphaByName: (modelName, alphaIn) ->
-    (model.setAlpha(alphaIn) for model in @models when modelName is model.getName()).shift()
+  getQuantile: (modelName, params, p) ->
+    a = params.xMin
+    b = params.xMax
+    for model in @models when modelName is model.getName()
+      if p == 0
+        a
+      else if p == 1
+        b
+      else if 0 < p & p < 1
+        x1 = a
+        x2 = b
+        x = (x1 + x2) / 2
+        q = model.CDF(x)
+        e = Math.abs(q-p)
+        k = 1
+        while e > 0.00001 and k < 100
+          k++
+          if q < p then x1 = x else x2 = x
+          x = (x1 + x2) / 2
+          q = model.CDF(x)
+          e = Math.abs(q-p)
 
-  resetByName: (modelName) ->
-    (model.reset() for model in @models when modelName is model.getName()).shift()
+        return x
+    

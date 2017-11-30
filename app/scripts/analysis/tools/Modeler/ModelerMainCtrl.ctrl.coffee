@@ -55,17 +55,19 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
             r: row[3]
       @stats  = @getParams.getParams(data)
       @params.stats = @stats
+
+      
+      
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
-      @modelData = @router.getChartData(@distribution, @params )
+
+      lQuantile = @router.getQuantile(@distribution, @params, 0.001)
+      rQuantile = @router.getQuantile(@distribution, @params, .99)
+      @params.leftBound = Math.min(lQuantile, @params.xMin)
+      @params.rightBound = Math.max(rQuantile, @params.xMax)
+
       console.log(@distribution)
       console.log(@params)
-      @modelData.stats = @params
-
-      modelData = @router.getChartData(@distribution, @params )
-      modelData.stats = @params
-      @$timeout => @modelData = modelData,
-      5
       @syncData(@params)
       #@loadData()
       #@router.setParams(@distribution, @params)
@@ -85,8 +87,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     #@params.stats.variance = parseFloat(@gVariance.toPrecision(4))
 
 
-    @modelData = @router.getChartData(@distribution, @params )
-    @modelData.stats = @params
+    #@modelData = @router.getChartData(@distribution, @params )
+    #@modelData.stats = @params
     modelData = @router.getChartData(@distribution, @params )
     modelData.stats = @params
     @$timeout => @modelData = modelData,

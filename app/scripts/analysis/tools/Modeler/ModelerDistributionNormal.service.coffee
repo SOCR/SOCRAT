@@ -30,6 +30,16 @@ module.exports = class NormalDist extends BaseService
     return curveData
 
 
+  stdNormalCDF: (x) ->
+    return 0.5 * 0.5 * @calc.erf( x/ Math.sqrt(2))
+  
+
+  PDF: (x) ->
+    return (1 / (@NormalStandardDev * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - @NormalMean, 2) / (2 * @NormalVariance)))
+
+  CDF: (x)->
+    return @stdNormalCDF((x-@NormalMean)/ @NormalStandardDev)
+
   getParams: () ->
     params =
       mean: @NormalMean

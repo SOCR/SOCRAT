@@ -81,6 +81,24 @@ module.exports = class GetParams extends BaseService
     return values
 
 
+  #error function
+  erf: (x) ->
+    p = 0.3275911
+    a1 = 0.254829592
+    a2 = -0.284496736
+    a3 = 1.421413741
+    a4 = -1.453152027
+    a5 = 1.061405429
+    x0 = Math.abs(x)
+    t = 1 / (1 + p * x0)
+    y = 1 - ((a1 * t + a2 * Math.pow(t * 2) + a3 * Math.pow(t , 3) + a4 * Math.pow(t , 4) + a5 * Math.pow(t, 5) * Math.exp(-Math.pow(x , 2))))
+    
+    if x >= 0
+      y
+    else
+      -y
+
+
   getParams:(data) ->
     data = data.dataPoints
     data = data.map (row) ->
