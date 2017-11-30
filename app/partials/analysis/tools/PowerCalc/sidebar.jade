@@ -25,8 +25,8 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
             data-toggle="switch"
             id="toggle_switch"
             ng-model="sidebar.deployed"
-            ng-change="sidebar.change_mode()"
           )
+          {{ sidebar.deployed }}
         .row.form-inline(ng-show="!sidebar.deployed")
           label
             span.glyphicon.glyphicon-question-sign(
