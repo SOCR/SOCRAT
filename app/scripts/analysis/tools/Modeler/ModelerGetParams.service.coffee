@@ -91,7 +91,8 @@ module.exports = class GetParams extends BaseService
     a5 = 1.061405429
     x0 = Math.abs(x)
     t = 1 / (1 + p * x0)
-    y = 1 - ((a1 * t + a2 * Math.pow(t * 2) + a3 * Math.pow(t , 3) + a4 * Math.pow(t , 4) + a5 * Math.pow(t, 5) * Math.exp(-Math.pow(x , 2))))
+    #y = 1 - ((a1 * t + a2 * t ** 2 + a3 * t ** 3 + a4 * t ** 4 + a5 * t ** 5) * Math.exp(-x ** 2))
+    y = 1 - (a1 * t + a2 * Math.pow(t, 2) + a3 * Math.pow(t, 3) + a4 * Math.pow(t, 4) + a5 * Math.pow(t, 5)) * Math.exp(-Math.pow(x, 2))
     
     if x >= 0
       y
@@ -131,6 +132,9 @@ module.exports = class GetParams extends BaseService
     variance = parseFloat(variance.toFixed(2))
     median = parseFloat(median.toFixed(2))
     standardDerivation = parseFloat(standardDerivation.toFixed(2))
+
+    
+
 
     return stats =
       mean: mean

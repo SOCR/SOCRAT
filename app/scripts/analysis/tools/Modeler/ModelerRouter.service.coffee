@@ -45,7 +45,7 @@ module.exports = class ModelerRouter extends BaseModuleDataService
 
 
   getQuantile: (modelName, params, p) ->
-    a = params.xMin
+    a = Math.min(0, params.xMin)
     b = params.xMax
     for model in @models when modelName is model.getName()
       if p == 0
@@ -66,5 +66,6 @@ module.exports = class ModelerRouter extends BaseModuleDataService
           q = model.CDF(x)
           e = Math.abs(q-p)
 
-        return x
+        
+      return x
     

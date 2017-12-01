@@ -42,13 +42,13 @@ module.exports = class ModelerHist extends BaseService
 
 
     sizeOfData = arr.length
-    console.log dataHist #array for each bin, each array has all data points
+    #console.log dataHist #array for each bin, each array has all data points
     #create array of objects that store mean and median of each set
     stats = []
     for a in dataHist
       stats.push({mean: @getMean(a), median: @getMedian(a)})
 
-    console.log stats
+    #console.log stats
 
     xMean = (d, i) -> stats[i].mean
     xMedian = (d, i) -> stats[i].median

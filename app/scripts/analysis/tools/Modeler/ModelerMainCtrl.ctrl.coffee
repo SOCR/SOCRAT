@@ -42,7 +42,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
   updateChartData: (data) ->
     if data.dataPoints?
       console.log("updatating chartData")
-      console.log(data)
+      #console.log(data)
       #@stats = @getParams.getParams(data)
       @distribution = data.distribution.name
       console.log("distribution is : " + @distribution)
@@ -55,16 +55,21 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
             r: row[3]
       @stats  = @getParams.getParams(data)
       @params.stats = @stats
-
+      @router.setParamsByName(@distribution, @params)
       
       
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
 
-      lQuantile = @router.getQuantile(@distribution, @params, 0.001)
-      rQuantile = @router.getQuantile(@distribution, @params, .99)
-      @params.leftBound = Math.min(lQuantile, @params.xMin)
-      @params.rightBound = Math.max(rQuantile, @params.xMax)
+
+      #To be added for quantile
+      #lQuantile = @router.getQuantile(@distribution, @params, 0.01)
+      #rQuantile = @router.getQuantile(@distribution, @params, 0.99)
+
+      #console.log("1st percentile: " + lQuantile) 
+      #console.log("99th percentile: "  + rQuantile)
+      #@params.leftBound = Math.min(lQuantile, @params.xMin)
+      #@params.rightBound = Math.max(rQuantile, @params.xMax)
 
       console.log(@distribution)
       console.log(@params)

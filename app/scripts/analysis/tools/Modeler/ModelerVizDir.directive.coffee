@@ -128,7 +128,13 @@ module.exports = class ModelerDir extends BaseDirective
           padding = 50
           #xScale = d3.scale.linear().range([0, width]).domain([modelData.xMin, modelData.xMax])
           #yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
+         
+          #************** Change for quantile scaling **************
           xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.stats.xMin, modelData.stats.xMax])
+          #changin scale for larger range
+          #xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.stats.leftBound, modelData.stats.rightBound])
+
+          
           yScale = d3.scale.linear().range([height - padding, padding]).domain([bottomBound, topBound])
 
           #x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
@@ -148,7 +154,7 @@ module.exports = class ModelerDir extends BaseDirective
             .interpolate("basis")
 
           console.log("printing gaussian curve data")
-          console.log(curveData)
+          #console.log(curveData)
           '''
           if modelData.distribution.name == 'Kernel'
             console.log("plotting for kernel")

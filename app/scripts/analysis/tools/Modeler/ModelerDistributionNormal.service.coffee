@@ -40,6 +40,9 @@ module.exports = class NormalDist extends BaseService
   CDF: (x)->
     return @stdNormalCDF((x-@NormalMean)/ @NormalStandardDev)
 
+
+
+
   getParams: () ->
     params =
       mean: @NormalMean
