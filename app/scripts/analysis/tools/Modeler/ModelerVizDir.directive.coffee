@@ -52,6 +52,9 @@ module.exports = class ModelerDir extends BaseDirective
           labels = newChartData.labels
           scheme = newChartData.graph
 
+          #*************************#
+          modelBounds = newChartData.bounds
+
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
 
@@ -87,7 +90,7 @@ module.exports = class ModelerDir extends BaseDirective
           console.log("Printing Histogram")
 
 
-          @histogram.drawHist(_graph,data,container,labels,width,height,ranges)
+          @histogram.drawHist(_graph,data,container,labels,width,height,ranges, modelBounds)
           
           #case for each distribution
           ###

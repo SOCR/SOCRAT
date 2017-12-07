@@ -22,11 +22,18 @@ module.exports = class NormalDist extends BaseService
 
   getName: () ->
     return @name
-
+  getGaussianFunctionPoints: (leftBound, rightBound) ->
+    data = []
+    for i in [leftBound...rightBound] by .1
+      data.push
+        x: i
+        y: @PDF(i)
+    console.log(data)
+    data
 
   getChartData: (params) ->
     
-    curveData = @calc.getGaussianFunctionPoints(@NormalStandardDev, @NormalMean, @NormalVariance, params.xMin , params.xMax)
+    curveData = @getGaussianFunctionPoints( params.xMin , params.xMax)
     return curveData
 
 
@@ -35,21 +42,16 @@ module.exports = class NormalDist extends BaseService
   
 
   PDF: (x) ->
-    return (1 / (@NormalStandardDev * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - @NormalMean, 2) / (2 * @NormalVariance)))
+    return (1 / (@NormalStandardDev * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(x - @NormalMean, 2) / (2 * @NormalVariance)))
 
   CDF: (x)->
     return @stdNormalCDF((x-@NormalMean)/ @NormalStandardDev)
-
-
-
 
   getParams: () ->
     params =
       mean: @NormalMean
       standardDev: @NormalStandardDev
       variance: @NormalVariance
-
-
 
   setParams: (newParams) ->
     @NormalMean = parseFloat(newParams.stats.mean.toPrecision(4))

@@ -29,7 +29,7 @@ module.exports = class ModelerHist extends BaseService
 
 
 
-  plotHist: (bins, container, arr, _graph, gdata, x, height, width, data, median, mean) ->
+  plotHist: (bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds) ->
 
 #    tooltip
     $('#tooltip').remove();
@@ -62,8 +62,12 @@ module.exports = class ModelerHist extends BaseService
     x = d3.scale.linear().range([ padding, width - padding ])
     y = d3.scale.linear().range([ height - padding, padding ])
 
+    #need to change x and y ranges
+    dataSetYMax = (d3.max dataHist.map (i) -> i.length )/ sizeOfData  
+    yMax = Math.max(dataSetYMax , bounds.yMax)
+
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-    y.domain([0, (d3.max dataHist.map (i) -> i.length)/ sizeOfData   ])
+    y.domain([0, yMax ])
 
     yAxis = d3.svg.axis().scale(y).orient("left")
     xAxis = d3.svg.axis().scale(x).orient("bottom")
@@ -181,7 +185,7 @@ module.exports = class ModelerHist extends BaseService
     ##@gauss.drawKernelDensityEst(data, width, height, _graph, xAxis, yAxis, y, x)
 
     
-  drawHist: (_graph, data, container, gdata, width, height, ranges) ->
+  drawHist: (_graph, data, container, gdata, width, height, ranges, bounds) ->
     #pre-set value of slider
     container.append('div').attr('id', 'slider')
     $slider = $("#slider")
@@ -189,7 +193,7 @@ module.exports = class ModelerHist extends BaseService
     arr = data.map (d) -> parseFloat d.x
     median = @getMedian(arr)
     mean = @getMean(arr)
-    @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean
+    @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds
 
     if $slider.length > 0
       $slider.slider(
@@ -203,7 +207,7 @@ module.exports = class ModelerHist extends BaseService
     $slider.on "slidechange", (event, ui) =>
       bins = parseInt ui.value
 #      tooltip.html()
-      @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean
+      @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds
 
 
 

@@ -35,7 +35,7 @@ module.exports = class GetParams extends BaseService
 
   getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
     data = []
-    for i in [leftBound...rightBound] by .2
+    for i in [leftBound...rightBound] by .1
       data.push
         x: i
         y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
@@ -327,99 +327,87 @@ module.exports = class GetParams extends BaseService
           )
         ]
 
-  epanechnikovKernel: (scale) ->
-    (u) ->
-      if Math.abs(u /= scale) <= 1 then .75 * (1 - (u * u)) / scale else 0
-  '''
-  epanechnikovKernel: (u) ->
-    if u <= 1 and u >= -1
-      return .75 * (1 - (u * u))
-    0
-  '''
+  isEven = (n) ->
+    if n % 2 == 0
+      true
+    else
+      false
 
-  drawKernelDensityEst: (data, width, height, _graph, xAxis, yAxis, yScale, xScale) ->
-    console.log("datafrom kde")
-    console.log(data)
+  isOdd = (n) ->
+    if (n - 1) % 2 == 0
+      true
+    else
+      false
 
+  #Sign functon
 
+  sgn = (x) ->
+    if x > 0
+      1
+    else if x < 0
+      -1
+    else
+      0
 
-    bandwith = 7
-    console.log @extract(data, "x")
-    console.log("Within the modeler GetParams")
-    sample = @sort(@getRandomValueArray(@extract(data,"x")))
-    sum = @getSum(sample)
-    min = sample[0]
-    max = sample[sample.length - 1]
-    mean = @getMean(sum, sample.length)
-    variance = @getVariance(sample, mean)
-    standardDerivation =  Math.sqrt(variance)
-    rightBound = @getRightBound(mean, standardDerivation)
-    leftBound = @getLeftBound(mean,standardDerivation)
-    bottomBound = 0
-    topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
-    radiusCoef = 5
+  #Sorting functions
 
-    padding = 50
+  ascend = (a, b) ->
+    a - b
 
-    xScale = d3.scale.linear().domain([leftBound, rightBound]).range([0, width])
-    console.log(topBound)
-    yScale = d3.scale.linear().domain([bottomBound, topBound]).range([height-padding, padding])
-    '''
+  descend = (a, b) ->
+    b - a
 
-    x = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
+  #Generalzied power function
 
-    xAxis = d3.svg.axis().ticks(20)
-      .scale(xScale)
+  genPow = (a, n, b) ->
+    p = 1
+    i = 0
+    while i < n
+      p = p * (a + i * b)
+      i++
+    p
 
-    yAxis = d3.svg.axis()
-      .scale(yScale)
-      .ticks(12)
-      .tickPadding(0)
-      .orient("right")
+  #Rising power funtion
 
-    '''
-    lineGen = d3.svg.line()
-      .x (d) -> xScale(d.x)
-      .y (d) -> yScale(d.y)
-      .interpolate("basis")
+  risePow = (a, n) ->
+    genPow a, n, 1
 
+  #Falling power function
 
-    kde = @kernelDensityEstimator(@epanechnikovKernel(bandwith), xScale.ticks(100));
-    console.log("printing kde(data))")
-    data = @extract(data, "x")
-    #console.log(kde(data))
-    kde_data_array = kde(data)
-    kde_data_obj = []
-    for i in kde_data_array
-      pointObj = @toObject(i)
-      kde_data_obj.push(pointObj)
+  perm = (n, k) ->
+    p = 1
+    i = 0
+    while i < k
+      p = p * (n - i)
+      i++
+    p
 
+  #Factorial function
 
+  factorial = (n) ->
+    perm n, n
 
-    console.log("Kde_line_data")
-    console.log(kde_data_obj)
+  #Binomial coefficient
 
-    #console.log("appending graph")
-    '''
-    _graph.append('svg:path')
-      .datum(kde(data))
-      .attr('class', 'line')
-      .attr('d', lineGen)
-      .attr('stroke', 'black')
-      .attr('stroke-width', 1.5)
-      .attr('fill', "none")
-    #mike bostock way
-   _graph.append('svg:path')
-      .datum(kde(data))
-      .attr("class", "line")
-      .attr("d", lineGen);
+  binomial = (n, k) ->
+    if k < 0 or k > n
+      0
+    else
+      p = 1
+      i = 0
+      while i < k
+        p = p * (n - i) / (k - i)
+        i++
+      p
 
-  '''
+  #Polylogarithm function
 
-    #gaussian way
-    _graph.append('svg:path')
-      .attr('d', lineGen(kde_data_obj))
-      .data([kde_data_obj])
-      .attr('stroke', 'black')
-      .attr('stroke-width', 1.5)
-      .attr('fill', "none")
+  polyLog = (a, x) ->
+    sum = 0
+    k = 1
+    e = 0.0001
+    while x ** k / k ** a > e
+      sum = sum + x ** k / k ** a
+      k++
+    sum
+  
