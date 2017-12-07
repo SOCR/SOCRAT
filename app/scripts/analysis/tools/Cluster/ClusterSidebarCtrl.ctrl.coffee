@@ -79,6 +79,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       xCol = data.header.indexOf @xCol unless !@xCol?
       yCol = data.header.indexOf @yCol unless !@yCol?
       data = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
+      if @dataStandardization
+        data = @standardizeData(data)
     @msgService.broadcast 'cluster:updateDataPoints',
       dataPoints: data
       means: means
