@@ -27,6 +27,13 @@ module.exports = class ChartsLineChart extends BaseService
 
   lineChart: (data,ranges,width,height,_graph, labels,container) ->
 
+<<<<<<< HEAD
+=======
+    for item in data
+      item["x_vals"] = item["x"]
+      item["y_vals"] = item["y"]
+
+>>>>>>> master
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "width": 500,
@@ -35,6 +42,7 @@ module.exports = class ChartsLineChart extends BaseService
       "mark": "line",
       "encoding": {
         "x": {
+<<<<<<< HEAD
           "field": "x",
           "type": "temporal",
           "axis": {"title": labels.xLab.value},
@@ -45,6 +53,17 @@ module.exports = class ChartsLineChart extends BaseService
           "type": "quantitative",
           "axis": null,
           "title": labels.yLab.value
+=======
+          "field": "x_vals",
+          "type": "temporal",
+          "axis": {"title": labels.xLab.value}
+        },
+        "y": {
+          "aggregate": "sum",
+          "field": "y_vals",
+          "type": "quantitative",
+          "axis": {"title": labels.yLab.value}
+>>>>>>> master
         }
       }
     }

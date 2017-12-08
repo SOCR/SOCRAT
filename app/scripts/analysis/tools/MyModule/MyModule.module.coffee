@@ -13,8 +13,13 @@ module.exports = myModule = new Module
       'app_analysis_mymodule_dataService': require 'scripts/analysis/tools/MyModule/MyModuleDataService.service.coffee'
       'app_analysis_mymodule_myService': require 'scripts/analysis/tools/MyModule/MyModuleMyService.service.coffee'
     controllers:
+<<<<<<< HEAD
       'MyModuleMainCtrl': require 'scripts/analysis/tools/MyModule/MyModuleMainCtrl.ctrl.coffee'
       'MyModuleSidebarCtrl': require 'scripts/analysis/tools/MyModule/MyModuleSidebarCtrl.ctrl.coffee'
+=======
+      'mymoduleMainCtrl': require 'scripts/analysis/tools/MyModule/MyModuleMainCtrl.ctrl.coffee'
+      'mymoduleSidebarCtrl': require 'scripts/analysis/tools/MyModule/MyModuleSidebarCtrl.ctrl.coffee'
+>>>>>>> master
     directives:
       'appMyModuleDir': require 'scripts/analysis/tools/MyModule/MyModuleDir.directive.coffee'
 # module state config

@@ -124,12 +124,10 @@ module.exports = class ChartsDir extends BaseDirective
                 @time.checkTimeChoice(data)
                 @streamGraph.streamGraph(data,ranges,width,height,_graph, scheme)
               when 'Area Chart'
-                @time.checkTimeChoice(data)
                 @area.drawArea(height,width,_graph, data, labels)
               when 'Treemap'
                 @treemap.drawTreemap(svg, width, height, container, data)
               when 'Line Chart'
-                @time.checkTimeChoice(data)
                 @line.lineChart(data,ranges,width,height,_graph, labels,container)
               when 'Bivariate Area Chart'
                 @time.checkTimeChoice(data)

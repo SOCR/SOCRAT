@@ -51,6 +51,10 @@ module.exports = class ChartsBarChart extends BaseService
             "axis": {"title": labels.xLab.value}
           },
           "y": {
+<<<<<<< HEAD
+=======
+            "aggregate": "mean",
+>>>>>>> master
             "field": "y_vals",
             "type": "quantitative",
             "axis": {"title": labels.yLab.value}
@@ -70,7 +74,11 @@ module.exports = class ChartsBarChart extends BaseService
         "encoding": {
           "y": {
             "aggregate": "mean",
+<<<<<<< HEAD
             "field": "precipitation",
+=======
+            "field": "y_vals",
+>>>>>>> master
             "type": "quantitative"
           },
           "color": {"value": "firebrick"},

@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "MyModuleMsgService.service.js",
+  "sourceRoot": "",
+  "sources": [
+    "MyModuleMsgService.service.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,4CAAA;IAAA;;;EAEA,wBAAA,GAA2B,OAAA,CAAQ,qDAAR;;EAE3B,MAAM,CAAC,OAAP,GAAuB;;;;;;;iCAErB,OAAA,GACE;MAAA,QAAA,EAAU,CAAC,kBAAD,CAAV;MACA,QAAA,EAAU,CAAC,sBAAD,CADV;MAGA,KAAA,EAAO,CAAC,uBAAD,CAHP;;;;;KAH8C;AAJlD"
+}

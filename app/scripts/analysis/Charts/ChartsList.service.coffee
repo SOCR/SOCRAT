@@ -87,6 +87,28 @@ module.exports = class ChartsList extends BaseService
       z: false
       message: "Choose one variable to put into a pie chart."
       xLabel: "Category"
+    ,
+      name: 'Area Chart'
+      value: 10
+      v: false
+      w: false
+      x: ['date']
+      y: ['integer', 'number']
+      z: false
+      message: "Pick date variable for x and numerical variable for y"
+      xLabel: "X (date)"
+      yLabel: "Y"
+    ,
+      name: 'Line Chart'
+      value: 11
+      v: false
+      w: false
+      x: ['date']
+      y: ['integer', 'number']
+      z: false
+      message: "Choose a continuous variable for x and a numerical variable for y"
+      xLabel: "X (date)"
+      yLabel: "Y"
 
     ]
 
