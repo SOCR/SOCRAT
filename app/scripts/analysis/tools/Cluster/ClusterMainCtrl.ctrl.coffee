@@ -46,7 +46,13 @@ module.exports = class ClusterMainCtrl extends BaseCtrl
 
   updateChartData: (data) ->
     if data.dataPoints?
-      @dataPoints = data.dataPoints
+      if data.trueLabels?
+        @dataPoints = data.dataPoints.map((row, i) ->
+          row.push(data.trueLabels[i])
+          return row
+        )
+      else
+        @dataPoints = data.dataPoints
     @means = data.means
     @assignments = data.labels
 

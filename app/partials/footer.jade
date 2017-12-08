@@ -1,7 +1,9 @@
-footer.navbar.navbar-default.navbar-fixed-bottom
-  .container
-    p
-      a(href='http://socr.umich.edu/') The Statistics Online Computational Resource (SOCR), &nbsp;
-      b
-        span(style="color: #9aa4af")
-          != new Date().getFullYear()
+footer(style="position:fixed;width:100%;bottom:0")
+  ul.navbar-nav
+    li(ng-class="app.getClass('/contact')")
+      a(ng-href='#/contact') About
+  p
+    a(href='http://socr.umich.edu/') The Statistics Online Computational Resource (SOCR), &nbsp;
+    b
+      span(style="color: #9aa4af")
+        != new Date().getFullYear()

@@ -12,7 +12,7 @@ module.exports = class EventMngr
 
     @_msgMap = {}
 
-  # supported data types
+# supported data types
   @_DATA_TYPES:
     'FLAT': 'FLAT'
     'NESTED': 'NESTED'
@@ -20,9 +20,8 @@ module.exports = class EventMngr
   setMsgMap: (msgMap) ->
     @_msgMap = msgMap
 
-  # serialized subscription for a list of events
+# serialized subscription for a list of events
   subscribeForEvents: (events, listener) ->
-
     for msg in events.msgList
       @pubSub.subscribe
         msg: msg
@@ -31,19 +30,26 @@ module.exports = class EventMngr
 #        context: events.context
 
   redirectMsg: (msg, data) =>
-    matches = 0
-    for o in @_msgMap when o.msgFrom is msg
-      @pubSub.publish
-        msg: o.msgTo
-        data: data
-        msgScope: o.scopeTo
-      console.log '%cEVENT MANAGER: redirect mgs ' + o.msgTo + ' to ' + o.scopeTo, 'color:blue'
-      matches += 1
-    if matches == 0
-      console.log '%ccEVENT MANAGER: no mapping in API for message: ' + msg, 'color:blue'
-      return false
-    else
+    # special message for Core to subscribed to newly added messages
+    if msg.toLowerCase().startsWith('core') and data.dataFrame.scope? and data.dataFrame.msgList.length > 0
+      @subscribeForEvents data.dataFrame, @redirectMsg
       return true
+    # normal messages
+
+    else
+      matches = 0
+      for o in @_msgMap when o.msgFrom is msg
+        @pubSub.publish
+          msg: o.msgTo
+          data: data
+          msgScope: o.scopeTo
+        console.log '%cEVENT MANAGER: redirect mgs ' + o.msgTo + ' to ' + o.scopeTo, 'color:blue'
+        matches += 1
+      if matches == 0
+        console.log '%ccEVENT MANAGER: no mapping in API for message: ' + msg, 'color:blue'
+        return false
+      else
+        return true
 
   getInterface: ->
     subscribeForEvents: @subscribeForEvents

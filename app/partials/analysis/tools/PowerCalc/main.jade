@@ -1,0 +1,716 @@
+div(ng-controller="powerCalcMainCtrl as mainArea")
+  div.lead.bd-danger(ng-show='mainArea.selectedAlgorithm == "Select"')
+    h1 <b>Power Analysis Explanation</b>
+    br
+    h4 <b>CI for One Proportion</b>
+    p <b><i> sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='CI for One Proportion' ng-click='mainArea.update_algo($event)')
+    h4 <b>CI for One Mean</b>
+    p <b><i>sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='CI for One Mean' ng-click='mainArea.update_algo($event)')
+    h4 <b>Test of One Proportion</b>
+    p <b><i>power analysis of a one-sample test of proportions. You have your choice of the normal approximation, the beta approximation (which is more accurate), or two exact calculations based on the binomial distribution.  In the latter cases, the size of the test (i.e., the probability of a type I error) is often much smaller than the stated significance level.</i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='Test of One Proportion' ng-click='mainArea.update_algo($event)')
+    h4 <b>One-Sample (or Paired) t Test</b>
+    p <b><i>This dialog provides for power analysis of a one-sample t test or a pooled t test.  The effect size is the difference between the null and the target mean (in the one-sample test), or the mean difference of the pairs (in the paired t test). </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='One-Sample (or Paired) t Test' ng-click='mainArea.update_algo($event)')
+    h4 <b>Pilot Study</b>
+    p <b><i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='Pilot Study' ng-click='mainArea.update_algo($event)')
+    h4 <b>R-square (multiple correlation)</b>
+    p <b><i>This dialog provides rudimentary power analysis for a test of a coefficient of multiple determination (R-square). The underlying model is that we have a sample of N IID multivariate random vectors of length p, and that the p^{th} variable is regressed on the first p-1 variables. $ R^2 = 1 - \frac{SS(error)}{SS(total)} $ is the coefficient of multiple determination. </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='R-square (multiple correlation)' ng-click='mainArea.update_algo($event)')
+    h4 <b>Generic chi-square test</b>
+    p <b><i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='Generic chi-square test' ng-click='mainArea.update_algo($event)')
+    h4 <b>Power of a Simple Poisson Test</b>
+    p <b><i>This dialog provides rudimentary power analysis for an exact test of a Poisson parameter.  Specifically, our data are assumed to be x_1, x_2, ..., x_n iid Poisson(lambda), so that x = sum{x_i} is Poisson with mean n*lambda serves as the test statistic.  The critical value(s) for x are obtained using quantiles of the null Poisson distribution so as to cut off tail(s) of probability less than or equal to alpha.  The power of the test is then the probability of the critical region, computed from a Poisson distribution with the specified value of lambda. </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='Power of a Simple Poisson Test' ng-click='mainArea.update_algo($event)')
+    h4 <b>Two-sample t test (general case)</b>
+    p <b><i>This dialog provides for power analysis of a two-sample t test or a two-sample t test of equivalence.  If the "equal SDs" box is checked, then the pooled t test is used; otherwise, the calculations are based on the Satterthwaite approximation </i></b>
+    input(type='button' style='font-size:20px; margin-bottom:80px' value='Two-sample t test (general case)' ng-click='mainArea.update_algo($event)')
+  div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
+    h3 CI for One Proportion
+    p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
+    div(style='width:100%;overflow:hidden;height:100%;')
+      input(type='hidden', name='id', value='1')
+      div
+        div(style='line-height:10px;display:inline')
+          input#isFinite(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='isFinite', ng-click='mainArea.cfap_clk($event);')
+          | Finite Population &nbsp &nbsp;
+        div#showN(style='margin-left=40%;display:inline')
+          | N: &nbsp
+          input#N(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='N', ng-mouseleave='mainArea.cfap_valiad($event);')
+          span#Nerror
+      div(style='margin-top:10px;')
+        div(style='display:inline')
+          input#worstCase(type='checkbox',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='worstCase', ng-click='mainArea.cfap_clk($event);')
+          | Worst case &nbsp &nbsp;
+        div(style='display:inline')
+          | pi: &nbsp;
+          input#pi(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='pi', ng-mouseleave='mainArea.cfap_valiad($event);')
+          span#pierror
+      div(style='margin-top:20px;')
+        div(style='display:inline')
+          | Confidence Level: &nbsp
+          input#conf(name='conf',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cfap_presubmit('1','conf',$event);")
+        div(style='display:inline')
+          #slider(uib-tooltip="Manipulate this bar to adjust confidence level" tooltip-placement="top")
+      div
+        div(style='display:inline')
+          | Margin of Error: &nbsp
+          input#me(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('ME',$event);")
+        div(style='display:inline')
+          #meui(uib-tooltip="Manipulate this bar to adjust margin of error" tooltip-placement="top")
+      div
+        div(style='display:inline')
+          | n : &nbsp
+          input#n(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('n',$event);")
+        div(style='display:inline')
+          #nui(uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
+      div
+        input#cfapH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cfap_show_help();')
+        div(ng-show='mainArea.cfap_help == true;')
+          p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error:
+          p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} $  &nbsp;&nbsp;&nbsp; (infinite population)
+          p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} * \sqrt{1- \frac{n}{N}} $  &nbsp;&nbsp;&nbsp; (finite population)
+          p where z is a critical value from the normal distribution, p is the sample proportion, n is the sample size, and N is the population size.
+          br
+          p <b>Using The Graphical Interface</b>
+          p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
+          br
+          p <b>Finite Population</b>
+          p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
+          br
+          p <b>Worst Case</b>
+          p If "Worst case" is checked, computations are based on the assumption that the true sample proportion, pi, is .5.  If it is not checked, then a pi value other than .5 may be entered in the field to the right of the checkbox.
+          br
+          p <b>Confidence</b>
+          p Choose the desired confidence coefficient for the ME.  This determines the value of z.
+          br
+          p <b>Margin of Error</b>
+          p Enter the target value of the margin of error here.  Note that the actual value achieved after you collect the data will be more or less than this amount, because it will be based on p (estimated from the data) rather than pi.
+          br
+          p <b>n</b>
+          p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
+          br
+          p <b>Graphics</b>
+          p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
+  div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
+    h3 CI for One Mean
+    p <i>This dialog provides for sample-size determination for estimating a mean to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i>
+    div(style='width:100%;overflow:hidden;height:100%;')
+      input(type='hidden', name='id', value='1')
+      div
+        div(style='line-height:10px;display:inline')
+          input#isFinitea(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='isFinite', ng-click='mainArea.cimean_clk($event);')
+          | Finite Population &nbsp &nbsp;
+        div#showNa(style='margin-left=40%;display:inline')
+          | N: &nbsp
+          input#NN(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='NN', ng-mouseleave="mainArea.cimean_presubmit('1','NN',$event);")
+          span#Nerror
+        div(style='margin-top:20px;')
+          div(style='display:inline')
+            | Confidence Level: &nbsp
+            input#confa(name='conf',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_presubmit('1','conf',$event);")
+          div(style='display:inline')
+            #slidera_conf(uib-tooltip="Manipulate this bar to adjust confidence level" tooltip-placement="top")
+        div(style='margin-top:20px;')
+          div(style='display:inline')
+            | Sigma: &nbsp
+            input#sgn(name='sigma',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('sgn',$event);")
+          div(style='display:inline')
+            #sgnui(uib-tooltip="Manipulate this bar to adjust Sigma" tooltip-placement="top")
+        div(style='margin-top:20px;')
+          div(style='display:inline')
+            | Margin of Error: &nbsp
+            input#mea(name='me',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('me',$event);")
+          div(style='display:inline')
+            #meuia(uib-tooltip="Manipulate this bar to adjust Margin of Error" tooltip-placement="top")
+        div(style='margin-top:20px;')
+          div(style='display:inline')
+            | n: &nbsp
+            input#na(name='me',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('n',$event);")
+          div(style='display:inline')
+            #nuia(uib-tooltip="Manipulate this bar to adjust n" tooltip-placement="top")
+        div
+          input#cimeanH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cimean_show_help();')
+          div(ng-show='mainArea.cimean_help == true;')
+            p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error:
+            p $ ME = t * s / \sqrt{n} $  &nbsp;&nbsp;&nbsp; (infinite population)
+            p $ ME = t * s * \sqrt{\frac{\frac{1-n}{N}}{n}} $  &nbsp;&nbsp;&nbsp; (finite population)
+            p where t is a critical value from the t distribution, s is the sample SD, n is the sample size, and N is the population size.
+            br
+            p <b>Using The Graphical Interface</b>
+            p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
+            br
+            p <b>Finite Population</b>
+            p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
+            br
+            p <b>Confidence</b>
+            p Choose the desired confidence coefficient for the ME.  This determines the value of t.
+            br
+            p <b>Margin of Error</b>
+            p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
+            br
+            p <b>n</b>
+            p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
+            br
+            p <b>Graphics</b>
+            p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
+  div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
+    h3 Test of One Proportion
+    p <i>This dialog provides for power analysis of a one-sample test of proportions. You have your choice of the normal approximation, the beta approximation (which is more accurate), or two exact calculations based on the binomial distribution.  In the latter cases, the size of the test (i.e., the probability of a type I error) is often much smaller than the stated significance level.</i>
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Null Value (p0): &nbsp
+        input#p0(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('p0',$event);")
+      div(style='display:inline')
+        #p0ui(uib-tooltip="Manipulate this bar to adjust Null Value" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Actual Value (p): &nbsp
+        input#p(name='p',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('p',$event);")
+      div(style='display:inline')
+        #pui(uib-tooltip="Manipulate this bar to adjust Actual Value" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Sample Size: &nbsp
+        input#ssize(name='ssize',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('ssize',$event);")
+      div(style='display:inline')
+        #ssizeui(uib-tooltip="Manipulate this bar to adjust Sample Size" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      | Select Alternative: &nbsp
+      select#altt(name='altt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_altt_value" ng-change="mainArea.OnePGUI_altt_submit('1','altt');")
+        option(value='0') p < p0
+        option(value='1') p != p0
+        option(value='2') p > p0
+    div(style='margin-top:20px;')
+      | Select Method: &nbsp
+      select#method(name='method' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_method_value", ng-change="mainArea.OnePGUI_method_submit('1','method');")
+        option(value='0') Exact
+        option(value='1') Normal approx
+        option(value='2') Beta approx
+        option(value='3') Exact(Wald CV)
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Alpha: &nbsp
+        input#alpha(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OnePGUI_changeSlider('alpha',$event);")
+        div(style='display:inline')
+          #alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Power: &nbsp
+        input#power(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('power',$event);")
+      div(style='display:inline')
+        #powerui(disableds uib-tooltip="You Cannot Manipulate This Bar" tooltip-placement="top")
+    div
+      input#OnePGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OnePGUI_show_help();')
+      div(ng-show='mainArea.OnePGUI_help == true;')
+        p Common notations: Suppose that X is a binomial random variable with "success" probability p and n independent trials, and let:
+        p $ P = \frac{X}{n} $
+        br
+        p <b>Normal approximation:</b>
+        p We approximate distribution of P with N ($ mu=p $, $ sigma^2=p* \frac{1-p}{n} $). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
+        br
+        p <b>Beta approximation: </b>
+        p We approximate distribution of P with Beta( a=(n-1)*p, b=(n-1)*(1-p) ). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
+        br
+        p <b>Exact:</b>
+        p In the exact test, the significance level alpha is taken as an upper bound on the size of the test (its power under the null hypothesis). Since X has a discrete distribution, the size cannot be controlled exactly and is often much lower than the specified alpha.
+        br
+        p For the alternative p &lt p0, let xl denote the largest x for which Pr($ X \leq x | p = p0 $) &lt= alpha. Then the power is equal to Pr($ X \leq xl | p = p1 $) and the size of the test is Pr($ X \leq xl | p = p0 $).
+        br
+        p For the alternative p > p0, let xu denote the smallest x for which Pr($ X \geq x | p = p0 $) &lt= alpha. Then the power is equal to Pr($ X \geq xu | p = p1 $). And the size of the test is Pr($ X \geq xu | p = p0 $).
+        br
+        p For the alternative p != p0, compute both powers as above but replace alpha by $ \frac{alpha}{2} $; then sum the powers and sizes.
+        p <b>Exact (Wald CV):</b>
+        p This is like the exact method, except the critical values are calculated based on an adjusted Wald statistic.  This does NOT guarantee that the size of the test is less than alpha.
+        p Note: This is the exact method used in the JMP statistical software.
+  div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
+    .row
+      .col-md-8
+        h6 One-sample (or paired) t Test &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This calculator tests whether a mean, μ, is equal to a reference value, μ0."
+          tooltip-placement="bottom"
+          )
+        power-calc-viz
+        .row
+          .col-md-6
+            .form-inline
+              label Power: &nbsp
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.oneTestPower"
+                ng-click="mainArea.oneTestCalcPower()"
+                ng-keypress="mainArea.oneTestPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.0001"
+                name='oneTestPower'
+                )
+              #oneTestPowerUI
+        h6(
+        ng-show="mainArea.brokenCalc"
+        style="color:red;"
+        ) &nbsp;&nbsp;An error occurred. Press Reset to resume default settings.
+      .col-md-4
+        .form-group
+          .row.form-inline
+            label Mode: &nbsp;
+            select.form-control(
+            ng-model="mainArea.oneTestMode"
+            ng-change="mainArea.oneTestSync()"
+            ng-options="mode for mode in mainArea.oneTestModes"
+            )
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample size"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N&nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.oneTestN"
+              ng-click="mainArea.oneTestSync()"
+              ng-keypress="mainArea.oneTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='oneTestN'
+              )
+            #oneTestNUI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="population mean"
+              tooltip-placement="left"
+              ) &nbsp;
+              | μ
+              sub 0
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.oneTestMean0"
+              ng-click="mainArea.oneTestSync()"
+              ng-keypress="mainArea.oneTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='oneTestMean0'
+              )
+            #oneTestMean0UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample mean"
+              tooltip-placement="left"
+              ) &nbsp;
+              | μ&nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.oneTestMean"
+              ng-click="mainArea.oneTestSync()"
+              ng-keypress="mainArea.oneTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='oneTestMean'
+              )
+            #oneTestMeanUI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample st dev"
+              tooltip-placement="left"
+              ) &nbsp;
+              | σ&nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.oneTestStDev"
+              ng-click="mainArea.oneTestSync()"
+              ng-keypress="mainArea.oneTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='oneTestStDev'
+              )
+            #oneTestStDevUI
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | t-score: &nbsp;
+              b {{mainArea.oneTestT}}
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="p-value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | p-value: &nbsp;
+              b {{mainArea.oneTestPvalue}}
+  div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
+    h3 Pilot Study
+    p <i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study</i>
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Percent by which N is under-estimated: &nbsp
+        input#pctUnder(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('pctUnder',$event);")
+      div(style='display:inline')
+        #pctUnderui(uib-tooltip="Manipulate this bar to adjust Percentage" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Risk of exceeding this percentage: &nbsp
+        input#risk(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('risk',$event);")
+      div(style='display:inline')
+        #riskui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | d.f. for error in pilot studye: &nbsp
+        input#df(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('df',$event);")
+      div(style='display:inline')
+        #dfui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
+    div
+      input#Pilot_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.Pilot_show_help();')
+      div(ng-show='mainArea.Pilot_help == true;')
+        p the criterion employed in this dialog is the risk of underestimating N by a specified percentage 100*P.  This is approximately equal to the risk of underestimating sigma (pretty much regardless of what criterion -- power, CI width, etc. -- is used for sample-size determination). In a normal setting, this risk is a simple calculation on the chi-square distribution: risk = Pr{Q < (1-P)nu}, where Q is chi-square with nu d.f.
+        <br>
+        p The dialog has three sliders -- for 100P, for risk, and for nu.  If you vary P or nu, the risk is recomuted based on the above formula.  If you vary risk, nu is recomputed. (If the solve method fails, simply set the d.f. so the risk is in the ballpark, and try again
+  div(ng-show='mainArea.selectedAlgorithm == "R-square (multiple correlation)"')
+    h3 R-square (multiple correlation)
+    p <i>This dialog provides rudimentary power analysis for a test of a coefficient of multiple determination (R-square). The underlying model is that we have a sample of N IID multivariate random vectors of length p, and that the p^{th} variable is regressed on the first p-1 variables. $ R^2 = 1 - \frac{SS(error)}{SS(total)} $ is the coefficient of multiple determination.</i>
+    div
+      div#showN(style='margin-left=40%;display:inline')
+        | Alpha: &nbsp
+        input#alphaf(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='alpha', ng-mouseleave='mainArea.RsquareGUI_valiad($event);')
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | True $rho^2$ value: &nbsp
+        input#rho2f(name='rho2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('rho2',$event);")
+      div(style='display:inline')
+        #rho2uif(uib-tooltip="Manipulate this bar to adjust $ rho^2 $ value" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Sample Size: &nbsp
+        input#nf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('n',$event);")
+      div(style='display:inline')
+        #nuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Number of Regressors: &nbsp
+        input#predsf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('preds',$event);")
+      div(style='display:inline')
+        #predsuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | power: &nbsp
+        input#powerf(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('power',$event);")
+      div(style='display:inline')
+        #poweruif(disabled uib-tooltip="You cannot manipulate this bar" tooltip-placement="top")
+    div
+      input#RsuareGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.RsquareGUI_show_help();')
+      div(ng-show='mainArea.RsquareGUI_help == true;')
+        p The usual way to test a hypothesis about $ R^2 $ is to transform it to an F statistic:
+        <br>
+        p $$ F = \frac{(n-k-1)*R^2}{k*(1-R^2)} $$
+        <br>
+        p This is the usual ANOVA F.  The distinction that makes this dialog different from the one for regular ANOVA is  that the predictors are random.  The power computed here is unconditional, rather than conditional.
+        <br>
+        p The GUI components are as follows:
+        <br>
+        p Alpha: The desired significance level of the test
+        p True $ rho^2 $ value: The population value of R^2 at which we want to compute the power.
+        p Sample size: The number of N multivariate observations in the data set
+        p Number of regressors: The value of k = p - 1.
+        p Power (output only):  The power of the test.
+        <br>
+        p References:
+        p Gatsonis, C. and Sampson, A. (1989),  Multiple correlation: Exact power and sample size calculations. Psychological Bulletin, 106, 516--524.
+        p Benton, D. and Krishnamoorthy, K. (2003),  Computing discrete mixtures of continuous distributions..., Computational Statistics and Data Analysis, 43, 249--267
+  div(ng-show='mainArea.selectedAlgorithm == "Generic chi-square test"')
+    h3 Generic chi-square test
+    p <i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations</i>
+    h5 Prototype Data:
+    div
+      div(style='margin-left=40%;display:inline')
+        | Chi2*: &nbsp
+        input#proChi2g(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='proChi2', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
+    div(style='margin-top:20px;')
+      div(style='margin-left=40%;display:inline')
+        | n*: &nbsp
+        input#proNg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='proN', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
+    h5 Study Parameter
+    div(style='margin-top:20px;')
+      div(style='margin-left=40%;display:inline')
+        | df: &nbsp
+        input#dfg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='df', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
+    div(style='margin-top:20px;')
+      div(style='margin-left=40%;display:inline')
+        | Alpha*: &nbsp
+        input#Alphag(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='Alpha', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | n: &nbsp
+        input#ng(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimpleChi2GUI_changeSlider('n',$event);")
+      div(style='display:inline')
+        #nuig(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Power: &nbsp
+        input#Powerg(name='Power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimpleChi2GUI_changeSlider('Power',$event);")
+      div(style='display:inline')
+        #Poweruig(disabled uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
+    div
+      input#SimpleChi2GUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.SimpleChi2GUI_show_help();')
+      div(ng-show='mainArea.SimpleChi2GUI_help == true;')
+        p The prototype data should be fake data constructed to reflect the effect size of clinical or scientific importance.  Use the analysis you plan to do on these ake data to obtain the chi-square value Chi2* for the dialog.  The prototype data should include the expected frequencies (or whatever), but should not include random fluctuations
+  div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
+    h3 Power of a Simple Poisson Test
+    p <i>This dialog provides rudimentary power analysis for an exact test of a Poisson parameter.  Specifically, our data are assumed to be x_1, x_2, ..., x_n iid Poisson(lambda), so that x = sum{x_i} is Poisson with mean n*lambda serves as the test statistic.  The critical value(s) for x are obtained using quantiles of the null Poisson distribution so as to cut off tail(s) of probability less than or equal to alpha.  The power of the test is then the probability of the critical region, computed from a Poisson distribution with the specified value of lambda.</i>
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Lambda0: &nbsp
+        input#lambda0h(name='lambda0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('lambda0',$event);")
+      div(style='display:inline')
+        #lambda0uih(disabled uib-tooltip="Manipulate this bar to adjust lambda0" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      | Alternative: &nbsp
+      select#alth(name='alt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.SimplePoissonGUI_alt" ng-change="mainArea.SimplePoissonGUI_opt_submit('1','alt');")
+        option(value='0') lambda < lambda0
+        option(value='1') lambda != lambda0
+        option(value='2') lambda > lambda0
+    div
+      div(style='margin-left=40%;display:inline')
+        | Alpha: &nbsp
+        input#alphah(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='alpha', ng-mouseleave='mainArea.SimplePoissonGUI_valiad($event);')
+    h5 Boundaries of Acceptance Region:
+    div
+      div(style='margin-left=40%;display:inline')
+        | Lower: &nbsp
+        p#lowerh(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='lower')
+    div(style='margin-top:20px;')
+      div(style='margin-left=40%;display:inline')
+        | Upper: &nbsp
+        p#upperh(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='upper')
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Lambda: &nbsp
+        input#lambdah(name='lambda',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('lambda',$event);")
+      div(style='display:inline')
+        #lambdauih(disabled uib-tooltip="Manipulate this bar to adjust lambda" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | n: &nbsp
+        input#nh(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('n',$event);")
+      div(style='display:inline')
+        #nuih(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Power: &nbsp
+        input#powerh(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('power',$event);")
+      div(style='display:inline')
+        #poweruih(disabled uib-tooltip="You cannot manipulate this bar" tooltip-placement="top")
+    div
+      input#SimplePoissonGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.SimplePoissonGUI_show_help();')
+      div(ng-show='mainArea.SimplePoissonGUI_help == true;')
+        p The GUI components are as follows:
+        <br>
+        p lambda0: The value of the Poisson parameter under the null hypothesis.
+        <br>
+        p alternative: Choose a two-tailed alternative (lambda != lambda0) or one of the one-tailed alternatives.
+        <br>
+        p Boundaries of acceptance region (output values):  These are the lower and/or upper values of x for which the null hypothesis would NOT be rejected.
+        <br>
+        p size (output value):  The actual probability of the critical region under the null hypothesis.
+        <br>
+        p lambda: The Poisson parameter at which the power is to be calculated.
+        <br>
+        p n: The sample size.
+        <br>
+        p power: The probability of the critical region, given lambda and n.</p>
+  div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
+    .row
+      .col-md-8
+        h6 Two-sample t Test with power analysis &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This power analysis is for tests concerning whether the means of two groups are different."
+          tooltip-placement="bottom"
+          )
+        power-calc-viz
+        .row
+          .col-md-6
+            .form-inline
+              label Power: &nbsp
+                input.form-control.input-sm.flat(
+                  ng-model="mainArea.twoTestPower"
+                  ng-click="mainArea.twoTestCalcPower()"
+                  ng-keypress="mainArea.twoTestPress($event)"
+                  ng-disabled="mainArea.deployed"
+                  type="number"
+                  step="0.0001"
+                  name='twoTestPower'
+                )
+              #twoTestPowerUI
+        h6(
+          ng-show="mainArea.brokenCalc"
+          style="color:red;"
+        ) &nbsp;&nbsp;An error occurred. Press Reset to resume default settings.
+      .col-md-4
+        .form-group
+          .row.form-inline
+            label Mode: &nbsp;
+            select.form-control(
+              ng-model="mainArea.twoTestMode"
+              ng-change="mainArea.twoTestSync()"
+              ng-options="mode for mode in mainArea.twoTestModes"
+            )
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="size of the sample 1"
+                tooltip-placement="left"
+              ) &nbsp;
+              | N
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+                ng-model="mainArea.twoTestN1"
+                ng-click="mainArea.twoTestSync()"
+                ng-keypress="mainArea.twoTestPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='twoTestN1'
+              )
+            #twoTestN1UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="size of the sample 2"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N
+              sub 2
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoTestN2"
+              ng-click="mainArea.twoTestSync()"
+              ng-keypress="mainArea.twoTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoTestN2'
+              )
+            #twoTestN2UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="mean of the sample 1"
+              tooltip-placement="left"
+              ) &nbsp;
+              | μ
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoTestMean1"
+              ng-click="mainArea.twoTestSync()"
+              ng-keypress="mainArea.twoTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoTestMean1'
+              )
+            #twoTestMean1UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="mean of the sample 2"
+              tooltip-placement="left"
+              ) &nbsp;
+              | μ
+              sub 2
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoTestMean2"
+              ng-click="mainArea.twoTestSync()"
+              ng-keypress="mainArea.twoTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoTestMean2'
+              )
+            #twoTestMean2UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="st dev of the sample 1"
+              tooltip-placement="left"
+              ) &nbsp;
+              | σ
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoTestStDev1"
+              ng-click="mainArea.twoTestSync()"
+              ng-keypress="mainArea.twoTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoTestStDev1'
+              )
+            #twoTestStDev1UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="st dev of the sample 2"
+              tooltip-placement="left"
+              ) &nbsp;
+              | σ
+              sub 2
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoTestStDev2"
+              ng-click="mainArea.twoTestSync()"
+              ng-keypress="mainArea.twoTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoTestStDev2'
+              )
+            #twoTestStDev2UI
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="test statistics value"
+                tooltip-placement="left"
+              ) &nbsp;
+              | t-score: &nbsp;
+              b {{mainArea.twoTestT}}
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="p-value"
+                tooltip-placement="left"
+              ) &nbsp;
+              | p-value: &nbsp;
+              b {{mainArea.twoTestPvalue}}

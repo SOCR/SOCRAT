@@ -1,0 +1,61 @@
+div(ng-controller='ChartsSidebarCtrl as sidebar')
+  legend Graphs
+  select#chooseGraph.form-control(
+    value="Choose a graph"
+    ng-change="sidebar.updateSidebarControls()"
+    ng-model="sidebar.selectedGraph"
+    ng-options="g as g.name for g in sidebar.graphs"
+    ng-init="sidebar.selectedGraph = sidebar.graphs[0]"
+  )
+  fieldset
+    legend Variables
+    div.form-inline
+      div.form-horizontal(ng-show="sidebar.selectedGraph.x")
+        label(for = "x") {{sidebar.selectedGraph.xLabel}} &nbsp;
+        select#x.form-control(
+          ng-change="sidebar.updateDataPoints()"
+          ng-model="sidebar.xCol"
+          ng-options="col for col in sidebar.xCols"
+          ng-init="sidebar.xCol = sidebar.xCols[0]"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.y")
+        label(for = "y") {{sidebar.selectedGraph.yLabel}} &nbsp;
+        select#y.form-control(
+          ng-change="sidebar.updateDataPoints()"
+          ng-model="sidebar.yCol"
+          ng-options="col for col in sidebar.yCols"
+          ng-init="sidebar.yCol = sidebar.yCols[0]"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.z")
+        label(for = "z") {{sidebar.selectedGraph.zLabel}} &nbsp;
+        select#z.form-control(
+          ng-change="sidebar.updateDataPoints()"
+          ng-model="sidebar.zCol"
+          ng-options="col for col in sidebar.zCols"
+          ng-init="sidebar.zCol = sidebar.zCols[0]"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.r")
+        label(for = "r") {{sidebar.selectedGraph.rLabel}} &nbsp;
+        select#r.form-control(
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.rCol"
+        ng-options="col for col in sidebar.rCols"
+        ng-init="sidebar.rCol = sidebar.rCols[0]"
+        )
+    div(ng-show="!sidebar.selectedGraph.x")
+      select.form-control(
+      multiple
+      ng-model="sidebar.chosenCols"
+      ng-options="col for col in sidebar.numericalCols"
+      ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+      )
+    div.form-group(ng-show="!sidebar.selectedGraph.x")
+      label Labels column &nbsp;
+      //- show data header column names
+      select.form-control(
+      ng-model="sidebar.labelCol"
+      ng-options="col for col in sidebar.categoricalCols"
+      ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+      ng-init="sidebar.labelCol = null"
+      )
+        option(value="") No labels
