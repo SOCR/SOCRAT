@@ -80,18 +80,19 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
   updateModelData: () ->
     console.log("Updating Model Data from Sliders")
-    #@chartData = @tempData
-    #@params.stats.mean = parseFloat(@gMean.toPrecision(4))
-    #@params.stats.standardDev = parseFloat(@gstandardDev.toPrecision(4))
-    #@params.stats.variance = parseFloat(@gVariance.toPrecision(4))
-
-    
+   
     #@modelData = @router.getChartData(@distribution, @params )
     #@modelData.stats = @params
+    #modelData = @router.getChartData(@distribution, @params )
+    #modelData.stats = @params
+    
+    xBounds = @getXbounds(@params, @distribution)
+    @params.xMin = xBounds.xMin
+    @params.xMax = xBounds.xMax
     modelData = @router.getChartData(@distribution, @params )
     modelData.stats = @params
-    
-    @tempData.bounds = @getXYbounds(@params, modelData)
+    #tempData.bounds = xBounds
+    @tempData.bounds =  @getYBounds(modelData)
     @chartData = @tempData
     console.log "updating chart data"
     #@$timeout => @chartData = @tempData,
@@ -101,22 +102,24 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     5
 
 
-  getXYbounds: (@params, modelData) ->
+  getXbounds: (@params, @distribution) ->
       dataSetxMin = @params.xMin
       dataSetxMax = @params.xMax
       
-      # modelDataFirstQuantile = @router.getQuantile(@distribution, @params, 0.01)
-      # modelDataNNQuantile = @router.getQuantile(@distribution, @params, 0.99)
-      # xMin = Math.min(modelDataFirstQuantile, dataSetxMin)
-      # xMax = Math.max(modelDataYMax, dataSetxMax)
+      modelDataFirstQuantile = @router.getQuantile(@distribution, @params, 0.01)
+      modelDataNNQuantile = @router.getQuantile(@distribution, @params, 0.99)
+      xMin = Math.min(modelDataFirstQuantile, dataSetxMin)
+      xMax = Math.max(modelDataNNQuantile, dataSetxMax)
       #buggggggy value
-      modelDataYMax = d3.max(modelData, (d)->parseFloat d.y)
-    
       bounds =
-        # xMin: xMin
-        # xMax: xMax
-        yMax: modelDataYMax
+        xMin: xMin
+        xMax: xMax
+        
 
+  getYBounds: (modelData) ->
+      modelDataYMax = d3.max(modelData, (d)->parseFloat d.y)
+      bounds =
+        yMax: modelDataYMax
   syncData: (dataIn) ->
     @router.setParamsByName(@distribution, dataIn)
     @loadData()

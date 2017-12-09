@@ -65,12 +65,6 @@ module.exports = class ModelerDir extends BaseDirective
 
           _graph = svg.append('g')
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
-          # trellis chart is called differently
-          #if scheme.name is 'Trellis Chart' and newChartData.labels
-          #  @trellis.drawTrellis(width, height, data, _graph, labels, container)
-          # standard charts
-          
           data = data.map (row) ->
             x: row[0]
             y: row[1]
@@ -86,18 +80,8 @@ module.exports = class ModelerDir extends BaseDirective
             yMax: if labels? and numerics.includes(labels.yLab.type) then d3.max(data, (d) -> parseFloat(d.y)) else null
             zMax: if labels? and numerics.includes(labels.zLab.type) then d3.max(data, (d) -> parseFloat(d.z)) else null
 
-          console.log("Mean")
-          console.log("Printing Histogram")
-
-
           @histogram.drawHist(_graph,data,container,labels,width,height,ranges, modelBounds)
           
-          #case for each distribution
-          ###
-          switch scheme.name
-            when 'Histogram'
-              @histogram.drawHist(_graph,data,container,gdata,width,height,ranges)
-          ###
 
 
 
@@ -106,22 +90,9 @@ module.exports = class ModelerDir extends BaseDirective
 
       scope.$watch 'mainArea.modelData', (modelData) =>
         console.log("Plotting Model Data");
-        #console.log(data.dataPoints)
-        #distribution = data.distribution
-        ###
-        data= modelData.dataPoints
-        data = data.map (row) ->
-            x: row[0]
-            y: row[1]
-            z: row[2]
-            r: row[3]
-        ###
         if modelData
           container = d3.select(elem[0])
-          container.selectAll('path').remove()
-
-
-          
+          container.selectAll('path').remove() 
           leftBound = modelData.stats.stats.leftBound
           rightBound = modelData.stats.stats.rightBound
           topBound = modelData.stats.stats.topBound
@@ -157,20 +128,7 @@ module.exports = class ModelerDir extends BaseDirective
             .interpolate("basis")
 
           console.log("printing gaussian curve data")
-          #console.log(curveData)
-          '''
-          if modelData.distribution.name == 'Kernel'
-            console.log("plotting for kernel")
-            _graph.append('svg:path')
-            .datum(curveData)
-            .attr("class", "line")
-            .attr('d', lineGen)
-            .attr('stroke', 'black')
-            .attr('stroke-width', 1.5)
-            .attr('fill', "none")
-
-          else 
-          '''
+  
           _graph.append('svg:path')
           .attr('d', lineGen(curveData))
           .data([curveData])
@@ -180,26 +138,7 @@ module.exports = class ModelerDir extends BaseDirective
           .on('mouseout', (d) -> hideToolTip())
           .attr('fill', "none")
 
-
-
-        '''
-          if @distribution.name == 'Laplace'
-              @container.append('div').attr('id', 'laplace_slider')
-              $slider = $("#laplace_slider")
-              if $slider.length > 0
-              $slider.slider(
-                min: 1
-                max: 10
-                value: 5
-                orientation: "horizontal"
-                range: "min"
-                change: ->
-              ).addSliderSegments($slider.slider("option").max)
-              $slider.on "slidechange", (event, ui) =>
-                b = parseInt ui.value
-      #      tooltip.html()
-                modelData = @
-          '''
+       
 
 
     
