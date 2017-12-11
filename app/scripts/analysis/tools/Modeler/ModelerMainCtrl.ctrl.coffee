@@ -26,7 +26,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     #@gMean = 0
     #@gVariance =0
     #@gstandardDev = null
-    @loadData()
+    #@loadData()
 
 
     @$scope.$on 'modeler:updateDataPoints', (event, data) =>
@@ -92,14 +92,21 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     modelData = @router.getChartData(@distribution, @params )
     modelData.stats = @params
     #tempData.bounds = xBounds
+    yBounds = @getYBounds(modelData)
     @tempData.bounds =  @getYBounds(modelData)
-    @chartData = @tempData
-    console.log "updating chart data"
-    #@$timeout => @chartData = @tempData,
-    #5
+    modelData.yMax = yBounds.yMax
+    #@tempData.modelData = modelData
+    graph = {}
+    graph.chartData = @tempData
+    graph.modelData = modelData
 
-    @$timeout => @modelData = modelData,
-    5
+    console.log("updating graph data from main controller")
+    @$timeout => @graphData = graph,
+    1
+
+    #@chartData = @tempData
+    #@$timeout => @modelData = modelData,
+    #5
 
 
   getXbounds: (@params, @distribution) ->
@@ -120,6 +127,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       modelDataYMax = d3.max(modelData, (d)->parseFloat d.y)
       bounds =
         yMax: modelDataYMax
+  
   syncData: (dataIn) ->
     @router.setParamsByName(@distribution, dataIn)
     @loadData()
@@ -129,7 +137,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
   resetGetParams: () ->
-    @stats = @getParams.getParams(@chartData)
+    @stats = @getParams.getParams(@graphData.chartData)
     @params.stats = @stats
     @syncData(@params)
 
