@@ -9,7 +9,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
   //div.row-fluid
 
 
-
+ 
   div(ng-show='mainArea.distribution == "Normal"')
 
     .row
@@ -20,7 +20,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           uib-tooltip="This modeler plots a normal distribution."
           tooltip-placement="bottom"
           )
-        modelerdir
+        //modelerdir
       .col-md-4
           .row.form-inline
             label
@@ -91,7 +91,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           uib-tooltip="This modeler plots a LogNormal distribution."
           tooltip-placement="bottom"
           )
-        modelerdir
+        //modelerdir
       .col-md-4
         .row.form-inline
           label
@@ -144,7 +144,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           uib-tooltip="This modeler plots a Cauchy distribution."
           tooltip-placement="bottom"
           )
-        modelerdir
+        //modelerdir
       .col-md-4
           .row.form-inline
             label
@@ -197,7 +197,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           uib-tooltip="This modeler plots a Binomial distribution."
           tooltip-placement="bottom"
           )
-        modelerdir
+        //modelerdir
       .col-md-4
           .row.form-inline
             label
@@ -247,7 +247,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           uib-tooltip="This modeler plots a Exponential distribution."
           tooltip-placement="bottom"
           )
-        modelerdir
+        //modelerdir
       .col-md-4
           .row.form-inline
             label
@@ -280,7 +280,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           uib-tooltip="This modeler plots a ChiSquared distribution."
           tooltip-placement="bottom"
           )
-        modelerdir
+        //modelerdir
       .col-md-4
         .row.form-inline
           label
@@ -313,7 +313,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
           uib-tooltip="This modeler plots a Laplce distribution."
           tooltip-placement="bottom"
           )
-        modelerdir
+        //modelerdir
       .col-md-4
           .row.form-inline
             label
@@ -358,6 +358,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
             #LaplaceScale
 
   div(ng-show='mainArea.distribution == "Maxwell-Boltzman"')
+
       .row
         .col-md-8
           h6 Maxwell-BoltzMan Distribution Modeler &nbsp;
@@ -366,7 +367,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
             uib-tooltip="This modeler plots a Maxwell-Boltzman distribution."
             tooltip-placement="bottom"
             )
-          modelerdir
+          //modelerdir
         .col-md-4
           .row.form-inline
             label
@@ -389,7 +390,38 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               name='MaxBolt'
               )
             #MaxBolt
-       
+  div(ng-show='mainArea.distribution == "Kernel"')
+      .row
+        .col-md-8
+          h6 Kernel Density Distribution &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a Kernel Density distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="A of the dataset"
+              tooltip-placement="left"
+              ) &nbsp;
+              | Bandwith
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              string-to-number
+              ng-model="mainArea.kernelBandwidth"
+              ng-click="mainArea.KernelSync()"
+              ng-keypress ="mainArea.KernelPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='kernelBandwidth'
+              )
+            #kernelBandwidth     
   div.form-group
     .row
       .row.form-inline
@@ -408,6 +440,8 @@ div(ng-controller="ModelerMainCtrl as mainArea")
   
   
   div.row-fluid
+  div(ng-show ="mainArea.distrbution != ' ' ")
+    modelerdir
 
     h4 Parameters
     ul

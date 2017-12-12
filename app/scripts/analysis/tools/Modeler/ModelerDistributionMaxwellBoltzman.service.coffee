@@ -5,7 +5,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
   @name:
   @type: service
-  @desc: Performs spectral clustering using NJW algorithm
+  @desc: Implementation of the Maxwell Boltzman distribution model
 
 ###
 

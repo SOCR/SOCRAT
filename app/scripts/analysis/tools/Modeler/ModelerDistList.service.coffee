@@ -84,13 +84,13 @@ module.exports = class DistList extends BaseService
       xLabel: ""
     ,
 
-      name: 'Kernel'
-      value: 2
-      x: ['integer', 'number']
-      y: false
-      z: false
-      message: "This class Designs a simple polynomial model fitting curve"
-      xLabel: ""
+      # name: 'Kernel'
+      # value: 2
+      # x: ['integer', 'number']
+      # y: false
+      # z: false
+      # message: "This class Designs a simple polynomial model fitting curve"
+      # xLabel: ""
       #kernels ['uniform', 'triangular', 'epanechnikov', 'quartic', 'triweight', 'gaussian', 'cosine']
 
     ]

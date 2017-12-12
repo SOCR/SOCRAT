@@ -1,5 +1,11 @@
 'use strict'
 
+###
+  @name:
+  @type: service
+  @desc: Collection of helper function
+
+###
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class GetParams extends BaseService
@@ -150,6 +156,7 @@ module.exports = class GetParams extends BaseService
       scale: 1
       location: mean
       gamma: 1
+      bandwith: 5
       A: mean / (2* Math.sqrt(2/ Math.PI)).toFixed(2)
 
 

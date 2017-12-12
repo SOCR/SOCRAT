@@ -1,5 +1,11 @@
 'use strict'
 
+###
+  @name:
+  @type: service
+  @desc: Service to dynamically plot a histogram
+
+###
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ModelerHist extends BaseService

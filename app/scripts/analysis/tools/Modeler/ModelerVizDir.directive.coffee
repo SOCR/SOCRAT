@@ -1,7 +1,13 @@
 'use strict'
 
 require 'jquery-ui/ui/widgets/slider'
+###
+  @name:
+  @type: directive
+  @desc: Directive is loaded into jade file and dynamically renders the graph by waiting for new graph data, 
+  then creating a histogram from the dataset with the model data on top.
 
+###
 
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
@@ -52,6 +58,7 @@ module.exports = class ModelerDir extends BaseDirective
         console.log("running this many times: "+ @counter)
         @counter++
         if newGraphData != @oldData
+          console.log("Plotting new graph")
           @oldData = newGraphData
           newChartData = newGraphData.chartData
 

@@ -1,5 +1,11 @@
 'use strict'
 
+###
+  @name:
+  @type: service
+  @desc: Service to allow the main controller to access the different distribution
+
+###
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
 module.exports = class ModelerRouter extends BaseModuleDataService
@@ -17,6 +23,7 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     '$interval'
 
   initialize: ->
+    #import each distribution file
     @msgManager = @app_analysis_powerCalc_msgService
     @Normal = @socrat_modeler_distribution_normal
     @Kernel = @socrat_analysis_modeler_kernel_density_plotter
@@ -29,7 +36,8 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @Exponential =@socrat_modeler_distribution_exponential
 
     #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
-    @models = [@Normal, @Laplace, @ChiSquared, @MaxwellBoltzman, @LogNormal, @Cauchy, @Exponential]
+    #add distribution to the available models list
+    @models = [@Normal, @Laplace, @ChiSquared, @MaxwellBoltzman, @LogNormal, @Cauchy, @Exponential, @Kernel]
 
   getNames: -> @models.map (model) -> model.getName()
 

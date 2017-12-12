@@ -1,5 +1,10 @@
 'use strict'
 
+###
+  @name:
+  @type: controller
+  @desc: Main controller
+###
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ModelerMainCtrl extends BaseCtrl
@@ -39,15 +44,10 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @dataType = dataType
 
 
-
+  #imports the data from the side bar message service, syncs data to the distribution component
   updateChartData: (data) ->
     if data.dataPoints?
-      console.log("updatating chartData")
-      #console.log(data)
-      #@stats = @getParams.getParams(data)
       @distribution = data.distribution.name
-      console.log("distribution is : " + @distribution)
-      #@chartData = data
       @tempData = data
       histData = data.dataPoints
       histData = histData.map (row) ->
@@ -58,34 +58,22 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @stats  = @getParams.getParams(data)
       @params.stats = @stats
       @router.setParamsByName(@distribution, @params)
-      
-      
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
-
-
       #To be added for quantile
       console.log(@distribution)
       console.log(@params)
       @syncData(@params)
-      #@loadData()
-      #@router.setParams(@distribution, @params)
-
-      #@loadData()
 
 
 
 
 
 
+  #takes the current parameters, distribution and datset and updates the graph data accordingly
+  #graph data is two way binded to the modeler viz 
   updateModelData: () ->
     console.log("Updating Model Data from Sliders")
-   
-    #@modelData = @router.getChartData(@distribution, @params )
-    #@modelData.stats = @params
-    #modelData = @router.getChartData(@distribution, @params )
-    #modelData.stats = @params
-    
     xBounds = @getXbounds(@params, @distribution)
     @params.xMin = xBounds.xMin
     @params.xMax = xBounds.xMax
@@ -97,6 +85,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     modelData.yMax = yBounds.yMax
     #@tempData.modelData = modelData
     graph = {}
+    graph.distribution = @distribution
     graph.chartData = @tempData
     graph.modelData = modelData
 
@@ -109,25 +98,32 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     #5
 
 
+  #returns the top and bottom bound for the x axis
+  #compares (takes min) the dataset min to the model distribution 1st percentile
+  #compares (takes max) the dataset max to the model distribution 99st percentile
   getXbounds: (@params, @distribution) ->
       dataSetxMin = @params.xMin
       dataSetxMax = @params.xMax
       
-      modelDataFirstQuantile = @router.getQuantile(@distribution, @params, 0.01)
-      modelDataNNQuantile = @router.getQuantile(@distribution, @params, 0.99)
-      xMin = Math.min(modelDataFirstQuantile, dataSetxMin)
-      xMax = Math.max(modelDataNNQuantile, dataSetxMax)
+      # modelDataFirstQuantile = @router.getQuantile(@distribution, @params, 0.01)
+      # modelDataNNQuantile = @router.getQuantile(@distribution, @params, 0.99)
+      # xMin = Math.min(modelDataFirstQuantile, dataSetxMin)
+      # xMax = Math.max(modelDataNNQuantile, dataSetxMax)
       #buggggggy value
       bounds =
-        xMin: xMin
-        xMax: xMax
+        xMin: dataSetxMin
+        xMax: dataSetxMax
         
 
+  #returns the maximium y valuable to be plotted from the model data.
   getYBounds: (modelData) ->
       modelDataYMax = d3.max(modelData, (d)->parseFloat d.y)
       bounds =
         yMax: modelDataYMax
   
+
+  #sets the distribution to the updated parameters
+  #reloads the data to be plotted
   syncData: (dataIn) ->
     @router.setParamsByName(@distribution, dataIn)
     @loadData()
@@ -135,13 +131,13 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
 
-
+  #implementation of the reset button, restores to original extracted parameters
   resetGetParams: () ->
     @stats = @getParams.getParams(@graphData.chartData)
     @params.stats = @stats
     @syncData(@params)
 
-
+  #loads the proper distribution
   loadData: () ->
     if (@distribution is "Normal")
       @normalRetrieve()
@@ -159,13 +155,15 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @MaxBoltRetrieve()
     else if (@distribution is "Exponential")
       @ExponentialRetrieve()
+    else if (@distribution is "Kernel")
+      @KernelRetrieve()
     else
       return
 
 
 
 
-
+  #gets the current values of the distribution parameters
   normalRetrieve: ()->
     @currParams = @router.getParamsByName(@distribution)
     @NormalStDev = @currParams.standardDev
@@ -175,7 +173,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @NormalSliders()
     @updateModelData()
 
-
+  #updates the parameters object to the UI sliders, then syncs data
   NormalSync: () ->
     @params.stats.mean = @NormalMean
     @params.stats.standardDev = @NormalStDev
@@ -184,7 +182,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     #@loadData()
 
 
-
+  #handles a user pressing enter instead of using sliders
   NormalPress: (evt) ->
     name = evt.target.name
     key = evt.which or evt.keyCode
@@ -192,6 +190,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       if name is "Normal"
         @NormalSync()
 
+  #binded to the front end slider
   NormalSliders: () ->
 
     # select slider elements
@@ -515,3 +514,42 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @MaxBoltA = ui.value
         @MaxBoltSync()
     )
+
+
+
+  KernelRetrieve: () ->
+    @currParams = @router.getParamsByName(@distribution)
+    @kBandwith = @currParams.bandwith
+    @kernelSliders()
+    @updateModelData()
+
+
+
+  kernelSync: () ->
+    @params.stats.bandwith = @kBandwith
+    @syncData(@params)
+
+
+  kernelPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "kernel"
+        @kernelSync()
+
+  kernelSliders: () ->
+    kBandwith = $("#kernelBandwidth")
+
+    kBandwith.slider(
+      value: @kBandwith,
+      min: 0.01,
+      max: 30,
+      range: "min",
+      step: .5,
+      slide: (event, ui) =>
+        @kBandwith = ui.value
+        @kernelSync()
+    )
+
+   
+

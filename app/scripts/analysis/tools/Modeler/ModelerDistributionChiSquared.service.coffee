@@ -5,8 +5,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
   @name:
   @type: service
-  @desc: Performs spectral clustering using NJW algorithm
-
+  @desc: Implementation of the chi squared distribution model
 ###
 
 module.exports = class ChiSqr extends BaseService
