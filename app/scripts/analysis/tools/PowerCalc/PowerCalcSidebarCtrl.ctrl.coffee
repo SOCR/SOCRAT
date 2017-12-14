@@ -157,8 +157,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneProp()
 		else if (@selectedAlgorithm is 'Test of Two Proportions')
 			@twoProp()
-  else if (@selectedAlgorithm is 'CI for One Mean')
-      @CIOM()
+		else if (@selectedAlgorithm is 'CI for One Mean')
+			@CIOM()
 		return
 
 	twoTest: ()->
@@ -408,32 +408,31 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			size2: size2
 			target: @curTarget
 
-    # ********************** add CIOM filter function *********************
+
 	CIOM: () ->
 		@populations = {}
 
 		# if compare two different Variables, calculate separately
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
 
-		  #extract index if col
-		  index = @df.header.indexOf(@chosenColsOne)
+			#extract index if col
+			index = @df.header.indexOf(@chosenColsOne)
 
-		  #extract data from container to population
-		  @populations[@chosenSubCatsOne] = []
-		  for row in @container[@chosenSubCatsOne]
-		    @populations[@chosenSubCatsOne].push(row[index])
+			#extract data from container to population
+			@populations[@chosenSubCatsOne] = []
+			for row in @container[@chosenSubCatsOne]
+				@populations[@chosenSubCatsOne].push(row[index])
 
 		else
-		  # extract data from data to population
-		  index1 = @df.header.indexOf(@chosenColsOne)
-		  @populations[@chosenColsOne] = []
-		  for row in @df.data
-		    @populations[@chosenColsOne].push(row[index1])
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsOne)
+			@populations[@chosenColsOne] = []
+			for row in @df.data
+				@populations[@chosenColsOne].push(row[index1])
 
 		@msgService.broadcast 'powercalc:CIOMdata',
-		  popl: @populations
+			popl: @populations
 
-#******************************** end ********************************
 
 
 	findMinMax: (data, index1, index2, isTwo) ->
