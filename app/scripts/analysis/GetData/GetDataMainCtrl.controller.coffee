@@ -348,4 +348,4 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
           @passReceivedData _data
         else
           console.log 'GETDATA: request failed'
-
+    )

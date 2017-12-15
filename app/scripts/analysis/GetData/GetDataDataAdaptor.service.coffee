@@ -253,4 +253,3 @@ module.exports = class GetDataDataAdaptor extends BaseService
         obj[h.replace('.','_')] = entry[key]
       obj 
     return Object.assign {}, dataFrame, {data:formattedData}
->>>>>>> 4b2e9df04ab015b449f6a006c8c57371e903562a

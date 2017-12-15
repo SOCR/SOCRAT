@@ -31,9 +31,6 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-<<<<<<< HEAD
-        'app_analysis_mymodule'
-=======
         'app_analysis_powercalc'
       ]
     ,
@@ -79,7 +76,6 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability'
->>>>>>> 4b2e9df04ab015b449f6a006c8c57371e903562a
       ]
     #    ,
     #      msgFrom: 'upload csv'
@@ -104,11 +100,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-<<<<<<< HEAD
-        'app_analysis_mymodule'
-=======
         'app_analysis_powercalc'
->>>>>>> 4b2e9df04ab015b449f6a006c8c57371e903562a
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -121,11 +113,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-<<<<<<< HEAD
-        'app_analysis_mymodule'
-=======
         'app_analysis_powercalc'
->>>>>>> 4b2e9df04ab015b449f6a006c8c57371e903562a
       ]
     ]
 
