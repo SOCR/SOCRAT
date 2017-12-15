@@ -1179,6 +1179,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 				sl.slider("enable")
 				sl.find('.ui-slider-handle').show()
 
+
+
 	twoTestReset: () ->
 		@reset()
 
@@ -1212,11 +1214,9 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@params.sigma = @CIOMStDev
 		@params.mode = @CIOMMode
 		@syncData(@params)
-		console.log("syncedaaaaaaaaaaaaaa")
 		return
 
 	CIOMPress: (evt) ->
-		name = evt.target.name
 		key = evt.which or evt.keyCode
 		if key is 13
 			@CIOMSync()
