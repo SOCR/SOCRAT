@@ -37,7 +37,7 @@ module.exports = class ClusterVizDir extends BaseDirective
           minYDataPoint = d3.min yDataPoints
           maxYDataPoint = d3.max yDataPoints
           xScale = d3.scale.linear().domain([minXDataPoint, maxXDataPoint]).range([0, 600])
-          yScale = d3.scale.linear().domain([minYDataPoint, maxYDataPoint]).range([0, 500])
+          yScale = d3.scale.linear().domain([minYDataPoint, maxYDataPoint]).range([500, 0])
           drawDataPoints newDataPoints
       , on
 
@@ -62,6 +62,56 @@ module.exports = class ClusterVizDir extends BaseDirective
         .attr('cy', (d) -> yScale(d[1]))
         .attr('fill', (d) -> if d[2]? then color(d[2]) else 'black')
         pointDots.exit().remove()
+
+        MARGIN =
+          top: 20
+          right: 20
+          bottom: 20
+          left:20
+
+        width = 500 - MARGIN.left - MARGIN.right
+        height = 500 - MARGIN.top - MARGIN.bottom
+
+        xAxis = d3.svg.axis().ticks(10)
+        .orient("bottom")
+        .scale(xScale)
+
+        console.log(yScale)
+
+        yAxis = d3.svg.axis()
+        .scale(yScale)
+        .ticks(10)
+        .tickPadding(0)
+        .orient('left')
+
+        lineGen = d3.svg.line()
+        .x (d) -> xScale(d.x)
+        .y (d) -> yScale(d.y)
+        .interpolate('basis')
+
+        color = d3.scale.category10()
+
+        padding_top = 500
+        padding = 0
+
+        # x-axis
+        graph.append('svg:g')
+        .attr('class', 'x axis')
+        .attr("transform", "translate(0," + padding_top + ")")
+        .call(xAxis)
+
+        # y-axis
+        graph.append('svg:g')
+        .attr('class', 'y axis')
+        .attr("transform", "translate("+padding+",0)")
+        .call(yAxis)
+
+        # make x y axis thin
+        graph.selectAll('.x.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+        graph.selectAll('.y.axis path')
+        .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
+
 
       reset = () ->
         meanLayer.selectAll('.meanDots').remove()
@@ -94,5 +144,3 @@ module.exports = class ClusterVizDir extends BaseDirective
         .attr('cx', (d) -> xScale(d[0]))
         .attr('cy', (d) -> yScale(d[1]))
         meanDots.exit().remove()
-
-

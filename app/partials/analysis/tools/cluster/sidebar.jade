@@ -110,3 +110,11 @@ div(ng-controller="clusterSidebarCtrl as sidebar")
           ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
             | Reset&nbsp;
             span.fui-cross(aria-hidden="true")
+          
+        div.stdz-switch(ng-show="sidebar.dataFrame && sidebar.ready")
+          label Standardization &nbsp;
+          input(type='checkbox' 
+                data-toggle="switch"
+                ng-model="sidebar.dataStandardization"
+                id="toggle_switch1")
+        

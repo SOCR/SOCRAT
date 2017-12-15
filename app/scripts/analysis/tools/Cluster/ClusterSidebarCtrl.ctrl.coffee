@@ -27,7 +27,6 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @algParams = null
     # TODO: allow user control of delay
     @iterDelay = 750
-
     # dataset-specific
     @dataFrame = null
     @dataType = null
@@ -43,6 +42,11 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     if @algorithms.length > 0
       @selectedAlgorithm = @algorithms[0]
       @updateAlgControls()
+
+    @dataStandardization = off
+    $("#toggle_switch1").bootstrapSwitch()
+    $("#toggle_switch1").on 'switchChange.bootstrapSwitch', () =>
+    	@dataStandardization = !@dataStandardization
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
@@ -75,6 +79,8 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       xCol = data.header.indexOf @xCol unless !@xCol?
       yCol = data.header.indexOf @yCol unless !@yCol?
       data = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
+      if @dataStandardization
+        data = @standardizeData(data)
     @msgService.broadcast 'cluster:updateDataPoints',
       dataPoints: data
       means: means
@@ -141,7 +147,36 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         num: uniqueLabels.length
 
   ## Data preparation methods
+  average: (data) ->
+    avg = d3.sum(data) / data.length
+    avg
 
+  standardDeviation: (values) ->
+    avg = @average(values)
+    squareDiffs = values.map((value) ->
+      diff = value - avg
+      sqrDiff = diff * diff
+      sqrDiff
+    )
+    avgSquareDiff = @average(squareDiffs)
+    stdDev = Math.sqrt(avgSquareDiff)
+    stdDev
+
+  standardizeData: (data) ->
+    dataMat = d3.transpose(data)
+    i = 0
+    while i < dataMat.length
+      avg = @average(dataMat[i])
+      std = @standardDeviation(dataMat[i])
+      j = 0
+      while j < dataMat[i].length
+        dataMat[i][j] = (dataMat[i][j] - avg) / std
+        j++
+      i++
+    d3.transpose dataMat
+
+  switchStdz: () ->
+    @dataStandardization = !@dataStandardization
   # get requested columns from data
   prepareData: () ->
     data = @dataFrame
@@ -161,6 +196,11 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         labels = null
 
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+      # check if needs to standardize data
+      if @dataStandardization
+        console.log data
+        data = @standardizeData(data)
+        console.log data
 
       # re-check if possible to compute accuracy
       if @k is @uniqueLabels.num and @accuracyon
@@ -174,6 +214,7 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         acc: acc
 
     else false
+
 
   parseData: (data) ->
     @dataService.inferDataTypes data, (resp) =>
