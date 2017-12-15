@@ -279,28 +279,10 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
             aria-hidden="true"
             uib-tooltip="dahee calulator page"
             tooltip-placement="right")  
-        .col-md-4   
-          .form-group
-            .row.form-inline
-              label
-                span.glyphicon.glyphicon-question-sign(
-                aria-hidden="true"
-                uib-tooltip="whatever"
-                tooltip-placement="left"
-                ) &nbsp;
-                | P&nbsp;
-                sub s
-                | &nbsp;
-                input.form-control.input-sm.flat(
-                ng-model="mainArea.sampleproportion"
-                ng-click="mainArea.daheeSync()"
-                ng-keypress="mainArea.daheeClick($event)"
-                ng-disabled="mainArea.deployed"
-                type="number"
-                step="0.001"
-                name='dahee'
-                )
-              #propUI
+      .col-md-8
+        span.glyphicon.glyphicon-picture
+   
+      .col-md-4 
         .form-group
           .row.form-inline
             label
@@ -310,16 +292,16 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               tooltip-placement="left"
               ) &nbsp;
               | total sample: &nbsp;
-              input.form-control.input-sm.flat(
-              ng-model = "mainArea.samplesize"
-              ng-click='mainArea.daheeSync()'
-              ng-disabled="mainArea.deployed"
-              type="number"
-              step="1"
-              name='CIOP'
-              )
-            #totalUI
-
+              b {{mainArea.samplesize}}
+            //-   input.form-control.input-sm.flat(
+            //-   ng-model = "mainArea.samplesize"
+            //-   ng-click='mainArea.daheeSync()'
+            //-   ng-disabled="mainArea.deployed"
+            //-   type="number"
+            //-   step="1"
+            //-   name='CIOP'
+            //-   )
+            //- #totalU
 
         .form-group
           .row.form-inline
@@ -331,6 +313,29 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               ) &nbsp;
               | target sample: &nbsp;
               b {{mainArea.success}}
+
+        .form-group
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="whatever"
+                tooltip-placement="left"
+                ) &nbsp;
+                | P &nbsp;
+                sub s
+                | &nbsp; : &nbsp;
+                b {{mainArea.sampleproportion}}
+              //-   input.form-control.input-sm.flat(
+              //-   ng-model="mainArea.sampleproportion"
+              //-   ng-click="mainArea.daheeSync()"
+              //-   ng-keypress="mainArea.daheeClick($event)"
+              //-   ng-disabled="mainArea.deployed"
+              //-   type="number"
+              //-   step="0.001"
+              //-   name='dahee'
+              //-   )
+              //- #propUI   
         .form-group
           .row.form-inline
             label
@@ -351,11 +356,9 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               ) &nbsp;
               | upper bound: &nbsp;
               b {{mainArea.upbound}}
-        .form-group
-          .row.form-inline
-            label
-              | Interpretation: &nbsp;
-              b We are {{mainArea.cilevel}}% confident that the true value of {{mainArea.sampleproportion}} lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
+    .row
+      h6 Interpretation: &nbsp;
+      b We are {{mainArea.cilevel}}% confident that the true value of {{mainArea.sampleproportion}} lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
 
 
               
