@@ -216,7 +216,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		# if compare two different Variables, calculate separately
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-			@
+			
 			#extract data from container to population
 			for subcat in Object.keys(@container)
 				@populations[subcat] = @container[subcat].length
@@ -347,35 +347,38 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 							temp += 1
 			return [temp]
 
-	slider: ->
-		$("#alphaUI").slider(
+	slider: ()->
+
+		alphaUI = $("#alphaUI")
+		onePropThreshUI = $("#onePropThreshUI")
+
+		alphaUI.slider(
+			value: @alpha
 			min: 0.001
 			max: 0.200
-			value: @alpha
-			orientation: "horizontal"
 			range: "min"
-			step: 0.001
+			step: 0.0001
 			slide: (event, ui) =>
 				@alpha = ui.value
+				console.log @alpha
 				@msgService.broadcast 'powercalc:alpha',
 					alpha_in: @alpha
 		)
-		$("#onePropThreshUI").slider(
+		onePropThreshUI.slider(
 			min: @MinMax[0]["min"]
 			max: @MinMax[0]["max"]
 			value: @thresh
-			orientation: "horizontal"
 			range: "min"
 			step: 0.1
 			slide: (event, ui) =>
 				@thresh = ui.value
 				@run()
-				return
 		)
 
 	changeValue: (evt) ->
 		name = evt.target.name
 		key = evt.which or evt.keyCode
+		console.log key
 		if key is 13
 			@slider()
 			@run()

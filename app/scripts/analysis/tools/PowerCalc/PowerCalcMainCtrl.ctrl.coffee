@@ -437,25 +437,66 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @ciAlpha =  @params.a
     @standarddev = @params.sd
     @cilevel = 1.0 - @ciAlpha
+    @daheeClick()
 
   daheeSync: () ->
     @params.sampleproportion = @sampleproportion
     @params.n = @success
+    @params.t = @samplesize
     @syncData(@params)
 
-  # daheePower: () ->
-  #   @syncPower(@params)
-  #   return
+  daheeClick: () ->
+    #slider elements
+    propUI = $("#propUI")
+    totalUI = $("#totalUI")
+    targetUI = $("#targetUI")
+    daheeSliders = [propUI, totalUI, targetUI]
 
-  # daheePress: (evt) ->
-  #   name = evt.target.name
-  #   key = evt.which or evt.keyCode
-  #   if key is 13
-  #     if name is "dahee"
-  #       @daheePower()
-  #     else
-  #       @daheeSync()
-  #   return
+    propUI.slider(
+      value: @sampleproportion,
+      min :0,
+      max:1,
+      range :'min',
+      step: 0.01,
+      slide: (event, ui)=>
+        @sampleproportion = ui.value
+        @daheeSync()
+    )
+
+    totalUI.slider(
+      value: @samplesize,
+      min: 0,
+      max: 1000,
+      range: "min",
+      step: 10,
+      slide: (event, ui) =>
+        @samplesize = ui.value
+        @daheeSync()
+    )
+
+    targetUI.slider(
+      value: @success,
+      min: 0,
+      max: 1000,
+      range: "min",
+      step: 10,
+      slide: (event, ui) =>
+        @success = ui.value
+        @daheeSync()
+    )
+
+
+    if @deployed is true
+      for sl in daheeSliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
+    else
+      for sl in daheeSliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+
+    return  
+
     
   #OneProp function only
   onePropRetrieve: () ->
