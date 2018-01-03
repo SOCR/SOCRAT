@@ -97,67 +97,98 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
           p <b>Graphics</b>
           p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
   div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
-    h3 CI for One Mean
-    p <i>This dialog provides for sample-size determination for estimating a mean to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)</i>
-    div(style='width:100%;overflow:hidden;height:100%;')
-      input(type='hidden', name='id', value='1')
+    .row
+      .col-md-8
+        h6 CI for One Mean &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This dialog provides for sample-size determination for estimating a mean to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)."
+          tooltip-placement="bottom"
+          )
+          .row
+            .col-md-8
+              .form-group
+                .form-inline
+                  label(style='margin-top:30px; margin-bottom:10px;') Mode: &nbsp;
+                  select.form-control(
+                  ng-model="mainArea.CIOMMode"
+                  ng-change="mainArea.CIOMSync()"
+                  ng-options="mode for mode in mainArea.CIOMModes"
+                  )
+              .form-group
+                .form-inline
+                  label
+                    span.glyphicon.glyphicon-question-sign(
+                    aria-hidden="true"
+                    uib-tooltip="sample size"
+                    tooltip-placement="left"
+                    ) &nbsp;
+                    | N&nbsp;
+                    input.form-control.input-sm.flat(
+                    ng-model="mainArea.CIOMN"
+                    ng-click="mainArea.CIOMSync()"
+                    ng-keypress="mainArea.CIOMPress($event)"
+                    ng-disabled="mainArea.deployed"
+                    type="number"
+                    step="1"
+                    name='CIOMN'
+                    )
+                  #CIOMNUI
+                .form-inline
+                  label
+                    span.glyphicon.glyphicon-question-sign(
+                    aria-hidden="true"
+                    uib-tooltip="sample mean"
+                    tooltip-placement="left"
+                    ) &nbsp;
+                    | μ&nbsp;
+                    input.form-control.input-sm.flat(
+                    ng-model="mainArea.CIOMMean"
+                    ng-click="mainArea.CIOMSync()"
+                    ng-keypress="mainArea.CIOMPress($event)"
+                    ng-disabled="mainArea.deployed"
+                    type="number"
+                    step="0.001"
+                    name='CIOMMean'
+                    )
+                  #CIOMMeanUI
+                .form-inline
+                  label
+                    span.glyphicon.glyphicon-question-sign(
+                    aria-hidden="true"
+                    uib-tooltip="sample st dev"
+                    tooltip-placement="left"
+                    ) &nbsp;
+                    | σ&nbsp;
+                    input.form-control.input-sm.flat(
+                    ng-model="mainArea.CIOMStDev"
+                    ng-click="mainArea.CIOMSync()"
+                    ng-keypress="mainArea.CIOMPress($event)"
+                    ng-disabled="mainArea.deployed"
+                    type="number"
+                    step="0.001"
+                    name='CIOMStDev'
+                    )
+                  #CIOMStDevUI
+              .form-group
+                .form-inline
+                  label
+                    span.glyphicon.glyphicon-question-sign(
+                    aria-hidden="true"
+                    uib-tooltip="test statistics value"
+                    tooltip-placement="left"
+                    ) &nbsp;
+                    | t-score: &nbsp;
+                    b {{mainArea.CIOMTScore}}
+          h6(
+          ng-show="mainArea.brokenCalc"
+          style="color:red;"
+          ) &nbsp;&nbsp;An error occurred. Press Reset to resume default settings.
+
+    div
       div
-        div(style='line-height:10px;display:inline')
-          input#isFinitea(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='isFinite', ng-click='mainArea.cimean_clk($event);')
-          | Finite Population &nbsp &nbsp;
-        div#showNa(style='margin-left=40%;display:inline')
-          | N: &nbsp
-          input#NN(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='NN', ng-mouseleave="mainArea.cimean_presubmit('1','NN',$event);")
-          span#Nerror
-        div(style='margin-top:20px;')
-          div(style='display:inline')
-            | Confidence Level: &nbsp
-            input#confa(name='conf',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_presubmit('1','conf',$event);")
-          div(style='display:inline')
-            #slidera_conf(uib-tooltip="Manipulate this bar to adjust confidence level" tooltip-placement="top")
-        div(style='margin-top:20px;')
-          div(style='display:inline')
-            | Sigma: &nbsp
-            input#sgn(name='sigma',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('sgn',$event);")
-          div(style='display:inline')
-            #sgnui(uib-tooltip="Manipulate this bar to adjust Sigma" tooltip-placement="top")
-        div(style='margin-top:20px;')
-          div(style='display:inline')
-            | Margin of Error: &nbsp
-            input#mea(name='me',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('me',$event);")
-          div(style='display:inline')
-            #meuia(uib-tooltip="Manipulate this bar to adjust Margin of Error" tooltip-placement="top")
-        div(style='margin-top:20px;')
-          div(style='display:inline')
-            | n: &nbsp
-            input#na(name='me',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cimean_changeSlider('n',$event);")
-          div(style='display:inline')
-            #nuia(uib-tooltip="Manipulate this bar to adjust n" tooltip-placement="top")
-        div
-          input#cimeanH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cimean_show_help();')
-          div(ng-show='mainArea.cimean_help == true;')
-            p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error:
-            p $ ME = t * s / \sqrt{n} $  &nbsp;&nbsp;&nbsp; (infinite population)
-            p $ ME = t * s * \sqrt{\frac{\frac{1-n}{N}}{n}} $  &nbsp;&nbsp;&nbsp; (finite population)
-            p where t is a critical value from the t distribution, s is the sample SD, n is the sample size, and N is the population size.
-            br
-            p <b>Using The Graphical Interface</b>
-            p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
-            br
-            p <b>Finite Population</b>
-            p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
-            br
-            p <b>Confidence</b>
-            p Choose the desired confidence coefficient for the ME.  This determines the value of t.
-            br
-            p <b>Margin of Error</b>
-            p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
-            br
-            p <b>n</b>
-            p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
-            br
-            p <b>Graphics</b>
-            p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
+        p Confidence Interval: [{{mainArea.CIOMLowerBound}}, {{mainArea.CIOMUpperBound}}]
+
   div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
     .row
       .col-md-8
