@@ -1,0 +1,10 @@
+div(ng-controller="statsSidebarCtrl as sidebar")
+  form
+    legend Parameters &nbsp;
+      .form-group
+        label(
+          style=''
+        ) Calculator &nbsp;
+        select.form-control(
+          ng-model="sidebar.selectedAlgorithm"
+        )
