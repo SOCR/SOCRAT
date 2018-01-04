@@ -1,0 +1,17 @@
+div(ng-controller="statsMainCtrl as mainArea")
+	
+	div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
+		h6 CI for One Mean &nbsp;
+			span.glyphicon.glyphicon-question-sign(
+				aria-hidden="true"
+				uib-tooltip="This dialog provides for sample-size determination for estimating a mean to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)."
+				tooltip-placement="bottom"
+			)
+		.row
+			.col-md-8
+				label(style='margin-top:30px; margin-bottom:10px;') Mode: &nbsp;
+				select.form-control-inline(
+					ng-model="mainArea.CIOMMode"
+					ng-change="mainArea.CIOMSync()"
+					ng-options="mode for mode in mainArea.CIOMModes"
+				)

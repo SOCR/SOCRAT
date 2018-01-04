@@ -16,9 +16,11 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 		@algorithmsService = @app_analysis_stats_algorithms
 
 		# all alglorithms
-		@algorithms = ['Select']
+		@algorithms = ['Select',
+		'CI for One Mean'
+		]
 		# select first calculator
-		@selectedAlgorithm = @algorithms[0]
+		@selectedAlgorithm = @algorithms[1]
 
 		# set up data and algorithm-agnostic controls
 		@DATA_TYPES = @dataService.getDataTypes()
@@ -30,11 +32,6 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 		@labelCol = ["none"]
 		@df = null
 
-		# pre-processed data container
-		@container = {} # {name1:[#,#,#,#,#,#....], name2:[#,#,#,#,#,#,#,#.....]}
-		@MinMax = [{"min": 0, "max": 1}, {"min": 0, "max": 1}]
-		@populations = {}
-
 		# sidebar variables needed to process data
 		@newTarget = true
 		@curTarget = ["",""]
@@ -45,16 +42,13 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 		@chosenSubCatsTwo = []
 		@alpha = 0.01
 		@thresh = 0
-		@twoPropThresh1 = 0
-		@twoPropThresh2 = 0
 
-		# modes 
-		@deployed = false
-		@threshMode = false
-		@threshTypeModes = ["larger", "smaller", "equal"]
-		@threshTypeMode = "larger"
-		@threshTypeMode1 = "larger"
-		@threshTypeMode2 = "larger"
+		# pre-processed data container
+		@container = {} # {name1:[#,#,#,#,#,#....], name2:[#,#,#,#,#,#,#,#.....]}
+		@MinMax = [{"min": 0, "max": 1}, {"min": 0, "max": 1}]
+		@populations = {}
+
+
 		$("#toggleDataDriven").bootstrapSwitch()
 		$("#toggleThresh").bootstrapSwitch()
 		$("#twoPropToggleThresh").bootstrapSwitch()
@@ -71,7 +65,7 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 
 
 		# initialize slider
-		# @slider()
+		@slider()
 
 		# receive raw data
 		@dataService.getData().then (obj) =>
@@ -122,3 +116,34 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 					else if header in ["string"]
 						@categoricalCols.push(@df.header[id])
 					id += 1
+
+	# called when sidebar updates variables
+	# 1. update categories and its subcategories
+	# 2. push all the related data into its own category
+	update: () ->
+		index = @df.header.indexOf(@chosenCats)
+		@container = {}
+		@subCategoricalCols = []
+		for row in @df.data
+			if row[index] not of @container
+				@container[row[index]] = []
+
+			if row[index] not in @subCategoricalCols
+				@subCategoricalCols.push(row[index])
+
+			@container[row[index]].push(row)
+
+	slider: ->
+		$("#alphaUI").slider(
+			min: 0.001
+			max: 0.200
+			value: @alpha
+			orientation: "horizontal"
+			range: "min"
+			step: 0.001
+			slide: (event, ui) =>
+				@alpha = ui.value
+				@msgService.broadcast 'powercalc:alpha',
+					@alpha
+				@$scope.$apply()
+		)
