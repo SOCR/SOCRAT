@@ -18,7 +18,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		# all alglorithms
 		@algorithms = ['Select',
 		'CI for One Proportion',
-		'CI for One Mean',
 		'Test of One Proportion',
 		'Test of Two Proportions',
 		'Pilot Study',
@@ -159,8 +158,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneProp()
 		else if (@selectedAlgorithm is 'Test of Two Proportions')
 			@twoProp()
-		else if (@selectedAlgorithm is 'CI for One Mean')
-			@CIOM()
 		return
 
 	twoTest: ()->
@@ -409,32 +406,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			size1: size1
 			size2: size2
 			target: @curTarget
-
-
-	CIOM: () ->
-		@populations = {}
-
-		# if compare two different Variables, calculate separately
-		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-
-			#extract index if col
-			index = @df.header.indexOf(@chosenColsOne)
-
-			#extract data from container to population
-			@populations[@chosenSubCatsOne] = []
-			for row in @container[@chosenSubCatsOne]
-				@populations[@chosenSubCatsOne].push(row[index])
-
-		else
-			# extract data from data to population
-			index1 = @df.header.indexOf(@chosenColsOne)
-			@populations[@chosenColsOne] = []
-			for row in @df.data
-				@populations[@chosenColsOne].push(row[index1])
-
-		@msgService.broadcast 'powercalc:CIOMdata',
-			popl: @populations
-
 
 
 	findMinMax: (data, index1, index2, isTwo) ->

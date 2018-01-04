@@ -21,6 +21,10 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		@loadData()
 
+		@$scope.$on 'stats:alpha', (event, data)=>
+			@algorithmService.passAlphaByName(@selectedAlgorithm, data)
+			@loadData()
+
 		# receive updated algorithm from sidebar
 		@$scope.$on 'stats:updateAlgorithm', (event, data)=>
 			@selectedAlgorithm = data
@@ -28,8 +32,8 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			@loadData()
 			MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
-		#receive data
-		@$scope.$on 'stats:onetwoTestdata', (event, data)=>
+		# receive data
+		@$scope.$on 'stats:CIOMdata', (event, data)=>
 			@algorithmService.passDataByName(@selectedAlgorithm, data)
 			@loadData()
 

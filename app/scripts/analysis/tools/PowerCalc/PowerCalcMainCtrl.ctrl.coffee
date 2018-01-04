@@ -119,10 +119,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			@algorithmService.passDataByName(@selectedAlgorithm, data)
 			@loadData()
 
-		@$scope.$on 'powercalc:CIOMdata', (event, data)=>
-			@algorithmService.passDataByName(@selectedAlgorithm, data)
-			@loadData()
-
 		@$scope.$on 'powercalc:alpha', (event, data)=>
 			@algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
 			@loadData()
@@ -1188,91 +1184,3 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		chartData = @algorithmService.getChartData @selectedAlgorithm
 		@$timeout => @chartData = chartData,
 		5
-
-
-	# functions for CIOM only
-	CIOMRetrieve: () ->
-		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
-		@CIOMN = @params.n
-		@CIOMNMax = @params.nMax
-		@CIOMMean = @params.mu
-		@CIOMMeanMax = @params.meanMax
-		@CIOMStDev = @params.sigma
-		@CIOMSigmaMax = @params.sigmaMax
-		@CIOMTScore = @params.t
-		@CIOMLowerBound = @params.lowBound
-		@CIOMUpperBound = @params.upBound
-		@CIOMMode = @params.mode
-		@CIOMModes = ["Two Tailed", "One Tailed"]
-		@CIOMClick()
-		return
-
-	CIOMSync: () ->
-		@params.n = @CIOMN
-		@params.mu = @CIOMMean
-		@params.sigma = @CIOMStDev
-		@params.mode = @CIOMMode
-		@syncData(@params)
-		return
-
-	CIOMPress: (evt) ->
-		key = evt.which or evt.keyCode
-		if key is 13
-			@CIOMSync()
-		return
-
-	CIOMClick: () ->
-		# slider elements
-		CIOMNUI = $("#CIOMNUI")
-		CIOMMeanUI = $("#CIOMMeanUI")
-		CIOMStDevUI= $("#CIOMStDevUI")
-
-		CIOMNUI.slider(
-			value: @CIOMN,
-			min: 2,
-			max: @CIOMNMax,
-			range: "min",
-			step: 1,
-			slide: (event, ui) =>
-				@CIOMN = ui.value
-				@CIOMSync()
-		)
-
-		CIOMMeanUI.slider(
-			value: @CIOMMean,
-			min: 0,
-			max: @CIOMMeanMax,
-			range: "min",
-			step: 0.001,
-			slide: (event, ui) =>
-				@CIOMMean = ui.value
-				@CIOMSync()
-		)
-
-		CIOMStDevUI.slider(
-			value: @CIOMStDev,
-			min: 0,
-			max: @CIOMSigmaMax,
-			range: "min",
-			step: 0.001,
-			slide: (event, ui) =>
-				@CIOMStDev = ui.value
-				@CIOMSync()
-		)
-
-		# enable or disable slider
-		CIOMSliders = [CIOMNUI, CIOMMeanUI, CIOMStDevUI]
-		if @deployed is true
-			for sl in CIOMSliders
-				sl.slider("disable")
-				sl.find('.ui-slider-handle').hide()
-		else
-			for sl in CIOMSliders
-				sl.slider("enable")
-				sl.find('.ui-slider-handle').show()
-
-		return
-
-	CIOMReset: () ->
-		@reset()
-		return

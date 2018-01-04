@@ -133,6 +133,36 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 
 			@container[row[index]].push(row)
 
+	run: () ->
+		if (@selectedAlgorithm is 'CI for One Mean')
+			@CIOM()
+		return
+
+
+	CIOM: () ->
+		@populations = {}
+
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+
+			#extract index if col
+			index = @df.header.indexOf(@chosenColsOne)
+
+			#extract data from container to population
+			@populations[@chosenSubCatsOne] = []
+			for row in @container[@chosenSubCatsOne]
+				@populations[@chosenSubCatsOne].push(row[index])
+
+		else
+			# extract data from data to population
+			index1 = @df.header.indexOf(@chosenColsOne)
+			@populations[@chosenColsOne] = []
+			for row in @df.data
+				@populations[@chosenColsOne].push(row[index1])
+
+		@msgService.broadcast 'stats:CIOMdata',
+			popl: @populations
+
 	slider: ->
 		$("#alphaUI").slider(
 			min: 0.001
@@ -143,7 +173,7 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 			step: 0.001
 			slide: (event, ui) =>
 				@alpha = ui.value
-				@msgService.broadcast 'powercalc:alpha',
+				@msgService.broadcast 'stats:alpha',
 					@alpha
 				@$scope.$apply()
 		)

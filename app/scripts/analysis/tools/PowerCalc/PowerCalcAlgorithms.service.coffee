@@ -8,7 +8,6 @@ module.exports = class PowerCalcAlgorithms extends BaseModuleDataService
     'app_analysis_powerCalc_oneTest',
     'app_analysis_powerCalc_oneProp',
     'app_analysis_powerCalc_twoProp',
-    'app_analysis_powerCalc_CIOM'
     '$interval'
 
   initialize: ->
@@ -17,8 +16,7 @@ module.exports = class PowerCalcAlgorithms extends BaseModuleDataService
     @oneTest = @app_analysis_powerCalc_oneTest
     @oneProp = @app_analysis_powerCalc_oneProp
     @twoProp = @app_analysis_powerCalc_twoProp
-    @CIOM = @app_analysis_powerCalc_CIOM
-    @algorithms = [@twoTest, @oneTest, @oneProp, @twoProp, @CIOM]
+    @algorithms = [@twoTest, @oneTest, @oneProp, @twoProp]
 
   ############
 
