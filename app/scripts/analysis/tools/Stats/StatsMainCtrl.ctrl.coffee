@@ -97,6 +97,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@CIOMN = ui.value
 				@CIOMSync()
+				@$scope.$apply()
 		)
 
 		CIOMMeanUI.slider(
@@ -108,6 +109,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@CIOMMean = ui.value
 				@CIOMSync()
+				@$scope.$apply()
 		)
 
 		CIOMStDevUI.slider(
@@ -119,7 +121,9 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@CIOMStDev = ui.value
 				@CIOMSync()
+				@$scope.$apply()
 		)
+
 
 		# enable or disable slider
 		CIOMSliders = [CIOMNUI, CIOMMeanUI, CIOMStDevUI]
