@@ -10,7 +10,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 	'$scope'
 
 	initialize: ->
-		@d3 = require 'd3'
 		@powerAnalysis = require 'powercalc'
 		@distribution = require 'distributome'
 		@msgService = @app_analysis_powerCalc_msgService
