@@ -132,6 +132,7 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
 
         color = d3.scale.category10()
 
+        # data points
         for datum, i in data
           _graph.append('svg:path')
             .attr('d', lineGen(datum))

@@ -19,7 +19,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		#algorithm type
 		@selectedAlgorithm = "Test of One Proportion"
 		@SIGNIFICANT = 5
-		@data = []
 		@dataType = ''
 		@dataPoints = null
 		@means = null
@@ -130,6 +129,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@$scope.$on 'powercalc:updateDataPoints', (event, data) =>
 			@data = data.dataPoints
 
+	# retreive data parameters from algorithm services
 	loadData: () ->
 		if (@selectedAlgorithm is "Two-sample t test (general case)")
 			@twoTestRetrieve()
@@ -147,27 +147,18 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			@CIOMRetrieve()
 			return
 		else
+			console.log("Unknown algorithms selected")
 			return
 
-	update_algo: (evt) ->
-		console.log(@selectedAlgorithm)
-		@selectedAlgorithm = evt.currentTarget.value
-		@msgService.broadcast 'powercalc:updateAlgorithm_back',
-			@selectedAlgorithm
-
+	# send new data parameters to algorithm service (execpt power)
 	syncData: (dataIn) ->
 		@algorithmService.setParamsByName(@selectedAlgorithm, dataIn)
 		@loadData()
 
+	# send new power value to algorithm service
 	syncPower: (dataIn) ->
 		@algorithmService.setPowerByName(@selectedAlgorithm, dataIn)
 		@loadData()
-
-	reset: () ->
-		@brokenCalc = false
-		@algorithmService.resetByName(@selectedAlgorithm)
-		@loadData()
-
 
 	#cfap function only
 	cfap_clk: (evt) ->
@@ -288,6 +279,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@cfap_help = !@cfap_help;
 		return
 
+	
 	#OneProp function only
 	onePropRetrieve: () ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
@@ -549,12 +541,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@oneTestT = parseFloat(@params.t.toPrecision(4))
 		@oneTestPvalue = parseFloat(@params.pvl.toPrecision(4))
 		@oneTestMode = @params.mode
-		@compAgents = @params.comp
 		@oneTestModes = ["Two Tailed", "One Tailed"]
+		if @deployed is true then @compAgents = @params.comp
+		else @compAgents = "Sample"
 		@oneTestClick()
-		if (@oneTestN is Infinity)
-			@brokenCalc = true
-			return
 		@oneTestGraph()
 		return
 
@@ -583,10 +573,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		name = evt.target.name
 		key = evt.which or evt.keyCode
 		if key is 13
-			if name is "oneTestPower"
-				@oneTestCalcPower()
-			else
-				@oneTestSync()
+			if name is "oneTestPower" then @oneTestCalcPower()
+			else @oneTestSync()
 		return
 
 	oneTestClick: () ->
@@ -665,8 +653,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 				sl.slider("enable")
 				sl.find('.ui-slider-handle').show()
 
-	oneTestReset: () ->
-		@reset()
 
 	oneTestGraph:() ->
 		@chartData = null
