@@ -118,6 +118,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			@algorithmService.passDataByName(@selectedAlgorithm, data)
 			@loadData()
 
+		@$scope.$on 'powercalc:daheeData', (event, data) =>
+			@algorithmService.passDataByName(@selectedAlgorithm, data)
+			@loadData()
+
 		@$scope.$on 'powercalc:alpha', (event, data)=>
 			@algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
 			@loadData()
@@ -143,8 +147,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		else if (@selectedAlgorithm is "Test of Two Proportions")
 			@twoPropRetrieve()
 			return
-		else if (@selectedAlgorithm is "CI for One Mean")
-			@CIOMRetrieve()
+		else if (@selectedAlgorithm is "DAHEE")
+			@daheeRetrieve()
 			return
 		else
 			console.log("Unknown algorithms selected")
@@ -1170,3 +1174,79 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		chartData = @algorithmService.getChartData @selectedAlgorithm
 		@$timeout => @chartData = chartData,
 		5
+
+	
+	####Dahee 
+	daheeRetrieve:() ->
+	@params = @algorithmService.getParamsByName(@selectedAlgorithm)
+	@sampleproportion = parseFloat(@params.p.toPrecision(4))
+	@success = @params.n
+	@samplesize = @params.t
+	@zscore = @params.z
+	@upbound = parseFloat(@params.u.toPrecision(4))
+	@lowbound = parseFloat(@params.l.toPrecision(4))
+	@confinterval =@params.ci
+	@ciAlpha =  @params.a
+	@standarddev = @params.sd
+	@cilevel = 1.0 - @ciAlpha
+	@daheeClick()
+
+	daheeSync: () ->
+	@params.sampleproportion = @sampleproportion
+	@params.n = @success
+	@params.t = @samplesize
+	@syncData(@params)
+
+	daheeClick: () ->
+	#slider elements
+	propUI = $("#propUI")
+	totalUI = $("#totalUI")
+	targetUI = $("#targetUI")
+	daheeSliders = [propUI, totalUI, targetUI]
+
+	propUI.slider(
+		value: @sampleproportion,
+		min :0,
+		max:1,
+		range :'min',
+		step: 0.01,
+		slide: (event, ui)=>
+		@sampleproportion = ui.value
+		@daheeSync()
+	)
+
+	totalUI.slider(
+		value: @samplesize,
+		min: 0,
+		max: 1000,
+		range: "min",
+		step: 10,
+		slide: (event, ui) =>
+		@samplesize = ui.value
+		@daheeSync()
+	)
+
+	targetUI.slider(
+		value: @success,
+		min: 0,
+		max: 1000,
+		range: "min",
+		step: 10,
+		slide: (event, ui) =>
+		@success = ui.value
+		@daheeSync()
+	)
+
+
+	if @deployed is true
+		for sl in daheeSliders
+		sl.slider("disable")
+		sl.find('.ui-slider-handle').hide()
+	else
+		for sl in daheeSliders
+		sl.slider("enable")
+		sl.find('.ui-slider-handle').show()
+
+	return  
+
+	

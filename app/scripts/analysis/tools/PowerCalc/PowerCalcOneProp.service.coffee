@@ -147,6 +147,7 @@ module.exports = class PowerCalcOneProp extends BaseService
     return 0
 
   getChartData: () ->
+    console.log [@onePropP]
     return [@onePropP]
 
   tProb: ($n, $x) ->

@@ -133,12 +133,17 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 
 			@container[row[index]].push(row)
 
+	# call specified pre-processor
 	run: () ->
 		if (@selectedAlgorithm is 'CI for One Mean')
 			@CIOM()
 		return
 
 
+	###
+		pre-process data when the specified calculator is CIOM
+		@return: TODO
+	###
 	CIOM: () ->
 		@populations = {}
 
@@ -163,6 +168,7 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 		@msgService.broadcast 'stats:CIOMdata',
 			popl: @populations
 
+	# collection of sliders that update sliders
 	slider: ->
 		$("#alphaUI").slider(
 			min: 0.001

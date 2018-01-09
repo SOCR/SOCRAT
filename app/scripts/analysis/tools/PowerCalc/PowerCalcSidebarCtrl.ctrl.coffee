@@ -14,10 +14,12 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@dataService = @app_analysis_powerCalc_dataService
 		@msgService = @app_analysis_powerCalc_msgService
 		@algorithmsService = @app_analysis_powerCalc_algorithms
+		
 
 		# all alglorithms
 		@algorithms = ['Select',
 		'CI for One Proportion',
+		'DAHEE',
 		'Test of One Proportion',
 		'Test of Two Proportions',
 		'Pilot Study',
@@ -25,8 +27,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		'Generic chi-square test',
 		'Power of a Simple Poisson Test',
 		'Two-sample t test (general case)',
-		'One-Sample (or Paired) t Test',]
-		# select first calculator
+		'One-Sample (or Paired) t Test']
 		@selectedAlgorithm = @algorithms[3]
 
 		# set up data and algorithm-agnostic controls
@@ -54,8 +55,9 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@chosenSubCatsTwo = []
 		@alpha = 0.01
 		@thresh = 0
-		@twoPropThresh1 = 0
-		@twoPropThresh2 = 0
+		@thresh1 = 0
+		@thresh2 = 0
+		@jstat = require('jStat').jStat
 
 		# modes
 		@deployed = false
@@ -108,6 +110,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		#broadcast algorithms to main controller
 		@msgService.broadcast 'powercalc:updateAlgorithm',
 			@selectedAlgorithm
+		console.log @jstat.tci(0.53, 0.95, 0.015, 1148)
 
 	# called right after receiving the raw data
 	# categorize data types into numeric or names
@@ -158,7 +161,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneProp()
 		else if (@selectedAlgorithm is 'Test of Two Proportions')
 			@twoProp()
-		return
+		else if (@selectedAlgorithm is 'DAHEE')
+			@numDic()
 
 	twoTest: ()->
 		@populations = {}
@@ -215,7 +219,29 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
-			target: @curTarget
+	
+
+	# ####create filter!
+	numDic: () ->
+		console.log @container
+		@populations = {}
+		@samplesize = @df.data.length
+
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+			
+			#extract data from container to population
+			for subcat in Object.keys(@container)
+				@populations[subcat] = @container[subcat].length
+
+		console.log @populations
+		console.log @chosenSubCatsOne[0]
+		@msgService.broadcast 'powercalc:daheeData',
+			popl: @populations
+			total : @samplesize
+			target: @chosenSubCatsOne
+	
+
 
 	oneTest: () ->
 		@populations = {}
@@ -241,10 +267,11 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			for row in @df.data
 				@populations[@chosenColsOne].push(row[index1])
 
-
+	
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
 			target: @curTarget
+
 
 	oneProp: () ->
 		if @chosenCols is null
@@ -477,30 +504,32 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 							temp += 1
 			return [temp]
 
-	slider: ->
-		$("#alphaUI").slider(
+	slider: ()->
+
+		alphaUI = $("#alphaUI")
+		onePropThreshUI = $("#onePropThreshUI")
+
+		alphaUI.slider(
+			value: @alpha
 			min: 0.001
 			max: 0.200
-			value: @alpha
-			orientation: "horizontal"
 			range: "min"
-			step: 0.001
+			step: 0.0001
 			slide: (event, ui) =>
 				@alpha = ui.value
+				console.log @alpha
 				@msgService.broadcast 'powercalc:alpha',
 					alpha_in: @alpha
 		)
-		$("#onePropThreshUI").slider(
+		onePropThreshUI.slider(
 			min: @MinMax[0]["min"]
 			max: @MinMax[0]["max"]
 			value: @thresh
-			orientation: "horizontal"
 			range: "min"
 			step: 0.1
 			slide: (event, ui) =>
 				@thresh = ui.value
 				@run()
-				return
 		)
 		$("#twoPropThresh1UI").slider(
 			min: @MinMax[0]["min"]
@@ -530,6 +559,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 	changeValue: (evt) ->
 		name = evt.target.name
 		key = evt.which or evt.keyCode
+		console.log key
 		if key is 13
 			@slider()
 			@run()
