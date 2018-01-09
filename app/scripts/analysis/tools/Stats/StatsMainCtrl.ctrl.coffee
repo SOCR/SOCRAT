@@ -10,7 +10,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 	initialize: ->
 
-		# required modules
+		# required basic modules
 		@d3 = require 'd3'
 		@distribution = require 'distributome'
 		@msgService = @app_analysis_stats_msgService
@@ -21,11 +21,12 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		@loadData()
 
+
 		@$scope.$on 'stats:alpha', (event, data)=>
 			@algorithmService.passAlphaByName(@selectedAlgorithm, data)
 			@loadData()
 
-		# receive updated algorithm from sidebar
+		# receive updated algorithm from sidebar area
 		@$scope.$on 'stats:updateAlgorithm', (event, data)=>
 			@selectedAlgorithm = data
 			console.log("algorithms updated:", @selectedAlgorithm)
@@ -37,6 +38,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			@algorithmService.passDataByName(@selectedAlgorithm, data)
 			@loadData()
 
+	# load data to a specified calculator
 	loadData: () ->
 		if (@selectedAlgorithm is "CI for One Mean")
 			@CIOMRetrieve()
@@ -44,18 +46,21 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		else
 			return
 
+	# outdated
 	update_algo: (evt) ->
 		console.log(@selectedAlgorithm)
 		@selectedAlgorithm = evt.currentTarget.value
 		@msgService.broadcast 'powercalc:updateAlgorithm_back',
 			@selectedAlgorithm
 
+	# call to update data parameters of specified calculator
 	syncData: (dataIn) ->
 		@algorithmService.setParamsByName(@selectedAlgorithm, dataIn)
 		@loadData()
 
 
 	# functions for CIOM only
+	# retrieve data parameters from specified calculators
 	CIOMRetrieve: () ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
 		@CIOMN = @params.n
@@ -72,6 +77,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		@CIOMClick()
 		return
 
+	# call syncData
 	CIOMSync: () ->
 		@params.n = @CIOMN
 		@params.mu = @CIOMMean
@@ -80,12 +86,16 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		@syncData(@params)
 		return
 
+	# if user press enter, then sync data parameters
+	# otherwise, do nothing
 	CIOMPress: (evt) ->
 		key = evt.which or evt.keyCode
 		if key is 13
 			@CIOMSync()
 		return
 
+	# update all sliders
+	# and check deployment of data mode
 	CIOMClick: () ->
 		# slider elements
 		CIOMNUI = $("#CIOMNUI")
