@@ -34,17 +34,15 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 		# receive data
-		@$scope.$on 'stats:CIOMdata', (event, data)=>
+		@$scope.$on 'stats:Data', (event, data)=>
 			@algorithmService.passDataByName(@selectedAlgorithm, data)
 			@loadData()
 
+
 	# load data to a specified calculator
 	loadData: () ->
-		if (@selectedAlgorithm is "CI for One Mean")
-			@CIOMRetrieve()
-			return
-		else
-			return
+		if (@selectedAlgorithm is "CI for One Mean") then @CIOMRetrieve()
+		else if (@selectedAlgorithm is "CI for One Proportion") then @CIOPRetrieve()
 
 	# outdated
 	update_algo: (evt) ->
@@ -151,3 +149,73 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 				sl.find('.ui-slider-handle').show()
 
 		return
+
+
+	# functions for CIOM only 
+	CIOPRetrieve:() ->
+		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
+		@CIOPP = @params.p
+		@CIOPN = @params.n
+		@CIOPT = @params.t
+		@CIOPTMax = @params.tMax
+		@zscore = @params.z
+		@upbound = @params.u
+		@lowbound = @params.l
+		@confinterval =@params.ci
+		@ciAlpha =  @params.a
+		@standarddev = @params.sd
+		@cilevel = 1.0 - @ciAlpha
+		@CIOPClick()
+
+	CIOPSync: () ->
+		@params.p = @CIOPP
+		@params.n = @CIOPN
+		@params.t = @CIOPT
+		@syncData(@params)
+
+	CIOPPress: (evt) ->
+		key = evt.which or evt.keyCode
+		if key is 13
+			@CIOMSync()
+		return
+
+	CIOPClick: () ->
+		#slider elements
+		CIOPNUI = $("#CIOPNUI")
+		CIOPTUI = $("#CIOPTUI")
+		sliders = [CIOPNUI, CIOPTUI]
+
+		CIOPNUI.slider(
+			value: @CIOPN,
+			min: 0,
+			max: @CIOPTMax,
+			range: 'min',
+			step: 1,
+			slide: (event, ui) =>
+				@CIOPN = ui.value
+				@CIOPSync()
+				@$scope.$apply()
+		)
+
+		CIOPTUI.slider(
+			value: @CIOPT,
+			min: 0,
+			max: @CIOPTMax,
+			range: 'min',
+			step: 1,
+			slide: (event, ui) =>
+				@CIOPT = ui.value
+				@CIOPSync()
+				@$scope.$apply()
+		)
+
+
+		if @deployed is true
+			for sl in sliders
+				sl.slider("disable")
+				sl.find('.ui-slider-handle').hide()
+		else
+			for sl in sliders
+				sl.slider("enable")
+				sl.find('.ui-slider-handle').show()
+		return  

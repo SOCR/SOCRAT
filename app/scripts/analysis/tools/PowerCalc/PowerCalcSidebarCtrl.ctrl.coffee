@@ -19,7 +19,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		# all alglorithms
 		@algorithms = ['Select',
 		'CI for One Proportion',
-		'DAHEE',
 		'Test of One Proportion',
 		'Test of Two Proportions',
 		'Pilot Study',
@@ -161,8 +160,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneProp()
 		else if (@selectedAlgorithm is 'Test of Two Proportions')
 			@twoProp()
-		else if (@selectedAlgorithm is 'DAHEE')
-			@numDic()
 
 	twoTest: ()->
 		@populations = {}
@@ -220,28 +217,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
 	
-
-	# ####create filter!
-	numDic: () ->
-		console.log @container
-		@populations = {}
-		@samplesize = @df.data.length
-
-		# if compare two different Variables, calculate separately
-		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
-			
-			#extract data from container to population
-			for subcat in Object.keys(@container)
-				@populations[subcat] = @container[subcat].length
-
-		console.log @populations
-		console.log @chosenSubCatsOne[0]
-		@msgService.broadcast 'powercalc:daheeData',
-			popl: @populations
-			total : @samplesize
-			target: @chosenSubCatsOne
-	
-
 
 	oneTest: () ->
 		@populations = {}

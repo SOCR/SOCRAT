@@ -5,12 +5,14 @@ BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffe
 module.exports = class StatsAlgorithms extends BaseModuleDataService
   @inject 'app_analysis_stats_msgService',
     'app_analysis_stats_CIOM',
+    'app_analysis_stats_CIOP',
     '$interval'
 
   initialize: ->
     @msgManager = @app_analysis_stats_msgService
     @CIOM = @app_analysis_stats_CIOM
-    @algorithms = [@CIOM]
+    @CIOP = @app_analysis_stats_CIOP
+    @algorithms = [@CIOM, @CIOP]
 
   ############
 

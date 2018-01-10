@@ -12,7 +12,8 @@ div(ng-controller="statsSidebarCtrl as sidebar")
 		)
 
 	.form-group(
-		ng-show= "sidebar.selectedAlgorithm == 'CI for One Mean'" 
+		ng-show= "sidebar.selectedAlgorithm == 'CI for One Mean' ||" + 
+		"sidebar.selectedAlgorithm == 'CI for One Proportion'"
 		ng-disabled="sidebar.deployed"
 	)
 		.row.form-inline.bootstrap-switch-square
@@ -58,6 +59,22 @@ div(ng-controller="statsSidebarCtrl as sidebar")
 			)
 		.form-group
 			label Subcategory
+			select.form-control(
+			ng-model="sidebar.chosenSubCatsOne"
+			ng-options="col for col in sidebar.subCategoricalCols"
+			ng-change="sidebar.run()"
+			)
+	fieldset(ng-show="sidebar.selectedAlgorithm == 'CI for One Proportion' && sidebar.deployed")
+		legend Data
+		.form-group
+			label Categorical Columns &nbsp;
+			select.form-control(
+			ng-model="sidebar.chosenCats"
+			ng-options="col for col in sidebar.categoricalCols"
+			ng-change="sidebar.update()"
+			)
+		.form-group
+			label SubCategories
 			select.form-control(
 			ng-model="sidebar.chosenSubCatsOne"
 			ng-options="col for col in sidebar.subCategoricalCols"

@@ -17,7 +17,8 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 
 		# all alglorithms
 		@algorithms = ['Select',
-		'CI for One Mean'
+		'CI for One Mean',
+		'CI for One Proportion'
 		]
 		# select first calculator
 		@selectedAlgorithm = @algorithms[1]
@@ -135,15 +136,9 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 
 	# call specified pre-processor
 	run: () ->
-		if (@selectedAlgorithm is 'CI for One Mean')
-			@CIOM()
-		return
+		if (@selectedAlgorithm is 'CI for One Mean') then @CIOM()
+		if (@selectedAlgorithm is 'CI for One Proportion') then @CIOP()
 
-
-	###
-		pre-process data when the specified calculator is CIOM
-		@return: TODO
-	###
 	CIOM: () ->
 		@populations = {}
 
@@ -165,8 +160,24 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 			for row in @df.data
 				@populations[@chosenColsOne].push(row[index1])
 
-		@msgService.broadcast 'stats:CIOMdata',
+		@msgService.broadcast 'stats:Data',
 			popl: @populations
+
+	CIOP: () ->
+		@populations = 0
+		@samplesize = @df.data.length
+
+		# if compare two different Variables, calculate separately
+		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
+			console.log(@container[@chosenSubCatsOne].length)
+			#extract data from container to population
+			@populations = @container[@chosenSubCatsOne].length
+			
+
+		@msgService.broadcast 'stats:Data',
+			popl: @populations
+			total : @samplesize
+			target: @chosenSubCatsOne
 
 	# collection of sliders that update sliders
 	slider: ->

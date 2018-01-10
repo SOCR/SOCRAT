@@ -9,7 +9,7 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 
-module.exports = class StatsCalcCIOM extends BaseService
+module.exports = class StatsCIOM extends BaseService
 	@inject 'app_analysis_stats_msgService',
 		'$timeout'
 
@@ -55,7 +55,6 @@ module.exports = class StatsCalcCIOM extends BaseService
 
 	setAlpha: (alphaIn) ->
 		@CIOMAlpha = alphaIn
-		console.log @CIOMAlpha
 		@CIOMUpdate()
 		return
 

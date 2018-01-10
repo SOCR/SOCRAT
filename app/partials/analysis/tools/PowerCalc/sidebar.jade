@@ -13,8 +13,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
 			.form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + 
 				"sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + 
 				"sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ 
-				"sidebar.selectedAlgorithm == 'Test of Two Proportions' ||" + 
-				"sidebar.selectedAlgorithm == 'DAHEE'" 
+				"sidebar.selectedAlgorithm == 'Test of Two Proportions' ||" 
 				ng-disabled="sidebar.deployed")
 				.row.form-inline.bootstrap-switch-square
 					label
@@ -249,22 +248,4 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
 				ng-options="col for col in sidebar.subCategoricalCols"
 				ng-change="sidebar.run()"
 				id="twoPropSubCat"
-				)
-		fieldset(ng-show="sidebar.selectedAlgorithm == 'DAHEE' && sidebar.deployed")
-			legend Data
-			.form-group
-				label Category &nbsp;
-				select.form-control(
-					ng-model="sidebar.chosenCats"
-					ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
-					ng-options="col for col in sidebar.categoricalCols"
-					ng-change="sidebar.update()"
-				)
-			.form-group
-				label SubCategories
-				select.form-control(
-				multiple
-				ng-model="sidebar.chosenSubCatsOne"
-				ng-options="col for col in sidebar.subCategoricalCols"
-				ng-change="sidebar.run()"
 				)
