@@ -18,7 +18,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		# all alglorithms
 		@algorithms = ['Select',
-		'CI for One Proportion',
 		'Test of One Proportion',
 		'Test of Two Proportions',
 		'Pilot Study',

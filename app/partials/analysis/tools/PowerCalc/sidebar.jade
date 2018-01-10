@@ -13,7 +13,7 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
 			.form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + 
 				"sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + 
 				"sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ 
-				"sidebar.selectedAlgorithm == 'Test of Two Proportions' ||" 
+				"sidebar.selectedAlgorithm == 'Test of Two Proportions' " 
 				ng-disabled="sidebar.deployed")
 				.row.form-inline.bootstrap-switch-square
 					label
