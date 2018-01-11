@@ -26,7 +26,7 @@ The technology stack used in this framework is described below.
   
 ## Commit message format
 
-We loosely follow [AngularJs Commit Message Format](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit):
+We loosely follow [AngularJs Commit Message Format](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines):
 
 First line of the git message has to be in the following format: `<type>(<scope>): <subject>`
 * `<type>` here is from [this list](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#type)
