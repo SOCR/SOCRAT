@@ -540,7 +540,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@oneTestMode = @params.mode
 		@oneTestModes = ["Two Tailed", "One Tailed"]
 		if @deployed is true then @compAgents = @params.comp
-		else @compAgents = "Sample"
+		else @compAgents = ["Sample", "Sample"]
 		@oneTestClick()
 		@oneTestGraph()
 		return
@@ -1007,7 +1007,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@twoTestT = parseFloat(@params.t.toPrecision(4))
 		@twoTestPvalue = parseFloat(@params.pvl.toPrecision(4))
 		@twoTestMode = @params.mode
-		@compAgents = @params.comp
+		if @deployed is true then @compAgents = ["S1:"+@params.comp[0], "S2:"+@params.comp[1]]
+		else @compAgents = ["Sample1", "Sample2"]		
 		@twoTestModes = ["Two Tailed", "One Tailed"]
 		@twoTestClick()
 		if (@twoTestN2 is Infinity) or (@twoTestN1 is Infinity)

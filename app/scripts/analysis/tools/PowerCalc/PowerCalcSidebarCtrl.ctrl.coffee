@@ -162,6 +162,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 	twoTest: ()->
 		@populations = {}
+		targets = []
 		if @chosenColsTwo.length is 1
 			$("#twoTestCat").prop("disabled", false)
 			$("#twoTestSubCat").prop("disabled", false)
@@ -193,6 +194,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@populations[elt] = []
 				for row in @container[elt]
 					@populations[elt].push(row[index])
+			targets = @chosenSubCatsTwo
 
 		else
 
@@ -212,13 +214,16 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			for row in @df.data
 				@populations[@chosenColsTwo[0]].push(row[index1])
 				@populations[@chosenColsTwo[1]].push(row[index2])
+			targets = @chosenColsTwo
 
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
+			target: targets
 	
 
 	oneTest: () ->
 		@populations = {}
+		targets = []
 		# if compare two different Variables, calculate separately
 		if (@chosenCats isnt "none") and (@chosenCats isnt undefined)
 
@@ -234,6 +239,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			for row in @container[@chosenSubCatsOne]
 				@populations[@chosenSubCatsOne].push(row[index])
 
+			targets = [@chosenSubCatsOne, ""]
 		else
 			# extract data from data to population
 			index1 = @df.header.indexOf(@chosenColsOne)
@@ -241,10 +247,10 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			for row in @df.data
 				@populations[@chosenColsOne].push(row[index1])
 
-	
+			targets = [@chosenColsOne, ""]
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
-			target: @curTarget
+			target: targets
 
 
 	oneProp: () ->

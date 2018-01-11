@@ -512,18 +512,18 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 					tooltip-placement="bottom"
 					)
 				power-calc-viz
-					.form-inline
-						label Power: &nbsp
-							input.form-control.input-sm.flat(
-								ng-model="mainArea.twoTestPower"
-								ng-click="mainArea.twoTestCalcPower()"
-								ng-keypress="mainArea.twoTestPress($event)"
-								ng-disabled="mainArea.deployed"
-								type="number"
-								step="0.0001"
-								name='twoTestPower'
-							)
-						#twoTestPowerUI
+				.form-inline
+					label Power: &nbsp
+						input.form-control.input-sm.flat(
+							ng-model="mainArea.twoTestPower"
+							ng-click="mainArea.twoTestCalcPower()"
+							ng-keypress="mainArea.twoTestPress($event)"
+							ng-disabled="mainArea.deployed"
+							type="number"
+							step="0.0001"
+							name='twoTestPower'
+						)
+					#twoTestPowerUI
 			.col-md-4
 				.form-inline
 					label Mode: &nbsp;
