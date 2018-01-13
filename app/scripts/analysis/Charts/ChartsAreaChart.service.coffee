@@ -27,6 +27,10 @@ module.exports = class ChartsAreaChart extends BaseService
 
   drawArea: (height,width,_graph, data, labels) ->
 
+    for item in data
+      item["x_vals"] = item["x"]
+      item["y_vals"] = item["y"]
+
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "width": 500,
@@ -35,16 +39,15 @@ module.exports = class ChartsAreaChart extends BaseService
       "mark": "area",
       "encoding": {
         "x": {
-          "field": "x",
+          "field": "x_vals",
           "type": "temporal",
           "axis": {"title": labels.xLab.value},
         },
         "y": {
           "aggregate": "sum",
-          "field": "y",
+          "field": "y_vals",
           "type": "quantitative",
-          "axis": null,
-          "title": labels.yLab.value
+          "axis": {"title": labels.yLab.value},
         }
       }
     }
