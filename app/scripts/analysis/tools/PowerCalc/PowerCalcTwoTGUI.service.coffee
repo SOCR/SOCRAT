@@ -18,6 +18,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     # dependecies
     @distribution = require 'distributome'
     @msgService = @app_analysis_powerCalc_msgService
+    @jStat = require("jStat").jStat
 
     @distanceFromMean = 5
     @SIGNIFICANT = 5
@@ -190,20 +191,20 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     return
 
   twoTestPowerTon: () ->
-    kappa = @twoTestN1 / @twoTestN2
+    kappa = 1
     stdv = Math.sqrt(Math.pow(@twoTestSigma1,2) + Math.pow(@twoTestSigma2,2))
     twoTestvar1 = Math.pow(@twoTestSigma1,2)
     twoTestvar2 = Math.pow(@twoTestSigma2,2)
+    if  @twoTestMean1 is @twoTestMean2 
+      console.log ("TwoTest: sample mean same, cannot update size")
+      return
     # calculate n1 or n2 from power based on different mdoes
     if @twoTestMode is "Two Tailed"
       @twoTestN2 = (1 + 1 / kappa)*Math.pow(stdv*(@distribution.qnorm(1-@twoTestAlpha / 2)+@distribution.qnorm(@twoTestPower))/(@twoTestMean1-@twoTestMean2),2)
-      @twoTestN2 = Math.round(@twoTestN2)
-      @twoTestMaxN2 = Math.max(@twoTestMaxN2, @twoTestN2)
-      # @parameters.n2 = @twoTestn2
+      @twoTestN2 = Math.round(@twoTestN2)  
     else
-      @twoTestN1=(twoTestvar1 + twoTestvar2 / kappa) * Math.pow((@distribution.qnorm(1-@twoTestAlpha)+@distribution.qnorm(@twoTestPower))/(@twoTestMean1-@twoTestMean2),2)
-      @twoTestN1 = Math.round(@twoTestN1)
-      @twoTestMaxN2 = Math.max(@twoTestMaxN1, @twoTestN1)
+      @twoTestN2=(twoTestvar1 + twoTestvar2 / kappa) * Math.pow((@distribution.qnorm(1-@twoTestAlpha)+@distribution.qnorm(@twoTestPower))/(@twoTestMean1-@twoTestMean2),2)
+      @twoTestN2 = Math.round(@twoTestN1)
       # @parameters.n1 = @twoTestn1
     @twoTestCheckRange()
     @twoTestTTest()
@@ -219,31 +220,12 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @twoTestPvalue = Math.max(0, @twoTestPvalue)
     @twoTestPvalue = Math.min(1, @twoTestPvalue)
 
-  extract: (data, variable) ->
-    tmp = []
-    for d in data
-      tmp.push +d[variable]
-    tmp
 
   getRightBound: (middle,step) ->
     return middle + step * @distanceFromMean
 
   getLeftBound: (middle,step) ->
     return middle - step * @distanceFromMean
-
-  sort: (values) ->
-    values.sort (a, b) -> a-b
-
-  getVariance: (values, mean) ->
-    temp = 0
-    numberOfValues = values.length
-    while( numberOfValues--)
-      temp += Math.pow( (parseInt(values[numberOfValues]) - mean), 2 )
-
-    return temp / values.length
-
-  getSum: (values) ->
-    values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
 
   getGaussianFunctionPoints: (mean, std, leftBound, rightBound) ->
     data = []
@@ -252,35 +234,6 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
         x: i
         y: (1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * Math.pow(std, 2))))
     data
-
-  getMean: (valueSum, numberOfOccurrences) ->
-    valueSum / numberOfOccurrences
-
-  getZ: (x, mean, standardDerivation) ->
-    (x - mean) / standardDerivation
-
-  getWeightedValues: (values) ->
-    weightedValues= {}
-    data= []
-    lengthValues = values.length
-    for i in [0...lengthValues] by 1
-      label = values[i].toString()
-      if(weightedValues[label])
-        weightedValues[label].weight++
-      else
-        weightedValues[label]={weight :1,value :label}
-        data.push(weightedValues[label])
-    return data
-
-  getRandomNumber: (min,max) ->
-    Math.round((max-min) * Math.random() + min)
-
-  getRandomValueArray: (data) ->
-    values = []
-    length = data.length
-    for i in [1...length]
-      values.push data[Math.floor(Math.random() * data.length)]
-    return values
 
   getChartData: () ->
     mean1 = @twoTestMean1

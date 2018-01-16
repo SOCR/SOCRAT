@@ -497,7 +497,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			step: 0.0001
 			slide: (event, ui) =>
 				@alpha = ui.value
-				console.log @alpha
 				@msgService.broadcast 'powercalc:alpha',
 					alpha_in: @alpha
 		)
@@ -539,7 +538,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 	changeValue: (evt) ->
 		name = evt.target.name
 		key = evt.which or evt.keyCode
-		console.log key
 		if key is 13
 			@slider()
 			@run()

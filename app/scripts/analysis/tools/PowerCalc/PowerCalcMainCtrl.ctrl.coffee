@@ -563,7 +563,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@params.power = @oneTestPower
 		@params.mode = @oneTestMode
 		@syncPower(@params)
-		@loadData()
 		return
 
 	oneTestPress: (evt) ->
@@ -575,7 +574,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		return
 
 	oneTestClick: () ->
-
 		# slider elements
 		oneTestNUI = $("#oneTestNUI")
 		oneTestMean0UI = $("#oneTestMean0UI")
@@ -630,7 +628,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		oneTestPowerUI.slider(
 			value: @oneTestPower,
 			min: 0.0001,
-			max: 0.2,
+			max: 0.9999,
 			range: "min",
 			step: 0.0001,
 			slide:  (event, ui) =>
@@ -1030,14 +1028,12 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@params.power = @twoTestPower
 		@params.mode = @twoTestMode
 		@syncData(@params)
-		@loadData()
 		return
 
 	twoTestCalcPower: () ->
 		@params.power = @twoTestPower
 		@params.mode = @twoTestMode
 		@syncPower(@params)
-		@loadData()
 		return
 
 	twoTestPress: (evt) ->
