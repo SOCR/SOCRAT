@@ -68,7 +68,8 @@ module.exports = class PowerCalcOneProp extends BaseService
     return @name
 
   getParams: () ->
-    @parameters =
+    # console.log @onePropN
+    return @parameters =
       p: @onePropP
       p0: @onePropP0
       pMax: @onePropPMax
@@ -131,10 +132,13 @@ module.exports = class PowerCalcOneProp extends BaseService
 
   onePropPowerTon: () ->
     # calculate n1 or n2 from power based on different mdoes
+    if  @onePropP is @onePropP0 
+      console.log ("oneProp: sample proportion, cannot update size")
+      return
     if @mode is "Two Sided"
       @onePropN = @onePropP*(1-@onePropP)*Math.pow(((@distribution.qnorm(1-@onePropAlpha / 2)+@distribution.qnorm(@onePropPower))/(@onePropP-@onePropP0)),2)
     else
-      @onePropN = @onePropP0*(1-@onePropP0)*Math.pow(((@distribution.qnorm(1-@onePropAlpha)+@distribution.qnorm(@onePropAlpha)*Math.sqrt(@onePropP*(1-@onrPropP)/ @onePropP0/ (1-@onePropP0)))/(@onePropP-@onePropP0)),2)
+      @onePropN = @onePropP0*(1-@onePropP0)*Math.pow(((@distribution.qnorm(1-@onePropAlpha)+@distribution.qnorm(@onePropPower)*Math.sqrt(@onePropP*(1-@onePropP)/ @onePropP0/ (1-@onePropP0)))/(@onePropP-@onePropP0)),2)
     @onePropPV()
     @onePropCheckRange()
     return
@@ -147,7 +151,6 @@ module.exports = class PowerCalcOneProp extends BaseService
     return 0
 
   getChartData: () ->
-    console.log [@onePropP]
     return [@onePropP]
 
   tProb: ($n, $x) ->

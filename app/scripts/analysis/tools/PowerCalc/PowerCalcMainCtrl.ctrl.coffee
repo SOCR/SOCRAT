@@ -281,6 +281,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 	onePropRetrieve: () ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
 		@onePropN = @params.n
+		# console.log @params
 		@onePropNMax = @params.nMax
 		@onePropP = parseFloat(@params.p.toPrecision(4))
 		@onePropP0 = parseFloat(@params.p0.toPrecision(4))
@@ -365,7 +366,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		onePropPowerUI.slider(
 			value: @onePropPower,
 			min: 0,
-			max: 1,
+			max: 0.9999,
 			range: "min",
 			step: 0.001,
 			slide: (event, ui) =>

@@ -82,7 +82,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 					label Power: &nbsp
 						input.form-control.input-sm.flat(
 						ng-model="mainArea.onePropPower"
-						ng-click="mainArea.onePropCalcPower()"
+						ng-click="mainArea.onePropCalcPower()" 
 						ng-keypress="mainArea.onePropPress($event)"
 						ng-disabled="mainArea.deployed"
 						type="number"
