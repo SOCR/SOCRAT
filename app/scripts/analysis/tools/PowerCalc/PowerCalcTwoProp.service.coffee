@@ -137,6 +137,9 @@ module.exports = class PowerCalcTwoProp extends BaseService
 
   twoPropPowerTon: () ->
     # calculate n1 or n2 from power based on different mdoes
+    if  @twoPropP1 is @twoPropP2 
+      console.log ("twoProp: sample proportion, cannot update size")
+      return
     kappa = 1
     if @mode is "Two Sided"
       @twoPropN2=(@twoPropP1*(1-@twoPropP1) / kappa + @twoPropP2*(1-@twoPropP2))*Math.pow(((@distribution.qnorm(1-@twoPropAlpha / 2) + @distribution.qnorm(@twoPropPower))/(@twoPropP1-@twoPropP2)),2)
