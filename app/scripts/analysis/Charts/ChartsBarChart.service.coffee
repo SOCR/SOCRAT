@@ -31,7 +31,6 @@ module.exports = class ChartsBarChart extends BaseService
       item["x_vals"] = item["x"]
       item["y_vals"] = item["y"]
 
-    console.log(data)
     if data[0]["z"]
       vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",

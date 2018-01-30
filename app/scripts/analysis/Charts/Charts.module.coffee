@@ -14,7 +14,6 @@ module.exports = charts = new Module
       'app_analysis_charts_msgService': require 'scripts/analysis/Charts/ChartsMsgService.service.coffee'
       'app_analysis_charts_dataService': require 'scripts/analysis/Charts/ChartsDataService.service.coffee'
       'app_analysis_charts_areaChart': require 'scripts/analysis/Charts/ChartsAreaChart.service.coffee'
-      'app_analysis_charts_areaTrellisChart': require 'scripts/analysis/Charts/ChartsAreaTrellisChart.service.coffee'
       'app_analysis_charts_barChart': require 'scripts/analysis/Charts/ChartsBarChart.service.coffee'
       'app_analysis_charts_trellisChart': require 'scripts/analysis/Charts/ChartsTrellisChart.service.coffee'
       'app_analysis_charts_bivariateLineChart': require 'scripts/analysis/Charts/ChartsBivariateLineChart.service.coffee'
@@ -32,6 +31,7 @@ module.exports = charts = new Module
       'app_analysis_charts_sendData': require 'scripts/analysis/Charts/ChartsSendData.service.coffee'
       'app_analysis_charts_dataTransform': require 'scripts/analysis/Charts/ChartsDataTransform.service.coffee'
       'app_analysis_charts_checkTime': require 'scripts/analysis/Charts/ChartsCheckTime.service.coffee'
+      'app_analysis_charts_areaTrellisChart': require 'scripts/analysis/Charts/ChartsAreaTrellisChart.service.coffee'
 
     controllers:
       'ChartsSidebarCtrl': require 'scripts/analysis/Charts/ChartsSidebarCtrl.controller.coffee'

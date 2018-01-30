@@ -23,7 +23,7 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_checkTime'
 
   initialize: ->
-    @areaTrellis = @app_analysis_charts_charts_areaTrellisChart
+    @areaTrellis = @app_analysis_charts_areaTrellisChart
     @bar = @app_analysis_charts_barChart
     @bubble = @app_analysis_charts_bubbleChart
     @histogram = @app_analysis_charts_histogram
