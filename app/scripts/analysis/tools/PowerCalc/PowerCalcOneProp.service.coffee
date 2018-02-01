@@ -18,7 +18,6 @@ module.exports = class PowerCalcOneProp extends BaseService
     @SIGNIFICANT = 5
     @populations = null
     @distribution = require 'distributome'
-    @jstats = require 'jstat'
     @msgService = @app_analysis_powerCalc_msgService
     @name = 'Test of One Proportion'
 

@@ -28,10 +28,9 @@ require 'styles/app.less'
 require 'd3'
 
 # TODO: consider relocating to Charts
-require("expose?vg!vega")
+require("expose?vega!vega")
 require("expose?vl!vega-lite")
-require 'vega-embed/vega-embed.js'
-require 'compassql'
+require 'vega-embed'
 
 # create app-level modules
 angular.module 'app_services', []

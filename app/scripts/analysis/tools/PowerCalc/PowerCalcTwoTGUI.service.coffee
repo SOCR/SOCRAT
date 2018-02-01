@@ -18,7 +18,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     # dependecies
     @distribution = require 'distributome'
     @msgService = @app_analysis_powerCalc_msgService
-    @jStat = require("jStat").jStat
+    @jStat = require("jstat").jStat
 
     @distanceFromMean = 5
     @SIGNIFICANT = 5
@@ -261,6 +261,19 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
       data: data
       bounds: bounds
     }
+
+  getSum: (values) ->
+    values.reduce (previousValue, currentValue) -> parseFloat(previousValue) + parseFloat(currentValue)
+
+  getMean: (valueSum, numberOfOccurrences) ->
+    valueSum / numberOfOccurrences
+
+  getVariance: (values, mean) ->
+    temp = 0
+    numberOfValues = values.length
+    while( numberOfValues--)
+      temp += Math.pow( (parseInt(values[numberOfValues]) - mean), 2 )
+    return temp / values.length
 
   tProb: ($n, $x) ->
     if $n <= 0

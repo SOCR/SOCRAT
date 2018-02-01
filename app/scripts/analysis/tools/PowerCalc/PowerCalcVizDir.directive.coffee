@@ -182,24 +182,7 @@ module.exports = class PowerCalcVizDiv extends BaseDirective
             .style("opacity", 0.7)
             svg.selectAll("#Label").remove()
             )
-        
 
-        # svg.selectAll("path")
-          # .attr("fill", "red")
-          # .attr("mouseover", ()->svg.select("#path0").attr("fill","red"))
-          # .attr("mouseout", ()->svg.select("#path0").attr("fill","black"))
-
-        # svg.selectAll("path")
-        #   .attr("fill", "red")
-
-        # for datum, k in data
-        #   svg.append('path')
-        #     .attr('d', lineGen(datum))
-        #     .attr('id', 'path'+k)
-        #     .attr('stroke', 'black')
-        #     .attr('stroke-width', 1)
-        #     .attr('fill', color(k))
-        #     .style('opacity', 0.75)
 
 
         # x-axis

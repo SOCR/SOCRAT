@@ -15,7 +15,7 @@ module.exports = class StatsCIOP extends BaseService
 
   initialize: ->
    @msgService = @app_analysis_stats_msgService
-   @jstat = require('jStat').jStat
+   @jStat = require('jstat').jStat
    @name = 'CI for One Proportion'
    @compAgents=[]
    @proportion = 0.2
@@ -79,7 +79,7 @@ module.exports = class StatsCIOP extends BaseService
   update: () ->
     @proportion = @success/@size
     @standarddev = Math.sqrt((@proportion*(1-@proportion))/@size)
-    @confinterval = @jstat.tci(@proportion, @alpha, @standarddev, @size)
+    @confinterval = @jStat.tci(@proportion, @alpha, @standarddev, @size)
     @upbound = @confinterval[1]
     @lowbound = @confinterval[0]
     @sizeMax = Math.max(@size, @sizeMax)
