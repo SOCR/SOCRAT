@@ -15,10 +15,6 @@ to the project, follow these steps to setup your environment.
 
 First, install [Node.js](http://nodejs.org/) if you haven't yet. `npm` is the package manager for `Node.js` and comes bundled with it.
 
-Install Webpack:
-
-    $> sudo npm install webpack -g
-
 Clone the repository:
 
     $> git clone https://github.com/SOCR/SOCRAT.git

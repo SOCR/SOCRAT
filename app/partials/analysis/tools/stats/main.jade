@@ -1,5 +1,5 @@
 div(ng-controller="statsMainCtrl as mainArea")
-	
+
 	div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
 		h6 Confidence Interval for One Mean &nbsp;
 			span.glyphicon.glyphicon-question-sign(
@@ -8,6 +8,8 @@ div(ng-controller="statsMainCtrl as mainArea")
 				tooltip-placement="bottom"
 			)
 		.row
+			.form-inline
+				#vis
 			.form-inline
 				label(style='margin-top:30px; margin-bottom:10px;') Mode: &nbsp;
 				select.form-control(
@@ -81,7 +83,7 @@ div(ng-controller="statsMainCtrl as mainArea")
 					name='CIOPT'
 				)
 				#CIOPTUI
-				
+
 		.row
 			h6 Interpretation: &nbsp;
 			b We are {{mainArea.cilevel}}% confident that the true value of proportion lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
