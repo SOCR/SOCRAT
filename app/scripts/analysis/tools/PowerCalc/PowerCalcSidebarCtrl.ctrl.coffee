@@ -55,7 +55,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@thresh = 0
 		@thresh1 = 0
 		@thresh2 = 0
-		@jstat = require('jStat').jStat
+		@jstat = require('jstat').jStat
 
 		# modes
 		@deployed = false

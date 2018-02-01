@@ -14,7 +14,7 @@ module.exports = class StatsCIOM extends BaseService
 		'$timeout'
 
 	initialize: ->
-		@jStat = require("jStat").jStat
+		@jStat = require("jstat").jStat
 		@msgService = @app_analysis_stats_msgService
 		@name = 'CI for One Mean'
 		@populations = null
