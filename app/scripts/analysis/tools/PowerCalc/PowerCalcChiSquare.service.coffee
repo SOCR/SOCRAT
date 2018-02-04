@@ -45,6 +45,15 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
   getParams: () ->
     @parameters = 
       power: @chiSqrPower
+      chi2: @chiSquareChi2
+      chi2Max: @chiSquareChi2Max
+      proN: @chiSquareProN
+      proNMax: @chiSquareProNMax
+      n: @chiSquareN
+      nMax: @chiSquareNMax
+      df: @chiSquareDf
+      dfMax: @chiSquareDfMax
+
 
   setParams: (newParams) ->
     @chiSquareChi2 = newParams.chi2
