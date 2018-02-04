@@ -12,6 +12,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
   initialize: ->
     @dataService = @app_analysis_cluster_dataService
     @msgService = @app_analysis_cluster_msgService
+    @clusterRunning = on
 #     @algorithmsService = @app_analysis_cluster_algorithms
 #     @algorithms = @algorithmsService.getNames()
 #     @DATA_TYPES = @dataService.getDataTypes()

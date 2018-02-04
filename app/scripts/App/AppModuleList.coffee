@@ -39,14 +39,14 @@ module.exports = class AppModuleList
   ,
     require 'scripts/analysis/Charts/Charts.module.coffee'
   ,
-    require 'scripts/analysis/MyModule/MyModule.module.coffee'
-  ,
     Tools: [
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
     ,
-      require 'scripts/analysis/tools/PowerCalc/PowerCalc.module.coffee'
+      require 'scripts/analysis/tools/MyModule/MyModule.module.coffee'
+    # ,
+      # require 'scripts/analysis/tools/PowerCalc/PowerCalc.module.coffee'
     ]
   ]
 
