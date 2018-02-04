@@ -4,14 +4,14 @@ Module = require 'scripts/BaseClasses/BaseModule.coffee'
 # export instance of new module
 module.exports = myModule = new Module
   # module id for registration
-  id: 'socrat_analysis_mymodule'
+  id: 'app_analysis_mymodule'
   # module components
   components:
     services:
-      'socrat_analysis_mymodule_initService': require 'scripts/analysis/tools/MyModule/MyModuleInit.service.coffee'
-      'socrat_analysis_mymodule_msgService': require 'scripts/analysis/tools/MyModule/MyModuleMsgService.service.coffee'
-      'socrat_analysis_mymodule_dataService': require 'scripts/analysis/tools/MyModule/MyModuleDataService.service.coffee'
-      'socrat_analysis_mymodule_myService': require 'scripts/analysis/tools/MyModule/MyModuleMyService.service.coffee'
+      'app_analysis_mymodule_initService': require 'scripts/analysis/tools/MyModule/MyModuleInit.service.coffee'
+      'app_analysis_mymodule_msgService': require 'scripts/analysis/tools/MyModule/MyModuleMsgService.service.coffee'
+      'app_analysis_mymodule_dataService': require 'scripts/analysis/tools/MyModule/MyModuleDataService.service.coffee'
+      'app_analysis_mymodule_myService': require 'scripts/analysis/tools/MyModule/MyModuleMyService.service.coffee'
     controllers:
       'mymoduleMainCtrl': require 'scripts/analysis/tools/MyModule/MyModuleMainCtrl.ctrl.coffee'
       'mymoduleSidebarCtrl': require 'scripts/analysis/tools/MyModule/MyModuleSidebarCtrl.ctrl.coffee'

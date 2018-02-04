@@ -114,6 +114,16 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc'
       ]
+    ,
+      msgFrom: 'mymodule:getData'
+      scopeFrom: ['app_analysis_mymodule']
+      msgTo: 'database:getData'
+      scopeTo: ['app_analysis_database']
+    ,
+      msgFrom: 'database:receiveData'
+      scopeFrom: ['app_analysis_database']
+      msgTo: 'mymodule:receiveData'
+      scopeTo: ['app_analysis_mymodule']
     ]
 
   getMap: ->
