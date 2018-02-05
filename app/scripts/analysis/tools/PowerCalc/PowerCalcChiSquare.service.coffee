@@ -17,7 +17,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
 
     # dependecies
     @msgService = @app_analysis_powerCalc_msgService
-    @name = 'Two-sample t test (general case)'
+    @name = 'Generic chi-square test'
     @powerCalc = require 'powercalc'
 
     #variables needed for chisquare
@@ -75,7 +75,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
   update: ()->
     input = 
       chi2: @chiSquareChi2
-      propN: @chiSquareProN
+      proN: @chiSquareProN
       n: @chiSquareN
       df: @chiSquareDf
       alpha: @chiSquareAlpha

@@ -134,7 +134,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		else if (@selectedAlgorithm is "Test of Two Proportions")
 			@twoPropRetrieve()
 			return
-		else if (@selectedAlgorithm is "Two-sample t test (general case)")
+		else if (@selectedAlgorithm is "Generic chi-square test")
 			@chi2Retrieve()
 		else 
 			console.log("Unknown algorithms selected")
@@ -811,10 +811,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
 	chi2Retrieve: () ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
-		@chi2Power = @params.power
+		@chi2Power = parseFloat(@params.power.toPrecision(4))
 		@chi2chi2 = @params.chi2
 		@chi2chi2Max = @params.chi2Max
-		@Chi2ProN = @params.proN
+		@chi2ProN = @params.proN
 		@chi2ProNMax = @params.proNMax
 		@chi2N = @params.n
 		@chi2NMax = @params.nMax
@@ -839,17 +839,19 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@chi2chi2 = ui.value
 				@chi2Sync()
+				@$scope.$apply()
 		)
 
 		chi2ProNUI.slider(
-			value: @Chi2ProN,
+			value: @chi2ProN,
 			min: 1,
 			max: @chi2ProNMax,
 			range: "min",
 			step: 1,
 			slide: (event, ui) =>
-				@Chi2ProN = ui.value
+				@chi2ProN = ui.value
 				@chi2Sync()
+				@$scope.$apply()
 		)
 
 		chi2NUI.slider(
@@ -861,6 +863,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@chi2N = ui.value
 				@chi2Sync()
+				@$scope.$apply()
 		)
 
 		chi2DfUI.slider(
@@ -872,6 +875,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			slide: (event, ui) =>
 				@chi2Df = ui.value
 				@chi2Sync()
+				@$scope.$apply()
 		)
 
 		chi2PowerUI.slider(
@@ -881,18 +885,19 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			range: "min",
 			step: 1,
 			slide: (event, ui) =>
-				
+				@chi2Power = ui.value
+				@$scope.$apply()
 		)
 
 		return
 
 	chi2Sync: () ->
-		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
-		@params.chi2 = @chi2chi2
-		@params.proN = @Chi2ProN
-		@params.n = @chi2N
-		@params.df = @chi2Df
-		@syncData(@params) 
+		params = @algorithmService.getParamsByName(@selectedAlgorithm)
+		params.chi2 = @chi2chi2
+		params.proN = @chi2ProN
+		params.n = @chi2N
+		params.df = @chi2Df
+		@syncData(params) 
 		return
 
 	#functions for SimplePoissonGUI only

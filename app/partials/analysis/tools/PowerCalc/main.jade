@@ -1,73 +1,5 @@
 div(ng-controller="powerCalcMainCtrl as mainArea")
 
-	div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
-		h3 CI for One Proportion
-		p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
-		div(style='width:100%;overflow:hidden;height:100%;')
-			input(type='hidden', name='id', value='1')
-			div
-				div(style='line-height:10px;display:inline')
-					input#isFinite(style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;', type='checkbox', name='isFinite', ng-click='mainArea.cfap_clk($event);')
-					| Finite Population &nbsp &nbsp;
-				div#showN(style='margin-left=40%;display:inline')
-					| N: &nbsp
-					input#N(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='N', ng-mouseleave='mainArea.cfap_valiad($event);')
-					span#Nerror
-			div(style='margin-top:10px;')
-				div(style='display:inline')
-					input#worstCase(type='checkbox',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='worstCase', ng-click='mainArea.cfap_clk($event);')
-					| Worst case &nbsp &nbsp;
-				div(style='display:inline')
-					| pi: &nbsp;
-					input#pi(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' size='10', name='pi', ng-mouseleave='mainArea.cfap_valiad($event);')
-					span#pierror
-			div(style='margin-top:20px;')
-				div(style='display:inline')
-					| Confidence Level: &nbsp
-					input#conf(name='conf',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.95', ng-mouseleave="mainArea.cfap_presubmit('1','conf',$event);")
-				div(style='display:inline')
-					#slider(uib-tooltip="Manipulate this bar to adjust confidence level" tooltip-placement="top")
-			div
-				div(style='display:inline')
-					| Margin of Error: &nbsp
-					input#me(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('ME',$event);")
-				div(style='display:inline')
-					#meui(uib-tooltip="Manipulate this bar to adjust margin of error" tooltip-placement="top")
-			div
-				div(style='display:inline')
-					| n : &nbsp
-					input#n(type='text', style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;', ng-mouseleave="mainArea.cfap_changeSlider('n',$event);")
-				div(style='display:inline')
-					#nui(uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
-			div
-				input#cfapH(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.cfap_show_help();')
-				div(ng-show='mainArea.cfap_help == true;')
-					p The confidence interval is of the form p +/- ME, where p is the sample proportion and ME is the margin of error:
-					p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} $  &nbsp;&nbsp;&nbsp; (infinite population)
-					p $ ME = z * \sqrt{\frac{p*(1-p)}{(n-1)}} * \sqrt{1- \frac{n}{N}} $  &nbsp;&nbsp;&nbsp; (finite population)
-					p where z is a critical value from the normal distribution, p is the sample proportion, n is the sample size, and N is the population size.
-					br
-					p <b>Using The Graphical Interface</b>
-					p The dialog is designed such that a sample size n is computed whenever you change any of the other input values.  If you change n, a new ME is computed (using sigma in place of s in the above formulas).
-					br
-					p <b>Finite Population</b>
-					p If "Finite population" is checked, calculations are based on the population size N entered in the adjacent input field. If the box is unchecked, the "N" field is hidden, and calculations are based on an infinite population.
-					br
-					p <b>Worst Case</b>
-					p If "Worst case" is checked, computations are based on the assumption that the true sample proportion, pi, is .5.  If it is not checked, then a pi value other than .5 may be entered in the field to the right of the checkbox.
-					br
-					p <b>Confidence</b>
-					p Choose the desired confidence coefficient for the ME.  This determines the value of z.
-					br
-					p <b>Margin of Error</b>
-					p Enter the target value of the margin of error here.  Note that the actual value achieved after you collect the data will be more or less than this amount, because it will be based on p (estimated from the data) rather than pi.
-					br
-					p <b>n</b>
-					p Enter the sample size here if you want to see what margin of error is achieved with that size sample.  When you change n, it is rounded to the nearest integer; otherwise, n is not rounded
-					br
-					p <b>Graphics</b>
-					p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's 
-
 	div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
 		.row
 			.col-md-8
@@ -141,7 +73,6 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 					.form-inline
 						label p-value: &nbsp;
 							b {{mainArea.onePropPvalue}}
-
 
 	div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
 		.row
@@ -402,40 +333,55 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 	div(ng-show='mainArea.selectedAlgorithm == "Generic chi-square test"')
 		h3 Generic chi-square test
 		p <i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations</i>
-		h5 Prototype Data:
-		div
-			div(style='margin-left=40%;display:inline')
-				| Chi2*: &nbsp
-				input#proChi2g(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='proChi2', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
-		div(style='margin-top:20px;')
-			div(style='margin-left=40%;display:inline')
-				| n*: &nbsp
-				input#proNg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='proN', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
-		h5 Study Parameter
-		div(style='margin-top:20px;')
-			div(style='margin-left=40%;display:inline')
-				| df: &nbsp
-				input#dfg(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='df', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
-		div(style='margin-top:20px;')
-			div(style='margin-left=40%;display:inline')
-				| Alpha*: &nbsp
-				input#Alphag(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='Alpha', ng-mouseleave='mainArea.SimpleChi2GUI_valiad($event);')
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| n: &nbsp
-				input#ng(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimpleChi2GUI_changeSlider('n',$event);")
-			div(style='display:inline')
-				#nuig(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Power: &nbsp
-				input#Powerg(name='Power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimpleChi2GUI_changeSlider('Power',$event);")
-			div(style='display:inline')
-				#Poweruig(disabled uib-tooltip="Manipulate this bar to adjust power" tooltip-placement="top")
-		div
-			input#SimpleChi2GUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.SimpleChi2GUI_show_help();')
-			div(ng-show='mainArea.SimpleChi2GUI_help == true;')
-				p The prototype data should be fake data constructed to reflect the effect size of clinical or scientific importance.  Use the analysis you plan to do on these ake data to obtain the chi-square value Chi2* for the dialog.  The prototype data should include the expected frequencies (or whatever), but should not include random fluctuations
+		.row
+			h5 Prototype Date:
+			.form-inline
+				label Chi2*: &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.chi2chi2"
+					ng-change="mainArea.chi2Sync()"
+					type="number"
+					step="0.01"
+				)
+				#chi2chi2UI
+			.form-inline
+				label N*: &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.chi2ProN"
+					ng-change="mainArea.chi2Sync()"
+					type="number"
+					step="1"
+				)
+				#chi2ProNUI
+			h5 Study Parameter
+			.form-inline
+				label Degree of Freedom: &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.chi2Df"
+					ng-change="mainArea.chi2Sync()"
+					type="number"
+					step="1"
+				)
+				#chi2DfUI
+			.form-inline
+				label N: &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.chi2N"
+					ng-change="mainArea.chi2Sync()"
+					type="number"
+					step="1"
+				)
+				#chi2NUI
+			.form-inline
+				label Power: &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.chi2Power"
+					ng-change="mainArea.chi2Sync()"
+					type="number"
+					step="0.01"
+				)
+				#chi2PowerUI
+
 
 	div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
 		h3 Power of a Simple Poisson Test

@@ -499,6 +499,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@alpha = ui.value
 				@msgService.broadcast 'powercalc:alpha',
 					alpha_in: @alpha
+				@$scope.$apply()
 		)
 		onePropThreshUI.slider(
 			min: @MinMax[0]["min"]
