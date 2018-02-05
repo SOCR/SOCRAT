@@ -35,7 +35,7 @@
     "flatui-radiocheck": "~0.1.2",
     "handsontable": "~0.26.0",
     "holderjs": "~2.9.3",
-    "jquery": "~2.1.0",
+    "jquery": "~3.0.0",
     "jquery-highlight": "~3.3.0",
     "jquery-ui": "~1.12.0",
     "jquery-ui-layout": "git+https://github.com/benosman/layout.git",
