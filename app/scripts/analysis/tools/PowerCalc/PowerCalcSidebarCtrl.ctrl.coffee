@@ -17,15 +17,15 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 		# choose algorithms
 		@algorithms = ['Select',
-		 'CI for One Proportion',
-		 'CI for One Mean',
-		 'Test of One Proportion',
-		 'One-Sample (or Paired) t Test',
-		 'Pilot Study',
-		 'R-square (multiple correlation)',
-		 'Generic chi-square test',
-		 'Power of a Simple Poisson Test',
-		 'Two-sample t test (general case)']
+			'CI for One Proportion',
+			'CI for One Mean',
+			'Test of One Proportion',
+			'One-Sample (or Paired) t Test',
+			'Pilot Study',
+			'R-square (multiple correlation)',
+			'Generic chi-square test',
+			'Power of a Simple Poisson Test',
+			'Two-sample t test (general case)']
 		@powercalcRunning = off
 		@algParams = null
 		@selectedAlgorithm = @algorithms[9]
@@ -38,8 +38,8 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@ready = off
 		@running = 'hidden'
 		@uniqueLabels =
-		  labelCol: null
-		  num: null
+			labelCol: null
+			num: null
 		@algParams = null
 
 		# dataset
@@ -254,10 +254,10 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 					alpha_in: @tTestAlpha
 		)
 
-  changeValue: (evt) ->
-    name = evt.target.name
-    key = evt.which or evt.keyCode
-    if key is 13
-      @tTestAlpha = parseFloat(val)
-    @slidebar()
-    return
+	changeValue: (evt) ->
+		name = evt.target.name
+		key = evt.which or evt.keyCode
+		if key is 13
+			@tTestAlpha = parseFloat(val)
+			@slidebar()
+		return
