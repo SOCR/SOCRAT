@@ -35,8 +35,6 @@ module.exports = class AppConfig
           if moduleComponents.services
             # adding services
             for serviceName, Service of moduleComponents.services
-              console.log serviceName
-              console.log Service
               Service.register angModule, serviceName
               console.log 'AppConfig: created service ' + serviceName
               # add init services to app's run block

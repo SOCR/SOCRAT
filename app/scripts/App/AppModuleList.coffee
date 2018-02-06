@@ -56,16 +56,12 @@ module.exports = class AppModuleList
     tools: @tools
 
   getAnalysisModules: ->
-    console.log('get analysis MODULES')
-    console.log(@analysis)
     @analysis
 
   listAnalysisModules: ->
     modules = []
     for m in @analysis
       m = if m instanceof Module then [m.id] else (v.map((e) -> e.id) for k, v of m)[0]
-      console.log('analysis module:')
-      console.log(m)
       modules = modules.concat m
     modules
 
