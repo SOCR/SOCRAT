@@ -2,27 +2,23 @@
 
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class PowerCalcAlgorithms extends BaseModuleDataService
-  @inject 'app_analysis_powerCalc_msgService',
-    'app_analysis_powerCalc_twoTest',
-    'app_analysis_powerCalc_oneTest',
-    'app_analysis_powerCalc_oneProp',
-    'app_analysis_powerCalc_twoProp',
+module.exports = class StatsAlgorithms extends BaseModuleDataService
+  @inject 'app_analysis_stats_msgService',
+    'app_analysis_stats_CIOM',
+    'app_analysis_stats_CIOP',
     '$interval'
 
   initialize: ->
-    @msgManager = @app_analysis_powerCalc_msgService
-    @twoTest = @app_analysis_powerCalc_twoTest
-    @oneTest = @app_analysis_powerCalc_oneTest
-    @oneProp = @app_analysis_powerCalc_oneProp
-    @twoProp = @app_analysis_powerCalc_twoProp
-    @algorithms = [@twoTest, @oneTest, @oneProp, @twoProp]
+    @msgManager = @app_analysis_stats_msgService
+    @CIOM = @app_analysis_stats_CIOM
+    @CIOP = @app_analysis_stats_CIOP
+    @algorithms = [@CIOM, @CIOP]
 
   ############
 
   getNames: -> @algorithms.map (alg) -> alg.getName()
 
-  getParamsByName: (algName) ->
+  getParamsByName: (algName) -> 
     (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()
 
   getChartData: (algName) ->
@@ -33,9 +29,6 @@ module.exports = class PowerCalcAlgorithms extends BaseModuleDataService
 
   passDataByName: (algName, dataIn) ->
     (alg.saveData(dataIn) for alg in @algorithms when algName is alg.getName()).shift()
-
-  setPowerByName: (algName, dataIn) ->
-    (alg.savePower(dataIn) for alg in @algorithms when algName is alg.getName()).shift()
 
   passAlphaByName: (algName, alphaIn) ->
     (alg.setAlpha(alphaIn) for alg in @algorithms when algName is alg.getName()).shift()
