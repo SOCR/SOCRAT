@@ -18,14 +18,13 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
     @title = 'Power Calculator Module'
     #algorithm type
-    @selectedAlgorithm = "Two-sample t test (general case)"
+    @selectedAlgorithm = "Test of One Proportion"
     @SIGNIFICANT = 5
     @data = []
     @dataType = ''
     @dataPoints = null
     @means = null
     @assignments = null
-    @populations = {}
     @deployed = false
     @chosenCols = []
     @compAgents = []
@@ -35,6 +34,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
     # initialize data for plotting
     @chartData = null
+    @barChartData = null
 
     #variables needed for cfap only
     @cfap_nn = 1
@@ -59,23 +59,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @cimean_help=false
     @cimean_click()
     @cimean_submit()
-
-    #variables needed for OnePGUI only
-    @OnePGUI_nn = 1
-    @OnePGUI_p0=null
-    @OnePGUI_p=null
-    @OnePGUI_ssize=null
-    @OnePGUI_power=null
-    @OnePGUI_maxp0=1.0
-    @OnePGUI_maxp=1.0
-    @OnePGUI_maxssize=77
-    @OnePGUI_maxpower=1.0
-    @OnePGUI_alpha=0.02
-    @OnePGUI_help=false
-    @OnePGUI_altt_value = 1
-    @OnePGUI_method_value = 1
-    @OnePGUI_click()
-    @OnePGUI_submit()
 
     #variables needed for Pilot only
     @Pilot_n = 1;
@@ -137,13 +120,24 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @loadData()
       MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
-   #receive data
+    #receive data
     @$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
-      @populations = data.populations
       @algorithmService.passDataByName(@selectedAlgorithm, data)
       @loadData()
 
-    @$scope.$on 'powercalc:onetwoTestalpha', (event, data)=>
+    @$scope.$on 'powercalc:onePropdata', (event, data)=>
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @loadData()
+
+    @$scope.$on 'powercalc:twoPropdata', (event, data)=>
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @loadData()
+
+    @$scope.$on 'powercalc:daheeData', (event, data) =>
+      @algorithmService.passDataByName(@selectedAlgorithm, data)
+      @loadData()
+
+    @$scope.$on 'powercalc:alpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data.alpha_in)
       @loadData()
 
@@ -151,9 +145,11 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       @deployed=data.deploy
       @loadData()
 
-
     @$scope.$on 'powercalc:updateDataPoints', (event, data) =>
       @data = data.dataPoints
+
+ 
+
 
   loadData: () ->
     if (@selectedAlgorithm is "Two-sample t test (general case)")
@@ -162,6 +158,14 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     else if (@selectedAlgorithm is "One-Sample (or Paired) t Test")
       @oneTestRetrieve()
       return
+    else if (@selectedAlgorithm is "Test of One Proportion")
+      @onePropRetrieve()
+      return
+    else if (@selectedAlgorithm is "Test of Two Proportions")
+      @twoPropRetrieve()
+      return
+    else if (@selectedAlgorithm is "DAHEE")
+      @daheeRetrieve()
     else
       return
 
@@ -419,128 +423,328 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       $('#cimeanH').val "Hide Help"
     @cimean_help = !@cimean_help;
     return
+    
+  ####Dahee 
+  daheeRetrieve:() ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @sampleproportion = parseFloat(@params.p.toPrecision(4))
+    @success = @params.n
+    @samplesize = @params.t
+    @zscore = @params.z
+    @upbound = parseFloat(@params.u.toPrecision(4))
+    @lowbound = parseFloat(@params.l.toPrecision(4))
+    @confinterval =@params.ci
+    @ciAlpha =  @params.a
+    @standarddev = @params.sd
+    @cilevel = 1.0 - @ciAlpha
+    @daheeClick()
 
-  #OnePGUI function only
-  OnePGUI_click: ->
-        $( "#p0ui" ).slider(
-            value: @OnePGUI_p0
-            min: 0
-            max: @OnePGUI_maxp0
-            range: "min"
-            step: 0.0001
-            slide: ( event, ui ) =>
-              $( "#p0" ).val( ui.value )
-              @OnePGUI_submit('1','p0',ui.value)
-              return
-          )
-        $( "#p0" ).val( $( "#p0ui" ).slider( "value" ) )
-        $( "#pui" ).slider(
-            value:@OnePGUI_p
-            min: 0
-            max: @OnePGUI_maxp
-            range: "min"
-            step: 0.0001
-            slide: ( event, ui ) =>
-              $( "#p" ).val( ui.value )
-              @OnePGUI_submit('1','p',ui.value)
-              return
-          )
-        $( "#p" ).val( $( "#pui" ).slider( "value" ) )
-        $( "#ssizeui" ).slider(
-            value:@OnePGUI_ssize,
-            min: 0,
-            max: @OnePGUI_maxssize,
-            range: "min",
-            step: 0.01,
-            slide:( event, ui ) =>
-              $( "#ssize" ).val( ui.value );
-              @OnePGUI_submit('1','ssize',ui.value);
-              return
-          )
-        $( "#ssize" ).val( $( "#ssizeui" ).slider( "value" ) )
-        $( "#powerui" ).slider(
-            value:@OnePGUI_power,
-            min: 0,
-            max: @OnePGUI_maxpower,
-            range: "min"
-            step: 0.0001,
-            slide: ( event, ui ) =>
-              #$( "#power" ).val( ui.value );
-              @OnePGUI_submit('1','power',ui.value);
-              console.log("moving")
-              return
-          )
-        $( "#power" ).val( $( "#powerui" ).slider( "value" ) );
-        $("#alphaui").slider(
-          min: 0.005
-          max: 0.2
-          value: @OnePGUI_alpha
-          orientation: "horizontal"
-          range: "min"
-          step: 0.01
-          slide: (event, ui) =>
-            @OnePGUI_alpha = ui.value
-            $('#alpha').val ui.value
-            @OnePGUI_submit '1', 'alpha', ui.value
-            return
-          )
-  OnePGUI_clk: (evt) ->
-    obj = evt.currentTarget
-    if obj
-      id=obj.id;
-      ck=$(obj).prop("checked")
-      if ck
-        #console.log(evt.currentTarget.value)
-        @OnePGUI_submit("1",id,"1")
+  daheeSync: () ->
+    @params.sampleproportion = @sampleproportion
+    @params.n = @success
+    @params.t = @samplesize
+    @syncData(@params)
+
+  daheeClick: () ->
+    #slider elements
+    propUI = $("#propUI")
+    totalUI = $("#totalUI")
+    targetUI = $("#targetUI")
+    daheeSliders = [propUI, totalUI, targetUI]
+
+    propUI.slider(
+      value: @sampleproportion,
+      min :0,
+      max:1,
+      range :'min',
+      step: 0.01,
+      slide: (event, ui)=>
+        @sampleproportion = ui.value
+        @daheeSync()
+    )
+
+    totalUI.slider(
+      value: @samplesize,
+      min: 0,
+      max: 1000,
+      range: "min",
+      step: 10,
+      slide: (event, ui) =>
+        @samplesize = ui.value
+        @daheeSync()
+    )
+
+    targetUI.slider(
+      value: @success,
+      min: 0,
+      max: 1000,
+      range: "min",
+      step: 10,
+      slide: (event, ui) =>
+        @success = ui.value
+        @daheeSync()
+    )
+
+
+    if @deployed is true
+      for sl in daheeSliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
+    else
+      for sl in daheeSliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+
+    return  
+
+    
+  #OneProp function only
+  onePropRetrieve: () ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @onePropN = @params.n
+    @onePropNMax = @params.nMax
+    @onePropP = parseFloat(@params.p.toPrecision(4))
+    @onePropP0 = parseFloat(@params.p0.toPrecision(4))
+    @onePropPMax = parseFloat(@params.pMax.toPrecision(4))
+    @onePropPower = parseFloat(@params.power.toPrecision(4))
+    @onePropZ = parseFloat(@params.z.toPrecision(4))
+    @onePropPvalue = parseFloat(@params.pvl.toPrecision(4))
+    @onePropMode = @params.mode
+    @onePropModes = ["Two Sided", "One Sided"]
+    @onePropClick()
+    @onePropGraph()
+    if (@deployed)
+      @compAgents = [@params.comp]
+    else 
+      @compAgents = ["Sample"]
+    return
+
+  onePropSync: () ->
+    @params.n = @onePropN
+    @params.p = @onePropP
+    @params.p0 = @onePropP0
+    @params.mode = @onePropMode
+    @syncData(@params)
+
+  onePropCalcPower: () ->
+    @params.power = @onePropPower
+    @params.mode = @onePropMode
+    @syncPower(@params)
+    return
+
+  onePropPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "onePropPower"
+        @onePropCalcPower()
       else
-        @OnePGUI_submit("1",id,"")
+        @onePropSync()
     return
-  OnePGUI_presubmit: (id, key, evt) ->
-    value = evt.target.value
-    #console.log(evt.currentTarget.value)
-    @OnePGUI_submit(id, key, value)
-  OnePGUI_submit: (id, key, value) ->
-    c = @powerAnalysis.OnePGUI_cfap(id, key, value);
-    @OnePGUI_altt_value = c.alt
-    @OnePGUI_method_value = c.Method
-    $("#p0").prop("value",c.p0);
-    @OnePGUI_p0=c.p0;
-    $("#p").val(c.p);
-    @OnePGUI_p=c.p;
-    $("#ssize").val(c.n);
-    @OnePGUI_ssize=c.n;
-    $("#altt").prop("value",@OnePGUI_altt_value);
-    $("#alpha").prop("value",c.Alpha);
-    if c.Method is 0
-      $("#showsize").show();
-      $("#size").val(c.sizes);
-    else if c.Method is 3
-      $("#showsize").show();
-      $("#size").val(c.sizes);
+
+  onePropClick: () ->
+    #slider elements
+    onePropPUI = $("#onePropPUI")
+    onePropP0UI = $("#onePropP0UI")
+    onePropNUI = $("#onePropNUI")
+    onePropPowerUI = $("#onePropPowerUI")
+    onePropSliders = [onePropPUI, onePropNUI, onePropPowerUI]
+
+    onePropPUI.slider(
+      value: @onePropP,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @onePropP = ui.value
+        @onePropSync()
+    )
+
+    onePropP0UI.slider(
+      value: @onePropP0,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @onePropP0 = ui.value
+        @onePropSync()
+    )
+
+    onePropNUI.slider(
+      value: @onePropN,
+      min: 1,
+      max: @onePropNMax,
+      range: "min",
+      step: 1,
+      slide: (event, ui) =>
+        @onePropN = ui.value
+        @onePropSync()
+    )
+
+    onePropPowerUI.slider(
+      value: @onePropPower,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @onePropPower = ui.value
+        @onePropCalcPower()
+    )
+
+    if @deployed is true
+      for sl in onePropSliders
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
     else
-      $("#showsize").hide();
-    $("#method").prop("value",@OnePGUI_method_value);
-    @OnePGUI_power=c.Power;
-    @OnePGUI_click();
-  OnePGUI_changeSlider: (sliderId, evt) ->
-    #console.log("changeSlider hit")
-    key = evt.target.value
-    @OnePGUI_submit '1', sliderId, key
+      for sl in onePropSliders
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
+
     return
-  OnePGUI_altt_submit: (id, key) ->
-    @OnePGUI_submit(id, key, @OnePGUI_altt_value)
+
+  onePropReset: () ->
+    @reset()
     return
-  OnePGUI_method_submit: (id, key) ->
-    @OnePGUI_submit(id, key, @OnePGUI_method_value)
+
+  onePropGraph: () ->
+    @barChartData = null
+    chartData = @algorithmService.getChartData @selectedAlgorithm
+    @$timeout => @barChartData = chartData,
+    5
+
+  #twoProp
+  twoPropRetrieve: () ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @twoPropP1 = parseFloat(@params.p1.toPrecision(4))
+    @twoPropP2 = parseFloat(@params.p2.toPrecision(4))
+    @twoPropN1 = @params.n1
+    @twoPropN2 = @params.n2
+    @twoPropNMax = @params.nMax
+    @twoPropPower = parseFloat(@params.power.toPrecision(4))
+    @twoPropMode = @params.mode
+    if (@deployed)
+      @compAgents = @params.comp
+    else 
+      @compAgents = ["Sample1", "Sample2"]
+    @twoPropModes = ["Two Sided", "One Sided"]
+    @twoPropClick()
+    @twoPropGraph()
     return
-  OnePGUI_show_help: () ->
-    #console.log(@cfap_help)
-    if (@OnePGUI_help == true)
-      $('#OnePGUIH').val "Show Help"
+
+  twoPropSync: () ->
+    @params.n1 = @twoPropN1
+    @params.n2 = @twoPropN2
+    @params.p1 = @twoPropP1
+    @params.p2 = @twoPropP2
+    @params.mode = @twoPropMode
+    @syncData(@params)
+    return
+
+  twoPropCalcPower: () ->
+    @params.power = @twoPropPower
+    @params.mode = @twoPropMode
+    @syncPower(@params)
+    return
+
+  twoPropPress: (evt) ->
+    name = evt.target.name
+    key = evt.which or evt.keyCode
+    if key is 13
+      if name is "twoPropPower"
+        @twoPropCalcPower()
+      else
+        @twoPropSync()
+    return
+
+  twoPropClick: () ->
+    #slider elements
+    twoPropP1UI = $("#twoPropP1UI")
+    twoPropP2UI = $("#twoPropP2UI")
+    twoPropN1UI = $("#twoPropN1UI")
+    twoPropN2UI = $("#twoPropN2UI")
+    twoPropPowerUI = $("#twoPropPowerUI")
+    twoPropSlidersToDisable = [twoPropP1UI, twoPropP2UI, twoPropN1UI, twoPropN2UI]
+
+    twoPropP1UI.slider(
+      value: @twoPropP1,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @twoPropP1 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropP2UI.slider(
+      value: @twoPropP2,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @twoPropP2 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropN1UI.slider(
+      value: @twoPropN1,
+      min: 0,
+      max: @twoPropNMax,
+      range: "min",
+      step: 1,
+      slide: (event, ui) =>
+        @twoPropN1 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropN2UI.slider(
+      value: @twoPropN1,
+      min: 0,
+      max: @twoPropNMax,
+      range: "min",
+      step: 1,
+      slide: (event, ui) =>
+        @twoPropN2 = ui.value
+        @twoPropSync()
+    )
+
+    twoPropPowerUI.slider(
+      value: @twoPropPower,
+      min: 0,
+      max: 1,
+      range: "min",
+      step: 0.001,
+      slide: (event, ui) =>
+        @twoPropPower = ui.value
+        @twoPropCalcPower()
+    )
+
+    if @deployed is true
+      for sl in twoPropSlidersToDisable
+        sl.slider("disable")
+        sl.find('.ui-slider-handle').hide()
     else
-      $('#OnePGUIH').val "Hide Help"
-    @OnePGUI_help = !@OnePGUI_help
+      for sl in twoPropSlidersToDisable
+        sl.slider("enable")
+        sl.find('.ui-slider-handle').show()
     return
+
+  twoPropReset: () ->
+    @reset()
+    return
+
+  twoPropGraph: () ->
+    @barChartData = null
+    chartData = @algorithmService.getChartData @selectedAlgorithm
+    @$timeout => @barChartData = chartData,
+    5
+
+
+
 
   #functions for OneTGUI only
   oneTestRetrieve: () ->
@@ -605,6 +809,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     oneTestMeanUI = $("#oneTestMeanUI")
     oneTestStDevUI= $("#oneTestStDevUI")
     oneTestPowerUI = $("#oneTestPowerUI")
+
 
     oneTestNUI.slider(
       value: @oneTestN,
@@ -677,6 +882,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @reset()
 
   oneTestGraph:() ->
+    @chartData = null
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5
@@ -1168,7 +1374,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       twoTestMean1UI,
       twoTestMean2UI,
       twoTestStDev1UI,
-      twoTestStDev1UI
+      twoTestStDev2UI,
+      twoTestPowerUI
       ]
 
     if @deployed is true
@@ -1184,6 +1391,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @reset()
 
   twoTestGraph:() ->
+    @chartData = null
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5

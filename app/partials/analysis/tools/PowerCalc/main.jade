@@ -29,6 +29,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
     h4 <b>Two-sample t test (general case)</b>
     p <b><i>This dialog provides for power analysis of a two-sample t test or a two-sample t test of equivalence.  If the "equal SDs" box is checked, then the pooled t test is used; otherwise, the calculations are based on the Satterthwaite approximation </i></b>
     input(type='button' style='font-size:20px; margin-bottom:80px' value='Two-sample t test (general case)' ng-click='mainArea.update_algo($event)')
+ 
   div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
     h3 CI for One Proportion
     p <i>This dialog provides sample-size determination for estimating a proportion to within a specified margin of error, for either a finite population of specified size, or an infinite population </i>
@@ -159,74 +160,328 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
             p <b>Graphics</b>
             p A simple graphics facility is available from the Options menu.  Enter the variables for the x and y axes, and the range of values for the x variable.  More information is available through the graphics dialog's help menu.
   div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
-    h3 Test of One Proportion
-    p <i>This dialog provides for power analysis of a one-sample test of proportions. You have your choice of the normal approximation, the beta approximation (which is more accurate), or two exact calculations based on the binomial distribution.  In the latter cases, the size of the test (i.e., the probability of a type I error) is often much smaller than the stated significance level.</i>
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Null Value (p0): &nbsp
-        input#p0(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('p0',$event);")
-      div(style='display:inline')
-        #p0ui(uib-tooltip="Manipulate this bar to adjust Null Value" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Actual Value (p): &nbsp
-        input#p(name='p',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('p',$event);")
-      div(style='display:inline')
-        #pui(uib-tooltip="Manipulate this bar to adjust Actual Value" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Sample Size: &nbsp
-        input#ssize(name='ssize',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('ssize',$event);")
-      div(style='display:inline')
-        #ssizeui(uib-tooltip="Manipulate this bar to adjust Sample Size" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      | Select Alternative: &nbsp
-      select#altt(name='altt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_altt_value" ng-change="mainArea.OnePGUI_altt_submit('1','altt');")
-        option(value='0') p < p0
-        option(value='1') p != p0
-        option(value='2') p > p0
-    div(style='margin-top:20px;')
-      | Select Method: &nbsp
-      select#method(name='method' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.OnePGUI_method_value", ng-change="mainArea.OnePGUI_method_submit('1','method');")
-        option(value='0') Exact
-        option(value='1') Normal approx
-        option(value='2') Beta approx
-        option(value='3') Exact(Wald CV)
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Alpha: &nbsp
-        input#alpha(name='alpha',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' value='0.02', ng-mouseleave="mainArea.OnePGUI_changeSlider('alpha',$event);")
-        div(style='display:inline')
-          #alphaui(uib-tooltip="Manipulate this bar to adjust Alpha" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Power: &nbsp
-        input#power(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.OnePGUI_changeSlider('power',$event);")
-      div(style='display:inline')
-        #powerui(disableds uib-tooltip="You Cannot Manipulate This Bar" tooltip-placement="top")
-    div
-      input#OnePGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.OnePGUI_show_help();')
-      div(ng-show='mainArea.OnePGUI_help == true;')
-        p Common notations: Suppose that X is a binomial random variable with "success" probability p and n independent trials, and let:
-        p $ P = \frac{X}{n} $
-        br
-        p <b>Normal approximation:</b>
-        p We approximate distribution of P with N ($ mu=p $, $ sigma^2=p* \frac{1-p}{n} $). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
-        br
-        p <b>Beta approximation: </b>
-        p We approximate distribution of P with Beta( a=(n-1)*p, b=(n-1)*(1-p) ). This has the same mean and variance as the true distribution of P. The critical region is obtained using this approximation with p=p0, then the power is computed using this approximation with p=p1.
-        br
-        p <b>Exact:</b>
-        p In the exact test, the significance level alpha is taken as an upper bound on the size of the test (its power under the null hypothesis). Since X has a discrete distribution, the size cannot be controlled exactly and is often much lower than the specified alpha.
-        br
-        p For the alternative p &lt p0, let xl denote the largest x for which Pr($ X \leq x | p = p0 $) &lt= alpha. Then the power is equal to Pr($ X \leq xl | p = p1 $) and the size of the test is Pr($ X \leq xl | p = p0 $).
-        br
-        p For the alternative p > p0, let xu denote the smallest x for which Pr($ X \geq x | p = p0 $) &lt= alpha. Then the power is equal to Pr($ X \geq xu | p = p1 $). And the size of the test is Pr($ X \geq xu | p = p0 $).
-        br
-        p For the alternative p != p0, compute both powers as above but replace alpha by $ \frac{alpha}{2} $; then sum the powers and sizes.
-        p <b>Exact (Wald CV):</b>
-        p This is like the exact method, except the critical values are calculated based on an adjusted Wald statistic.  This does NOT guarantee that the size of the test is less than alpha.
-        p Note: This is the exact method used in the JMP statistical software.
+    .row
+      .col-md-8
+        h6 Test of One Proportion &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This power analysis is used to test whether a proportion, p, is equal to a reference value, p0"
+            tooltip-placement="bottom"
+          )
+        power-calc-viz
+        .row
+          .col-md-6
+            .form-inline
+              label Power: &nbsp
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.onePropPower"
+                ng-click="mainArea.onePropCalcPower()"
+                ng-keypress="mainArea.onePropPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.0001"
+                name='onePropPower'
+                )
+              #onePropPowerUI
+        h6(
+        ng-show="mainArea.brokenCalc"
+        style="color:red;"
+        ) &nbsp;&nbsp;An error occurred. Press Reset to resume default settings.
+      .col-md-4
+        .form-group
+          .row.form-inline
+            label Mode: &nbsp;
+            select.form-control(
+            ng-model="mainArea.onePropMode"
+            ng-change="mainArea.onePropSync()"
+            ng-options="mode for mode in mainArea.onePropModes"
+            )
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample proportion"
+              tooltip-placement="left"
+              ) &nbsp;
+              | P&nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.onePropP"
+              ng-click="mainArea.onePropSync()"
+              ng-keypress="mainArea.onePropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='onePropP'
+              )
+            #onePropPUI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="true proportion"
+              tooltip-placement="left"
+              ) &nbsp;
+              | P
+              sub 0
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.onePropP0"
+              ng-click="mainArea.onePropSync()"
+              ng-keypress="mainArea.onePropPress($event)"
+              type="number"
+              step="0.001"
+              name='onePropP0'
+              )
+            #onePropP0UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample size"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N&nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.onePropN"
+              ng-click="mainArea.onePropSync()"
+              ng-keypress="mainArea.onePropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='onePropN'
+              )
+            #onePropNUI
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="z score"
+              tooltip-placement="left"
+              ) &nbsp;
+              | z: &nbsp;
+              b {{mainArea.onePropZ}}
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="p-value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | p-value: &nbsp;
+              b {{mainArea.onePropPvalue}}
+  div(ng-show='mainArea.selectedAlgorithm == "DAHEE"')
+    .row
+      .col-md-8
+        h6 Confidence interval for sampe proportion &nbsp;
+          span.glyphicon.glyphicon-search(
+            aria-hidden="true"
+            uib-tooltip="dahee calulator page"
+            tooltip-placement="right")  
+      .col-md-8
+        span.glyphicon.glyphicon-picture
+   
+      .col-md-4 
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | total sample: &nbsp;
+              b {{mainArea.samplesize}}
+            //-   input.form-control.input-sm.flat(
+            //-   ng-model = "mainArea.samplesize"
+            //-   ng-click='mainArea.daheeSync()'
+            //-   ng-disabled="mainArea.deployed"
+            //-   type="number"
+            //-   step="1"
+            //-   name='CIOP'
+            //-   )
+            //- #totalU
+
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | target sample: &nbsp;
+              b {{mainArea.success}}
+
+        .form-group
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="whatever"
+                tooltip-placement="left"
+                ) &nbsp;
+                | P &nbsp;
+                sub s
+                | &nbsp; : &nbsp;
+                b {{mainArea.sampleproportion}}
+              //-   input.form-control.input-sm.flat(
+              //-   ng-model="mainArea.sampleproportion"
+              //-   ng-click="mainArea.daheeSync()"
+              //-   ng-keypress="mainArea.daheeClick($event)"
+              //-   ng-disabled="mainArea.deployed"
+              //-   type="number"
+              //-   step="0.001"
+              //-   name='dahee'
+              //-   )
+              //- #propUI   
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | lower bound: &nbsp;
+              b {{mainArea.lowbound}}
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="test statistics value"
+              tooltip-placement="left"
+              ) &nbsp;
+              | upper bound: &nbsp;
+              b {{mainArea.upbound}}
+    .row
+      h6 Interpretation: &nbsp;
+      b We are {{mainArea.cilevel}}% confident that the true value of {{mainArea.sampleproportion}} lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
+
+
+              
+  
+
+  div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
+    .row
+      .col-md-8
+        h6 Test of Two Proportions &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This calculator is useful for tests about whether the proportions for two samples are different."
+            tooltip-placement="bottom"
+          )
+        power-calc-viz
+        .row
+          .col-md-6
+            .form-inline
+              label Power: &nbsp
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.twoPropPower"
+                ng-click="mainArea.twoPropCalcPower()"
+                ng-keypress="mainArea.twoPropPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.0001"
+                name='twoPropPower'
+                )
+              #twoPropPowerUI
+        h6(
+        ng-show="mainArea.brokenCalc"
+        style="color:red;"
+        ) &nbsp;&nbsp;An error occurred. Press Reset to resume default settings.
+      .col-md-4
+        .form-group
+          .row.form-inline
+            label Mode: &nbsp;
+            select.form-control(
+            ng-model="mainArea.twoPropMode"
+            ng-change="mainArea.twoPropSync()"
+            ng-options="mode for mode in mainArea.twoPropModes"
+            )
+        .form-group
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample proportion 1"
+              tooltip-placement="left"
+              ) &nbsp;
+              | P&nbsp;
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropP1"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='twoPropP1'
+              )
+            #twoPropP1UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample proportion 2"
+              tooltip-placement="left"
+              ) &nbsp;
+              | P
+              sub 2
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropP2"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='twoPropP2'
+              )
+            #twoPropP2UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample size 1"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropN1"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoPropN1'
+              )
+            #twoPropN1UI
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="sample size 2"
+              tooltip-placement="left"
+              ) &nbsp;
+              | N
+              sub 2
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropN2"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoPropN2'
+              )
+            #twoPropN2UI
   div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
     .row
       .col-md-8
@@ -297,7 +552,6 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
               ng-model="mainArea.oneTestMean0"
               ng-click="mainArea.oneTestSync()"
               ng-keypress="mainArea.oneTestPress($event)"
-              ng-disabled="mainArea.deployed"
               type="number"
               step="1"
               name='oneTestMean0'
