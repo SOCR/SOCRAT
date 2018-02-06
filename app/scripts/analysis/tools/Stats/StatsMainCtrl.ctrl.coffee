@@ -13,6 +13,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		# required basic modules
 		@d3 = require 'd3'
 		@ve = require 'vega-embed'
+		@vt = require 'vega-tooltip/build/vega-tooltip.js'
 		@distribution = require 'distributome'
 		@msgService = @app_analysis_stats_msgService
 		@algorithmService = @app_analysis_stats_algorithms
@@ -75,62 +76,51 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		@CIOMMode = @params.mode
 		@CIOMModes = ["Two Tailed", "One Tailed"]
 		@CIOMClick()
-		@CIOMTest()
+		@CIOMDraw()
 		return
 
 
-	CIOMTest: () ->
+	CIOMDraw: () ->
 
-		resultData = [{"yield":27,"variety":"Manchuria","year":1931,"site":"University Farm"},
-		{"yield":48.86667,"variety":"Manchuria","year":1931,"site":"Waseca"},
-		{"yield":27.43334,"variety":"Manchuria","year":1931,"site":"Morris"},
-		{"yield":39.93333,"variety":"Manchuria","year":1931,"site":"Crookston"},
-		{"yield":32.96667,"variety":"Manchuria","year":1931,"site":"Grand Rapids"},
-		{"yield":28.96667,"variety":"Manchuria","year":1931,"site":"Duluth"},
-		{"yield":43.06666,"variety":"Glabron","year":1931,"site":"University Farm"},
-		{"yield":55.2,"variety":"Glabron","year":1931,"site":"Waseca"},
-		{"yield":28.76667,"variety":"Glabron","year":1931,"site":"Morris"}]
-
-		console.log("indsideeeeeeeeeeeeeeeeeeee test")
-		console.log(resultData)
+		confidenceInterval = [{"lowerBound":@CIOMLowerBound}, {"mean":@CIOMMean}, {"upperBound":@CIOMUpperBound}]
+		title = "LowerBound: ".concat (@CIOMLowerBound).toString()
+		title = title.concat " Mean: "
+		title = title.concat (@CIOMMean).toString()
+		title = title.concat " UpperBound: "
+		title = title.concat (@CIOMUpperBound).toString()
 
 		vlSpec =
 			{
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"data": {"values": resultData},
+				"width": 300,
+				"height": 150,
+				"data": {"values": confidenceInterval},
 				"layer": [{
 					"mark": {"type": "point", "filled": true},
 					"encoding": {
 						"x": {
-							"aggregate": "mean", "field": "yield", "type": "quantitative",
-							"scale": {"zero": false},
-							"axis": {"title": "Barley Yield"}
+							"field": "mean", "type": "quantitative",
+							"axis": {"title": title}
 						},
-						"y": {
-							"field": "variety", "type": "ordinal"
+						"color": {"value": "black"},
+					}
+				}, 
+				{
+					"mark": "rule",
+					"encoding": {
+						"x": {
+							"aggregate": "ci0", "field": "lowerBound", "type": "quantitative"
 						},
-						"color": {"value": "black"}
+						"x2": {
+							"aggregate": "ci1", "field": "upperBound", "type": "quantitative"
+						}
 					}
-				}, {
-				"mark": "rule",
-				"encoding": {
-					"x": {
-						"aggregate": "ci0", "field": "yield", "type": "quantitative",
-						"scale": {"zero": false}
-					},
-					"x2": {
-						"aggregate": "ci1", "field": "yield", "type": "quantitative"
-					},
-					"y": {
-						"field": "variety", "type": "ordinal"
-					}
-				}
 				}]
 			}
-		# vegaEmbed("#vis", vlSpec)
-		opt = {"actions": {export: true, source: false, editor: false}}
-		@ve '#vis', vlSpec, opt, (error, result) ->
-		 	return
+		opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
+		@ve('#vis', vlSpec, opt, (error, result) -> return).then((result) => 
+			@vt.vegaLite(result.view, vlSpec)
+		)
 
 	# call syncData
 	CIOMSync: () ->

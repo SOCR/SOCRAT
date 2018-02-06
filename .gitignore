@@ -4,6 +4,7 @@
 /.idea
 /test/test-results.xml
 *.log
+package-lock.json
 
 # Public files (generated)#
 ===============
