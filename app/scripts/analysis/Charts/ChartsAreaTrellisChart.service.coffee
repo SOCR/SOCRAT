@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsBubbleChart extends BaseService
+module.exports = class ChartsAreaTrellisChart extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
@@ -21,50 +21,27 @@ module.exports = class ChartsBubbleChart extends BaseService
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
-    @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
-    
-  drawBubble: (width,height,_graph,data,labels,container,ranges) ->
 
-    if (data[0]["r"] && data[0]["z"])
+  areaTrellisChart: (data,ranges,width,height,_graph,labels,container) ->
+
+    if (data[0]["z"])
       vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
         "width": 500,
         "height": 500,
         "data": {"values": data},
-        "mark": "point",
+        "mark": "line",
         "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
+          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
           "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "color": {"field": "z", "type": "nominal"},
-          "size": {"field": "r", "type": "quantitative"}
-        }
-      }
-    else if (data[0]["r"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "point",
-        "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "size": {"field": "r", "type": "quantitative"}
-        }
-      }
-    else if (data[0]["z"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "point",
-        "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "color": {"field": "z", "type": "nominal"}
+          "color": {"field": "z", "type": "nominal", "legend": null},
+          "row": {
+            "field": "z",
+            "type": "nominal",
+            "header": {"title": "z"}
+          }
         }
       }
     else
@@ -73,9 +50,9 @@ module.exports = class ChartsBubbleChart extends BaseService
         "width": 500,
         "height": 500,
         "data": {"values": data},
-        "mark": "point",
+        "mark": "line",
         "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
+          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
           "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
         }
       }
