@@ -15,7 +15,8 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -28,7 +29,8 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc'
       ]
     ,
       msgFrom: 'data summary'
@@ -45,6 +47,28 @@ module.exports = class AppMessageMap
       msgFrom: 'summary_res'
       scopeFrom: ['app_analysis_datalib']
       msgTo: 'data summary result'
+      scopeTo: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts',
+        'app_analysis_reliability'
+      ]
+    ,
+      msgFrom: 'data histogram'
+      scopeFrom: [
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_cluster',
+        'app_analysis_charts',
+        'app_analysis_reliability'
+      ]
+      msgTo: 'histogram'
+      scopeTo: ['app_analysis_datalib']
+    ,
+      msgFrom: 'histogram_res'
+      scopeFrom: ['app_analysis_datalib']
+      msgTo: 'data histogram result'
       scopeTo: [
         'app_analysis_getData',
         'app_analysis_dataWrangler',
@@ -74,7 +98,8 @@ module.exports = class AppMessageMap
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -86,7 +111,8 @@ module.exports = class AppMessageMap
         'app_analysis_getData',
         'app_analysis_dataWrangler',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc'
       ]
     ]
 

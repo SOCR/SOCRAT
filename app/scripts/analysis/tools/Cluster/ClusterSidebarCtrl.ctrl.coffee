@@ -192,7 +192,6 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     clustData = @prepareData()
     @kmeanson = on
     @running = 'spinning'
-    console.log clustData.labels
     res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
       xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
       @updateDataPoints null, xyMeans, res.labels
@@ -214,5 +213,3 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
   reset: ->
     @algorithmsService.reset @selectedAlgorithm
     @updateDataPoints(@dataFrame, null, null)
-
-
