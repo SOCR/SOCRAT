@@ -1,0 +1,44 @@
+iv(ng-controller="mymoduleSidebarCtrl as sidebar")
+  form
+    legend Parameters &nbsp;
+      div.form-group
+        fieldset(ng-show="sidebar.dataFrame")
+          legend Dataset
+          div(uib-tooltip="2D projection is always visualized")
+            select.form-control(
+            multiple
+            ng-model="sidebar.chosenCols"
+            ng-options="col for col in sidebar.numericalCols"
+            ng-change="sidebar.updateChosenCols()"
+            )
+          div.form-group
+            label Labels column &nbsp;
+            //- show data header column names
+            select.form-control(
+            ng-model="sidebar.labelCol"
+            ng-options="col for col in sidebar.categoricalCols"
+            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+            ng-init="sidebar.labelCol = null"
+            )
+              option(value="") No labels
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.xCol")
+            label X column &nbsp;
+            //- show data header column names
+            select.form-control(
+            ng-model="sidebar.xCol"
+            ng-options="col for col in sidebar.chosenCols"
+            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+            )
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.yCol")
+            label Y column &nbsp;
+            //- show data header column names
+            select.form-control(
+            ng-model="sidebar.yCol"
+            ng-options="col for col in sidebar.chosenCols"
+            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+            )
+        div.form-group.btn-group(
+          role="group"
+          area-label="Sidebar flow controls"
+          uib-tooltip = "Choose at least 2 columns to start"
+        )

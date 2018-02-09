@@ -8,9 +8,9 @@ module.exports = myModule = new Module
   # module components
   components:
     services:
-      'socrat_analysis_mymodule_initService': require 'scripts/analysis/MyModule/MyModuleInit.service.coffee'
-      'socrat_analysis_mymodule_msgService': require 'scripts/analysis/MyModule/MyModuleMsgService.service.coffee'
-      'socrat_analysis_mymodule_myService': require 'scripts/analysis/MyModule/MyModuleMyService.service.coffee'
+      'socrat_analysis_mymodule_initService': require 'scripts/analysis/tools/MyModule/MyModuleInit.service.coffee'
+      'socrat_analysis_mymodule_msgService': require 'scripts/analysis/tools/MyModule/MyModuleMsgService.service.coffee'
+      'socrat_analysis_mymodule_dataService': require 'scripts/analysis/tools/MyModule/MyModuleDataService.service.coffee'
     controllers:
       'mymoduleMainCtrl': require 'scripts/analysis/tools/MyModule/MyModuleMainCtrl.ctrl.coffee'
       'mymoduleSidebarCtrl': require 'scripts/analysis/tools/MyModule/MyModuleSidebarCtrl.ctrl.coffee'

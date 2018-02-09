@@ -13,18 +13,12 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
     @msgService = @socrat_analysis_mymodule_msgService
     @DATA_TYPES = @dataService.getDataTypes()
 
-    # set up data and algorithm-agnostic controls
+    # set up data controls
     @useLabels = off
-    @reportAccuracy = on
-    @clusterRunning = off
     @ready = off
-    @running = 'hidden'
     @uniqueLabels =
       labelCol: null
       num: null
-    @algParams = null
-    # TODO: allow user control of delay
-    @iterDelay = 750
 
     # dataset-specific
     @dataFrame = null
@@ -43,7 +37,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
           # update local data type
           @dataType = obj.dataFrame.dataType
           # send update to main are actrl
-          @msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
+          @msgService.broadcast 'mymodule:updateDataType', obj.dataFrame.dataType
         # make local copy of data
         @dataFrame = obj.dataFrame
         # parse dataFrame
@@ -54,7 +48,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
-  updateDataPoints: (data=null, means=null, labels=null) ->
+  updateDataPoints: (data=null, labels=null) ->
     if data
       trueLabels = null
       if @labelCol
@@ -65,9 +59,8 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
       xCol = data.header.indexOf @xCol unless !@xCol?
       yCol = data.header.indexOf @yCol unless !@yCol?
       data = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
-    @msgService.broadcast 'cluster:updateDataPoints',
+    @msgService.broadcast 'mymodule:updateDataPoints',
       dataPoints: data
-      means: means
       labels: labels
       trueLabels: trueLabels
 
@@ -76,14 +69,6 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
     @cols = data.header
     @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
     @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
-    # make sure number of unique labels is less than maximum number of clusters for visualization
-    if @algParams.k
-      [minK, ..., maxK] = @algParams.k
-      colData = d3.transpose(data.data)
-      @categoricalCols = @categoricalCols.filter (x, i) =>
-        @uniqueVals(colData[@cols.indexOf(x)]).length < maxK
-#    [@xCol, @yCol, ..., lastCol] = @numericalCols
-    @clusterRunning = off
     if @labelCol
       @uniqueLabels =
         num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
@@ -106,29 +91,6 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
     @updateDataPoints @dataFrame
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
-
-  detectK: () ->
-    detectedK = @detectKValue()
-    @setDetectedKValue detectedK
-
-  setDetectedKValue: (detectedK) ->
-    if detectedK.num <= 10
-      @uniqueLabels = detectedK
-      @k = detectedK.num
-      # TODO: add success messages
-    else
-      # TODO: create popup with warning message
-      console.log 'KMEANS: k is more than 10'
-
-  detectKValue: () ->
-    # extra check that labels are on
-    if @dataFrame and @labelCol
-      labelCol = @dataFrame.header.indexOf @labelCol
-      labels = (row[labelCol] for row in @dataFrame.data)
-      uniqueLabels = @uniqueVals labels
-      uniqueLabels =
-        labelCol: @labelCol
-        num: uniqueLabels.length
 
   ## Data preparation methods
 
@@ -161,7 +123,6 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
         labels: labels
         xCol: xCol
         yCol: yCol
-        acc: acc
 
     else false
 
@@ -175,10 +136,3 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
         @updateSidebarControls(df)
         @updateDataPoints(df)
         @ready = on
-
-  ## Interface method to run clustering
-
-
-
-  reset: ->
-    @updateDataPoints(@dataFrame, null, null)
