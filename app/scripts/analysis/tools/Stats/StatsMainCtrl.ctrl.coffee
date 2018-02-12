@@ -43,6 +43,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 	loadData: () ->
 		if (@selectedAlgorithm is "CI for One Mean") then @CIOMRetrieve()
 		else if (@selectedAlgorithm is "CI for One Proportion") then @CIOPRetrieve()
+		else return
 
 	# outdated
 	update_algo: (evt) ->
