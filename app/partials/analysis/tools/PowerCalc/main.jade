@@ -11,7 +11,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 					)
 				power-calc-viz
 				.form-inline
-					label Power: &nbsp
+					label Power: &nbsp;
 						input.form-control.input-sm.flat(
 						ng-model="mainArea.onePropPower"
 						ng-click="mainArea.onePropCalcPower()" 
@@ -339,26 +339,26 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 				label Chi2*: &nbsp;
 				input.form-control.input-sm.flat(
 					ng-model="mainArea.chi2chi2"
-					ng-change="mainArea.chi2Sync()"
+					ng-change="mainArea.chi2Sync('chi2')"
 					type="number"
 					step="0.01"
 				)
 				#chi2chi2UI
 			.form-inline
-				label N*: &nbsp;
+				label Effective Size: &nbsp;
 				input.form-control.input-sm.flat(
-					ng-model="mainArea.chi2ProN"
-					ng-change="mainArea.chi2Sync()"
+					ng-model="mainArea.chi2EffSize"
+					ng-change="mainArea.chi2Sync('effSize')"
 					type="number"
-					step="1"
+					step="0.01"
 				)
-				#chi2ProNUI
+				#chi2EffSizeUI
 			h5 Study Parameter
 			.form-inline
 				label Degree of Freedom: &nbsp;
 				input.form-control.input-sm.flat(
 					ng-model="mainArea.chi2Df"
-					ng-change="mainArea.chi2Sync()"
+					ng-change="mainArea.chi2Sync('df')"
 					type="number"
 					step="1"
 				)
@@ -367,7 +367,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 				label N: &nbsp;
 				input.form-control.input-sm.flat(
 					ng-model="mainArea.chi2N"
-					ng-change="mainArea.chi2Sync()"
+					ng-change="mainArea.chi2Sync('n')"
 					type="number"
 					step="1"
 				)
@@ -376,7 +376,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 				label Power: &nbsp;
 				input.form-control.input-sm.flat(
 					ng-model="mainArea.chi2Power"
-					ng-change="mainArea.chi2Sync()"
+					ng-change="mainArea.chi2Sync('power')"
 					type="number"
 					step="0.01"
 				)

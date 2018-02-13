@@ -812,10 +812,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 	chi2Retrieve: () ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
 		@chi2Power = parseFloat(@params.power.toPrecision(4))
+		console.log @chi2Power
 		@chi2chi2 = @params.chi2
 		@chi2chi2Max = @params.chi2Max
-		@chi2ProN = @params.proN
-		@chi2ProNMax = @params.proNMax
+		@chi2EffSize = @params.effSize
 		@chi2N = @params.n
 		@chi2NMax = @params.nMax
 		@chi2Df = @params.df
@@ -824,11 +824,11 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
 	chi2Click:() ->
 		chi2chi2UI = $("#chi2chi2UI")
-		chi2ProNUI = $("#chi2ProNUI")
+		chi2EffSizeUI = $("#chi2EffSizeUI")
 		chi2NUI = $("#chi2NUI")
 		chi2DfUI = $("#chi2DfUI")
 		chi2PowerUI = $("#chi2PowerUI")
-		sliders = [chi2chi2UI, chi2ProNUI, chi2NUI, chi2DfUI, chi2PowerUI];
+		sliders = [chi2chi2UI, chi2EffSizeUI, chi2NUI, chi2DfUI, chi2PowerUI];
 
 		chi2chi2UI.slider(
 			value: @chi2chi2,
@@ -838,19 +838,19 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			step: 1,
 			slide: (event, ui) =>
 				@chi2chi2 = ui.value
-				@chi2Sync()
+				@chi2Sync("chi2")
 				@$scope.$apply()
 		)
 
-		chi2ProNUI.slider(
-			value: @chi2ProN,
-			min: 1,
-			max: @chi2ProNMax,
+		chi2EffSizeUI.slider(
+			value: @chi2EffSize,
+			min: 0,
+			max: 1,
 			range: "min",
-			step: 1,
+			step: 0.01,
 			slide: (event, ui) =>
-				@chi2ProN = ui.value
-				@chi2Sync()
+				@chi2EffSize = ui.value
+				@chi2Sync("effSize")
 				@$scope.$apply()
 		)
 
@@ -862,7 +862,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			step: 1,
 			slide: (event, ui) =>
 				@chi2N = ui.value
-				@chi2Sync()
+				@chi2Sync("n")
 				@$scope.$apply()
 		)
 
@@ -874,7 +874,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			step: 1,
 			slide: (event, ui) =>
 				@chi2Df = ui.value
-				@chi2Sync()
+				@chi2Sync("df")
 				@$scope.$apply()
 		)
 
@@ -883,7 +883,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			min: 0,
 			max: 0.99,
 			range: "min",
-			step: 1,
+			step: 0.01,
 			slide: (event, ui) =>
 				@chi2Power = ui.value
 				@$scope.$apply()
@@ -891,13 +891,14 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 
 		return
 
-	chi2Sync: () ->
-		params = @algorithmService.getParamsByName(@selectedAlgorithm)
-		params.chi2 = @chi2chi2
-		params.proN = @chi2ProN
-		params.n = @chi2N
-		params.df = @chi2Df
-		@syncData(params) 
+	chi2Sync: (tar) ->
+		@params.target = tar
+		@params.chi2 = @chi2chi2
+		@params.effSize = @chi2EffSize
+		@params.n = @chi2N
+		@params.df = @chi2Df
+		@params.power = @chi2Power
+		@syncData(@params) 
 		return
 
 	#functions for SimplePoissonGUI only

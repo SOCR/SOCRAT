@@ -23,9 +23,8 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     #variables needed for chisquare
     @chiSquareChi2 = 10
     @chiSquareChi2Max = 20
-    @chiSqrPower=0.5
-    @chiSquareProN = 100
-    @chiSquareProNMax = 150
+    @chiSquarePower=0.5
+    @chiSquareEffSize = 100
     @chiSquareN=100
     @chiSquareNMax=75
     @chiSquareDf=10
@@ -44,11 +43,10 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
 
   getParams: () ->
     @parameters = 
-      power: @chiSqrPower
+      power: @chiSquarePower
       chi2: @chiSquareChi2
       chi2Max: @chiSquareChi2Max
-      proN: @chiSquareProN
-      proNMax: @chiSquareProNMax
+      effSize: @chiSquareEffSize
       n: @chiSquareN
       nMax: @chiSquareNMax
       df: @chiSquareDf
@@ -57,27 +55,35 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
 
   setParams: (newParams) ->
     @chiSquareChi2 = newParams.chi2
-    @chiSquareProN = newParams.proN
+    @chiSquareEffSize = newParams.effSize
     @chiSquareN = newParams.n
     @chiSquareDf = newParams.df
-    @checkRange()
-    @update()
+    @update(newParams.target)
     return
 
   checkRange: () ->
     @chiSquareChi2Max = Math.max(@chiSquareChi2Max, @chiSquareChi2)
-    @chiSquareProNMax = Math.max(@chiSquareProN, @chiSquareProNMax)
     @chiSquareNMax = Math.max(@chiSquareNMax, @chiSquareN)
     @chiSquareDfMax = Math.max(@chiSquareDf, @chiSquareDfMax)
     return
 
 
-  update: ()->
+  update: (tar)->
+    # update parameters
+    if tar is "chi2"
+      @chiSquareEffSize = Math.sqrt(@chiSquareChi2/@chiSquareN)
+    else if tar is "effSize"
+      @chiSquareChi2 = Math.pow(@chiSquareEffSize,2) * @chiSquareN
+    else if tar is "n"
+      @chiSquareChi2 = Math.pow(@chiSquareEffSize,2) * @chiSquareN
+
+    # update power
     input = 
       chi2: @chiSquareChi2
-      proN: @chiSquareProN
+      proN: @chiSquareEffSize*@chiSquareN
       n: @chiSquareN
       df: @chiSquareDf
       alpha: @chiSquareAlpha
     params = @powerCalc.SimpleChi2GUI_handle(input)
-    @chiSqrPower = params.Power
+    @chiSquarePower = params.Power
+    @checkRange()
