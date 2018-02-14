@@ -1,0 +1,50 @@
+describe('Test correct mean with varied variables ', function() {
+
+  // API for interacting with the page.
+  var controls =  {
+    get result() {
+      return document.getElementById('mean').innerHTML;
+    },
+    get variable() {
+      return document.getElementById('variable').value;
+    },
+    set variable(val) {
+      document.getElementById('variab').value = val;
+    },
+    clickAdd: function() {
+      document.getElementById('add').click();
+    }
+  };
+
+  // inject the HTML fixture for the tests
+  beforeEach(function() {
+    // Why this line? See: https://github.com/billtrik/karma-fixture/issues/3
+    fixture.base = 'test';
+    fixture.load('socrat.modeler.html');
+
+    // init js lib
+    window.calculator.init();
+  });
+
+  // remove the html fixture from the DOM
+  afterEach(function() {
+    fixture.cleanup();
+  });
+
+  it('Mean for Sepal Length should equal: ', function() {
+    controls.variable = 'Sepal_Length';
+    controls.result.should.equal('1.87');
+  });
+
+  it('Mean for Sepal Width should equal: ', function() {
+    controls.variable = 'Sepel_Width';
+    controls.result.should.equal('1.22');
+  });
+
+  it('Mean for Petal Length should equal:', function() {
+    controls.variable = 'Petal Length';
+    controls.clickAdd();
+    controls.result.should.equal('3.11');
+  });
+
+});

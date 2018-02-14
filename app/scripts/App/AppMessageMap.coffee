@@ -16,6 +16,7 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
+        'socrat_analysis_mymodule'
         'app_analysis_powercalc'
       ]
       msgTo: 'type.inferAll'
@@ -30,6 +31,7 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
+        'socrat_analysis_mymodule',
         'app_analysis_powercalc'
       ]
     ,
@@ -112,6 +114,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
+        'socrat_analysis_mymodule'
         'app_analysis_powercalc'
       ]
     ]
