@@ -20,13 +20,12 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@algorithms = ['Select',
 		'Test of One Proportion',
 		'Test of Two Proportions',
-		'Pilot Study',
 		'R-square (multiple correlation)',
 		'Generic chi-square test',
 		'Power of a Simple Poisson Test',
 		'Two-sample t test (general case)',
 		'One-Sample (or Paired) t Test']
-		@selectedAlgorithm = @algorithms[3]
+		@selectedAlgorithm = @algorithms[1]
 
 		# set up data and algorithm-agnostic controls
 		@DATA_TYPES = @dataService.getDataTypes()
