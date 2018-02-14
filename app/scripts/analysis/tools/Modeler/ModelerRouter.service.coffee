@@ -9,31 +9,31 @@
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
 module.exports = class ModelerRouter extends BaseModuleDataService
-  @inject 'app_analysis_powerCalc_msgService',
-    'socrat_modeler_distribution_normal',
-    'socrat_modeler_distribution_laplace',
-    'socrat_modeler_distribution_cauchy',
-    'socrat_modeler_distribution_maxwell_boltzman',
-    'socrat_modeler_distribution_binomial',
-    'socrat_analysis_modeler_kernel_density_plotter',
-    'socrat_modeler_distribution_ChiSquared',
-    'socrat_modeler_distribution_LogNormal',
-    'socrat_modeler_distribution_exponential',
-   
+  @inject 'app_analysis_modeler_msgService',
+    'app_analysis_modeler_distrNormal',
+    'app_analysis_modeler_distrLaplace',
+    'app_analysis_modeler_distrCauchy',
+    'app_analysis_modeler_distrMaxwellBoltzman',
+    'app_analysis_modeler_distrBinomial',
+    'app_analysis_modeler_kernelDensityPlotter',
+    'app_analysis_modeler_distrChiSquared',
+    'app_analysis_modeler_distrLogNormal',
+    'app_analysis_modeler_distrExponential',
+
     '$interval'
 
   initialize: ->
     #import each distribution file
-    @msgManager = @app_analysis_powerCalc_msgService
-    @Normal = @socrat_modeler_distribution_normal
-    @Kernel = @socrat_analysis_modeler_kernel_density_plotter
-    @Laplace = @socrat_modeler_distribution_laplace
-    @Cauchy = @socrat_modeler_distribution_cauchy
-    @MaxwellBoltzman = @socrat_modeler_distribution_maxwell_boltzman
-    @Binomial = @socrat_modeler_distribution_binomial
-    @ChiSquared = @socrat_modeler_distribution_ChiSquared
-    @LogNormal= @socrat_modeler_distribution_LogNormal
-    @Exponential =@socrat_modeler_distribution_exponential
+    @msgManager = @app_analysis_modeler_msgService
+    @Normal = @app_analysis_modeler_distrNormal
+    @Kernel = @app_analysis_modeler_kernelDensityPlotter
+    @Laplace = @app_analysis_modeler_distrLaplace
+    @Cauchy = @app_analysis_modeler_distrCauchy
+    @MaxwellBoltzman = @app_analysis_modeler_distrMaxwellBoltzman
+    @Binomial = @app_analysis_modeler_distrBinomial
+    @ChiSquared = @app_analysis_modeler_distrChiSquared
+    @LogNormal= @app_analysis_modeler_distrLogNormal
+    @Exponential =@app_analysis_modeler_distrExponential
 
     #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
     #add distribution to the available models list
@@ -74,6 +74,5 @@ module.exports = class ModelerRouter extends BaseModuleDataService
           q = model.CDF(x)
           e = Math.abs(q-p)
 
-        
+
       return x
-    

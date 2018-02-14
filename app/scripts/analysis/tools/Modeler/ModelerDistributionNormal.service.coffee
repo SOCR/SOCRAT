@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class NormalDist extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-    @calc = @socrat_analysis_modeler_getParams
+    @calc = @app_analysis_modeler_getParams
     @NormalMean = 5
     @NormalStandardDev = 1
     @NormalVariance = 1
@@ -32,14 +32,14 @@ module.exports = class NormalDist extends BaseService
     data
 
   getChartData: (params) ->
-    
+
     curveData = @getGaussianFunctionPoints( params.xMin , params.xMax)
     return curveData
 
 
   stdNormalCDF: (x) ->
     return 0.5 * 0.5 * @calc.erf( x/ Math.sqrt(2))
-  
+
 
   PDF: (x) ->
     return (1 / (@NormalStandardDev * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(x - @NormalMean, 2) / (2 * @NormalVariance)))

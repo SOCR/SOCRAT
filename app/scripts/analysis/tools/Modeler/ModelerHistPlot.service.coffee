@@ -9,12 +9,12 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ModelerHist extends BaseService
-  @inject 'socrat_analysis_modeler_kernel_density_plotter', 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_kernelDensityPlotter', 'app_analysis_modeler_getParams'
 
 
   initialize: ->
-  @kernel = @socrat_analysis_modeler_kernel_density_plotter
-  @gauss = @socrat_analysis_modeler_getParams
+  @kernel = @app_analysis_modeler_kernelDensityPlotter
+  @gauss = @app_analysis_modeler_getParams
   @bandwith = 4
   @kde = null
 
@@ -42,8 +42,8 @@ module.exports = class ModelerHist extends BaseService
     # slider
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
-    
-    
+
+
     dataHist = d3.layout.histogram().frequency(false).bins(bins)(arr)
 
 
@@ -69,7 +69,7 @@ module.exports = class ModelerHist extends BaseService
     y = d3.scale.linear().range([ height - padding, padding ])
 
     #need to change x and y ranges
-    dataSetYMax = (d3.max dataHist.map (i) -> i.length )/ sizeOfData  
+    dataSetYMax = (d3.max dataHist.map (i) -> i.length )/ sizeOfData
     yMax = Math.max(dataSetYMax , bounds.yMax)
 
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
@@ -173,7 +173,7 @@ module.exports = class ModelerHist extends BaseService
 #        tooltip.append("/br")
 
     )
-    .on('mouseout', () -> 
+    .on('mouseout', () ->
       d3.select(this).transition().style('fill', getColor(0))
       tooltip.style('display', 'none')
     )
@@ -190,7 +190,7 @@ module.exports = class ModelerHist extends BaseService
 
     ##@gauss.drawKernelDensityEst(data, width, height, _graph, xAxis, yAxis, y, x)
 
-    
+
   drawHist: (_graph, data, container, gdata, width, height, ranges, bounds) ->
     #pre-set value of slider
     container.append('div').attr('id', 'slider')
@@ -287,4 +287,3 @@ module.exports = class ModelerHist extends BaseService
 	return optimal
 
   '''
-

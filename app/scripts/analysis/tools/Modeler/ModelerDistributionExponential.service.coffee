@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class ExpDist extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-#    @getParams = @socrat_analysis_modeler_getParams
+#    @getParams = @app_analysis_modeler_getParams
 
     @name = 'Exponential'
     @gamma = .75
@@ -45,6 +45,3 @@ module.exports = class ExpDist extends BaseService
 
   setParams: (newParams) ->
     @gamma = parseFloat(newParams.stats.gamma.toPrecision(4))
-
-
-

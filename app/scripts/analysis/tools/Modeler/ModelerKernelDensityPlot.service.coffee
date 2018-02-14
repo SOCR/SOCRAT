@@ -10,11 +10,11 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class KernelDensityPlot extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
 
   initialize: () ->
     @name = 'Kernel'
-    @calc = @socrat_analysis_modeler_getParams
+    @calc = @app_analysis_modeler_getParams
     @bandwith = 5
 
   getName: () ->
@@ -32,7 +32,7 @@ module.exports = class KernelDensityPlot extends BaseService
       return d[0]
     curveData = kde(toKDE)
     return curveData
-    
+
 
   kernelDensityEstimator: (kernel, x) ->
     (sample) ->
@@ -43,7 +43,7 @@ module.exports = class KernelDensityPlot extends BaseService
             kernel x - v
           )
         }
-  
+
   getParams: () ->
     params =
       kernel: @kernel
@@ -66,26 +66,26 @@ module.exports = class KernelDensityPlot extends BaseService
     (u) ->
       if Math.abs(u /= scale) <= 1 then 1 - Math.abs(u)
 
-  
+
 '''
   quartic: (scale) ->
     (u) ->
       if Math.abs(u /= scale) <= 1 then (15/16) * (1-(u*u))*(1-(u*u)) else 0
 
- 
+
   triweight: (scale) ->
     (u) ->
-      if Math.abs(u /= scale) <= 1 then (35/32) * (1-(u*u))*(1-(u*u)*(1-(u*u)) else 0    
+      if Math.abs(u /= scale) <= 1 then (35/32) * (1-(u*u))*(1-(u*u)*(1-(u*u)) else 0
 
 
   gaussian: (scale) ->
     (u) ->
-      if Math.abs(u /= scale) <= 1 then 1 / (Math.sqrt(2*Math.PI) * Math.exp(-.5 * u* U)) 
+      if Math.abs(u /= scale) <= 1 then 1 / (Math.sqrt(2*Math.PI) * Math.exp(-.5 * u* U))
 
 
   cosine : (scale) ->
     (u) ->
       if Math.abs(u /= scale) <= 1 then Math.PI / 4 * Math.cos(Math.PI /2 * u)
 
-  
+
 '''
