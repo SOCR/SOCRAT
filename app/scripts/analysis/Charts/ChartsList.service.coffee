@@ -29,8 +29,8 @@ module.exports = class ChartsList extends BaseService
       w: false
       x: ['integer', 'number']
       y: ['integer', 'number']
-      z: false
-      message: "Choose an x variable and a y variable."
+      z: ['string']
+      message: "Choose an x variable and a y variable. If you'd like, also choose a z variable to denote color."
       xLabel: "X"
       yLabel: "Y"
     ,
@@ -51,7 +51,7 @@ module.exports = class ChartsList extends BaseService
       x: ['integer', 'number']
       y: ['integer', 'number']
       z: ['integer', 'string']
-      r: ['integer', 'string']
+      r: ['integer', 'number']
       message: "Choose an x variable, a y variable and a radius variable."
       xLabel: "X"
       yLabel: "Y"
@@ -87,7 +87,42 @@ module.exports = class ChartsList extends BaseService
       z: false
       message: "Choose one variable to put into a pie chart."
       xLabel: "Category"
-
+    ,
+      name: 'Line Chart'
+      value: 11
+      v: false
+      w: false
+      x: ['date']
+      y: ['integer', 'number']
+      z: ['string']
+      message: "Choose a continuous variable for x and a numerical variable for y"
+      xLabel: "X (date)"
+      yLabel: "Y"
+      zLabel: "Category (if applicable)"
+    ,
+      name: 'Stream Graph'
+      value: 8
+      v: false
+      w: false
+      x: ['date']
+      y: ['integer', 'number']
+      z: ['string']
+      message: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
+      xLabel: "X (date)"
+      yLabel: "Y"
+      zLabel: "Key"
+    ,
+      name: 'Area Trellis Chart'
+      value: 12
+      v: false
+      w: false
+      x: ['date']
+      y: ['integer', 'number']
+      z: ['string']
+      message: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
+      xLabel: "X (date)"
+      yLabel: "Y"
+      zLabel: "Key"
     ]
 
   getNested: () ->
@@ -126,29 +161,6 @@ module.exports = class ChartsList extends BaseService
       message: "Pick date variable for x and numerical variable for y"
       xLabel: "X (date)"
       yLabel: "Y"
-    ,
-      name: 'Line Chart'
-      value: 11
-      v: false
-      w: false
-      x: true
-      y: true
-      z: false
-      message: "Choose a continuous variable for x and a numerical variable for y"
-      xLabel: "X (date)"
-      yLabel: "Y"
-    ,
-      name: 'Bivariate Area Chart'
-      value: 12
-      v: false
-      w: false
-      x: true
-      y: true
-      z: true
-      message: "Choose a date variable for x and two numerical variables for y and z"
-      xLabel: "X (date)"
-      yLabel: "Y"
-      zLabel: "Z"
     ,
       name: 'Stream Graph'
       value: 13

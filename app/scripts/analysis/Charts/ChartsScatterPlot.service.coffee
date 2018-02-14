@@ -3,82 +3,59 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsScatterPlot extends BaseService
-  
+  @inject '$q',
+    '$stateParams',
+    'app_analysis_charts_dataTransform',
+    'app_analysis_charts_list',
+    'app_analysis_charts_sendData',
+    'app_analysis_charts_checkTime',
+    'app_analysis_charts_dataService',
+    'app_analysis_charts_msgService'
+
   initialize: ->
+    @msgService = @app_analysis_charts_msgService
+    @dataService = @app_analysis_charts_dataService
+    @dataTransform = @app_analysis_charts_dataTransform
+    @list = @app_analysis_charts_list
+    @sendData = @app_analysis_charts_sendData
+    @checkTime = @app_analysis_charts_checkTime
+    @DATA_TYPES = @dataService.getDataTypes()
 
-  drawScatterPlot: (data,ranges,width,height,_graph,container,gdata) ->
-    padding = 50
-    x = d3.scale.linear().domain([ranges.xMin,ranges.xMax]).range([ padding, width-padding ])
-    y = d3.scale.linear().domain([ranges.yMin,ranges.yMax]).range([ height-padding, padding ])
-    xAxis = d3.svg.axis().scale(x).orient('bottom')
-    yAxis = d3.svg.axis().scale(y).orient('left')
+    @ve = require 'vega-embed'
 
-    # values
-    xValue = (d)->parseFloat d.x
-    yValue = (d)->parseFloat d.y
+  drawScatterPlot: (data,ranges,width,height,_graph,container,labels) ->
 
-    # map dot coordination
-    xMap = (d)-> x xValue(d)
-    yMap = (d)-> y yValue(d)
+    if (data[0]["z"])
+      vlSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "width": 500,
+        "height": 500,
+        "data": {"values": data},
+        "mark": "point",
+        "encoding": {
+          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
+          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
+          "color": {"field": "z", "type": "nominal"}
+        }
+      }
+    else
+      vlSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "width": 500,
+        "height": 500,
+        "data": {"values": data},
+        "mark": "point",
+        "encoding": {
+          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
+          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
+        }
+      }
 
-    # x axis
-    _graph.append("g")
-    .attr("class", "x axis")
-    .attr('transform', 'translate(0,' + (height - padding) + ')')
-    .call xAxis
-    .style('font-size', '16px')
 
-    # y axis
-    _graph.append("g")
-    .attr("class", "y axis")
-    .attr('transform', 'translate(' + padding + ',0)' )
-    .call(yAxis)
-    .style('font-size', '16px')  
+    opt =
+      "actions": {export: true, source: false, editor: false}
     
-    # make x y axis thin
-    _graph.selectAll('.x.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-    _graph.selectAll('.y.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-   
-    # rotate text on x axis
-    _graph.selectAll('.x.axis text')
-    .attr('transform', (d) ->
-       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-    .style('font-size', '16px')
-        
-    # Title on x-axis
-    _graph.append('text')
-    .attr('class', 'label')
-    .attr('text-anchor', 'middle')
-    .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
-    .text gdata.xLab.value
-    
-    # Title on y-axis
-    _graph.append("text")
-    .attr('class', 'label')
-    .attr('text-anchor', 'middle')
-    .attr('transform', 'translate(0,' + padding/2 + ')')
-    .text gdata.yLab.value
-
-    # add the tooltip area to the webpage
-    tooltip = container
-    .append('div')
-    .attr('class', 'tooltip')
-
-    # draw dots
-    _graph.selectAll('.dot')
-    .data(data)
-    .enter().append('circle')
-    .attr('class', 'dot')
-    .attr('r', 5)
-    .attr('cx', xMap)
-    .attr('cy', yMap)
-    .style('fill', 'DodgerBlue')
-    .attr('opacity', '0.5')
-    .on('mouseover', (d)->
-      tooltip.transition().duration(200).style('opacity', .9)
-      tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">(' + xValue(d)+ ',' + yValue(d) + ')</div>')
-      .style('left', d3.select(this).attr('cx') + 'px').style('top', d3.select(this).attr('cy') + 'px'))
-    .on('mouseout', (d)->
-      tooltip.transition().duration(500).style('opacity', 0))
+    @ve '#vis', vlSpec, opt, (error, result) ->
+      # Callback receiving the View instance and parsed Vega spec
+      # result.view is the View, which resides under the '#vis' element
+      return
