@@ -20,13 +20,12 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@algorithms = ['Select',
 		'Test of One Proportion',
 		'Test of Two Proportions',
-		'Pilot Study',
 		'R-square (multiple correlation)',
 		'Generic chi-square test',
 		'Power of a Simple Poisson Test',
 		'Two-sample t test (general case)',
 		'One-Sample (or Paired) t Test']
-		@selectedAlgorithm = @algorithms[3]
+		@selectedAlgorithm = @algorithms[1]
 
 		# set up data and algorithm-agnostic controls
 		@DATA_TYPES = @dataService.getDataTypes()
@@ -159,6 +158,10 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			@oneProp()
 		else if (@selectedAlgorithm is 'Test of Two Proportions')
 			@twoProp()
+		else if (@selectedAlgorithm is 'Generic chi-square test')
+			@chiSquare()
+
+
 
 	twoTest: ()->
 		@populations = {}
@@ -216,11 +219,10 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@populations[@chosenColsTwo[1]].push(row[index2])
 			targets = @chosenColsTwo
 
-		@msgService.broadcast 'powercalc:onetwoTestdata',
+		@msgService.broadcast 'powercalc:data',
 			popl: @populations
 			target: targets
 	
-
 	oneTest: () ->
 		@populations = {}
 		targets = []
@@ -248,10 +250,9 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@populations[@chosenColsOne].push(row[index1])
 
 			targets = [@chosenColsOne, ""]
-		@msgService.broadcast 'powercalc:onetwoTestdata',
+		@msgService.broadcast 'powercalc:data',
 			popl: @populations
 			target: targets
-
 
 	oneProp: () ->
 		if @chosenCols is null
@@ -291,7 +292,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		if size is 0 then size = 1
 		proportion = size/totalSize
 
-		@msgService.broadcast 'powercalc:onePropdata',
+		@msgService.broadcast 'powercalc:data',
 			prop: proportion
 			size: size
 			target: @curTarget
@@ -407,12 +408,24 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		proportion1 = size1/totalSize
 		proportion2 = size2/totalSize
 
-		@msgService.broadcast 'powercalc:twoPropdata',
+		@msgService.broadcast 'powercalc:data',
 			prop1: proportion1
 			prop2: proportion2
 			size1: size1
 			size2: size2
 			target: @curTarget
+
+	chiSquare:() -> 
+		@populations = {}
+
+		# check if contains categorical column
+		for header in @df.types
+			if header in ["string"]
+				console.log("Error: Contains categorical column")
+				return
+
+		@msgService.broadcast 'powercalc:data',
+			data = @df.data
 
 
 	findMinMax: (data, index1, index2, isTwo) ->
