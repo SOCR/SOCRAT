@@ -9,7 +9,7 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
     @socrDatasets = [
       name: 'testContingencyTable'
       url: 'datasets/contingencyTable.csv'
-      description: null
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_052511_IrisSepalPetalClasses'
     ,
       name: 'Iris Flower Dataset'
       url: 'datasets/iris.csv'
