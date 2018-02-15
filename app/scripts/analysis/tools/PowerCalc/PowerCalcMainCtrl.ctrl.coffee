@@ -72,16 +72,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@RsquareGUI_click();
 		@RsquareGUI_submit();
 
-		#variables needed for SimpleChi2GUI only
-		@SimpleChi2GUI_nn = 1
-		@SimpleChi2GUI_Power=null;
-		@SimpleChi2GUI_n=null;
-		@SimpleChi2GUI_maxn=75;
-		@SimpleChi2GUI_maxPower=1;
-		@SimpleChi2GUI_help = false;
-		@SimpleChi2GUI_click();
-		@SimpleChi2GUI_submit();
-
 		#variables needed for SimplePoissonGUI only
 		@SimplePoissonGUI_nn = 1;
 		@SimplePoissonGUI_lambda0=null;
@@ -143,6 +133,8 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		else if (@selectedAlgorithm is "Test of Two Proportions")
 			@twoPropRetrieve()
 			return
+		else if (@selectedAlgorithm is "Generic chi-square test")
+			@chi2Retrieve()
 		else
 			console.log("Unknown algorithms selected")
 			return
@@ -815,77 +807,96 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@RsquareGUI_help = !@RsquareGUI_help
 		return
 
+	chi2Retrieve: () ->
+		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
+		@chi2Power = parseFloat(@params.power.toPrecision(4))
+		console.log @chi2Power
+		@chi2chi2 = @params.chi2
+		@chi2chi2Max = @params.chi2Max
+		@chi2EffSize = @params.effSize
+		@chi2N = @params.n
+		@chi2NMax = @params.nMax
+		@chi2Df = @params.df
+		@chi2DfMax = @params.dfMax
+		@chi2Click()
 
-	#functions for SimpleChi2GUI only
-	SimpleChi2GUI_click: () ->
-		$( "#nuig" ).slider(
-			value:@SimpleChi2GUI_n,
+	chi2Click:() ->
+		chi2chi2UI = $("#chi2chi2UI")
+		chi2EffSizeUI = $("#chi2EffSizeUI")
+		chi2NUI = $("#chi2NUI")
+		chi2DfUI = $("#chi2DfUI")
+		chi2PowerUI = $("#chi2PowerUI")
+		sliders = [chi2chi2UI, chi2EffSizeUI, chi2NUI, chi2DfUI, chi2PowerUI];
+
+		chi2chi2UI.slider(
+			value: @chi2chi2,
 			min: 0,
-			max: @SimpleChi2GUI_maxn,
+			max: @chi2chi2Max,
 			range: "min",
-			step: 0.005,
-			slide: ( event, ui ) =>
-				$( "#ng" ).val( ui.value );
-				@SimpleChi2GUI_submit('1','n',ui.value);
+			step: 1,
+			slide: (event, ui) =>
+				@chi2chi2 = ui.value
+				@chi2Sync("chi2")
+				@$scope.$apply()
 		)
-		$( "#ng" ).val( $( "#nuig" ).slider( "value" ) );
-		$( "#Poweruig" ).slider(
-			value:@SimpleChi2GUI_Power,
+
+		chi2EffSizeUI.slider(
+			value: @chi2EffSize,
 			min: 0,
-			max: @SimpleChi2GUI_maxPower,
-			range: 'min',
-			step: 0.0001,
-			slide: ( event, ui ) =>
-				$( "#Powerg" ).val( ui.value );
-				@SimpleChi2GUI_submit('1','Power',ui.value);
+			max: 1,
+			range: "min",
+			step: 0.01,
+			slide: (event, ui) =>
+				@chi2EffSize = ui.value
+				@chi2Sync("effSize")
+				@$scope.$apply()
 		)
-		$( "#Powerg" ).val( $( "#Poweruig" ).slider( "value" ) );
-	SimpleChi2GUI_clk: (evt) ->
-		obj=evt.currentTarget
-		if obj
-			id=obj.id;
-			ck=$(obj).prop("checked");
-		if ck
-			@SimpleChi2GUI_submit("1",id,"1");
-		else
-			@SimpleChi2GUI_submit("1",id,"");
-	SimpleChi2GUI_submit: (id, key, value) ->
-		d = @powerAnalysis.SimpleChi2GUI_handle(id, key, value);
-		$("#proChi2g").prop("value",d.proChi2);
-		$("#proNg").prop("value",d.proN);
-		$("#dfg").prop("value",d.df);
-		$("#Alphag").prop("value",d.Alpha);
-		$("#ng").val(d.n);
-		$("#Powerg").val(d.Power);
-		@SimpleChi2GUI_Power=d.Power;
-		if @SimpleChi2GUI_Power > @SimpleChi2GUI_maxPower
-			@SimpleChi2GUI_maxPower= (@SimpleChi2GUI_Power / 0.02 + 1) * 0.02;
-		@SimpleChi2GUI_n = d.n;
-		if @SimpleChi2GUI_n > @SimpleChi2GUI_maxn
-			@SimpleChi2GUI_maxn = (@SimpleChi2GUI_n / 20 + 1) * 20;
-		@SimpleChi2GUI_click();
-	SimpleChi2GUI_valiad: (evt) ->
-		id = evt.target.name
-		data = evt.target.value
-		r=/^\d+(\.\d+)?$/;
-		if r.test(data)
-			@SimpleChi2GUI_submit('1',id,data);
-			return true;
-		else
-			return true;
-	SimpleChi2GUI_changeSlider: (sliderId, evt) ->
-		#console.log("changeSlider hit")
-		key = evt.target.value
-		@SimpleChi2GUI_submit '1', sliderId, key
+
+		chi2NUI.slider(
+			value: @chi2N,
+			min: 1,
+			max: @chi2NMax,
+			range: "min",
+			step: 1,
+			slide: (event, ui) =>
+				@chi2N = ui.value
+				@chi2Sync("n")
+				@$scope.$apply()
+		)
+
+		chi2DfUI.slider(
+			value: @chi2Df,
+			min: 1,
+			max: @chi2DfMax,
+			range: "min",
+			step: 1,
+			slide: (event, ui) =>
+				@chi2Df = ui.value
+				@chi2Sync("df")
+				@$scope.$apply()
+		)
+
+		chi2PowerUI.slider(
+			value: @chi2Power,
+			min: 0,
+			max: 0.99,
+			range: "min",
+			step: 0.01,
+			slide: (event, ui) =>
+				@chi2Power = ui.value
+				@$scope.$apply()
+		)
+
 		return
-	SimpleChi2GUI_show_help: () ->
-		#console.log(@cfap_help)
-		if @SimpleChi2GUI_help is true
-			$('#SimpleChi2GUI_H').val "Show Help"
-		else
-			$('#SimpleChi2GUI_H').val "Hide Help"
-		@SimpleChi2GUI_help = !@SimpleChi2GUI_help
-		return
+
+	chi2Sync: (tar) ->
+		@params.target = tar
+		@params.chi2 = @chi2chi2
+		@params.effSize = @chi2EffSize
+		@params.n = @chi2N
+		@params.df = @chi2Df
+		@params.power = @chi2Power
+		@syncData(@params) 
 
 	#functions for SimplePoissonGUI only
 	SimplePoissonGUI_click: () ->

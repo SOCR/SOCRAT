@@ -18,7 +18,8 @@ module.exports = class StatsSidebarCtrl extends BaseCtrl
 		# all alglorithms
 		@algorithms = ['Select',
 		'CI for One Mean',
-		'CI for One Proportion'
+		'CI for One Proportion',
+		'Pilot Study'
 		]
 		# select first calculator
 		@selectedAlgorithm = @algorithms[1]

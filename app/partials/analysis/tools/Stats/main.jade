@@ -85,3 +85,7 @@ div(ng-controller="statsMainCtrl as mainArea")
 		.row
 			h6 Interpretation: &nbsp;
 			b We are {{mainArea.cilevel}}% confident that the true value of proportion lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
+
+
+	div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
+		h1 TODO
