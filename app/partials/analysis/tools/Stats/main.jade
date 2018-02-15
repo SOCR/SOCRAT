@@ -1,0 +1,91 @@
+div(ng-controller="statsMainCtrl as mainArea")
+	
+	div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
+		h6 Confidence Interval for One Mean &nbsp;
+			span.glyphicon.glyphicon-question-sign(
+				aria-hidden="true"
+				uib-tooltip="This dialog provides for sample-size determination for estimating a mean to within a specified margin of error, for either a finite population of specified size, or an infinite population (or sampling with replacement)."
+				tooltip-placement="bottom"
+			)
+		.row
+			.form-inline
+				label(style='margin-top:30px; margin-bottom:10px;') Mode: &nbsp;
+				select.form-control(
+					ng-model="mainArea.CIOMMode"
+					ng-change="mainArea.CIOMSync()"
+					ng-options="mode for mode in mainArea.CIOMModes"
+				)
+			.form-inline
+				label N (Sample Size): &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.CIOMN"
+					ng-keypress="mainArea.CIOMPress($event)"
+					ng-disabled="mainArea.deployed"
+					type="number"
+					step="1"
+					name='CIOMN'
+				)
+				#CIOMNUI
+			.form-inline
+				label μ (Sample Mean): &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.CIOMMean"
+					ng-keypress="mainArea.CIOMPress($event)"
+					ng-disabled="mainArea.deployed"
+					type="number"
+					step="0.001"
+					name='CIOMMean'
+				)
+				#CIOMMeanUI
+			.form-inline
+				label σ (Sample std): &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.CIOMStDev"
+					ng-keypress="mainArea.CIOMPress($event)"
+					ng-disabled="mainArea.deployed"
+					type="number"
+					step="0.001"
+					name='CIOMStDev'
+				)
+				#CIOMStDevUI
+			.form-inline
+				p Confidence Interval: [{{mainArea.CIOMLowerBound}}, {{mainArea.CIOMUpperBound}}]
+
+
+	div(ng-show='mainArea.selectedAlgorithm == "CI for One Proportion"')
+		h6 Confidence interval for sampe proportion &nbsp;
+			span.glyphicon.glyphicon-search(
+				aria-hidden="true"
+				uib-tooltip="calulator page"
+				tooltip-placement="right")
+		.row
+			.form-inline
+				label N (Sample Size): &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.CIOPN"
+					ng-keypress="mainArea.CIOPPress($event)"
+					ng-disabled="mainArea.deployed"
+					type="number"
+					step="1"
+					name='CIOPN'
+				)
+				#CIOPNUI
+			.form-inline
+				label T (Total Size): &nbsp;
+				input.form-control.input-sm.flat(
+					ng-model="mainArea.CIOPT"
+					ng-keypress="mainArea.CIOPPress($event)"
+					ng-disabled="mainArea.deployed"
+					type="number"
+					step="1"
+					name='CIOPT'
+				)
+				#CIOPTUI
+				
+		.row
+			h6 Interpretation: &nbsp;
+			b We are {{mainArea.cilevel}}% confident that the true value of proportion lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
+
+
+	div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
+		h1 TODO
