@@ -16,8 +16,13 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
+<<<<<<< HEAD
         'app_analysis_mymodule',
         'app_analysis_powercalc'
+=======
+        'app_analysis_powercalc',
+        'app_analysis_stats'
+>>>>>>> df50d07590e14b0006ebb99e45eca8ccc901fd59
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -31,7 +36,8 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc'
+        'app_analysis_powercalc',
+        'app_analysis_stats'
       ]
     ,
       msgFrom: 'data summary'
@@ -40,7 +46,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc',
+        'app_analysis_stats'
       ]
       msgTo: 'summary'
       scopeTo: ['app_analysis_datalib']
@@ -53,7 +61,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc',
+        'app_analysis_stats'
       ]
     ,
       msgFrom: 'data histogram'
@@ -100,7 +110,8 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc'
+        'app_analysis_powercalc',
+        'app_analysis_stats'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -113,7 +124,8 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc'
+        'app_analysis_powercalc',
+        'app_analysis_stats'
       ]
     ]
 
