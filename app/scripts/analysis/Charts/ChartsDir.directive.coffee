@@ -6,7 +6,6 @@ BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class ChartsDir extends BaseDirective
   @inject 'app_analysis_charts_areaChart',
-          'app_analysis_charts_areaTrellisChart'
           'app_analysis_charts_barChart',
           'app_analysis_charts_bivariateLineChart',
           'app_analysis_charts_bubbleChart',
@@ -23,7 +22,6 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_checkTime'
 
   initialize: ->
-    @areaTrellis = @app_analysis_charts_areaTrellisChart
     @bar = @app_analysis_charts_barChart
     @bubble = @app_analysis_charts_bubbleChart
     @histogram = @app_analysis_charts_histogram
@@ -109,8 +107,6 @@ module.exports = class ChartsDir extends BaseDirective
               zMax: if labels? and numerics.includes(labels.zLab.type) then d3.max(data, (d) -> parseFloat(d.z)) else null
 
             switch scheme.name
-              when 'Area Trellis Chart'
-                @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
               when 'Bar Graph'
                 @bar.drawBar(width,height,data,_graph,labels,ranges)
               when 'Bubble Chart'
@@ -125,7 +121,8 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Stacked Bar Chart'
                 @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
               when 'Stream Graph'
-                @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
+                @time.checkTimeChoice(data)
+                @streamGraph.streamGraph(data,ranges,width,height,_graph, scheme)
               when 'Area Chart'
                 @area.drawArea(height,width,_graph, data, labels)
               when 'Treemap'
@@ -133,7 +130,7 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Line Chart'
                 @line.lineChart(data,ranges,width,height,_graph, labels,container)
               when 'Bivariate Area Chart'
-                # @time.checkTimeChoice(data)
+                @time.checkTimeChoice(data)
                 @bivariate.bivariateChart(height,width,_graph, data, labels)
               when 'Normal Distribution'
                 @normal.drawNormalCurve(data, width, height, _graph)

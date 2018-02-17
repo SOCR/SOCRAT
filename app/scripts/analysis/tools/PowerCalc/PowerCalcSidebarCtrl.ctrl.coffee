@@ -14,37 +14,11 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@dataService = @app_analysis_powerCalc_dataService
 		@msgService = @app_analysis_powerCalc_msgService
 		@algorithmsService = @app_analysis_powerCalc_algorithms
-
+		
 
 		# all alglorithms
 		@algorithms = ['Select',
-		'CI for One Proportion',
-		'CI for One Mean',
 		'Test of One Proportion',
-		'One-Sample (or Paired) t Test',
-		'Pilot Study',
-		'R-square (multiple correlation)',
-		'Generic chi-square test',
-		'Power of a Simple Poisson Test',
-		'Two-sample t test (general case)']
-		@powercalcRunning = off
-		@algParams = null
-		@selectedAlgorithm = @algorithms[9]
-		@DATA_TYPES = @dataService.getDataTypes()
-
-		# set up data and algorithm-agnostic controls
-		@useLabels = off
-		@reportAccuracy = on
-		@clusterRunning = off
-		@ready = off
-		@running = 'hidden'
-		@uniqueLabels =
-		labelCol: null
-		num: null
-		@algParams = null
-
-		# dataset
-		['Test of One Proportion',
 		'Test of Two Proportions',
 		'R-square (multiple correlation)',
 		'Generic chi-square test',
@@ -244,7 +218,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@msgService.broadcast 'powercalc:onetwoTestdata',
 			popl: @populations
 			target: targets
-
+	
 
 	oneTest: () ->
 		@populations = {}
@@ -584,10 +558,9 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 
 
-	changeValue: (evt) ->
-		name = evt.target.name
-		key = evt.which or evt.keyCode
-		if key is 13
-			@tTestAlpha = parseFloat(val)
-		@slidebar()
+
+
+
+
+
 

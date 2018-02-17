@@ -25,7 +25,6 @@ module.exports = class ChartsLineChart extends BaseService
 
     @ve = require 'vega-embed'
 
-<<<<<<< HEAD
   lineChart: (data,ranges,width,height,_graph, labels,container) ->
 
     for item in data
@@ -52,38 +51,6 @@ module.exports = class ChartsLineChart extends BaseService
         }
       }
     }
-=======
-  lineChart: (data,ranges,width,height,_graph,labels,container) ->
-
-    console.log(data)
-    
-    if (data[0]["z"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "line",
-        "encoding": {
-          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "color": {"field": "z", "type": "nominal"}
-        }
-      }
-    else
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "line",
-        "encoding": {
-          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
-        }
-      }
-
->>>>>>> df50d07590e14b0006ebb99e45eca8ccc901fd59
 
     opt =
       "actions": {export: true, source: false, editor: false}
@@ -91,8 +58,4 @@ module.exports = class ChartsLineChart extends BaseService
     @ve '#vis', vlSpec, opt, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec
       # result.view is the View, which resides under the '#vis' element
-<<<<<<< HEAD
       return
-=======
-      return
->>>>>>> df50d07590e14b0006ebb99e45eca8ccc901fd59
