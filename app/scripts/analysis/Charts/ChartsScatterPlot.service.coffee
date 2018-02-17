@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsAreaChart extends BaseService
+module.exports = class ChartsScatterPlot extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
@@ -10,7 +10,7 @@ module.exports = class ChartsAreaChart extends BaseService
     'app_analysis_charts_sendData',
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
-    'app_analysis_charts_msgService',
+    'app_analysis_charts_msgService'
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
