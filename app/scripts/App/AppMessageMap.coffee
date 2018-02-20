@@ -16,8 +16,7 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc',
-        'socrat_analysis_mymodule'
+        'app_analysis_powercalc'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -31,8 +30,7 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc',
-        'socrat_analysis_mymodule'
+        'app_analysis_powercalc'
       ]
     ,
       msgFrom: 'data summary'
