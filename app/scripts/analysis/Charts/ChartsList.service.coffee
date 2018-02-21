@@ -88,19 +88,12 @@ module.exports = class ChartsList extends BaseService
       message: "Choose one variable to put into a pie chart."
       xLabel: "Category"
     ,
-      name: 'Area Chart'
-      value: 10
+      name: 'Line Chart'
+      value: 11
       v: false
       w: false
       x: ['date']
       y: ['integer', 'number']
-      z: false
-      message: "Pick date variable for x and numerical variable for y"
-      xLabel: "X (date)"
-      yLabel: "Y"
-    ,
-      name: 'Line Chart'
-      value: 11
       z: ['string']
       message: "Choose a continuous variable for x and a numerical variable for y"
       xLabel: "X (date)"
@@ -113,10 +106,23 @@ module.exports = class ChartsList extends BaseService
       w: false
       x: ['date']
       y: ['integer', 'number']
-      z: false
-      message: "Choose a continuous variable for x and a numerical variable for y"
+      z: ['string']
+      message: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
       xLabel: "X (date)"
       yLabel: "Y"
+      zLabel: "Key"
+    ,
+      name: 'Area Trellis Chart'
+      value: 12
+      v: false
+      w: false
+      x: ['date']
+      y: ['integer', 'number']
+      z: ['string']
+      message: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
+      xLabel: "X (date)"
+      yLabel: "Y"
+      zLabel: "Key"
     ]
 
   getNested: () ->
@@ -255,6 +261,3 @@ module.exports = class ChartsList extends BaseService
       message: "Choose one variable to put into a pie chart."
       xLabel: "Category"
     ]
-
-
-
