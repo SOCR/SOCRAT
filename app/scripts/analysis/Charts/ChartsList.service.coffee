@@ -261,6 +261,3 @@ module.exports = class ChartsList extends BaseService
       message: "Choose one variable to put into a pie chart."
       xLabel: "Category"
     ]
-
-
-
