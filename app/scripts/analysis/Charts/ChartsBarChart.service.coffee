@@ -37,30 +37,53 @@ module.exports = class ChartsBarChart extends BaseService
         "width": 500,
         "height": 500,
         "data": {"values": data},
-        "selection": {
-          "brush": {
-            "type": "interval",
-            "encodings": ["x"]
-          }
-        },
-        "mark": "bar",
-        "encoding": {
-          "x": {
-            "field": "x_vals",
-            "type": "ordinal",
-            "axis": {"title": labels.xLab.value}
+        "layer": [{
+          "selection": {
+            "brush": {
+              "type": "interval",
+              "encodings": ["x"]
+            }
           },
-          "y": {
-            "field": "y_vals",
-            "type": "quantitative",
-            "axis": {"title": labels.yLab.value},
-          },
-          "color": {
-            "field": "z",
-            "type": "nominal",
-            "scale": {"scheme": "category20b"}
+          "mark": "bar",
+          "encoding": {
+            "x": {
+              "field": "x_vals",
+              "type": "ordinal",
+              "axis": {"title": labels.xLab.value}
+            },
+            "y": {
+              "aggregate": "mean",
+              "field": "y_vals",
+              "type": "quantitative",
+              "axis": {"title": labels.yLab.value}
+            },
+            "color": {
+              "field": "z",
+              "type": "nominal",
+              "scale": {"scheme": "category20b"}
+            },
+            "opacity": {
+              "condition": {
+                "selection": "brush", "value": 1
+              },
+              "value": 0.7
+            }
           }
-        }
+        }, {
+          "transform": [{
+            "filter": {"selection": "brush"}
+          }],
+          "mark": "rule",
+          "encoding": {
+            "y": {
+              "aggregate": "mean",
+              "field": "y_vals",
+              "type": "quantitative"
+            },
+            "color": {"value": "firebrick"},
+            "size": {"value": 3}
+          }
+        }]
       }
     else
       vlSpec = {
@@ -68,30 +91,53 @@ module.exports = class ChartsBarChart extends BaseService
         "width": 500,
         "height": 500,
         "data": {"values": data},
-        "selection": {
-          "brush": {
-            "type": "interval",
-            "encodings": ["x"]
-          }
-        },
-        "mark": "bar",
-        "encoding": {
-          "x": {
-            "field": "x_vals",
-            "type": "ordinal",
-            "axis": {"title": labels.xLab.value}
+        "layer": [{
+          "selection": {
+            "brush": {
+              "type": "interval",
+              "encodings": ["x"]
+            }
           },
-          "y": {
-            "field": "y_vals",
-            "type": "quantitative",
-            "axis": {"title": labels.yLab.value}
+          "mark": "bar",
+          "encoding": {
+            "x": {
+              "field": "x_vals",
+              "type": "ordinal",
+              "axis": {"title": labels.xLab.value}
+            },
+            "y": {
+              "aggregate": "mean",
+              "field": "y_vals",
+              "type": "quantitative",
+              "axis": {"title": labels.yLab.value}
+            },
+            "opacity": {
+              "condition": {
+                "selection": "brush", "value": 1
+              },
+              "value": 0.7
+            }
           }
-        }
+        }, {
+          "transform": [{
+            "filter": {"selection": "brush"}
+          }],
+          "mark": "rule",
+          "encoding": {
+            "y": {
+              "aggregate": "mean",
+              "field": "y_vals",
+              "type": "quantitative"
+            },
+            "color": {"value": "firebrick"},
+            "size": {"value": 3}
+          }
+        }]
       }
 
     opt =
       "actions": {export: true, source: false, editor: false}
-    
+
     @ve '#vis', vlSpec, opt, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec
       # result.view is the View, which resides under the '#vis' element
