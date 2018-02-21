@@ -6,11 +6,11 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
   @inject 'app_analysis_mymodule_dataService', '$timeout', '$scope'
 
   initialize: ->
-    @dataService = @app_analysis_cluster_dataService
-    # @DATA_TYPES = @dataService.getDataTypes()
+    @dataService = @socrat_analysis_mymodule_dataService
+    @DATA_TYPES = @dataService.getDataTypes()
 
     @title = 'My Awesome module'
-#     @dataType = ''
+    @dataType = ''
 #     @transforming = off
 #     @transformation = ''
 #     @transformations = []
@@ -20,18 +20,21 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
 #     @avgAccuracy = ''
 #     @accs = {}
 
-#     @dataPoints = null
+    @dataPoints = null
 #     @means = null
 #     @assignments = null
 
-#     @$scope.$on 'cluster:updateDataPoints', (event, data) =>
+    @$scope.$on 'myModule:displayDataPoints', (event, dataFrame) =>
 # #      @showresults = off if @showresults is on
 #       # safe enforce $scope.$digest to activate directive watchers
-#       @$timeout => @updateChartData(data)
+      @$timeout => @updateTable(dataFrame)
 
 #     @$scope.$on 'cluster:updateDataType', (event, dataType) =>
 #       @dataType = dataType
-
+  updateTableData: (dataFrame) ->
+    if dataFrame?
+      @dataPoint
+      @dataPoints = dataFrame
   # prettifyArrayOutput: (arr) ->
   #   if arr?
   #     arr = arr.map (x) -> x.toFixed 3
