@@ -3,27 +3,23 @@
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class socratMyModuleDir extends BaseDirective
-  # @inject '$parse'
+  @inject '$parse'
 
-  # initialize: ->
-  #   @restrict = 'E'
-  #   @template = "<svg width='100%' height='600'></svg>"
-  #   @replace = true # replace the directive element with the output of the template
+  initialize: ->
+    @restrict = 'E'
+    @template = "<svg width='100%' height='600'></svg>"
+    @replace = true # replace the directive element with the output of the template
 
   #   # The link method does the work of setting the directive
   #   #  up, things like bindings, jquery calls, etc are done in here
-  #   @link = (scope, elem, attr) =>
-
+    @link = (scope, elem, attr) =>
+      svg = d3.select(elem[0])
   #     MARGIN_LEFT = 40
   #     MARGIN_TOP = 20
-
-  #     graph = null
   #     xScale = null
   #     yScale = null
   #     color = null
   #     meanLayer = null
-
-  #     svg = d3.select(elem[0])
   #     graph = svg.append('g').attr('transform', 'translate(' +  MARGIN_LEFT + ',' + MARGIN_TOP + ')')
   #     meanLayer = graph.append('g')
   #     color = d3.scale.category10()

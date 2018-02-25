@@ -2,10 +2,8 @@ div(ng-controller="MyModuleSidebarCtrl as sidebar")
   form
     legend Parameters &nbsp;
       div.form-group(ng-disabled="sidebar.MyModuleRunning")
-        fieldset
-          label(
-            uib-tooltip="Choose an algorithm from the list below"
-            tooltip-placement="right" )
+        fieldset(ng-show="sidebar.dataFrame")
+          legend Dataset
           //- ) Algorithm &nbsp;
           //- select.form-control(
           //- ng-model="sidebar.selectedAlgorithm"
