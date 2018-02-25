@@ -10,9 +10,8 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
     '$timeout'
 
   initialize: ->
-    @dataService = @app_analysis_cluster_dataService
-    @msgService = @app_analysis_cluster_msgService
-    @clusterRunning = on
+    @dataService = @socrat_analysis_cluster_dataService
+    @msgService = @socrat_analysis_cluster_msgService
 #     @algorithmsService = @app_analysis_cluster_algorithms
 #     @algorithms = @algorithmsService.getNames()
 #     @DATA_TYPES = @dataService.getDataTypes()
@@ -51,7 +50,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 #           # update local data type
 #           @dataType = obj.dataFrame.dataType
 #           # send update to main are actrl
-			@msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
+			@msgService.broadcast 'mymodule:updateDataType', obj.dataFrame.dataType
 #         # make local copy of data
 			@dataFrame = obj.dataFrame
 #         # parse dataFrame

@@ -3,7 +3,7 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class MyModuleMainCtrl extends BaseCtrl
-  @inject 'app_analysis_mymodule_dataService', '$timeout', '$scope'
+  @inject 'socrat_analysis_mymodule_dataService', '$timeout', '$scope'
 
   initialize: ->
     @dataService = @socrat_analysis_mymodule_dataService

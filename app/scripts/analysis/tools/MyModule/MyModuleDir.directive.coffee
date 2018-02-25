@@ -13,6 +13,7 @@ module.exports = class socratMyModuleDir extends BaseDirective
   #   # The link method does the work of setting the directive
   #   #  up, things like bindings, jquery calls, etc are done in here
     @link = (scope, elem, attr) =>
+      graph = null
       svg = d3.select(elem[0])
   #     MARGIN_LEFT = 40
   #     MARGIN_TOP = 20
