@@ -9,7 +9,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
   //div.row-fluid
 
 
- 
+
   div(ng-show='mainArea.distribution == "Normal"')
 
     .row
@@ -43,26 +43,6 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               name='NormalMean'
               )
             #NormalMean
-          .row.form-inline
-            label
-              span.glyphicon.glyphicon-question-sign(
-              aria-hidden="true"
-              uib-tooltip="Standard Deviation of the sample"
-              tooltip-placement="left"
-              ) &nbsp;
-              | σ
-              sub 1
-              | &nbsp;
-              input.form-control.input-sm.flat(
-              ng-model="mainArea.NormalStDev"
-              ng-click="mainArea.NormalSync()"
-              ng-keypress ="mainArea.NormalPress($event)"
-              ng-disabled="mainArea.deployed"
-              type="number"
-              step="0.01"
-              name='NormalStDev'
-              )
-            #NormalStDev
           .row.form-inline
             label
               span.glyphicon.glyphicon-question-sign(
@@ -421,7 +401,7 @@ div(ng-controller="ModelerMainCtrl as mainArea")
               step="1"
               name='kernelBandwidth'
               )
-            #kernelBandwidth     
+            #kernelBandwidth
   div.form-group
     .row
       .row.form-inline
@@ -435,10 +415,10 @@ div(ng-controller="ModelerMainCtrl as mainArea")
                 | Reset
 
 
-  
-  
-  
-  
+
+
+
+
   div.row-fluid
   div(ng-show ="mainArea.distrbution != ' ' ")
     modelerdir
@@ -449,6 +429,3 @@ div(ng-controller="ModelerMainCtrl as mainArea")
       li Median: {{mainArea.stats.median}}
       li Variance: {{mainArea.stats.variance}}
       li Standard Deviation: {{mainArea.stats.standardDev}}
-
-
-
