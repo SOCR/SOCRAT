@@ -18,8 +18,12 @@ module.exports = class ModelerHist extends BaseService
   @bandwith = 4
   @kde = null
 
-  @median = null;
-  @mean = null;
+  @median = null
+  @mean = null
+
+  @graphData = null
+  @elem = null
+
   getMedian: (arr) ->
     arr.sort  (a,b) -> return a - b
     half = Math.floor arr.length/2
@@ -42,8 +46,8 @@ module.exports = class ModelerHist extends BaseService
     # slider
     $('#slidertext').remove()
     container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
-    
-    
+
+
     dataHist = d3.layout.histogram().frequency(false).bins(bins)(arr)
 
 
@@ -69,7 +73,7 @@ module.exports = class ModelerHist extends BaseService
     y = d3.scale.linear().range([ height - padding, padding ])
 
     #need to change x and y ranges
-    dataSetYMax = (d3.max dataHist.map (i) -> i.length )/ sizeOfData  
+    dataSetYMax = (d3.max dataHist.map (i) -> i.length )/ sizeOfData
     yMax = Math.max(dataSetYMax , bounds.yMax)
 
     x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
@@ -173,7 +177,7 @@ module.exports = class ModelerHist extends BaseService
 #        tooltip.append("/br")
 
     )
-    .on('mouseout', () -> 
+    .on('mouseout', () ->
       d3.select(this).transition().style('fill', getColor(0))
       tooltip.style('display', 'none')
     )
@@ -190,7 +194,7 @@ module.exports = class ModelerHist extends BaseService
 
     ##@gauss.drawKernelDensityEst(data, width, height, _graph, xAxis, yAxis, y, x)
 
-    
+
   drawHist: (_graph, data, container, gdata, width, height, ranges, bounds) ->
     #pre-set value of slider
     container.append('div').attr('id', 'slider')
@@ -214,11 +218,60 @@ module.exports = class ModelerHist extends BaseService
       bins = parseInt ui.value
 #      tooltip.html()
       @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds
+      @drawModelCurve @graphData,  _graph, @elem, container,gdata,width,height,ranges, bounds
+      return
 
+  drawModelCurve: (graphData=@graphData,  _graph, elem=@elem, container,labels,width,height,ranges, modelBounds) =>
+    @graphData = graphData
+    @elem = elem
 
+    modelData = graphData.modelData
+    console.log("Plotting Model Data");
+    if modelData
+      container = d3.select(elem[0])
+      container.selectAll('path').remove()
+      leftBound = modelData.stats.stats.leftBound
+      rightBound = modelData.stats.stats.rightBound
+      topBound = modelData.stats.stats.topBound
+      bottomBound = modelData.stats.stats.bottomBound
+      curveData = modelData
 
+      padding = 50
+      #xScale = d3.scale.linear().range([0, width]).domain([modelData.xMin, modelData.xMax])
+      #yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
 
+      #************** Change for quantile scaling **************
+      xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.stats.xMin, modelData.stats.xMax])
+      #changin scale for larger range
+      #xScale = d3.scale.linear().range([padding, width - padding ]).domain([modelData.stats.leftBound, modelData.stats.rightBound])
 
+      top = Math.max(modelData.yMax, topBound)
+      yScale = d3.scale.linear().range([height - padding, padding]).domain([bottomBound, top])
+
+      #x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
+      #y.domain([0, (d3.max dataHist.map (i) -> i.length)])
+      xAxis = d3.svg.axis().ticks(20)
+        .scale(xScale)
+
+      yAxis = d3.svg.axis()
+        .scale(yScale)
+        .ticks(12)
+        .tickPadding(0)
+        .orient("right")
+
+      lineGen = d3.svg.line()
+        .x (d) -> xScale(d.x)
+        .y (d) -> yScale(d.y)
+        .interpolate("basis")
+
+      console.log("printing gaussian curve data")
+
+      _graph.append('svg:path')
+      .attr('d', lineGen(curveData))
+      .data([curveData])
+      .attr('stroke', 'black')
+      .attr('stroke-width', 2.5)
+      .attr('fill', "none")
 
 
 '''
@@ -287,4 +340,3 @@ module.exports = class ModelerHist extends BaseService
 	return optimal
 
   '''
-
