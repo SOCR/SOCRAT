@@ -71,7 +71,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
 
   #takes the current parameters, distribution and datset and updates the graph data accordingly
-  #graph data is two way binded to the modeler viz 
+  #graph data is two way binded to the modeler viz
   updateModelData: () ->
     console.log("Updating Model Data from Sliders")
     xBounds = @getXbounds(@params, @distribution)
@@ -104,7 +104,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
   getXbounds: (@params, @distribution) ->
       dataSetxMin = @params.xMin
       dataSetxMax = @params.xMax
-      
+
       # modelDataFirstQuantile = @router.getQuantile(@distribution, @params, 0.01)
       # modelDataNNQuantile = @router.getQuantile(@distribution, @params, 0.99)
       # xMin = Math.min(modelDataFirstQuantile, dataSetxMin)
@@ -113,14 +113,14 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       bounds =
         xMin: dataSetxMin
         xMax: dataSetxMax
-        
+
 
   #returns the maximium y valuable to be plotted from the model data.
   getYBounds: (modelData) ->
       modelDataYMax = d3.max(modelData, (d)->parseFloat d.y)
       bounds =
         yMax: modelDataYMax
-  
+
 
   #sets the distribution to the updated parameters
   #reloads the data to be plotted
@@ -231,7 +231,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     )
     # enable or disable sliders
     sliders = [
-      nMean, nVariance, nStDev
+      nMean
+    ,
+      nVariance
+    # ,
+    #   nStDev
       ]
 
     if @deployed is true
@@ -550,6 +554,3 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @kBandwith = ui.value
         @kernelSync()
     )
-
-   
-
