@@ -13,16 +13,18 @@ module.exports = class ModelerHist extends BaseService
 
 
   initialize: ->
-  @kernel = @socrat_analysis_modeler_kernel_density_plotter
-  @gauss = @socrat_analysis_modeler_getParams
-  @bandwith = 4
-  @kde = null
+    @kernel = @socrat_analysis_modeler_kernel_density_plotter
+    @gauss = @socrat_analysis_modeler_getParams
+    @bandwith = 4
+    @kde = null
 
-  @median = null
-  @mean = null
+    @median = null
+    @mean = null
 
-  @graphData = null
-  @elem = null
+    @graphData = null
+    @elem = null
+
+    @bins = 5
 
   getMedian: (arr) ->
     arr.sort  (a,b) -> return a - b
@@ -83,8 +85,6 @@ module.exports = class ModelerHist extends BaseService
     xAxis = d3.svg.axis().scale(x).orient("bottom")
 
     getColor = d3.scale.category10()
-
-
 
     # add the tooltip area to the webpage
     tooltip = container
@@ -199,25 +199,25 @@ module.exports = class ModelerHist extends BaseService
     #pre-set value of slider
     container.append('div').attr('id', 'slider')
     $slider = $("#slider")
-    bins = 5
+    # @bins = 5
     arr = data.map (d) -> parseFloat d.x
     median = @getMedian(arr)
     mean = @getMean(arr)
-    @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds
+    @plotHist @bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds
 
     if $slider.length > 0
       $slider.slider(
         min: 1
         max: 10
-        value: 5
+        value: @bins
         orientation: "horizontal"
         range: "min"
         change: ->
       ).addSliderSegments($slider.slider("option").max)
     $slider.on "slidechange", (event, ui) =>
-      bins = parseInt ui.value
+      @bins = parseInt ui.value
 #      tooltip.html()
-      @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds
+      @plotHist @bins, container, arr, _graph, gdata, x, height, width, data, median, mean, bounds
       @drawModelCurve @graphData,  _graph, @elem, container,gdata,width,height,ranges, bounds
       return
 
