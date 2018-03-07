@@ -32,7 +32,6 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @chiSquareAlpha=0.05
     @update()
 
-
   setAlpha: (alphaIn) ->
     @chiSquareAlpha = alphaIn
     @update()
@@ -114,7 +113,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     # update power
     input = 
       chi2: @chiSquareChi2
-      proN: @chiSquareEffSize*@chiSquareN
+      proN: @chiSquareN / @chiSquareEffSize
       n: @chiSquareN
       df: @chiSquareDf
       alpha: @chiSquareAlpha
