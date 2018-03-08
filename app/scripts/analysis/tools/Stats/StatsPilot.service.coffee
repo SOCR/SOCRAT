@@ -33,6 +33,7 @@ module.exports = class StatsPilot extends BaseService
   setAlpha: (alphaIn) ->
     return
     
+
   update: () ->
     return
     
