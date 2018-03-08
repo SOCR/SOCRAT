@@ -6,18 +6,17 @@ module.exports = class StatsAlgorithms extends BaseModuleDataService
   @inject 'app_analysis_stats_msgService',
     'app_analysis_stats_CIOM',
     'app_analysis_stats_CIOP',
+    'app_analysis_stats_Pilot',
     '$interval'
 
   initialize: ->
     @msgManager = @app_analysis_stats_msgService
     @CIOM = @app_analysis_stats_CIOM
     @CIOP = @app_analysis_stats_CIOP
-    @algorithms = [@CIOM, @CIOP]
+    @Pilot = @app_analysis_stats_Pilot
+    @algorithms = [@CIOM, @CIOP, @Pilot]
 
   ############
-
-  getNames: -> @algorithms.map (alg) -> alg.getName()
-
   getParamsByName: (algName) -> 
     (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()
 

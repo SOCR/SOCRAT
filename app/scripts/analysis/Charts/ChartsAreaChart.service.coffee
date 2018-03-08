@@ -3,45 +3,59 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsAreaChart extends BaseService
+  @inject '$q',
+    '$stateParams',
+    'app_analysis_charts_dataTransform',
+    'app_analysis_charts_list',
+    'app_analysis_charts_sendData',
+    'app_analysis_charts_checkTime',
+    'app_analysis_charts_dataService',
+    'app_analysis_charts_msgService',
+    'app_analysis_charts_scatterPlot'
 
   initialize: ->
+    @msgService = @app_analysis_charts_msgService
+    @dataService = @app_analysis_charts_dataService
+    @dataTransform = @app_analysis_charts_dataTransform
+    @list = @app_analysis_charts_list
+    @sendData = @app_analysis_charts_sendData
+    @checkTime = @app_analysis_charts_checkTime
+    @DATA_TYPES = @dataService.getDataTypes()
+    @scatterPlot = @app_analysis_charts_scatterPlot
 
-  drawArea: (height,width,_graph, data,gdata) ->
-  #      parseDate = d3.time.format("%d-%b-%y").parse
+    @ve = require 'vega-embed'
 
-    for d in data
-      d.x = new Date d.x
-      d.y = +d.y
-    x = d3.time.scale().range([ 0, width ])
-    y = d3.scale.linear().range([ height, 0 ])
-    xAxis = d3.svg.axis().scale(x).orient("bottom")
-    yAxis = d3.svg.axis().scale(y).orient("left")
-    area = d3.svg.area().x((d) ->
-      x d.x
-    ).y0(height).y1((d) ->
-      y d.y
-    )
-    #  svg = d3.select("body").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+  drawArea: (height,width,_graph, data, labels) ->
 
-    x.domain d3.extent(data, (d) ->
-      d.x
-    )
-    y.domain [ 0, d3.max(data, (d) ->
-      d.y
-    ) ]
-    _graph.append("path")
-    .datum(data)
-    .attr("class", "area")
-    .attr "d", area
-    _graph.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call xAxis
+    for item in data
+      item["x_vals"] = item["x"]
+      item["y_vals"] = item["y"]
 
-    _graph.append("g")
-    .attr("class", "y axis")
-    .call(yAxis).append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 6).attr("dy", ".71em")
-    .style("text-anchor", "end")
-    .text gdata.yLab.value
+    vlSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "width": 500,
+      "height": 500,
+      "data": {"values": data},
+      "mark": "area",
+      "encoding": {
+        "x": {
+          "field": "x_vals",
+          "type": "temporal",
+          "axis": {"title": labels.xLab.value},
+        },
+        "y": {
+          "aggregate": "sum",
+          "field": "y_vals",
+          "type": "quantitative",
+          "axis": {"title": labels.yLab.value},
+        }
+      }
+    }
+
+    opt =
+      "actions": {export: true, source: false, editor: false}
+    
+    @ve '#vis', vlSpec, opt, (error, result) ->
+      # Callback receiving the View instance and parsed Vega spec
+      # result.view is the View, which resides under the '#vis' element
+      return
