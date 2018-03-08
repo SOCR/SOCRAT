@@ -1,0 +1,166 @@
+div(ng-controller="ModelerSidebarCtrl as sidebar")
+  legend Distribution
+    select#chooseDistribution.form-control(
+    value="Choose a Distribution"
+    ng-model="sidebar.selectedDistributions"
+    ng-options="g as g.name for g in sidebar.distributions"
+    ng-change="sidebar.updateSidebarControls()"
+    ng-init="sidebar.selectedDistributions = sidebar.distributions[0]"
+
+    )
+    legend Variables
+    div.form-inline
+      div.form-horizontal(ng-show="sidebar.selectedDistributions.x")
+        label(for = "x") X &nbsp;
+        select#x.form-control(
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.xCol"
+        ng-options="col for col in sidebar.xCols"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedDistributions.y")
+        label(for = "y") Y &nbsp;
+        select#y.form-control(
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.yCol"
+        ng-options="col for col in sidebar.yCols"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedDistributions.z")
+        label(for = "z") Z (radius) &nbsp;
+        select#z.form-control(
+        ng-change="sidebar.updateDataPoints()"
+        ng-model="sidebar.zCol"
+        ng-options="col for col in sidebar.zCols"
+        )
+
+
+    
+    //fieldset(ng-show="sidebar.selectedDistributions == 'Kernel")
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenKernel"
+        ng-options="col for col in sidebar.Kernels"
+        ng-change="sidebar.updateDataPoints()"
+        )
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  //-
+    form
+      legend Parameters &nbsp;
+        div.form-group(ng-disabled="sidebar.clusterRunning")
+          fieldset
+            label(
+              uib-tooltip="Choose an algorithm from the list below"
+              tooltip-placement="right"
+            ) Distribution Fit &nbsp;
+            select.form-control(
+            ng-model="sidebar.selectedAlgorithm"
+            ng-options="method for method in sidebar.algorithms"
+            ng-change="sidebar.updateAlgControls()"
+            )
+            div.form-group(ng-show="sidebar.algParams.k")
+              fieldset.form-inline
+                label Number of clusters &nbsp;
+                select.form-control(
+                ng-model="sidebar.k"
+                ng-options="k for k in sidebar.algParams.k"
+                ng-init="sidebar.k = sidebar.algParams.k[0]"
+                )
+                button.btn.btn-info(
+                  type="submit"
+                  aria-label="Get k value"
+                  ng-click="sidebar.detectK()"
+                  ng-disabled="!sidebar.labelCol"
+                  uib-tooltip = "Use labels to get number of clusters"
+                  tooltip-placement="right"
+                )
+                  | Detect k
+            div.form-group(ng-show="sidebar.algParams.distance")
+              label Distance &nbsp;
+              select.form-control(
+                ng-model="sidebar.distance"
+                ng-options="dist for dist in sidebar.algParams.distance"
+                ng-init="sidebar.distance = sidebar.algParams.distance[0]"
+              )
+            div.form-group(ng-show="sidebar.algParams.init")
+              label Initialization &nbsp;
+              select.form-control(
+              ng-model="sidebar.initMethod"
+              ng-options="init for init in sidebar.algParams.init"
+              ng-init="sidebar.initMethod = sidebar.algParams.init[0]"
+              )
+            hr
+          fieldset(ng-show="sidebar.dataFrame")
+            legend Dataset
+            div(uib-tooltip="2D projection is always visualized")
+              select.form-control(
+              multiple
+              ng-model="sidebar.chosenCols"
+              ng-options="col for col in sidebar.numericalCols"
+              )
+            div.form-group
+              label Labels column &nbsp;
+              //- show data header column names
+              select.form-control(
+              ng-model="sidebar.labelCol"
+              ng-options="col for col in sidebar.categoricalCols"
+              ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+              ng-init="sidebar.labelCol = null"
+              )
+                option(value="") No labels
+            div.form-group(ng-show="sidebar.xCol")
+              label X column &nbsp;
+              //- show data header column names
+              select.form-control(
+              ng-model="sidebar.xCol"
+              ng-options="col for col in sidebar.numericalCols"
+              ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+              )
+            div.form-group(ng-show="sidebar.yCol")
+              label Y column &nbsp;
+              //- show data header column names
+              select.form-control(
+              ng-model="sidebar.yCol"
+              ng-options="col for col in sidebar.numericalCols"
+              ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
+              )
+          div.form-group.btn-group(
+            role="group"
+            area-label="Sidebar flow controls"
+            uib-tooltip = "Choose at least 2 columns to start"
+          )
+            button.btn.btn-info.btn-sm(
+            ng-show="sidebar.dataFrame && sidebar.ready"
+            type="submit"
+            aria-label="Step"
+            ng-click="sidebar.stepClustering(sidebar.dataFrame)"
+            ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
+              | Step&nbsp;
+              span.glyphicon.glyphicon-step-forward(aria-hidden="true")
+            span &nbsp;
+            button.btn.btn-primary.btn-sm(
+            ng-show="sidebar.dataFrame && sidebar.ready"
+            type="submit"
+            aria-label="Run"
+            ng-click="sidebar.runClustering()"
+            ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
+              | Run&nbsp;
+              span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+              span &nbsp;
+            button.btn.btn-danger.btn-sm(
+            ng-show="sidebar.dataFrame && sidebar.ready"
+            type="submit"
+            aria-label="Reset"
+            ng-click="sidebar.reset()"
+            ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
+              | Reset&nbsp;
+              span.fui-cross(aria-hidden="true")
