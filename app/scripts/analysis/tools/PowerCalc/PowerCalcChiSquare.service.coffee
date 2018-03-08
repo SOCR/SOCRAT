@@ -71,7 +71,6 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
 
     @update('chi2')
 
-
   getName: () ->
     return @name
 

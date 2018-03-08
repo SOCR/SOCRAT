@@ -72,7 +72,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@RsquareGUI_click();
 		@RsquareGUI_submit();
 
-
 		#variables needed for SimplePoissonGUI only
 		@SimplePoissonGUI_nn = 1;
 		@SimplePoissonGUI_lambda0=null;
@@ -128,7 +127,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			return
 		else if (@selectedAlgorithm is "Generic chi-square test")
 			@chi2Retrieve()
-		else 
+		else
 			console.log("Unknown algorithms selected")
 			return
 
@@ -799,7 +798,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			$('#RsquareGUI_H').val "Hide Help"
 		@RsquareGUI_help = !@RsquareGUI_help
 		return
-
 
 	chi2Retrieve: () ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
