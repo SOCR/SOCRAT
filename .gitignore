@@ -5,7 +5,6 @@
 /test/test-results.xml
 *.log
 package-lock.json
-*.vscode*
 
 # Public files (generated)#
 ===============

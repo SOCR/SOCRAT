@@ -33,8 +33,6 @@ module.exports = charts = new Module
       'app_analysis_charts_checkTime': require 'scripts/analysis/Charts/ChartsCheckTime.service.coffee'
       'app_analysis_charts_areaTrellisChart': require 'scripts/analysis/Charts/ChartsAreaTrellisChart.service.coffee'
 
-      'app_analysis_charts_VegeAreaChart': require 'scripts/analysis/Charts/ChartsVegaAreaChart.service.coffee'
-
     controllers:
       'ChartsSidebarCtrl': require 'scripts/analysis/Charts/ChartsSidebarCtrl.controller.coffee'
       'ChartsMainCtrl': require 'scripts/analysis/Charts/ChartsMainCtrl.controller.coffee'

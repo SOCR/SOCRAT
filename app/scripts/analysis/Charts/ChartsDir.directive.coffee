@@ -21,7 +21,6 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
           'app_analysis_charts_checkTime',
-          'app_analysis_charts_VegeAreaChart'
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
@@ -40,8 +39,6 @@ module.exports = class ChartsDir extends BaseDirective
     @bivariate = @app_analysis_charts_bivariateLineChart
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
-
-    @vegaArea = @app_analysis_charts_VegeAreaChart
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -141,6 +138,5 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Normal Distribution'
                 @normal.drawNormalCurve(data, width, height, _graph)
               when 'Pie Chart'
-                @vegaArea.drawVegaAreaChart(width,height,data,_graph,labels,ranges)
-#                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-#                @pie.drawPie(data,width,height,_graph,true)
+                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
+                @pie.drawPie(data,width,height,_graph,true)
