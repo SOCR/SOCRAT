@@ -20,13 +20,12 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		@algorithms = ['Select',
 		'Test of One Proportion',
 		'Test of Two Proportions',
-		'Pilot Study',
 		'R-square (multiple correlation)',
 		'Generic chi-square test',
 		'Power of a Simple Poisson Test',
 		'Two-sample t test (general case)',
 		'One-Sample (or Paired) t Test']
-		@selectedAlgorithm = @algorithms[3]
+		@selectedAlgorithm = @algorithms[1]
 
 		# set up data and algorithm-agnostic controls
 		@DATA_TYPES = @dataService.getDataTypes()
@@ -499,6 +498,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@alpha = ui.value
 				@msgService.broadcast 'powercalc:alpha',
 					alpha_in: @alpha
+				@$scope.$apply()
 		)
 		onePropThreshUI.slider(
 			min: @MinMax[0]["min"]
@@ -553,7 +553,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			if b[0] isnt item then return false
 			i+=1
 		return true
-
 
 
 
