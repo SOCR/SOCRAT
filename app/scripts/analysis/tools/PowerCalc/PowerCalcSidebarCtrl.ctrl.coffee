@@ -77,7 +77,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		$("#twoPropToggleThresh").on 'switchChange.bootstrapSwitch', () =>
 			@threshMode = !@threshMode
 
-
 		# initialize slider
 		@slider()
 
@@ -161,8 +160,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		else if (@selectedAlgorithm is 'Generic chi-square test')
 			@chiSquare()
 
-
-
 	twoTest: ()->
 		@populations = {}
 		targets = []
@@ -223,6 +220,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			popl: @populations
 			target: targets
 	
+
 	oneTest: () ->
 		@populations = {}
 		targets = []
@@ -250,6 +248,7 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 				@populations[@chosenColsOne].push(row[index1])
 
 			targets = [@chosenColsOne, ""]
+
 		@msgService.broadcast 'powercalc:data',
 			popl: @populations
 			target: targets
