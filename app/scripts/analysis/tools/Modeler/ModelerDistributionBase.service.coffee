@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class Dist extends BaseService
-    @inject 'app_analysis_Modeler_getParams'
+    @inject 'app_analysis_modeler_getParams'
     initialize: () ->
-        @helpers = @app_analysis_Modeler_getParams
+        @helpers = @app_analysis_modeler_getParams
 
     
 

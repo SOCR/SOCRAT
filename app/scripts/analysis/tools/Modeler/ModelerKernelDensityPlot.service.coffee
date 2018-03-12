@@ -10,11 +10,11 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class KernelDensityPlot extends BaseService
-  @inject 'app_analysis_Modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
 
   initialize: () ->
     @name = 'Kernel'
-    @calc = @app_analysis_Modeler_getParams
+    @calc = @app_analysis_modeler_getParams
     @bandwith = 5
 
   getName: () ->
