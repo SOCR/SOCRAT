@@ -13,7 +13,7 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
   initialize: ->
     @dataService = @app_analysis_modeler_dataService
     @msgService = @app_analysis_modeler_msgService
-    @list = @app_analysis_modeler_dist_list
+    @distrList = @app_analysis_modeler_dist_list
     @getParams = @app_analysis_modeler_getParams
 
     @DATA_TYPES = @dataService.getDataTypes()
@@ -29,8 +29,13 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
     @numericalCols = []
     @categoricalCols = []
     @xCol = null
-    @yCol = null
     @labelCol = null
+
+    # choose first distribution as default one
+    @distributions = @distrList.getFlat()
+    if @distributions.length > 0
+      @selectedDistributions = @distributions[0]
+      @updateSidebarControls()
 
     # getting data
     @dataService.getData().then (obj) =>
@@ -39,19 +44,12 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
         # update local data type
           #console.log("in get list")
           @dataType = obj.dataFrame.dataType
-          @distributions = @list.getFlat()
-          #console.log(@distributions)
-          @selectedDistributions = @distributions[0]
           # send update to main are actrl
           @msgService.broadcast 'modeler:updateDataType', obj.dataFrame.dataType
         # make local copy of data
         @dataFrame = obj.dataFrame
         # parse dataFrame
         @parseData obj.dataFrame
-
-    if @distributions.length > 0
-      @selectedDistributions = @distributions[0]
-      @updateDistControls()
 
   parseData: (data) ->
     df = data
@@ -64,24 +62,14 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
         @updateDataPoints(df)
 
   updateSidebarControls: (data=@dataFrame) ->
-    @cols = data.header
-    #console.log("selected dist" + @selectedDistributions.name)
-    if @selectedDistributions.x
-      @xCols = (col for col, idx in @cols when data.types[idx] in @selectedDistributions.x)
-      @xCol = @xCols[0]
-    if @selectedDistributions.y
-      @yCols = (col for col, idx in @cols when data.types[idx] in @selectedDistributions.y)
-      for yCol in @yCols
-        if yCol isnt @xCol
-          @yCol = yCol
-          break
-    if @selectedDistributions.z
-      @zCols = (col for col, idx in @cols when data.types[idx] in @selectedDistributions.z)
-      for zCol in @zCols
-        if zCol not in [@xCol, @yCol]
-          @zCol = zCol
-    @$timeout =>
-      @updateDataPoints()
+    if data?
+      @cols = data.header
+      #console.log("selected dist" + @selectedDistributions.name)
+      if @selectedDistributions.x
+        @xCols = (col for col, idx in @cols when data.types[idx] in @selectedDistributions.x)
+        @xCol = @xCols[0]
+      @$timeout =>
+        @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
     [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
