@@ -54,13 +54,13 @@ module.exports = class ModelerHist extends BaseService
 
 
     sizeOfData = arr.length
-    #console.log dataHist #array for each bin, each array has all data points
+    ##console.log dataHist #array for each bin, each array has all data points
     #create array of objects that store mean and median of each set
     stats = []
     for a in dataHist
       stats.push({mean: @getMean(a), median: @getMedian(a)})
 
-    #console.log stats
+    ##console.log stats
 
     xMean = (d, i) -> stats[i].mean
     xMedian = (d, i) -> stats[i].median
@@ -226,7 +226,7 @@ module.exports = class ModelerHist extends BaseService
     @elem = elem
 
     modelData = graphData.modelData
-    console.log("Plotting Model Data");
+    #console.log("Plotting Model Data");
     if modelData
       container = d3.select(elem[0])
       container.selectAll('path').remove()
@@ -264,7 +264,7 @@ module.exports = class ModelerHist extends BaseService
         .y (d) -> yScale(d.y)
         .interpolate("basis")
 
-      console.log("printing gaussian curve data")
+      #console.log("printing gaussian curve data")
 
       _graph.append('svg:path')
       .attr('d', lineGen(curveData))

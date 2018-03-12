@@ -28,7 +28,7 @@ module.exports = class NormalDist extends BaseService
       data.push
         x: i
         y: @PDF(i)
-    console.log(data)
+    #console.log(data)
     data
 
   getChartData: (params) ->

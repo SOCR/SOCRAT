@@ -31,7 +31,7 @@ module.exports = class LaplaceDist extends BaseService
       data.push
         x: i
         y: @pdf(u, b, i)
-    console.log(data)
+    #console.log(data)
     data
   
   getChartData: (params) ->
