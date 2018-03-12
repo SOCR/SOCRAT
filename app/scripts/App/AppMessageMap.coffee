@@ -18,7 +18,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
-        'socrat_analysis_mymodule'
+        'app_analysis_Modeler'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -34,7 +34,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
-        'socrat_analysis_mymodule'
+        'app_analysis_Modeler'
       ]
     ,
       msgFrom: 'data summary'
@@ -109,7 +109,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
-        'socrat_analysis_mymodule'
+        'app_analysis_Modeler'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -124,7 +124,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
-        'socrat_analysis_mymodule'
+        'app_analysis_Modeler'
       ]
     ]
 

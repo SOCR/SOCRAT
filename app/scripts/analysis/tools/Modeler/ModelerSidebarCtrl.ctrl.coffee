@@ -3,18 +3,18 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ModelerSidebarCtrl extends BaseCtrl
-  @inject 'socrat_analysis_mymodule_dataService',
-    'socrat_analysis_mymodule_msgService',
-    'socrat_analysis_modeler_dist_list',
-    'socrat_analysis_modeler_getParams',
+  @inject 'app_analysis_Modeler_dataService',
+    'app_analysis_Modeler_msgService',
+    'app_analysis_Modeler_dist_list',
+    'app_analysis_Modeler_getParams',
     '$scope',
     '$timeout'
 
   initialize: ->
-    @dataService = @socrat_analysis_mymodule_dataService
-    @msgService = @socrat_analysis_mymodule_msgService
-    @list = @socrat_analysis_modeler_dist_list
-    @getParams = @socrat_analysis_modeler_getParams
+    @dataService = @app_analysis_Modeler_dataService
+    @msgService = @app_analysis_Modeler_msgService
+    @list = @app_analysis_Modeler_dist_list
+    @getParams = @app_analysis_Modeler_getParams
     #@distributions = ['Normal', 'Binomial', 'Poisson']
 
 

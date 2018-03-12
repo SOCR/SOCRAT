@@ -8,16 +8,16 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ModelerMainCtrl extends BaseCtrl
-  @inject 'socrat_analysis_mymodule_dataService',
-    'socrat_analysis_modeler_getParams',
-    'socrat_analysis_modeler_router'
+  @inject 'app_analysis_Modeler_dataService',
+    'app_analysis_Modeler_getParams',
+    'app_analysis_Modeler_router'
     '$timeout',
     '$scope'
 
   initialize: ->
-    @dataService = @socrat_analysis_mymodule_dataService
+    @dataService = @app_analysis_Modeler_dataService
     @DATA_TYPES = @dataService.getDataTypes()
-    @router = @socrat_analysis_modeler_router
+    @router = @app_analysis_Modeler_router
     @title = 'Modeling Module'
     @dataType = ''
     @dataPoints = null
@@ -27,7 +27,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @modelData = {}
     @params = {}
     @tempData = {}
-    @getParams = @socrat_analysis_modeler_getParams
+    @getParams = @app_analysis_Modeler_getParams
     #@gMean = 0
     #@gVariance =0
     #@gstandardDev = null
