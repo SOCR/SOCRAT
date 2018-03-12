@@ -47,7 +47,7 @@ module.exports = class ModelerHist extends BaseService
     $('#tooltip').remove();
     # slider
     $('#slidertext').remove()
-    container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
+    container.append('text').attr('id', 'slidertext').text('Bins: '+bins).attr('position','relative').attr('left', '50px')
 
 
     dataHist = d3.layout.histogram().frequency(false).bins(bins)(arr)
