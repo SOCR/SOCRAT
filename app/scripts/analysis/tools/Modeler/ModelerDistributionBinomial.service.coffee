@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class BinomialDist extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_Modeler_getParams'
   initialize: () ->
-    @getParams = @socrat_analysis_modeler_getParams
+    @getParams = @app_analysis_Modeler_getParams
 
     @name = 'Binomial'
     @n = 10;
