@@ -35,7 +35,7 @@ module.exports = class ExpDist extends BaseService
   getChartData: (params) ->
 
     curveData = @getExponentialDistribution(params.xMin, params.xMax, @gamma)
-    console.log(curveData)
+    #console.log(curveData)
 
     return curveData
 

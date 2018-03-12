@@ -22,12 +22,12 @@ module.exports = class KernelDensityPlot extends BaseService
 
 
   getChartData: (params) ->
-    console.log("Getting Kernel Density Data")
+    #console.log("Getting Kernel Density Data")
     #data = data.dataPoints
 
     xScale = d3.scale.linear().domain([params.xMin, params.xMax]).range([0, params.xMax])
     kde = @kernelDensityEstimator(@epanechnikovKernel(@bandwith), xScale.ticks(18));
-    console.log("printing kde data ")
+    #console.log("printing kde data ")
     toKDE = data.dataPoints.map (d) ->
       return d[0]
     curveData = kde(toKDE)

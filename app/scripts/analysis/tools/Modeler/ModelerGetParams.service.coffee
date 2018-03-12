@@ -45,7 +45,7 @@ module.exports = class GetParams extends BaseService
       data.push
         x: i
         y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
-    console.log(data)
+    #console.log(data)
     data
 
   getMedian = (values)=>
@@ -113,8 +113,8 @@ module.exports = class GetParams extends BaseService
       y: row[1]
       z: row[2]
 
-    console.log @extract(data, "x")
-    console.log("Within the modeler GetParams")
+    #console.log @extract(data, "x")
+    #console.log("Within the modeler GetParams")
     sample = @sort(@getRandomValueArray(@extract(data,"x")))
     sum = @getSum(sample)
     min = sample[0]
@@ -123,7 +123,7 @@ module.exports = class GetParams extends BaseService
 
 
     median = getMedian(sample)
-    console.log("Sample mean: " + mean)
+    #console.log("Sample mean: " + mean)
     variance = @getVariance(sample, mean)
     standardDerivation =  Math.sqrt(variance)
     rightBound = @getRightBound(mean, standardDerivation)
@@ -180,8 +180,8 @@ module.exports = class GetParams extends BaseService
       toolTipElement.style('display', 'none')
       toolTipElement.innerHTML = " "
 
-    console.log @extract(data, "x")
-    console.log("Within the modeler GetParams")
+    #console.log @extract(data, "x")
+    #console.log("Within the modeler GetParams")
     sample = @sort(@getRandomValueArray(@extract(data,"x")))
     sum = @getSum(sample)
     min = sample[0]
@@ -214,8 +214,8 @@ module.exports = class GetParams extends BaseService
       .y (d) -> yScale(d.y)
       .interpolate("basis")
 
-    console.log("printing gaussian curve data")
-    console.log(gaussianCurveData)
+    #console.log("printing gaussian curve data")
+    #console.log(gaussianCurveData)
 
 
     _graph.append('svg:path')

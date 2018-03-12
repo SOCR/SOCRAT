@@ -11,14 +11,12 @@ require 'jquery-ui/ui/widgets/slider'
 
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
-module.exports = class ModelerDir extends BaseDirective
+module.exports = class ModelerVizDir extends BaseDirective
   @inject 'app_analysis_modeler_hist',
     'app_analysis_modeler_getParams',
     'socrat_modeler_distribution_normal'
 
   initialize: ->
-
-    console.log("initalizing modeler dir")
     @normal = @socrat_modeler_distribution_normal
     @histogram = @app_analysis_modeler_hist
     @getParams = @app_analysis_modeler_getParams
@@ -55,10 +53,8 @@ module.exports = class ModelerDir extends BaseDirective
             $(this).prepend(segment.repeat(amount - 2))
 
       scope.$watch 'mainArea.graphData', (newGraphData) =>
-        console.log("running this many times: "+ @counter)
         @counter++
         if newGraphData? and newGraphData != @oldData
-          console.log("Plotting new graph")
           @oldData = newGraphData
           newChartData = newGraphData.chartData
 
@@ -99,7 +95,7 @@ module.exports = class ModelerDir extends BaseDirective
             @histogram.drawModelCurve(newGraphData, _graph, elem, container,labels,width,height,ranges, modelBounds)
 
       scope.$watch 'mainArea.modelData', (modelData) =>
-        console.log("Plotting Model Data");
+        #console.log("Plotting Model Data");
         if modelData
           container = d3.select(elem[0])
           container.selectAll('path').remove()
@@ -136,8 +132,6 @@ module.exports = class ModelerDir extends BaseDirective
             .x (d) -> xScale(d.x)
             .y (d) -> yScale(d.y)
             .interpolate("basis")
-
-          console.log("printing gaussian curve data")
 
           _graph.append('svg:path')
           .attr('d', lineGen(curveData))

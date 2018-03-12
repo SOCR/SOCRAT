@@ -37,7 +37,7 @@ module.exports = class BinomialDist extends BaseService
       data.push
         x: i
         y: @pdf(n, p, i)
-    console.log(data)
+    #console.log(data)
     data
   
   getChartData: (params) ->
@@ -49,7 +49,7 @@ module.exports = class BinomialDist extends BaseService
     
 
     curveData = @getBinomialDistribution(params.xMin, params.xMax, params.stats.n , params.stats.p)
-    console.log(curveData)
+    #console.log(curveData)
     
     return curveData
 
