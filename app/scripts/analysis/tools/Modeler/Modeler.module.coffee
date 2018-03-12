@@ -35,8 +35,8 @@ module.exports = modeler = new Module
 
 
     controllers:
-      'ModelerMainCtrl': require 'scripts/analysis/tools/Modeler/ModelerMainCtrl.ctrl.coffee'
-      'ModelerSidebarCtrl': require 'scripts/analysis/tools/Modeler/ModelerSidebarCtrl.ctrl.coffee'
+      'modelerMainCtrl': require 'scripts/analysis/tools/Modeler/ModelerMainCtrl.ctrl.coffee'
+      'modelerSidebarCtrl': require 'scripts/analysis/tools/Modeler/ModelerSidebarCtrl.ctrl.coffee'
 
     directives:
       'modelerdir': require 'scripts/analysis/tools/Modeler/ModelerVizDir.directive.coffee'
