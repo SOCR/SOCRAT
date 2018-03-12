@@ -96,7 +96,7 @@ module.exports = class ModelerVizDir extends BaseDirective
 
       scope.$watch 'mainArea.modelData', (modelData) =>
         #console.log("Plotting Model Data");
-        if modelData
+        if modelData? and modelData.stats?
           container = d3.select(elem[0])
           container.selectAll('path').remove()
           leftBound = modelData.stats.stats.leftBound
