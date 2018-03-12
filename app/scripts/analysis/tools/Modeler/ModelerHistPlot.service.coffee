@@ -9,12 +9,12 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ModelerHist extends BaseService
-  @inject 'socrat_analysis_modeler_kernel_density_plotter', 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_Modeler_kernel_density_plotter', 'app_analysis_Modeler_getParams'
 
 
   initialize: ->
-    @kernel = @socrat_analysis_modeler_kernel_density_plotter
-    @gauss = @socrat_analysis_modeler_getParams
+    @kernel = @app_analysis_Modeler_kernel_density_plotter
+    @gauss = @app_analysis_Modeler_getParams
     @bandwith = 4
     @kde = null
 

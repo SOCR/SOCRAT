@@ -4,14 +4,13 @@ Module = require 'scripts/BaseClasses/BaseModule.coffee'
 # export instance of new module
 module.exports = modeler = new Module
   # module id for registration
-  id: 'socrat_analysis_mymodule'
+  id: 'app_analysis_Modeler'
   # module components
   components:
     services:
-      'socrat_analysis_mymodule_initService': require 'scripts/analysis/tools/Modeler/MyModuleInit.service.coffee'
-      'socrat_analysis_mymodule_msgService': require 'scripts/analysis/tools/Modeler/MyModuleMsgService.service.coffee'
-      #'socrat_analysis_mymodule_myService': require 'scripts/analysis/tools/Modeler/MyModuleMyService.service.coffee'
-      'socrat_analysis_mymodule_dataService': require 'scripts/analysis/tools/Modeler/ModelerDataService.service.coffee'
+      'app_analysis_Modeler_initService': require 'scripts/analysis/tools/Modeler/ModelerInitService.service.coffee'
+      'app_analysis_Modeler_msgService': require 'scripts/analysis/tools/Modeler/ModelerMsgService.service.coffee'
+      'app_analysis_Modeler_dataService': require 'scripts/analysis/tools/Modeler/ModelerDataService.service.coffee'
       'socrat_modeler_distribution_normal': require 'scripts/analysis/tools/Modeler/ModelerDistributionNormal.service.coffee'
       'socrat_modeler_distribution_laplace': require 'scripts/analysis/tools/Modeler/ModelerDistributionLaplace.service.coffee'
       'socrat_modeler_distribution_cauchy': require 'scripts/analysis/tools/Modeler/ModelerDistributionCauchy.service.coffee'
@@ -23,13 +22,13 @@ module.exports = modeler = new Module
       'socrat_modeler_distribution_exponential': require 'scripts/analysis/tools/Modeler/ModelerDistributionExponential.service.coffee'
       'socrat_modeler_distribution_Weibull': require 'scripts/analysis/tools/Modeler/ModelerDistributionWeibull.service.coffee'
 
-      'socrat_analysis_modeler_dist_list': require 'scripts/analysis/tools/Modeler/ModelerDistList.service.coffee'
-      #'socrat_analysis_modeler_hist': require 'scripts/analysis/charts/ChartsHistogram.service.coffee'
-      'socrat_analysis_modeler_hist': require 'scripts/analysis/tools/Modeler/ModelerHistPlot.service.coffee'
-      'socrat_analysis_modeler_router': require 'scripts/analysis/tools/Modeler/ModelerRouter.service.coffee'
+      'app_analysis_Modeler_dist_list': require 'scripts/analysis/tools/Modeler/ModelerDistList.service.coffee'
+      #'app_analysis_Modeler_hist': require 'scripts/analysis/charts/ChartsHistogram.service.coffee'
+      'app_analysis_Modeler_hist': require 'scripts/analysis/tools/Modeler/ModelerHistPlot.service.coffee'
+      'app_analysis_Modeler_router': require 'scripts/analysis/tools/Modeler/ModelerRouter.service.coffee'
 
-      'socrat_analysis_modeler_getParams': require 'scripts/analysis/tools/Modeler/ModelerGetParams.service.coffee'
-      'socrat_analysis_modeler_kernel_density_plotter': require 'scripts/analysis/tools/Modeler/ModelerKernelDensityPlot.service.coffee'
+      'app_analysis_Modeler_getParams': require 'scripts/analysis/tools/Modeler/ModelerGetParams.service.coffee'
+      'app_analysis_Modeler_kernel_density_plotter': require 'scripts/analysis/tools/Modeler/ModelerKernelDensityPlot.service.coffee'
 
 
 
@@ -49,5 +48,3 @@ module.exports = modeler = new Module
     url: '/tools/modeler'
     mainTemplate: require 'partials/analysis/tools/modeler/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/modeler/sidebar.jade'
-
-
