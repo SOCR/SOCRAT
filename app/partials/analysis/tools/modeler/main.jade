@@ -1,5 +1,4 @@
 div(ng-controller="modelerMainCtrl as mainArea")
-  h4 {{mainArea.title}}
   div.lead.bg-danger(ng-hide="mainArea.dataType == mainArea.DATA_TYPES.FLAT")
     | Modeler only supports tabular data
   div(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT")
@@ -125,15 +124,14 @@ div(ng-controller="modelerMainCtrl as mainArea")
               label
                 span.glyphicon.glyphicon-question-sign(
                 aria-hidden="true"
-                uib-tooltip="Location Parameter"
+                uib-tooltip="Location parameter"
                 tooltip-placement="left"
                 ) &nbsp;
-                | Location
-                sub 1
+                | a
                 | &nbsp;
                 input.form-control.input-sm.flat(
                 string-to-number
-                ng-model="CauchyLocation"
+                ng-model="mainArea.CauchyLocation"
                 ng-click="mainArea.CauchySync()"
                 ng-keypress ="mainArea.CauchyPress($event)"
                 ng-disabled="mainArea.deployed"
@@ -146,11 +144,10 @@ div(ng-controller="modelerMainCtrl as mainArea")
               label
                 span.glyphicon.glyphicon-question-sign(
                 aria-hidden="true"
-                uib-tooltip="Gamma of the sample"
+                uib-tooltip="Scale parameter"
                 tooltip-placement="left"
                 ) &nbsp;
-                | γ
-                sub 1
+                | b
                 | &nbsp;
                 input.form-control.input-sm.flat(
                 ng-model="mainArea.CauchyGamma"
@@ -335,7 +332,7 @@ div(ng-controller="modelerMainCtrl as mainArea")
 
         .row
           .col-md-8
-            h6 Maxwell-BoltzMan Distribution Modeler &nbsp;
+            h6 Maxwell-Boltzman Distribution Modeler &nbsp;
               span.glyphicon.glyphicon-question-sign(
               aria-hidden="true"
               uib-tooltip="This modeler plots a Maxwell-Boltzman distribution."
@@ -399,23 +396,21 @@ div(ng-controller="modelerMainCtrl as mainArea")
               #kernelBandwidth
     
     div.form-group
-      .row
-        .row.form-inline
+      .row.col-md-2.col-md-offset-10.form-inline
         button.btn.btn-info(
                   type="submit"
                   aria-label="Reset"
                   ng-click="mainArea.resetGetParams()"
                   uib-tooltip = "Reset the distribution models to the extracted parameters"
-                  tooltip-placement="right"
+                  tooltip-placement="left"
                 )
                   | Reset
     
     div(ng-show ="mainArea.distrbution != ' ' ")
       modeler-viz-dir
 
-      h4 Parameters
+      h6 Parameters
       ul
         li Mean: {{mainArea.stats.mean}}
         li Median: {{mainArea.stats.median}}
         li Variance: {{mainArea.stats.variance}}
-        li Standard Deviation: {{mainArea.stats.standardDev}}
