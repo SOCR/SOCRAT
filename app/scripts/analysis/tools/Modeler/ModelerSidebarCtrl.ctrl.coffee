@@ -3,20 +3,18 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ModelerSidebarCtrl extends BaseCtrl
-  @inject 'app_analysis_Modeler_dataService',
-    'app_analysis_Modeler_msgService',
-    'app_analysis_Modeler_dist_list',
-    'app_analysis_Modeler_getParams',
+  @inject 'app_analysis_modeler_dataService',
+    'app_analysis_modeler_msgService',
+    'app_analysis_modeler_dist_list',
+    'app_analysis_modeler_getParams',
     '$scope',
     '$timeout'
 
   initialize: ->
-    @dataService = @app_analysis_Modeler_dataService
-    @msgService = @app_analysis_Modeler_msgService
-    @list = @app_analysis_Modeler_dist_list
-    @getParams = @app_analysis_Modeler_getParams
-    #@distributions = ['Normal', 'Binomial', 'Poisson']
-
+    @dataService = @app_analysis_modeler_dataService
+    @msgService = @app_analysis_modeler_msgService
+    @list = @app_analysis_modeler_dist_list
+    @getParams = @app_analysis_modeler_getParams
 
     @DATA_TYPES = @dataService.getDataTypes()
     @distributions = []
@@ -33,10 +31,9 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
     @xCol = null
     @yCol = null
     @labelCol = null
-    console.log("getting data")
+
+    # getting data
     @dataService.getData().then (obj) =>
-      console.log("received data")
-      console.log(obj.dataFrame)
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
         if @dataType isnt obj.dataFrame.dataType
         # update local data type
@@ -52,20 +49,9 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
         # parse dataFrame
         @parseData obj.dataFrame
 
-
-
-
     if @distributions.length > 0
-      console.log("in redoing dist")
       @selectedDistributions = @distributions[0]
       @updateDistControls()
-
-
-
-
-
-  updateDistControls: () ->
-    #@algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
   parseData: (data) ->
     df = data
@@ -96,27 +82,12 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
           @zCol = zCol
     @$timeout =>
       @updateDataPoints()
+
   updateDataPoints: (data=@dataFrame) ->
-    '''
-    if data
-      if @labelCol
-        @uniqueLabels =
-          num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
-          labelCol: @labelCol
-      xCol = data.header.indexOf @xCol
-      yCol = data.header.indexOf @yCol
-      data = ([row[xCol], row[yCol]] for row in data.data)
-
-
-
-     '''
-    console.log("Printing the data" + data)
-
     [xCol, yCol, zCol] = [@xCol, @yCol, @zCol].map (x) -> data.header.indexOf x
     [xType, yType, zType] = [xCol, yCol, zCol].map (x) -> data.types[x]
     data = ([row[xCol], row[yCol], row[zCol]] for row in data.data)
 
-    console.log("printing stats" + @dataStats)
     @msgService.broadcast 'modeler:updateDataPoints',
       dataPoints: data
       distribution: @selectedDistributions
@@ -130,11 +101,3 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
         zLab:
           value: @zCol
           type: zType
-
-
-
-
-
-
-
-

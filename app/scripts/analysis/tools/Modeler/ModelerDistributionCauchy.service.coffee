@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class CauchyDist extends BaseService
-  @inject 'app_analysis_Modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-    #@calc = @app_analysis_Modeler_getParams
+    #@calc = @app_analysis_modeler_getParams
 
     @name = 'Cauchy'
     @CauchyGamma = .75

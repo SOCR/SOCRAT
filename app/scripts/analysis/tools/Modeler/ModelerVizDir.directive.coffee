@@ -12,16 +12,16 @@ require 'jquery-ui/ui/widgets/slider'
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class ModelerDir extends BaseDirective
-  @inject 'app_analysis_Modeler_hist',
-    'app_analysis_Modeler_getParams',
+  @inject 'app_analysis_modeler_hist',
+    'app_analysis_modeler_getParams',
     'socrat_modeler_distribution_normal'
 
   initialize: ->
 
     console.log("initalizing modeler dir")
     @normal = @socrat_modeler_distribution_normal
-    @histogram = @app_analysis_Modeler_hist
-    @getParams = @app_analysis_Modeler_getParams
+    @histogram = @app_analysis_modeler_hist
+    @getParams = @app_analysis_modeler_getParams
     @restrict = 'E'
     @template = "<div class='graph-container' style='height: 600px'></div>"
     @counter = 0

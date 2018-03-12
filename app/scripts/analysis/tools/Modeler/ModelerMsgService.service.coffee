@@ -8,4 +8,4 @@ module.exports = class ModelerMsgService extends BaseModuleMessageService
     outgoing: ['getData', 'infer data types']
     incoming: ['takeTable', 'data types inferred']
 # required to be the same as module id
-    scope: ['app_analysis_Modeler']
+    scope: ['app_analysis_modeler']

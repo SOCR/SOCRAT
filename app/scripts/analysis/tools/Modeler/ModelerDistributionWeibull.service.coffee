@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class WeiDist extends BaseService
-  @inject 'app_analysis_Modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-#    @getParams = @app_analysis_Modeler_getParams
+#    @getParams = @app_analysis_modeler_getParams
 
     @name = 'Weibull'
     @gamma = .75
