@@ -6,24 +6,13 @@ div(ng-controller="modelerSidebarCtrl as sidebar")
     ng-options="g as g.name for g in sidebar.distributions"
     ng-change="sidebar.updateSidebarControls()"
     ng-init="sidebar.selectedDistributions = sidebar.distributions[0]"
-
     )
-    legend Variables
-    div.form-inline(ng-show="sidebar.dataFrame && sidebar.xCol")
-      div.form-horizontal
-        label(for = "x") X &nbsp;
-        select#x.form-control(
-        ng-change="sidebar.updateDataPoints()"
-        ng-model="sidebar.xCol"
-        ng-options="col for col in sidebar.xCols"
-        )
-
-    //fieldset(ng-show="sidebar.selectedDistributions == 'Kernel")
-      legend Data
-      .form-group
-        label Columns
-        select.form-control(
-        ng-model="sidebar.chosenKernel"
-        ng-options="col for col in sidebar.Kernels"
-        ng-change="sidebar.updateDataPoints()"
-        )
+  legend Variables
+  div.form-inline(ng-show="sidebar.dataFrame && sidebar.xCol")
+    div.form-horizontal
+      label(for = "x") X &nbsp;
+      select#x.form-control(
+      ng-change="sidebar.updateDataPoints()"
+      ng-model="sidebar.xCol"
+      ng-options="col for col in sidebar.xCols"
+      )
