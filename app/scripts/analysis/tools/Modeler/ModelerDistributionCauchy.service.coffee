@@ -12,7 +12,6 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 module.exports = class CauchyDist extends BaseService
   @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-    #@calc = @app_analysis_modeler_getParams
 
     @name = 'Cauchy'
     @CauchyGamma = .75
@@ -23,8 +22,7 @@ module.exports = class CauchyDist extends BaseService
 
   cauchy: (l, gamma, x) ->
     return 1 / (Math.PI * gamma *(1 +( Math.pow((x - l) / gamma ,2))))
-    
-  
+
   getCauchyDistribution: (leftBound, rightBound, l, gamma) ->
     data = []
     for i in [leftBound...rightBound] by .2
@@ -32,14 +30,13 @@ module.exports = class CauchyDist extends BaseService
         x: i
         y: @cauchy(l, gamma, i)
     data
-  
+
   getChartData: (params) ->
-    curveData = @getCauchyDistribution(params.xMin, params.xMax, @locationParam, @CauchyGamma)    
+    curveData = @getCauchyDistribution(params.xMin, params.xMax, @locationParam, @CauchyGamma)
     return curveData
 
-
   getParams: () ->
-    params = 
+    params =
       gamma: @CauchyGamma
       location: @locationParam
 

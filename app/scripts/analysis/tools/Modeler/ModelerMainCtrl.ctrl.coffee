@@ -18,7 +18,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @dataService = @app_analysis_modeler_dataService
     @DATA_TYPES = @dataService.getDataTypes()
     @router = @app_analysis_modeler_router
-    @title = 'Modeling Module'
+    @title = 'Modeler'
     @dataType = ''
     @dataPoints = null
     @assignments = null
@@ -64,11 +64,6 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       #console.log(@distribution)
       #console.log(@params)
       @syncData(@params)
-
-
-
-
-
 
   #takes the current parameters, distribution and datset and updates the graph data accordingly
   #graph data is two way binded to the modeler viz
@@ -307,10 +302,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
   CauchySync: () ->
     @params.stats.location = @CauchyLocation
-    @params.stats.gammma =  @CauchyGamma
+    @params.stats.gamma =  @CauchyGamma
     @syncData(@params)
-
-
 
   CauchyPress: (evt) ->
     name = evt.target.name
