@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class NormalDist extends BaseService
-  @inject 'app_analysis_Modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-    @calc = @app_analysis_Modeler_getParams
+    @calc = @app_analysis_modeler_getParams
     @NormalMean = 5
     @NormalStandardDev = 1
     @NormalVariance = 1
