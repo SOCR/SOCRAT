@@ -218,7 +218,6 @@ div(ng-controller="modelerMainCtrl as mainArea")
             uib-tooltip="This modeler plots a Exponential distribution."
             tooltip-placement="bottom"
             )
-          //modelerdir
         .col-md-4
             .row.form-inline
               label
@@ -227,8 +226,7 @@ div(ng-controller="modelerMainCtrl as mainArea")
                 uib-tooltip="Gamma Parameter"
                 tooltip-placement="left"
                 ) &nbsp;
-                | Gamma
-                sub 1
+                | b
                 | &nbsp;
                 input.form-control.input-sm.flat(
                 string-to-number
@@ -290,11 +288,10 @@ div(ng-controller="modelerMainCtrl as mainArea")
               label
                 span.glyphicon.glyphicon-question-sign(
                 aria-hidden="true"
-                uib-tooltip="Location Parameter"
+                uib-tooltip="Location parameter"
                 tooltip-placement="left"
                 ) &nbsp;
-                | Location
-                sub 1
+                | a
                 | &nbsp;
                 input.form-control.input-sm.flat(
                 string-to-number
@@ -311,11 +308,10 @@ div(ng-controller="modelerMainCtrl as mainArea")
               label
                 span.glyphicon.glyphicon-question-sign(
                 aria-hidden="true"
-                uib-tooltip="Scale of the sample"
+                uib-tooltip="Scale parameter"
                 tooltip-placement="left"
                 ) &nbsp;
                 | b
-                sub 1
                 | &nbsp;
                 input.form-control.input-sm.flat(
                 ng-model="mainArea.LaplaceScale"
@@ -409,7 +405,7 @@ div(ng-controller="modelerMainCtrl as mainArea")
     div(ng-show ="mainArea.distrbution != ' ' ")
       modeler-viz-dir
 
-      h6 Parameters
+      p Descriptive statistics:
       ul
         li Mean: {{mainArea.stats.mean}}
         li Median: {{mainArea.stats.median}}
