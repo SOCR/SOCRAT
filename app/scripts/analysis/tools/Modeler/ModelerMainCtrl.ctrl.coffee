@@ -40,7 +40,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @$timeout => @updateChartData(data)
 
     @$scope.$on 'modeler:updateDataType', (event, dataType) =>
-      console.log("broadcast occurered, updating datatTYPE")
+      #console.log("broadcast occurered, updating datatTYPE")
       @dataType = dataType
 
 
@@ -61,8 +61,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
       #To be added for quantile
-      console.log(@distribution)
-      console.log(@params)
+      #console.log(@distribution)
+      #console.log(@params)
       @syncData(@params)
 
 
@@ -73,7 +73,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
   #takes the current parameters, distribution and datset and updates the graph data accordingly
   #graph data is two way binded to the modeler viz
   updateModelData: () ->
-    console.log("Updating Model Data from Sliders")
+    #console.log("Updating Model Data from Sliders")
     xBounds = @getXbounds(@params, @distribution)
     @params.xMin = xBounds.xMin
     @params.xMax = xBounds.xMax
@@ -89,7 +89,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     graph.chartData = @tempData
     graph.modelData = modelData
 
-    console.log("updating graph data from main controller")
+    #console.log("updating graph data from main controller")
     @$timeout => @graphData = graph,
     1
 
@@ -424,7 +424,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @currParams = @router.getParamsByName(@distribution)
     @LogNormalStDev = @currParams.standardDev
     @LogNormalMean = @currParams.mean
-    console.log("in log normal retrieve!!!!!")
+    #console.log("in log normal retrieve!!!!!")
     @LogNormalSliders()
     @updateModelData()
 

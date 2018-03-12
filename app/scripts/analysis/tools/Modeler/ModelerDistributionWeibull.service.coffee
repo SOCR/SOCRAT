@@ -36,7 +36,7 @@ module.exports = class WeiDist extends BaseService
   getChartData: (params) ->
 
     curveData = @getWeibullDistribution(params.xMin, params.xMax, @gamma, @k)
-    console.log(curveData)
+    #console.log(curveData)
 
     return curveData
 

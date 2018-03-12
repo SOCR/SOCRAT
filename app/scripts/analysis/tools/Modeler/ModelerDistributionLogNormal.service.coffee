@@ -39,7 +39,7 @@ module.exports = class LogNorm extends BaseService
     if params.stats.mean == undefined
       params.stats.mean = 0.75
     curveData = @getLogNormalDistribution(params.xMin, params.xMax, @LogNormalStdev, @LogNormalMean)
-    console.log(curveData)
+    #console.log(curveData)
 
     return curveData
 

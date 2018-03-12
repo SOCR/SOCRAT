@@ -37,10 +37,10 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
         if @dataType isnt obj.dataFrame.dataType
         # update local data type
-          console.log("in get list")
+          #console.log("in get list")
           @dataType = obj.dataFrame.dataType
           @distributions = @list.getFlat()
-          console.log(@distributions)
+          #console.log(@distributions)
           @selectedDistributions = @distributions[0]
           # send update to main are actrl
           @msgService.broadcast 'modeler:updateDataType', obj.dataFrame.dataType
@@ -65,7 +65,7 @@ module.exports = class ModelerSidebarCtrl extends BaseCtrl
 
   updateSidebarControls: (data=@dataFrame) ->
     @cols = data.header
-    console.log("selected dist" + @selectedDistributions.name)
+    #console.log("selected dist" + @selectedDistributions.name)
     if @selectedDistributions.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedDistributions.x)
       @xCol = @xCols[0]
