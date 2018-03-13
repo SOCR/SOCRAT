@@ -50,6 +50,31 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
       name: 'Countries Rankings'
       url: 'datasets/Countries_Rankings.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_2008_World_CountriesRankings'
+    ,
+# Mine is From here
+      name: 'US Consumer Price Index (1981-2006)'
+      url: 'datasets/consumer_price_index.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Dinov_021808_ConsumerPriceIndex'
+    ,
+      name: 'US Federal Budget, Income, Expenditures and Deficit Data (1849-2016)'
+      url: 'datasets/budget_deficits.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_US_BudgetsDeficits_1849_2016'
+    ,
+      name: 'Google Web-Search Trends and Stock Market Data (2005-2011)'
+      url: 'datasets/google_trends.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_GoogleTrends_2005_2011'
+    ,
+      name: 'Wealth of Nations Data (1800-2009)'
+      url: 'datasets/wealth_of_nations.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_WealthOfNations_1800_2009'
+    ,
+      name: 'Standard & Poor\'s Stock Exchange'
+      url: 'datasets/standards_poor_500.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Dinov_070108_SP500_0608'
+    ,
+      name: 'US Economy by Sector (2002)'
+      url: 'datasets/economy2002.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Dinov_101709_USEconomy'
     ]
 
   getNames: -> @socrDatasets.map (dataset) ->
