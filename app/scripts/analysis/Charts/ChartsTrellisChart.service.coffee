@@ -38,7 +38,8 @@ module.exports = class ChartsTrellisChart extends BaseService
       row_obj = {}
       for label, lbl_idx in fields
         row_obj[label] = row[lbl_idx]
-      row_obj[ordinal] = labels[row_ind]
+      if labels
+        row_obj[ordinal] = labels[row_ind]
       d.push row_obj
 
     vlSpec = {
