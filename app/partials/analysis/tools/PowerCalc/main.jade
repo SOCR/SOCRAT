@@ -14,7 +14,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 					label Power: &nbsp;
 						input.form-control.input-sm.flat(
 						ng-model="mainArea.onePropPower"
-						ng-click="mainArea.onePropCalcPower()" 
+						ng-click="mainArea.onePropCalcPower()"
 						ng-keypress="mainArea.onePropPress($event)"
 						ng-disabled="mainArea.deployed"
 						type="number"
@@ -382,10 +382,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 				)
 				#chi2PowerUI
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 28509a4879044d0e3f4961e1bc2068926a9e95c4
 	div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
 		h3 Power of a Simple Poisson Test
 		p <i>This dialog provides rudimentary power analysis for an exact test of a Poisson parameter.  Specifically, our data are assumed to be x_1, x_2, ..., x_n iid Poisson(lambda), so that x = sum{x_i} is Poisson with mean n*lambda serves as the test statistic.  The critical value(s) for x are obtained using quantiles of the null Poisson distribution so as to cut off tail(s) of probability less than or equal to alpha.  The power of the test is then the probability of the critical region, computed from a Poisson distribution with the specified value of lambda.</i>
@@ -450,7 +447,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 				p n: The sample size.
 				<br>
 				p power: The probability of the critical region, given lambda and n.</p>
-				
+
 	div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
 		.row
 			.col-md-8
