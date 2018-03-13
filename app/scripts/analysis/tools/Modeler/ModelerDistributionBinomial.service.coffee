@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class BinomialDist extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-    @getParams = @socrat_analysis_modeler_getParams
+    @getParams = @app_analysis_modeler_getParams
 
     @name = 'Binomial'
     @n = 10;
@@ -37,7 +37,7 @@ module.exports = class BinomialDist extends BaseService
       data.push
         x: i
         y: @pdf(n, p, i)
-    console.log(data)
+    #console.log(data)
     data
   
   getChartData: (params) ->
@@ -49,7 +49,7 @@ module.exports = class BinomialDist extends BaseService
     
 
     curveData = @getBinomialDistribution(params.xMin, params.xMax, params.stats.n , params.stats.p)
-    console.log(curveData)
+    #console.log(curveData)
     
     return curveData
 

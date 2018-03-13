@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class WeiDist extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-#    @getParams = @socrat_analysis_modeler_getParams
+#    @getParams = @app_analysis_modeler_getParams
 
     @name = 'Weibull'
     @gamma = .75
@@ -36,7 +36,7 @@ module.exports = class WeiDist extends BaseService
   getChartData: (params) ->
 
     curveData = @getWeibullDistribution(params.xMin, params.xMax, @gamma, @k)
-    console.log(curveData)
+    #console.log(curveData)
 
     return curveData
 
