@@ -89,7 +89,7 @@ module.exports = class ChartsDir extends BaseDirective
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
           # trellis chart is called differently
-          if scheme.name is 'Trellis Chart' and newChartData.labels
+          if scheme.name is 'Trellis Chart'
             @trellis.drawTrellis(width, height, data, _graph, labels, container)
           # standard charts
           else

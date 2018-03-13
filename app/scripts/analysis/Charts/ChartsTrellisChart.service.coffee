@@ -71,17 +71,22 @@ module.exports = class ChartsTrellisChart extends BaseService
         "encoding": {
           "x": {"field": {"repeat": "column"},"type": "quantitative"},
           "y": {"field": {"repeat": "row"},"type": "quantitative"},
-          "color": {
-            "condition": {
-              "selection": "brush",
-              "field": ordinal,
-              "type": "nominal"
-            },
-            "value": "grey"
-          }
+          "color": null
         }
       }
     }
+
+    if labels
+      vlSpec['spec']['encoding']['color'] = {
+        "condition": {
+          "selection": "brush",
+          "field": ordinal,
+          "type": "nominal"
+        },
+        "value": "grey"
+      }
+    else
+      vlSpec['spec']['encoding']['color'] = null
 
     opt =
       "actions": {export: true, source: false, editor: false}
