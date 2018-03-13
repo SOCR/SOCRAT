@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class NormalDist extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-    @calc = @socrat_analysis_modeler_getParams
+    @calc = @app_analysis_modeler_getParams
     @NormalMean = 5
     @NormalStandardDev = 1
     @NormalVariance = 1
@@ -28,7 +28,7 @@ module.exports = class NormalDist extends BaseService
       data.push
         x: i
         y: @PDF(i)
-    console.log(data)
+    #console.log(data)
     data
 
   getChartData: (params) ->

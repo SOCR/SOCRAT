@@ -10,9 +10,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class LogNorm extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-#    @getParams = @socrat_analysis_modeler_getParams
+#    @getParams = @app_analysis_modeler_getParams
 
     @name = 'LogNormal'
     @LogNormalMean = 2
@@ -39,7 +39,7 @@ module.exports = class LogNorm extends BaseService
     if params.stats.mean == undefined
       params.stats.mean = 0.75
     curveData = @getLogNormalDistribution(params.xMin, params.xMax, @LogNormalStdev, @LogNormalMean)
-    console.log(curveData)
+    #console.log(curveData)
 
     return curveData
 

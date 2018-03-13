@@ -3,11 +3,11 @@
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
 module.exports = class ModelerDataService extends BaseModuleDataService
-  @inject '$q', 'socrat_analysis_mymodule_msgService'
+  @inject '$q', 'app_analysis_modeler_msgService'
 
   # requires renaming message service injection to @msgService
   initialize: () ->
-    @msgManager = @socrat_analysis_mymodule_msgService
+    @msgManager = @app_analysis_modeler_msgService
     @getDataRequest = @msgManager.getMsgList().outgoing[0]
     @getDataResponse = @msgManager.getMsgList().incoming[0]
 
