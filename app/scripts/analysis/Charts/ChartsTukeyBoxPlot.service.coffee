@@ -27,12 +27,25 @@ module.exports = class ChartsBoxPlot extends BaseService
 
   drawBoxPlot: (_graph, data, container, labels, width, height, ranges) ->
 
+    # do not bin categorical X
+    if labels.xLab.type is 'string'
+      binX = off
+      fieldX = 'x'
+    else
+      binX = on
+      fieldX = 'bin_x'
+
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "description": "A vertical 2D box plot showing median, min, and max.",
       "data":
         "values": data,
       "transform": [
+        {
+          "bin": binX,
+          "field": "x",
+          "as": fieldX
+        },
         {
           "aggregate": [
             {
@@ -52,7 +65,7 @@ module.exports = class ChartsBoxPlot extends BaseService
             }
           ],
           "groupby": [
-            "x"
+            fieldX
           ]
         },
         {
@@ -87,8 +100,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              # "bin": true,
-              "field": "x",
+              "field": fieldX,
               "type": "ordinal",
               "axis": {
                 "title": labels.xLab.value
@@ -111,8 +123,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              # "bin": true,
-              "field": "x",
+              "field": fieldX,
               "type": "ordinal"
             }
           }
@@ -132,8 +143,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              # "bin": true,
-              "field": "x",
+              "field": fieldX,
               "type": "ordinal"
             },
             "size": {
@@ -152,8 +162,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              # "bin": true,
-              "field": "x",
+              "field": fieldX,
               "type": "ordinal"
             },
             "color": {
