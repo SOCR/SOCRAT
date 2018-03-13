@@ -25,7 +25,6 @@ module.exports = class ChartsBoxPlot extends BaseService
 
     @ve = require 'vega-embed'
 
-  # drawBoxPlot: (width, height, data, _graph, labels, container) ->
   drawBoxPlot: (_graph, data, container, labels, width, height, ranges) ->
 
     vlSpec = {
@@ -80,7 +79,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "field": "lowerWhisker",
               "type": "quantitative",
               "axis": {
-                "title": "Y"
+                "title": labels.yLab.value
               }
             },
             "y2": {
@@ -90,7 +89,10 @@ module.exports = class ChartsBoxPlot extends BaseService
             "x": {
               # "bin": true,
               "field": "x",
-              "type": "ordinal"
+              "type": "ordinal",
+              "axis": {
+                "title": labels.xLab.value
+              }
             }
           }
         },
