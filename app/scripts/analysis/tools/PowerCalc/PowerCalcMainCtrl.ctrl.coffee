@@ -1176,4 +1176,3 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		chartData = @algorithmService.getChartData @selectedAlgorithm
 		@$timeout => @chartData = chartData,
 		5
-
