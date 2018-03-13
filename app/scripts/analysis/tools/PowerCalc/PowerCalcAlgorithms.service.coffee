@@ -19,7 +19,8 @@ module.exports = class PowerCalcAlgorithms extends BaseModuleDataService
     @twoProp = @app_analysis_powerCalc_twoProp
     @chi2 = @app_analysis_powerCalc_chi2
     @algorithms = [@twoTest, @oneTest, @oneProp, @twoProp, @chi2]
-    
+
+
   ############
 
   getNames: -> @algorithms.map (alg) -> alg.getName()
