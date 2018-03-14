@@ -20,7 +20,7 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_tilfordTree',
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
-          'app_analysis_charts_checkTime',
+          'app_analysis_charts_checkTime'
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
