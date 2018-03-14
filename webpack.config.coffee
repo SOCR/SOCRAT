@@ -21,12 +21,6 @@ module.exports =
     filename: 'socrat.js'
     chunkFilename: "[id].socrat.js"
 
-  devServer: {
-    hot: true,
-    host: '127.0.0.1',
-    port: 8080
-  }
-
   module:
     loaders: [
       test: /\.jsx?$/
@@ -75,13 +69,19 @@ module.exports =
     ,
       test: /[\/\\]flat-ui\.js$/
       loader: 'imports?this=>window'
+    # ,
+    #   test: require.resolve('vega'),
+    #   loaders: [
+    #     'transform?vega/scripts/strip-schema.js',
+    #     'transform?browserify-versionify'
+    #   ]
     ,
       test: /[\/\\]vega-lite\.js$/
       loader: 'imports?vg=vega'
     ,
       test: /[\/\\]vega-embed\.js$/
       loader: 'imports?vg=vega!imports?vl=vega-lite'
-    ]
+   ]
 
   resolve:
 
