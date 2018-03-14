@@ -118,5 +118,4 @@ module.exports =
       jQuery: "jquery",
       'window.jQuery': "jquery"
   ]
-
   
