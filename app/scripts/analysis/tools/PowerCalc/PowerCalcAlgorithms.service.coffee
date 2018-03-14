@@ -45,4 +45,3 @@ module.exports = class PowerCalcAlgorithms extends BaseModuleDataService
 
   resetByName: (algName) ->
     (alg.reset() for alg in @algorithms when algName is alg.getName()).shift()
-    
