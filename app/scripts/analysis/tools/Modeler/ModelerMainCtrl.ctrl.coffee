@@ -8,17 +8,17 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class ModelerMainCtrl extends BaseCtrl
-  @inject 'socrat_analysis_mymodule_dataService',
-    'socrat_analysis_modeler_getParams',
-    'socrat_analysis_modeler_router'
+  @inject 'app_analysis_modeler_dataService',
+    'app_analysis_modeler_getParams',
+    'app_analysis_modeler_router'
     '$timeout',
     '$scope'
 
   initialize: ->
-    @dataService = @socrat_analysis_mymodule_dataService
+    @dataService = @app_analysis_modeler_dataService
     @DATA_TYPES = @dataService.getDataTypes()
-    @router = @socrat_analysis_modeler_router
-    @title = 'Modeling Module'
+    @router = @app_analysis_modeler_router
+    @title = 'Modeler'
     @dataType = ''
     @dataPoints = null
     @assignments = null
@@ -27,7 +27,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @modelData = {}
     @params = {}
     @tempData = {}
-    @getParams = @socrat_analysis_modeler_getParams
+    @getParams = @app_analysis_modeler_getParams
     #@gMean = 0
     #@gVariance =0
     #@gstandardDev = null
@@ -40,7 +40,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @$timeout => @updateChartData(data)
 
     @$scope.$on 'modeler:updateDataType', (event, dataType) =>
-      console.log("broadcast occurered, updating datatTYPE")
+      #console.log("broadcast occurered, updating datatTYPE")
       @dataType = dataType
 
 
@@ -61,19 +61,14 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @params.xMin = d3.min(histData, (d)->parseFloat d.x)
       @params.xMax = d3.max(histData, (d)->parseFloat d.x)
       #To be added for quantile
-      console.log(@distribution)
-      console.log(@params)
+      #console.log(@distribution)
+      #console.log(@params)
       @syncData(@params)
 
-
-
-
-
-
   #takes the current parameters, distribution and datset and updates the graph data accordingly
-  #graph data is two way binded to the modeler viz 
+  #graph data is two way binded to the modeler viz
   updateModelData: () ->
-    console.log("Updating Model Data from Sliders")
+    #console.log("Updating Model Data from Sliders")
     xBounds = @getXbounds(@params, @distribution)
     @params.xMin = xBounds.xMin
     @params.xMax = xBounds.xMax
@@ -89,7 +84,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     graph.chartData = @tempData
     graph.modelData = modelData
 
-    console.log("updating graph data from main controller")
+    #console.log("updating graph data from main controller")
     @$timeout => @graphData = graph,
     1
 
@@ -104,7 +99,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
   getXbounds: (@params, @distribution) ->
       dataSetxMin = @params.xMin
       dataSetxMax = @params.xMax
-      
+
       # modelDataFirstQuantile = @router.getQuantile(@distribution, @params, 0.01)
       # modelDataNNQuantile = @router.getQuantile(@distribution, @params, 0.99)
       # xMin = Math.min(modelDataFirstQuantile, dataSetxMin)
@@ -113,14 +108,14 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       bounds =
         xMin: dataSetxMin
         xMax: dataSetxMax
-        
+
 
   #returns the maximium y valuable to be plotted from the model data.
   getYBounds: (modelData) ->
       modelDataYMax = d3.max(modelData, (d)->parseFloat d.y)
       bounds =
         yMax: modelDataYMax
-  
+
 
   #sets the distribution to the updated parameters
   #reloads the data to be plotted
@@ -231,7 +226,11 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     )
     # enable or disable sliders
     sliders = [
-      nMean, nVariance, nStDev
+      nMean
+    ,
+      nVariance
+    # ,
+    #   nStDev
       ]
 
     if @deployed is true
@@ -303,10 +302,8 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
 
   CauchySync: () ->
     @params.stats.location = @CauchyLocation
-    @params.stats.gammma =  @CauchyGamma
+    @params.stats.gamma =  @CauchyGamma
     @syncData(@params)
-
-
 
   CauchyPress: (evt) ->
     name = evt.target.name
@@ -420,7 +417,7 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
     @currParams = @router.getParamsByName(@distribution)
     @LogNormalStDev = @currParams.standardDev
     @LogNormalMean = @currParams.mean
-    console.log("in log normal retrieve!!!!!")
+    #console.log("in log normal retrieve!!!!!")
     @LogNormalSliders()
     @updateModelData()
 
@@ -550,6 +547,3 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @kBandwith = ui.value
         @kernelSync()
     )
-
-   
-

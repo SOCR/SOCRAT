@@ -10,7 +10,7 @@ module.exports = class DistList extends BaseService
     flat = [
       name: 'Normal'
       value: 0
-      x: ['integer', 'number', 'string']
+      x: ['integer', 'number']
       y: false
       z: false
       message: "This class models a normal distribution fitting curve to the dataset"
@@ -73,26 +73,12 @@ module.exports = class DistList extends BaseService
       z: false
       message: "This class Designs a simple Exponential model fitting curve"
       xLabel: ""
-    ,
-
-      name: 'Weibull'
-      value: 2
-      x: ['integer', 'number']
-      y: false
-      z: false
-      message: "This class Designs a simple Weibull model fitting curve"
-      xLabel: ""
-    ,
-
-      # name: 'Kernel'
-      # value: 2
-      # x: ['integer', 'number']
-      # y: false
-      # z: false
-      # message: "This class Designs a simple polynomial model fitting curve"
-      # xLabel: ""
-      #kernels ['uniform', 'triangular', 'epanechnikov', 'quartic', 'triweight', 'gaussian', 'cosine']
-
+    # ,
+    #   name: 'Weibull'
+    #   value: 2
+    #   x: ['integer', 'number']
+    #   y: false
+    #   z: false
+    #   message: "This class Designs a simple Weibull model fitting curve"
+    #   xLabel: ""
     ]
-
-
