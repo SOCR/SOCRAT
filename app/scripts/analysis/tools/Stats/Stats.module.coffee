@@ -33,3 +33,4 @@ module.exports = Stats = new Module
     url: '/tools/stats'
     mainTemplate: require 'partials/analysis/tools/stats/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/stats/sidebar.jade'
+    

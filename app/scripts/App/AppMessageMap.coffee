@@ -130,3 +130,4 @@ module.exports = class AppMessageMap
 
   getMap: ->
     @_msgMap
+    

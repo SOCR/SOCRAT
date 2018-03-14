@@ -72,3 +72,4 @@ module.exports = class AppModuleList
   listAll: ->
     console.log @system
     @system.concat @listAnalysisModules()
+    

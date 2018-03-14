@@ -34,3 +34,4 @@ module.exports = powerCalc = new Module
     url: '/tools/powercalc'
     mainTemplate: require 'partials/analysis/tools/PowerCalc/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/PowerCalc/sidebar.jade'
+    

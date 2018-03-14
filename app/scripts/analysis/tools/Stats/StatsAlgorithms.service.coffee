@@ -35,3 +35,4 @@ module.exports = class StatsAlgorithms extends BaseModuleDataService
 
   resetByName: (algName) ->
     (alg.reset() for alg in @algorithms when algName is alg.getName()).shift()
+    
