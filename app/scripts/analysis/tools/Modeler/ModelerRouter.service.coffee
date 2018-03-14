@@ -15,7 +15,7 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     'socrat_modeler_distribution_cauchy',
     'socrat_modeler_distribution_maxwell_boltzman',
     'socrat_modeler_distribution_binomial',
-    'socrat_analysis_modeler_kernel_density_plotter',
+    'app_analysis_modeler_kernel_density_plotter',
     'socrat_modeler_distribution_ChiSquared',
     'socrat_modeler_distribution_LogNormal',
     'socrat_modeler_distribution_exponential',
@@ -26,7 +26,7 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     #import each distribution file
     @msgManager = @app_analysis_powerCalc_msgService
     @Normal = @socrat_modeler_distribution_normal
-    @Kernel = @socrat_analysis_modeler_kernel_density_plotter
+    @Kernel = @app_analysis_modeler_kernel_density_plotter
     @Laplace = @socrat_modeler_distribution_laplace
     @Cauchy = @socrat_modeler_distribution_cauchy
     @MaxwellBoltzman = @socrat_modeler_distribution_maxwell_boltzman

@@ -9,9 +9,9 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class ChiSqr extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
   initialize: () ->
-#    @getParams = @socrat_analysis_modeler_getParams
+#    @getParams = @app_analysis_modeler_getParams
 
     @name = 'ChiSquared'
     @k = 2
@@ -29,7 +29,7 @@ module.exports = class ChiSqr extends BaseService
     t
 
   gammaFn: (x) ->
-    console.log("In te chisquared service!!!!!!!!!!")
+    #console.log("In te chisquared service!!!!!!!!!!")
     return @factorial(x-1)
 
   getChiSquaredDistribution: (leftBound, rightBound, k) ->
@@ -38,7 +38,7 @@ module.exports = class ChiSqr extends BaseService
       data.push
         x: i
         y: @pdf(k, i)
-    console.log(data)
+    #console.log(data)
     data
 
   getChartData: (params) ->
@@ -46,7 +46,7 @@ module.exports = class ChiSqr extends BaseService
 #      params.stats.k = 2
 
     curveData = @getChiSquaredDistribution(params.xMin, params.xMax, @k)
-    console.log(curveData)
+    #console.log(curveData)
 
     return curveData
 

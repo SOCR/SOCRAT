@@ -32,11 +32,44 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @chiSquareAlpha=0.05
     @update()
 
-
   setAlpha: (alphaIn) ->
     @chiSquareAlpha = alphaIn
     @update()
     return
+
+  saveData: (data) ->
+    numRows = data.length
+    numCols = data[0].length
+
+    sumRows = []
+    sumCols = []
+    @chiSquareN = 0
+    @chiSquareDf = (numRows-1) * (numCols-1)    
+
+    expCount = []
+
+    for i in [0...numRows]
+      sumRows.push(0)
+      for j in [0...numCols]
+        sumRows[i] = sumRows[i] + parseFloat(data[i][j])
+        @chiSquareN += parseFloat(data[i][j])
+
+    for i in [0...numCols]
+      sumCols.push(0);
+      for j in [0...numRows]
+        sumCols[i] = sumCols[i] + parseFloat(data[j][i])
+
+    for i in [0...numRows]
+      expCount.push([])
+      for j in [0...numCols]
+        expCount[i][j] = (sumRows[i]*sumCols[j]) / @chiSquareN
+
+    @chiSquareChi2 = 0
+    for i in [0...numRows]
+      for j in [0...numCols]
+        @chiSquareChi2 += Math.pow(parseFloat(data[i][j]) - expCount[i][j], 2) / expCount[i][j]
+
+    @update('chi2')
 
   getName: () ->
     return @name
@@ -67,7 +100,6 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @chiSquareDfMax = Math.max(@chiSquareDf, @chiSquareDfMax)
     return
 
-
   update: (tar)->
     # update parameters
     if tar is "chi2"
@@ -80,7 +112,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     # update power
     input = 
       chi2: @chiSquareChi2
-      proN: @chiSquareEffSize*@chiSquareN
+      proN: @chiSquareN / @chiSquareEffSize
       n: @chiSquareN
       df: @chiSquareDf
       alpha: @chiSquareAlpha

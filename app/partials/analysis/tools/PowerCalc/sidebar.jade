@@ -48,6 +48,12 @@ div(ng-controller="powerCalcSidebarCtrl as sidebar")
 						)
 					#alphaUI
 
+				.row.form-inline
+					button(
+						ng-click="sidebar.run()"
+					)
+
+
 		fieldset(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' && sidebar.deployed")
 			legend Data
 			.form-group

@@ -10,11 +10,11 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 ###
 
 module.exports = class KernelDensityPlot extends BaseService
-  @inject 'socrat_analysis_modeler_getParams'
+  @inject 'app_analysis_modeler_getParams'
 
   initialize: () ->
     @name = 'Kernel'
-    @calc = @socrat_analysis_modeler_getParams
+    @calc = @app_analysis_modeler_getParams
     @bandwith = 5
 
   getName: () ->
@@ -22,12 +22,12 @@ module.exports = class KernelDensityPlot extends BaseService
 
 
   getChartData: (params) ->
-    console.log("Getting Kernel Density Data")
+    #console.log("Getting Kernel Density Data")
     #data = data.dataPoints
 
     xScale = d3.scale.linear().domain([params.xMin, params.xMax]).range([0, params.xMax])
     kde = @kernelDensityEstimator(@epanechnikovKernel(@bandwith), xScale.ticks(18));
-    console.log("printing kde data ")
+    #console.log("printing kde data ")
     toKDE = data.dataPoints.map (d) ->
       return d[0]
     curveData = kde(toKDE)
