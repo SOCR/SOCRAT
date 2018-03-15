@@ -18,6 +18,7 @@ module.exports = Stats = new Module
       'app_analysis_stats_CIOP': require 'scripts/analysis/tools/Stats/StatsCIOP.service.coffee'
       'app_analysis_stats_Pilot': require 'scripts/analysis/tools/Stats/StatsPilot.service.coffee'
 
+
     controllers:
       'statsMainCtrl': require 'scripts/analysis/tools/Stats/StatsMainCtrl.ctrl.coffee'
       'statsSidebarCtrl': require 'scripts/analysis/tools/Stats/StatsSidebarCtrl.ctrl.coffee'

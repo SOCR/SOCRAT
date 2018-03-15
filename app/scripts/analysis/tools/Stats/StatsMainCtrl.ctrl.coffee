@@ -12,6 +12,8 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		# required basic modules
 		@d3 = require 'd3'
+		@ve = require 'vega-embed'
+		@vt = require 'vega-tooltip/build/vega-tooltip.js'
 		@distribution = require 'distributome'
 		@msgService = @app_analysis_stats_msgService
 		@algorithmService = @app_analysis_stats_algorithms
@@ -74,7 +76,51 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		@CIOMMode = @params.mode
 		@CIOMModes = ["Two Tailed", "One Tailed"]
 		@CIOMClick()
+		@CIOMDraw()
 		return
+
+
+	CIOMDraw: () ->
+
+		confidenceInterval = [{"lowerBound":@CIOMLowerBound}, {"mean":@CIOMMean}, {"upperBound":@CIOMUpperBound}]
+		title = "LowerBound: ".concat (@CIOMLowerBound).toString()
+		title = title.concat " Mean: "
+		title = title.concat (@CIOMMean).toString()
+		title = title.concat " UpperBound: "
+		title = title.concat (@CIOMUpperBound).toString()
+
+		vlSpec =
+			{
+				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+				"width": 550,
+				"height": 200,
+				"data": {"values": confidenceInterval},
+				"layer": [{
+					"mark": {"type": "point", "filled": true},
+					"encoding": {
+						"x": {
+							"field": "mean", "type": "quantitative",
+							"axis": {"title": title}
+						},
+						"color": {"value": "black"},
+					}
+				}, 
+				{
+					"mark": "rule",
+					"encoding": {
+						"x": {
+							"aggregate": "ci0", "field": "lowerBound", "type": "quantitative"
+						},
+						"x2": {
+							"aggregate": "ci1", "field": "upperBound", "type": "quantitative"
+						}
+					}
+				}]
+			}
+		opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
+		@ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) => 
+			@vt.vegaLite(result.view, vlSpec)
+		)
 
 	# call syncData
 	CIOMSync: () ->
@@ -255,5 +301,4 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		}
 		opt = "actions": {export: true, source: false, editor: false}
 		#Embed the visualization in the container with id `vis`
-		@ve '#vis', vlSpec, opt, (error, result) ->;
-
+		@ve '#visCIOP', vlSpec, opt, (error, result) ->;

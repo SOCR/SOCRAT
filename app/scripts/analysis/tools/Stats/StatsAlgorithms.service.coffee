@@ -17,6 +17,7 @@ module.exports = class StatsAlgorithms extends BaseModuleDataService
     @algorithms = [@CIOM, @CIOP, @Pilot]
 
   ############
+
   getParamsByName: (algName) -> 
     (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()
 
