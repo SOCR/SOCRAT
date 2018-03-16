@@ -44,8 +44,19 @@ module.exports = class ChartsList extends BaseService
       message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
       xLabel: "X"
     ,
-      name: 'Bubble Chart'
+      name: 'Tukey Box Plot (1.5 IQR)'
       value: 4
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number']
+      z: false
+      message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
+      xLabel: "X"
+      yLabel: "Y"
+    ,
+      name: 'Bubble Chart'
+      value: 5
       v: false
       w: false
       x: ['integer', 'number']
@@ -59,7 +70,7 @@ module.exports = class ChartsList extends BaseService
       rLabel: "Radius"
     ,
       name: 'Pie Chart'
-      value: 5
+      value: 6
       v: false
       w: false
       x: ['integer', 'number', 'string']
@@ -69,7 +80,7 @@ module.exports = class ChartsList extends BaseService
       xLabel: "Category"
     ,
       name: 'Normal Distribution'
-      value: 6
+      value: 7
       v: false
       w: false
       x: ['integer', 'number']
@@ -79,7 +90,7 @@ module.exports = class ChartsList extends BaseService
       xLabel: "Category"
     ,
       name: 'Ring Chart'
-      value: 7
+      value: 8
       v: false
       w: false
       x: ['integer', 'number', 'string']
@@ -89,7 +100,7 @@ module.exports = class ChartsList extends BaseService
       xLabel: "Category"
     ,
       name: 'Area Chart'
-      value: 10
+      value: 9
       v: false
       w: false
       x: ['date']
@@ -100,7 +111,7 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Y"
     ,
       name: 'Line Chart'
-      value: 11
+      value: 10
       z: ['string']
       message: "Choose a continuous variable for x and a numerical variable for y"
       xLabel: "X (date)"
@@ -108,13 +119,25 @@ module.exports = class ChartsList extends BaseService
       zLabel: "Category (if applicable)"
     ,
       name: 'Stream Graph'
-      value: 8
+      value: 11
       v: false
       w: false
       x: ['date']
       y: ['integer', 'number']
-      z: false
-      message: "Choose a continuous variable for x and a numerical variable for y"
+      z: ['string']
+      message: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
+      xLabel: "X (date)"
+      yLabel: "Y"
+      zLabel: "Key"
+    ,
+      name: 'Area Trellis Chart'
+      value: 12
+      v: false
+      w: false
+      x: ['date']
+      y: ['integer', 'number']
+      z: ['string']
+      message: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
       xLabel: "X (date)"
       yLabel: "Y"
     ]
@@ -255,6 +278,3 @@ module.exports = class ChartsList extends BaseService
       message: "Choose one variable to put into a pie chart."
       xLabel: "Category"
     ]
-
-
-
