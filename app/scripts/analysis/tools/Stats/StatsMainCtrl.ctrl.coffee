@@ -13,6 +13,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		# required basic modules
 		@d3 = require 'd3'
 		@ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 		@distribution = require 'distributome'
 		@msgService = @app_analysis_stats_msgService
 		@algorithmService = @app_analysis_stats_algorithms
@@ -91,8 +92,8 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		vlSpec =
 			{
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": 300,
-				"height": 150,
+				"width": 550,
+				"height": 200,
 				"data": {"values": confidenceInterval},
 				"layer": [{
 					"mark": {"type": "point", "filled": true},
@@ -117,7 +118,9 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 				}]
 			}
 		opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
-		@ve '#vis', vlSpec, opt, (error, result) -> return
+		@ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) =>
+			@vt.vegaLite(result.view, vlSpec)
+		)
 
 	# call syncData
 	CIOMSync: () ->
@@ -253,7 +256,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 				@CIOPSync()
 				@$scope.$apply()
 		)
-  
+
 		if @deployed is true
 			for sl in sliders
 				sl.slider("disable")
@@ -298,5 +301,4 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		}
 		opt = "actions": {export: true, source: false, editor: false}
 		#Embed the visualization in the container with id `vis`
-		@ve '#vis', vlSpec, opt, (error, result) -> return
-
+		@ve '#visCIOP', vlSpec, opt, (error, result) ->;
