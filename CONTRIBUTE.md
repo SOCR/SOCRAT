@@ -9,7 +9,7 @@ The technology stack used in this framework is described below.
 **Git** - You guessed it right, we use git for our code versioning following the [git branching model](http://nvie.com/posts/a-successful-git-branching-model/) suggested by Vincent.
 
 **CoffeeScript** - For cleaner code, we have adopted [CoffeeScript](http://coffeescript.org). Please use the below resources to familiarise yourselves.
-  - http://coffeescript.org/ 
+  - http://coffeescript.org/
   - http://js2coffee.org
 
 **Jade** - For HTML, we use jade templating engine.
@@ -18,18 +18,18 @@ The technology stack used in this framework is described below.
 
 **AngularJS** - JavaScript framework that we employ. Very elegant. [Official website](https://angularjs.org/) has the best documentation.
 
-**[WebPack](https://webpack.github.io/)** - module bundler. 
+**[WebPack](https://webpack.github.io/)** - module bundler.
 
 ### Optional
 
 **[D3](http://d3js.org)** - Data driven charts
-  
+
 ## Commit message format
 
-We loosely follow [AngularJs Commit Message Format](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#type):
+We loosely follow [AngularJs Commit Message Format](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines):
 
 First line of the git message has to be in the following format: `<type>(<scope>): <subject>`
-* `<type>` here is from [this list](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#type)
+* `<type>` here is from [this list](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#type)
 * `<scope>` is a specific module within SOCRAT you're contributing to, i.e. `Core` or `Charts` or `PowerCalc`
 * `<subject>` is a description of the change starting with a verb in imperative form, present tense, not capitalized, without period in the end; when commiting unfinished work (e.g. with known bugs), prepend `<subject>` with `WIP`.
 

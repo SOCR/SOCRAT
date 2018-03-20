@@ -92,8 +92,8 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		vlSpec =
 			{
 				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": 300,
-				"height": 150,
+				"width": 550,
+				"height": 200,
 				"data": {"values": confidenceInterval},
 				"layer": [{
 					"mark": {"type": "point", "filled": true},
@@ -118,7 +118,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 				}]
 			}
 		opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
-		@ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+		@ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) =>
 			@vt.vegaLite(result.view, vlSpec)
 		)
 
@@ -265,7 +265,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			for sl in sliders
 				sl.slider("enable")
 				sl.find('.ui-slider-handle').show()
-<<<<<<< HEAD
 		return
 
 	#Chart Visualization
@@ -302,5 +301,4 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		}
 		opt = "actions": {export: true, source: false, editor: false}
 		#Embed the visualization in the container with id `vis`
-		@ve '#vis', vlSpec, opt, (error, result) ->;
-
+		@ve '#visCIOP', vlSpec, opt, (error, result) ->;
