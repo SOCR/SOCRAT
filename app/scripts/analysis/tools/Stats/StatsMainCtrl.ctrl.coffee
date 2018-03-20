@@ -13,7 +13,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		# required basic modules
 		@d3 = require 'd3'
 		@ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+		@vt = require 'vega-tooltip/build/vega-tooltip.js'
 		@distribution = require 'distributome'
 		@msgService = @app_analysis_stats_msgService
 		@algorithmService = @app_analysis_stats_algorithms
