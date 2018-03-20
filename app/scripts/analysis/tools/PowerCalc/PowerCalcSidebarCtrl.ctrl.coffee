@@ -574,6 +574,3 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 
 
 
-
-
-
