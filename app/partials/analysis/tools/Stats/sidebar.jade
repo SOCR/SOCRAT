@@ -1,6 +1,7 @@
 div(ng-controller="statsSidebarCtrl as sidebar")
 	legend Statistical Analysis &nbsp;
 	
+	
 	.form-group
 		label(
 			style=''
@@ -80,4 +81,3 @@ div(ng-controller="statsSidebarCtrl as sidebar")
 			ng-options="col for col in sidebar.subCategoricalCols"
 			ng-change="sidebar.run()"
 			)
-
