@@ -151,7 +151,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		return
 
-  # functions for CIOP only 
+  # functions for CIOP only
 	CIOPRetrieve:() ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
 		@CIOPP = @params.p #central point
@@ -219,7 +219,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			for sl in sliders
 				sl.slider("enable")
 				sl.find('.ui-slider-handle').show()
-		return  
+		return
 
 	#Chart Visualization
 	Chart:() ->
@@ -255,5 +255,5 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		}
 		opt = "actions": {export: true, source: false, editor: false}
 		#Embed the visualization in the container with id `vis`
-		@ve '#vis', vlSpec, opt, (error, result) ->;
+		@ve '#vis', vlSpec, opt, (error, result) ->
 
