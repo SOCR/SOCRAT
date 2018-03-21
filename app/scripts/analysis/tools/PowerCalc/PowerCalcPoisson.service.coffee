@@ -15,22 +15,23 @@ module.exports = class PowerCalcPoisson extends BaseService
 
   initialize: ->
 
-    # dependecies
+    # dependencies
     @msgService = @app_analysis_powerCalc_msgService
     @name = 'Power of a Simple Poisson Test'
     @powerCalc = require 'powercalc'
 
-    #variables needed for chisquare
+    #variables needed for poisson
     @poissonAlpha = 0.05
     @poissonLambda0 = 1
-    @poissonLambba1 = 1
+    @poissonLambda1 = 1
     @poissonLambdaMax = 2
     @poissonSize = 100
     @poissonSizeMax = 200
     @poissonPower = 0.5
-    @poissoneAlter = 0
+    @poissonAlter = 0
     @poissonLowerBound = 0
     @poissonUpperBound = 1
+    @poissonAlterInt = 0
     @update()
 
   setAlpha: (alphaIn) ->
@@ -39,51 +40,54 @@ module.exports = class PowerCalcPoisson extends BaseService
     return
 
   saveData: (data) ->
-    # TODO 
+    # TODO
     return
 
   getName: () ->
     return @name
 
   getParams: () ->
-    @parameters = 
+    @parameters =
       power: @poissonPower
       lambda0: @poissonLambda0
       lambda1: @poissonLambda1
+      lambdaMax: @poissonLambdaMax
       n: @poissonSize
-      alter: @poissoneAlter
+      nMax: @poissonSizeMax
+      alt: @poissonAlter
       lower: @poissonLowerBound
       upper: @poissonUpperBound
+    return @parameters
+
 
 
   setParams: (newParams) ->
     @poissonLambda0 = newParams.lambda0
     @poissonLambda1 = newParams.lambda1
     @poissonSize = newParams.n
-    @poissoneAlter = newParams.alter
-    @poissonLowerBound = newParams.lower
-    @poissonUpperBound = newParams.upper
+    @poissonAlt = newParams.alt
+    if @poissonAlter is "lambda < lambda0" then @poissonAlterInt = 0
+    else if @poissonAlter is "lambda != lambda0" then @poissonAlterInt = 1
+    else @poissonAlterInt = 2
     @update(newParams.target)
+
     return
 
   checkRange: () ->
-    @poissonLambdaMax = Math.max(@poissonLambdaMax, @poissonLambda0, @poissonLambda1) 
+    @poissonLambdaMax = Math.max(@poissonLambdaMax, @poissonLambda0, @poissonLambda1)
     @poissonSizeMax = Math.max(@poissonSizeMax, @poissonSize)
-
-    @chiSquareChi2Max = Math.max(@chiSquareChi2Max, @chiSquareChi2)
-    @chiSquareNMax = Math.max(@chiSquareNMax, @chiSquareN)
-    @chiSquareDfMax = Math.max(@chiSquareDf, @chiSquareDfMax)
     return
 
   update: (tar)->
-
-    # update power
-    input = 
-      chi2: @chiSquareChi2
-      proN: @chiSquareN / @chiSquareEffSize
-      n: @chiSquareN
-      df: @chiSquareDf
-      alpha: @chiSquareAlpha
-    params = @powerCalc.SimpleChi2GUI_handle(input)
-    @chiSquarePower = params.Power
+    input =
+      power: @poissonPower
+      lambda0: @poissonLambda0
+      lambda1: @poissonLambda1
+      alpha: @poissonAlpha
+      n: @poissonSize
+      alt: @poissonAlterInt
+    poissonGUI = @powerCalc.SimplePoissonGUI_temp(input, tar)
+    @poissonLowerBound = poissonGUI.lower
+    @poissonUpperBound = poissonGUI.upper
+    @poissonPower = poissonGUI.power
     @checkRange()
