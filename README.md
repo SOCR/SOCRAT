@@ -60,6 +60,26 @@ If you find our work useful, please cite our paper:
 
 Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017, 6 pages. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
 
+```
+@inproceedings{kalinin2017socrat,
+   author = {Kalinin, Alexandr A. and Palanimalai, Selvam and Dinov, Ivo D.},
+   title = {SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications},
+   booktitle = {Proceedings of the 2Nd Workshop on Human-In-the-Loop Data Analytics},
+   series = {HILDA'17},
+   year = {2017},
+   isbn = {978-1-4503-5029-7},
+   location = {Chicago, IL, USA},
+   pages = {1-6},
+   articleno = {8},
+   numpages = {6},
+   url = {http://doi.acm.org/10.1145/3077257.3077262},
+   doi = {10.1145/3077257.3077262},
+   publisher = {ACM},
+   address = {New York, NY, USA},
+   keywords = {System Design, Visual Analytics, Web Platform Architecture},
+}
+```
+
 Technologies/Packages
 ----------------
  [`CoffeeScript`](http://coffeescript.org/)
