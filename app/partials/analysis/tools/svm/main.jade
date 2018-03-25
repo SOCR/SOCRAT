@@ -1,10 +1,5 @@
-div(ng-controller="svmMainCtrl as mainArea")
+div.container-fluid(ng-controller="svmMainCtrl as mainArea")
   h4 {{mainArea.title}}
-    p.
-      This is the starter code for SVM module
-    div(style="display:inline-flex")
-      p.
-        Shows something
-      select.form-control.input-md(
-        ng-model="mainArea.dataPoints",
-        ng-options="item as item for item in mainArea.dataPoints.data track by item.id")
+  #vis
+  div.row-fluid
+    svmgraph

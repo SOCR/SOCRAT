@@ -77,14 +77,14 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     if @algParams.c
       [minC, ..., maxC] = @algParams.c
       @categoricalCols = @categoricalCols.filter (x, i) =>
-        @uniqueVals(colData[@cols.indexOf(x)]).length < maxK
+        #@uniqueVals(colData[@cols.indexOf(x)]).length < maxK
     if @labelCol
       @uniqueLabels =
         num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
         labelCol: @labelCol
     
     @$timeout =>
-      @updateDataPoints data
+      #@updateDataPoints data
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
@@ -130,9 +130,9 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
         for type, idx in df.types
          df.types[idx] = resp.dataFrame.data[idx]
         @updateSidebarControls(df)
-        @updateDataPoints(df)
+        #@updateDataPoints(df)
         @ready = on
 
   reset: ->
     @algorithmsService.reset @selectedAlgorithm
-    @updateDataPoints(@dataFrame, null, null)
+    #@updateDataPoints(@dataFrame, null, null)
