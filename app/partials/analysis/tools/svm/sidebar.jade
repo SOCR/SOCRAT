@@ -1,6 +1,74 @@
-iv(ng-controller="svmSidebarCtrl as sidebar")
+div(ng-controller="svmSidebarCtrl as sidebar")
   form
     legend Parameters &nbsp;
       div.form-group
+        fieldset
+          label(
+            uib-tooltip="Choose a model from the list below"
+            tooltip-placement="right"
+          ) Algorithm &nbsp;
+          select.form-control(
+          ng-model="sidebar.selectedAlgorithm"
+          ng-options="method for method in sidebar.algorithms"
+          ng-change="sidebar.updateAlgControls()"
+          )
+          div.form-group(ng-show="sidebar.algParams.c")
+            fieldset.form-inline
+              label Value of C &nbsp;
+              select.form-control(
+              ng-model="sidebar.c"
+              ng-options="c for c in sidebar.algParams.c"
+              ng-init="sidebar.c = sidebar.algParams.c[0]"
+              )
+          div.form-group(ng-show="sidebar.kernels")
+            label Kernel &nbsp;
+            select.form-control(
+              ng-model="sidebar.selectedKernel"
+              ng-options="kern for kern in sidebar.kernels"
+              ng-init="sidebar.kernel = sidebar.kernels[0]"
+            )
+          hr
         fieldset(ng-show="sidebar.dataFrame")
           legend Dataset
+          div(uib-tooltip="2D projection is always visualized")
+            select.form-control(
+            multiple
+            ng-model="sidebar.chosenCols"
+            ng-options="col for col in sidebar.numericalCols"
+            )
+          div.form-group
+            label Labels column &nbsp;
+            //- show data header column names
+            select.form-control(
+            ng-model="sidebar.labelCol"
+            ng-options="col for col in sidebar.categoricalCols"
+            ng-init="sidebar.labelCol = null"
+            )
+              option(value="") No labels
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.xCol")
+            label X column &nbsp;
+            //- show data header column names
+            select.form-control(
+            ng-model="sidebar.xCol"
+            ng-options="col for col in sidebar.chosenCols"
+            )
+          div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.yCol")
+            label Y column &nbsp;
+            //- show data header column names
+            select.form-control(
+            ng-model="sidebar.yCol"
+            ng-options="col for col in sidebar.chosenCols"
+            )
+        div.form-group.btn-group(
+          role="group"
+          area-label="Sidebar flow controls"
+          uib-tooltip = "Choose at least 2 columns to start"
+        )
+          button.btn.btn-danger.btn-sm(
+          ng-show="sidebar.dataFrame && sidebar.ready"
+          type="submit"
+          aria-label="Reset"
+          ng-click="sidebar.reset()"
+          ng-disabled="sidebar.chosenCols.length < 2")
+            | Reset&nbsp;
+            span.fui-cross(aria-hidden="true")
