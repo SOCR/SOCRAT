@@ -2,6 +2,8 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
+# MISSING: SENDING HYPERPARAMETERS TO ALGORITHMS
+
 module.exports = class SVMSidebarCtrl extends BaseCtrl
   @inject 'app_analysis_svm_dataService',
     'app_analysis_svm_msgService'
@@ -18,11 +20,9 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
 
     @DATA_TYPES = @dataService.getDataTypes()
     # set up data and algorithm-agnostic controls
-    @useLabels = off
-    @uniqueLabels =
-      labelCol: null
-      num: null
+
     @algParams = null
+    @labelCol = null
 
     # dataset-specific
     @dataFrame = null
@@ -33,8 +33,6 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     @categoricalCols = []
     @xCol = null
     @yCol = null
-    @labelCol = null
-
 
     # set up data controls
     @ready = off
@@ -53,17 +51,14 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     if @kernels.length > 0
       @selectedKernel = @kernels[0]
 
+    # ASK BRADY
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame
-        @msgService.broadcast 'svm:displayData', obj.dataFrame
         # make local copy of data
         @dataFrame = obj.dataFrame
         @parseData obj.dataFrame
-      else
-        # TODO: add processing for nested object
-        console.log 'NESTED DATASET'
 
   updateAlgControls: () ->
     @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
@@ -76,12 +71,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     # make sure number of unique labels is less than maximum number of classes for visualization
     if @algParams.c
       [minC, ..., maxC] = @algParams.c
-      @categoricalCols = @categoricalCols.filter (x, i) =>
-        #@uniqueVals(colData[@cols.indexOf(x)]).length < maxK
-    if @labelCol
-      @uniqueLabels =
-        num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
-        labelCol: @labelCol
+    # Will probably make a longer if for each type of hyperparameter
     
     @$timeout =>
       #@updateDataPoints data
@@ -89,6 +79,29 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
   ## Data preparation methods
+  updateDataPoints: (data=null) ->
+    if data
+      xCol = data.header.indexOf @xCol unless !@xCol?
+      yCol = data.header.indexOf @yCol unless !@yCol?
+      sendData = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
+      labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+      @msgService.broadcast 'svm:updateDataPoints',
+        dataPoints: sendData
+        labels = labels
+
+  updateChosenCols: () ->
+    axis = [@xCol, @yCol]
+    presentCols = ([name, idx] for name, idx in @chosenCols when name in axis)
+    # if current X and Y are not among selected anymore
+    switch presentCols.length
+      when 0
+        @xCol = if @chosenCols.length > 0 then @chosenCols[0] else null
+        @yCol = if @chosenCols.length > 1 then @chosenCols[1] else null
+      when 1
+        upd = if @chosenCols.length > 1 then @chosenCols.find (e, i) -> i isnt presentCols[0][1] else null
+        [@xCol, @yCol] = axis.map (c) -> if c isnt presentCols[0][0] then upd else c
+
+    @updateDataPoints @dataFrame
 
   # get requested columns from data
   prepareData: () ->
@@ -102,24 +115,15 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
 
       # if usage of labels is on
-      if @labelCol
-        labelColIdx = data.header.indexOf @labelCol
-        labels = (row[labelColIdx] for row in data.data)
-      else
-        labels = null
+
+      labelColIdx = data.header.indexOf @labelCol
+      labels = (row[labelColIdx] for row in data.data)
 
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
-
-      # re-check if possible to compute accuracy
-      if @k is @uniqueLabels.num and @accuracyon
-        acc = on
 
       obj =
         data: data
         labels: labels
-        xCol: xCol
-        yCol: yCol
-
     else false
 
   parseData: (data) ->
@@ -132,6 +136,13 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
         @updateSidebarControls(df)
         #@updateDataPoints(df)
         @ready = on
+
+  startAlgorithm: ->
+    algData = @sendData()
+    @msgService.broadcast 'svm:startAlgorithm',
+      dataFrame: algData.data
+      labels: algData.labels
+
 
   reset: ->
     @algorithmsService.reset @selectedAlgorithm

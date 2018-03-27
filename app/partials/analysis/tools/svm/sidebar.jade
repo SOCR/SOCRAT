@@ -35,6 +35,7 @@ div(ng-controller="svmSidebarCtrl as sidebar")
             multiple
             ng-model="sidebar.chosenCols"
             ng-options="col for col in sidebar.numericalCols"
+            ng-change="sidebar.updateChosenCols()"
             )
           div.form-group
             label Labels column &nbsp;
@@ -43,6 +44,7 @@ div(ng-controller="svmSidebarCtrl as sidebar")
             ng-model="sidebar.labelCol"
             ng-options="col for col in sidebar.categoricalCols"
             ng-init="sidebar.labelCol = null"
+            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
               option(value="") No labels
           div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.xCol")
@@ -51,6 +53,7 @@ div(ng-controller="svmSidebarCtrl as sidebar")
             select.form-control(
             ng-model="sidebar.xCol"
             ng-options="col for col in sidebar.chosenCols"
+            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
           div.form-group(ng-show="sidebar.chosenCols.length > 0 && sidebar.yCol")
             label Y column &nbsp;
@@ -58,12 +61,22 @@ div(ng-controller="svmSidebarCtrl as sidebar")
             select.form-control(
             ng-model="sidebar.yCol"
             ng-options="col for col in sidebar.chosenCols"
+            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
         div.form-group.btn-group(
           role="group"
           area-label="Sidebar flow controls"
           uib-tooltip = "Choose at least 2 columns to start"
         )
+          button.btn.btn-primary.btn-sm(
+          ng-show="sidebar.dataFrame && sidebar.ready"
+          type="submit"
+          aria-label="Run"
+          ng-click="sidebar.runSVM()"
+          ng-disabled="sidebar.running || sidebar.chosenCols.length < 2 || sidebar.labelCol === null")
+            | Run&nbsp;
+            span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
+            span &nbsp;
           button.btn.btn-danger.btn-sm(
           ng-show="sidebar.dataFrame && sidebar.ready"
           type="submit"
