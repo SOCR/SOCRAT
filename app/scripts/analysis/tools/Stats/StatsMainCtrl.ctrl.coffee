@@ -287,7 +287,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		      "x": {
 		        "aggregate": "mean", "field": "center", "type": "quantitative",
 		        "scale": {"zero": false},
-		        "axis": {"title": title}
+		        "axis": {"title": "Interval"}
 		      }
 		      "color": {"value": "black"}
 		    }
