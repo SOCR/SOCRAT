@@ -317,11 +317,11 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 	PilotClick: () ->
 		#slider elements
-		return 
+		return
 
 	PilotSync: () ->
-		return 
-		
+		return
+
 	PilotPress: (evt) ->
 		key = evt.which or evt.keyCode
 		if key is 13
