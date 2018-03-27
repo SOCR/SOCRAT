@@ -105,7 +105,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 						},
 						"color": {"value": "black"},
 					}
-				}, 
+				},
 				{
 					"mark": "rule",
 					"encoding": {
@@ -119,7 +119,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 				}]
 			}
 		opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
-		@ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) => 
+		@ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) =>
 			@vt.vegaLite(result.view, vlSpec)
 		)
 
@@ -198,7 +198,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		return
 
-  # functions for CIOP only 
+  # functions for CIOP only
 	CIOPRetrieve:() ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
 		@CIOPP = @params.p #central point
@@ -265,7 +265,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			for sl in sliders
 				sl.slider("enable")
 				sl.find('.ui-slider-handle').show()
-		return  
+		return
 
 	#Chart Visualization
 	CIOPChart:() ->
@@ -317,11 +317,11 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 	PilotClick: () ->
 		#slider elements
-		return 
+		return
 
 	PilotSync: () ->
-		return 
-		
+		return
+
 	PilotPress: (evt) ->
 		key = evt.which or evt.keyCode
 		if key is 13
