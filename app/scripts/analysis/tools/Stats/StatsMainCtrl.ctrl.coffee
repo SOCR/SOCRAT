@@ -310,20 +310,84 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 	#example update function in chi squared service update
 	PilotStudyRetrieve:() ->
-		@PilotClick()
-		@PilotDraw()
+		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
+		@PILOTP = @params.p #Percent Under
+		@PILOTR = @params.r #Risk Exceeded
+		@PILOTD = @params.d #Degrees of Freedom
+		@pAlpha = @params.a
+		@pSuccess = @params.s
+		@prMax = @params.rMax
+		@pdfMax = @params.dfMax
+		@ppMax = @params.pMax
+		@pSize = @params.t
 
+		@PilotClick()
 		return
 
 	PilotClick: () ->
 		#slider elements
-		return
+		
+		PILOTPUI = $("#PILOTPUI")
+		PILOTRUI = $("#PILOTRUI")
+		PILOTDUI = $("#PILOTDUI")
+		sliders = [PILOTPUI, PILOTDUI, PILOTDUI]
 
-	PilotSync: () ->
+		PILOTPUI.slider(
+			value: @PILOTP,
+			min: 0,
+			max: @ppMax,
+			range: 'min',
+			step: 1,
+			slide: (event, ui) =>
+				@PILOTP = ui.value
+				@PilotSync()
+				@$scope.$apply()
+		)
+
+		PILOTRUI.slider(
+			value: @PILOTR,
+			min: 0,
+			max: @prMax,
+			range: 'min',
+			step: 1,
+			slide: (event, ui) =>
+				@PILOTR = ui.value
+				@PilotSync()
+				@$scope.$apply()
+		)
+
+		PILOTDUI.slider(
+			value: @PILOTD,
+			min: 0,
+			max: @pdfMax,
+			range: 'min',
+			step: 1,
+			slide: (event, ui) =>
+				@PILOTD = ui.value
+				@PilotSync()
+				@$scope.$apply()
+		)
+
+		#enable or disable slider?
+		if @deployed is true
+			for sl in sliders
+				sl.slider("disable")
+				sl.find('.ui-slider-handle').hide()
+		else
+			for sl in sliders
+				sl.slider("enable")
+				sl.find('.ui-slider-handle').show()
 		return
 
 	PilotPress: (evt) ->
 		key = evt.which or evt.keyCode
 		if key is 13
 			@PilotSync()
+		return
+
+	PilotSync: () ->
+		@params.p = @PILOTP
+		@params.r = @PILOTR
+		@params.d = @PILOTD
+		@syncData(@params)
 		return

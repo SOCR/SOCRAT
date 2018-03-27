@@ -14,23 +14,23 @@ module.exports = class StatsPilot extends BaseService
     '$timeout'
 
   initialize: ->
-  @msgService = @app_analysis_stats_msgService
-  @powerCalc = require 'powercalc'
-  @name = 'Pilot Study'
-  @alpha = 0.05
-  @success =20
-  @pilotRiskExceedMax = 1;
-  @pilotDFMax = 80;
-  @pilotPercentUnderMax = 100;
-  @compAgents=[]
-  @size = 100
-  @percentUnder = 20;
-  @riskExceed = 0.1;
-  @df = 0;
-  @parameter =
-    p: @percentUnder
-    r: @riskExceed
-    d: @df
+    @msgService = @app_analysis_stats_msgService
+    @powerCalc = require 'powercalc'
+    @name = 'Pilot Study'
+    @alpha = 0.05
+    @success =20
+    @pilotRiskExceedMax = 1;
+    @pilotDFMax = 80;
+    @pilotPercentUnderMax = 100;
+    @compAgents=[]
+    @size = 100
+    @percentUnder = 20;
+    @riskExceed = 0.1;
+    @df = 0;
+    @parameter =
+      p: @percentUnder
+      r: @riskExceed
+      d: @df
 
   #TODO for data driven model
   saveData: (data) ->
@@ -68,7 +68,6 @@ module.exports = class StatsPilot extends BaseService
     @alpha = alphaIn
     @update()
     return
-
 
   update: () ->
     input =
