@@ -12,11 +12,21 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @title = 'SVM'
     @dataType = ''
     @dataPoints = null
+    @customData = null
 
-    @$scope.$on 'svm:displayData',(event, dataFrame) =>
-      @$timeout => @updateTableData(dataFrame)
+    @$scope.$on 'svm:updateDataPoints', (event, data) =>
+      console.log data
+      @$timeout => @organizeSend(data)
 
-  updateTableData: (dataFrame) ->
-    if dataFrame?
-      @dataPoint
-      @dataPoints = dataFrame
+  organizeSend: (data) ->
+    if data? and data.dataPoints?
+      @customData = data.dataPoints.map (point, i) ->
+        if data.labels?
+          label = data.labels[i]
+        else
+          label = 0
+        point = 
+          x_c: point[0]
+          y_c: point[1]
+          c: label
+        return point
