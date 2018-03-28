@@ -45,7 +45,6 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     sumCols = []
     @chiSquareN = 0
     @chiSquareDf = (numRows-1) * (numCols-1)
-
     expCount = []
 
     for i in [0...numRows]
