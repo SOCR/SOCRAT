@@ -14,7 +14,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 					label Power: &nbsp;
 						input.form-control.input-sm.flat(
 						ng-model="mainArea.onePropPower"
-						ng-click="mainArea.onePropCalcPower()" 
+						ng-click="mainArea.onePropCalcPower()"
 						ng-keypress="mainArea.onePropPress($event)"
 						ng-disabled="mainArea.deployed"
 						type="number"
@@ -446,7 +446,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 				p n: The sample size.
 				<br>
 				p power: The probability of the critical region, given lambda and n.</p>
-				
+
 	div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
 		.row
 			.col-md-8
