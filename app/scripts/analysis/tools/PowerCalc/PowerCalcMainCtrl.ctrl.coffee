@@ -45,33 +45,6 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @cfap_click()
     @cfap_submit()
 
-    #variables needed for Pilot only
-    @Pilot_n = 1;
-    @Pilot_pctUnder=null;
-    @Pilot_risk=null;
-    @Pilot_df=null;
-    @Pilot_maxpctUnder=30;
-    @Pilot_maxrisk=0.114;
-    @Pilot_maxdf=120;
-    @Pilot_help = false;
-    @Pilot_click()
-    @Pilot_submit()
-
-    #variables needed for RsquareGUI only
-    @RsquareGUI_n = 1;
-    @RsquareGUI_rho2=null;
-    @RsquareGUI_n=null;
-    @RsquareGUI_preds=null;
-    @RsquareGUI_power=null;
-    @RsquareGUI_maxrho2=0.14;
-    @RsquareGUI_maxn=70;
-    @RsquareGUI_maxpreds=1.4;
-    @RsquareGUI_maxpower=1;
-    @RsquareGUI_first = true;
-    @RsquareGUI_help = false;
-    @RsquareGUI_click();
-    @RsquareGUI_submit();
-
     @loadData()
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
@@ -115,6 +88,9 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       return
     else if (@selectedAlgorithm is "Power of a Simple Poisson Test")
       @poissonRetrieve()
+      return
+    else if (@selectedAlgorithm is "R-square (multiple correlation)")
+      @rSquareRetrieve()
       return
     else
       console.log("Unknown algorithms selected")
@@ -622,75 +598,12 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
         sl.slider("enable")
         sl.find('.ui-slider-handle').show()
 
-
   oneTestGraph:() ->
     @chartData = null
     chartData = @algorithmService.getChartData @selectedAlgorithm
     @$timeout => @chartData = chartData,
     5
 
-  #functions for Pilot only
-  Pilot_click: () ->
-    $( "#pctUnderui" ).slider(
-      value:@Pilot_pctUnder,
-      min: 0,
-      max: @Pilot_maxpctUnder,
-      range: "min",
-      step: 0.0025,
-      slide:( event, ui ) =>
-        $( "#pctUnder" ).val( ui.value );
-        @Pilot_submit('1','pctUnder',ui.value);
-        return
-    )
-    $( "#pctUnder" ).val( $( "#pctUnderui" ).slider( "value" ) );
-    $( "#riskui" ).slider(
-      value:@Pilot_risk,
-      min: 0,
-      max: @Pilot_maxrisk,
-      range: "min",
-      step: 0.00001,
-      slide: ( event, ui ) =>
-        $( "#risk" ).val( ui.value );
-        @Pilot_submit('1','risk',ui.value);
-        return
-    )
-    $( "#risk" ).val( $( "#riskui" ).slider( "value" ) );
-    $( "#dfui" ).slider(
-      value:@Pilot_df,
-      min: 0,
-      max: @Pilot_maxdf,
-      range: "min",
-      step: 0.01,
-      slide: ( event, ui ) =>
-        console.log "hit"
-        $( "#df" ).val( ui.value );
-        @Pilot_submit('1','df',ui.value);
-        return
-    )
-    $( "#df" ).val( $( "#dfui" ).slider( "value" ) );
-  Pilot_submit: (id, key, value) ->
-    d = @powerAnalysis.pilot_handle(id, key, value);
-    $("#pctUnder").val(d.pctUnder);
-    @Pilot_pctUnder=d.pctUnder;
-    $("#risk").prop("value",d.risk);
-    @Pilot_risk=d.risk;
-    $("#df").val(d.df);
-    @Pilot_df=d.df;
-    @Pilot_click();
-    return
-  Pilot_changeSlider: (sliderId, evt) ->
-    #console.log("changeSlider hit")
-    key = evt.target.value
-    @Pilot_submit '1', sliderId, key
-    return
-  Pilot_show_help: () ->
-    #console.log(@cfap_help)
-    if (@Pilot_help == true)
-      $('#Pilot_H').val "Show Help"
-    else
-      $('#Pilot_H').val "Hide Help"
-    @Pilot_help = !@Pilot_help
-    return
 
   #functions for RsquareGUI only
   RsquareGUI_click: () ->
@@ -786,6 +699,77 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     else
       $('#RsquareGUI_H').val "Hide Help"
     @RsquareGUI_help = !@RsquareGUI_help
+    return
+
+  rSquareRetrieve: () ->
+    @params = @algorithmService.getParamsByName(@selectedAlgorithm)
+    @rSquareRHO2 = @params.rho2
+    @rSquaren = @params.n
+    @rSquarenMax = @params.nMax
+    @rSquarePreds = @params.preds
+    @rSquarePredsMax = @params.predsMax
+    @rSquarePower = parseFloat(@params.power.toPrecision(2))
+    @rSquareClick()
+
+  rSquareClick: () ->
+      rSquareRHO2UI = $("#rSquareRHO2UI")
+      rSquarenUI = $("#rSquarenUI")
+      rSquarePredsUI = $("#rSquarePredsUI")
+      rSquarePowerUI = $("#rSquarePowerUI")
+
+      rSquareRHO2UI.slider(
+        value: @rSquareRHO2,
+        min: 0,
+        max: 0.99,
+        range: 'min',
+        step: 0.01,
+        slide: (event, ui) =>
+          @rSquareRHO2 = ui.value
+          @rSquareSync("rho2")
+          @$scope.$apply()
+      )
+
+      rSquarenUI.slider(
+        value: @rSquaren,
+        min: @rSquarePreds+1,
+        max: @rSquarenMax,
+        range: 'min',
+        step: 1,
+        slide: (event, ui) =>
+          @rSquaren = ui.value
+          @rSquareSync("n")
+          @$scope.$apply()
+      )
+
+      rSquarePredsUI.slider(
+        value: @rSquarePreds,
+        min: 1,
+        max: @rSquarePredsMax,
+        range: 'min',
+        step: 1,
+        slide: (event, ui) =>
+          @rSquarePreds = ui.value
+          @rSquareSync("preds")
+          @$scope.$apply()
+      )
+
+      rSquarePowerUI.slider(
+        value: @rSquarePower,
+        min: 0,
+        max: 1,
+        range: 'min',
+        step: 0.01
+      )
+
+      rSquarePowerUI.slider("disable")
+      rSquarePowerUI.find('.ui-slider-handle').hide()
+
+  rSquareSync: (tar) ->
+    @params.tar = tar
+    @params.rho2 = @rSquareRHO2
+    @params.n = @rSquaren
+    @params.preds = @rSquarePreds
+    @syncData(@params)
     return
 
   chi2Retrieve: () ->

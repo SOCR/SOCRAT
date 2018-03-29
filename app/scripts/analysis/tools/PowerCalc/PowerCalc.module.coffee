@@ -20,6 +20,7 @@ module.exports = powerCalc = new Module
       'app_analysis_powerCalc_twoProp': require 'scripts/analysis/tools/PowerCalc/PowerCalcTwoProp.service.coffee'
       'app_analysis_powerCalc_chi2': require 'scripts/analysis/tools/PowerCalc/PowerCalcChiSquare.service.coffee'
       'app_analysis_powerCalc_poisson': require 'scripts/analysis/tools/PowerCalc/PowerCalcPoisson.service.coffee'
+      'app_analysis_powerCalc_rsquare': require 'scripts/analysis/tools/PowerCalc/PowerCalcRsquare.service.coffee'
 
     controllers:
       'powerCalcMainCtrl': require 'scripts/analysis/tools/PowerCalc/PowerCalcMainCtrl.ctrl.coffee'

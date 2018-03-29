@@ -281,34 +281,43 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
   div(ng-show='mainArea.selectedAlgorithm == "R-square (multiple correlation)"')
     h3 R-square (multiple correlation)
     p <i>This dialog provides rudimentary power analysis for a test of a coefficient of multiple determination (R-square). The underlying model is that we have a sample of N IID multivariate random vectors of length p, and that the p^{th} variable is regressed on the first p-1 variables. $ R^2 = 1 - \frac{SS(error)}{SS(total)} $ is the coefficient of multiple determination.</i>
-    div
-      div#showN(style='margin-left=40%;display:inline')
-        | Alpha: &nbsp
-        input#alphaf(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='alpha', ng-mouseleave='mainArea.RsquareGUI_valiad($event);')
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | True $rho^2$ value: &nbsp
-        input#rho2f(name='rho2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('rho2',$event);")
-      div(style='display:inline')
-        #rho2uif(uib-tooltip="Manipulate this bar to adjust $ rho^2 $ value" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Sample Size: &nbsp
-        input#nf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('n',$event);")
-      div(style='display:inline')
-        #nuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | Number of Regressors: &nbsp
-        input#predsf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('preds',$event);")
-      div(style='display:inline')
-        #predsuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
-    div(style='margin-top:20px;')
-      div(style='display:inline')
-        | power: &nbsp
-        input#powerf(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('power',$event);")
-      div(style='display:inline')
-        #poweruif(disabled uib-tooltip="You cannot manipulate this bar" tooltip-placement="top")
+    .row
+      .form-inline
+        label True $rho^2$ value: &nbsp;
+        input.form-control.input-sm.flat(
+          ng-model="mainArea.rSquareRHO2"
+          ng-change="mainArea.rSquareSync('chi2')"
+          type="number"
+          step="0.01"
+        )
+        #rSquareRHO2UI
+      .form-inline
+        label Sample Size: &nbsp;
+        input.form-control.input-sm.flat(
+        ng-model="mainArea.rSquaren"
+        ng-change="mainArea.rSquareSync('n')"
+        type="number"
+        step="1"
+        )
+        #rSquarenUI
+      .form-inline
+        label Number of Regressions: &nbsp;
+        input.form-control.input-sm.flat(
+        ng-model="mainArea.rSquarePreds"
+        ng-change="mainArea.rSquareSync('preds')"
+        type="number"
+        step="1"
+        )
+        #rSquarePredsUI
+      .form-inline
+        label Power: &nbsp;
+        input.form-control.input-sm.flat(
+        disabled="True"
+        ng-model="mainArea.rSquarePower"
+        type="number"
+        step="0.01"
+        )
+        #rSquarePowerUI
     div
       input#RsuareGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.RsquareGUI_show_help();')
       div(ng-show='mainArea.RsquareGUI_help == true;')
@@ -386,20 +395,13 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 
     div
       p The GUI components are as follows:
-      <br>
       p lambda0: The value of the Poisson parameter under the null hypothesis.
-      <br>
       p alternative: Choose a two-tailed alternative (lambda != lambda0) or one of the one-tailed alternatives.
-      <br>
       p Boundaries of acceptance region (output values):  These are the lower and/or upper values of x for which the null hypothesis would NOT be rejected.
-      <br>
       p size (output value):  The actual probability of the critical region under the null hypothesis.
-      <br>
       p lambda: The Poisson parameter at which the power is to be calculated.
-      <br>
       p n: The sample size.
-      <br>
-      p power: The probability of the critical region, given lambda and n.</p>
+      p power: The probability of the critical region, given lambda and n.
 
 
   div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
