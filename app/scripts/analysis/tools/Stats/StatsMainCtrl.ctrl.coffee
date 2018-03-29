@@ -45,6 +45,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 	loadData: () ->
 		if (@selectedAlgorithm is "CI for One Mean") then @CIOMRetrieve()
 		else if (@selectedAlgorithm is "CI for One Proportion") then @CIOPRetrieve()
+		else if (@selectedAlgorithm is "Pilot Study") then @PilotStudyRetrieve()
 		else return
 
 	# outdated
@@ -211,8 +212,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		@ciAlpha = @params.a #significance level
 		@standarddev = @params.sd
 		@cilevel = 1.0 - @ciAlpha #confidence level
-		#show chart
-		@Chart()
+		@CIOPChart()#show chart
 		@CIOPClick()
 
 	CIOPSync: () ->
@@ -268,9 +268,14 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		return  
 
 	#Chart Visualization
-	Chart:() ->
+	CIOPChart:() ->
 		@ve = require 'vega-embed'
 		nums = [{"lower" : @lowbound}, {"upper" : @upbound}, {"center" : @CIOPP}]
+		title = "LowerBound: ".concat (@lowbound.toFixed(3)).toString()
+		title = title.concat " Center: "
+		title = title.concat (@CIOPP.toFixed(3)).toString()
+		title = title.concat " UpperBound: "
+		title = title.concat (@upbound.toFixed(3)).toString()
 		vlSpec = {
 			"width": 550,
 			"height": 200,
@@ -282,7 +287,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		      "x": {
 		        "aggregate": "mean", "field": "center", "type": "quantitative",
 		        "scale": {"zero": false},
-		        "axis": {"title": "Interval"}
+		        "axis": {"title": title}
 		      }
 		      "color": {"value": "black"}
 		    }
@@ -302,3 +307,23 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		opt = "actions": {export: true, source: false, editor: false}
 		#Embed the visualization in the container with id `vis`
 		@ve '#visCIOP', vlSpec, opt, (error, result) ->;
+
+	#example update function in chi squared service update
+	PilotStudyRetrieve:() ->
+		@PilotClick()
+		@PilotDraw()
+
+		return
+
+	PilotClick: () ->
+		#slider elements
+		return 
+
+	PilotSync: () ->
+		return 
+		
+	PilotPress: (evt) ->
+		key = evt.which or evt.keyCode
+		if key is 13
+			@PilotSync()
+		return
