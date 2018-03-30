@@ -45,18 +45,9 @@ module.exports = class ChartsDir extends BaseDirective
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
 
-    @link = (scope, elem, attr) =>
-      margin = {top: 10, right: 40, bottom: 50, left:80}
-      width = 750 - margin.left - margin.right
-      height = 500 - margin.top - margin.bottom
-      svg = null
+    @link = (scope) =>
       data = null
-      _graph = null
-      container = null
       labels = null
-      ranges = null
-
-      numerics = ['integer', 'number']
 
       # add segments to a slider
       # https://designmodo.github.io/Flat-UI/docs/components.html#fui-slider
@@ -73,48 +64,21 @@ module.exports = class ChartsDir extends BaseDirective
             $(this).prepend(segment.repeat(amount - 2))
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
-
         if newChartData and newChartData.dataPoints
           data = newChartData.dataPoints
           labels = newChartData.labels
           scheme = newChartData.graph
 
-          container = d3.select(elem.find('div')[0])
-          container.selectAll('*').remove()
-
-          svg = container.append('svg')
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          #svg.select("#remove").remove()
-
-          _graph = svg.append('g')
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
           # trellis chart is called differently
           if scheme.name is 'Trellis Chart'
-            @trellis.drawTrellis(width, height, data, _graph, labels, container)
+            @trellis.drawTrellis(data,labels,container)
           # standard charts
           else
-            data = data.map (row) ->
-              x: row[0]
-              y: row[1]
-              z: row[2]
-              r: row[3]
-
-            ranges =
-              xMin: if labels? and numerics.includes(labels.xLab.type) then d3.min(data, (d) -> parseFloat(d.x)) else null
-              yMin: if labels? and numerics.includes(labels.yLab.type) then d3.min(data, (d) -> parseFloat(d.y)) else null
-              zMin: if labels? and numerics.includes(labels.zLab.type) then d3.min(data, (d) -> parseFloat(d.z)) else null
-
-              xMax: if labels? and numerics.includes(labels.xLab.type) then d3.max(data, (d) -> parseFloat(d.x)) else null
-              yMax: if labels? and numerics.includes(labels.yLab.type) then d3.max(data, (d) -> parseFloat(d.y)) else null
-              zMax: if labels? and numerics.includes(labels.zLab.type) then d3.max(data, (d) -> parseFloat(d.z)) else null
-
             switch scheme.name
               when 'Area Trellis Chart'
                 @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
               when 'Bar Graph'
-                @bar.drawBar(width,height,data,_graph,labels,ranges)
+                @bar.drawBar(data,labels)
               when 'Bubble Chart'
                 @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
               when 'Histogram'
@@ -125,7 +89,7 @@ module.exports = class ChartsDir extends BaseDirective
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,false)
               when 'Scatter Plot'
-                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels)
+                @scatterPlot.drawScatterPlot(data,labels)
               when 'Stacked Bar Chart'
                 @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
               when 'Stream Graph'

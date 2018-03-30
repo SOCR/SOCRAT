@@ -161,11 +161,20 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    if @selectedGraph.x
-      [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
-      [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
-      data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
 
+    [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
+    [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
+
+    transformed_data = []
+    for row in data.data
+      obj = {}
+      for h, index in data.header
+        obj[h] = row[index]
+      transformed_data.push obj
+
+    data = transformed_data
+
+    if @selectedGraph.x
       # Remove the variables that are already chosen for one field
       # isX is a boolean. This is used to determine if to include 'None' or not
       removeFromList = (variables, list) ->
@@ -194,39 +203,19 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             type: rType
 
     # if trellis plot
-    else if @chosenCols.length > 1
-      if @labelCol
-        labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
-        labels.splice 0, 0, @labelCol
-      else labels = null
-
-      chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
-      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
-      data.splice 0, 0, @chosenCols
-
-    else data = null
+#    else if @chosenCols.length > 1
+#      if @labelCol
+#        labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+#        labels.splice 0, 0, @labelCol
+#      else labels = null
+#
+#      chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
+#      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+#      data.splice 0, 0, @chosenCols
+#
+#    else data = null
 
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data
       graph: @selectedGraph
       labels: labels
-
-#  changeGraph: () ->
-#    if @graphSelect.name is "Stream Graph"
-#      @stream = true
-#    else
-#      @stream = false
-
-#    if @dataType is "NESTED"
-#      @graphInfo.x = "initiate"
-#      @sendData.createGraph @data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme
-#    else
-#      @sendData.createGraph @chartData, @graphInfo, @headers, @dataType, @selector4.scheme
-
-#  changeVar: (selector, headers, ind) ->
-#    console.log @selector4.scheme
-    #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
-    #only allow numerical ones for ind = y or z
-#    for h in headers
-#      if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
-#    @sendData.createGraph(@chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
