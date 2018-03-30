@@ -10,10 +10,14 @@ module.exports = class SVMAlgorithms extends BaseModuleDataService
     # options that are offered by svm npm
 
   initialize: ->
+    @dataService = @app_analysis_svm_dataService
     @msgManager = @app_analysis_svm_msgService
     @csvc = @app_analysis_svm_csvc
 
     @algorithms = [@csvc]
+
+    # load ml-svm module
+    @svmModel = require 'ml-svm'
 
   ############
 
