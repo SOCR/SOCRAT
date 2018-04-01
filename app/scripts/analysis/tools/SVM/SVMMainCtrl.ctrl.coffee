@@ -13,10 +13,17 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @dataType = ''
     @dataPoints = null
     @customData = null
+    @graphingData =
+      state: "scatter"
+      data = null
+      labels = null
 
     @$scope.$on 'svm:updateDataPoints', (event, data) =>
       console.log data
       @$timeout => @organizeSend(data)
+
+    @$scope.$on 'svm:startAlgorithm', (event, data) =>
+      @timeout => sendAlgorithmData(data)
 
   organizeSend: (data) ->
     if data? and data.dataPoints?
@@ -25,8 +32,19 @@ module.exports = class SVMMainCtrl extends BaseCtrl
           label = data.labels[i]
         else
           label = 0
-        point = 
+        point =
           x_c: point[0]
           y_c: point[1]
           c: label
         return point
+
+  sendGraphingData: (data) ->
+    if data?
+      graphingData.data = data.dataPoints
+      @msgManager.broadcast 'svm:sendScatterGraphing', graphingData
+
+  sendAlgorithmData: (data) ->
+    if data?
+      graphingData.data = data.dataFrame
+      graphingData.labels = data.labels
+      @msgManager.broadcast 'svm:sendAlgorithmGraphing', graphingData
