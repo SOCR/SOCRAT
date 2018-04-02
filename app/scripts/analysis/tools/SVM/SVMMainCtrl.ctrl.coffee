@@ -15,7 +15,7 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @customData = null
 
     @$scope.$on 'svm:updateDataPoints', (event, data) =>
-      console.log data
+      @selectedAlgorithm = data.model
       @$timeout => @organizeSend(data)
 
   organizeSend: (data) ->

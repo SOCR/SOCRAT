@@ -148,18 +148,16 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       hyperPar =
         kernel: @selectedKernel
         c: @c
-
-    # Set model hyperparameters
-    console.log algData
-    console.log hyperPar
-    @algorithmsService.setParamsByName(@selectedAlgorithm, hyperPar)
-
+    
     # Set data to model
     @algorithmsService.passDataByName(@selectedAlgorithm, algData)
 
+    @algorithmsService.setParamsByName(@selectedAlgorithm, hyperPar)
+
     @msgService.broadcast 'svm:startAlgorithm',
-      dataFrame: algData.data
+      dataPoints: algData.data
       labels: algData.labels
+      model: @selectedAlgorithm
 
 
   reset: ->
