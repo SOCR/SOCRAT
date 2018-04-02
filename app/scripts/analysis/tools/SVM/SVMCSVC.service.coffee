@@ -42,8 +42,10 @@ module.exports = class SVMCSVC extends BaseService
   saveData: (data) ->
     @features = data.features
     @lables = data.labels
-    console.log @features
-    console.log @labels
+
+  train: () ->
+    @svmModel.train(features, labels);
+    return updateGraphData()
 
   setParams: (newParams) ->
     @params = newParams
@@ -55,8 +57,6 @@ module.exports = class SVMCSVC extends BaseService
       kernel: newParams.kernel
       kernelOptions: sigma: 0.5
     @svmModel = new @svm options
-    # Start Training the svmModel
-    @svmModel.train(@features, @labels);
     return
 
   updateGraphData: ->
