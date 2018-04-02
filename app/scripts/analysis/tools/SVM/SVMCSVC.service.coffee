@@ -13,6 +13,7 @@ module.exports = class SVMCSVC extends BaseService
   initialize: () ->
     @metrics = @app_analysis_svm_metrics
     @jsfeat = require 'jsfeat'
+    @svm = require 'ml-svm'
 
     @name = 'C-SVC'
     exponents = [-4..5]
@@ -20,11 +21,14 @@ module.exports = class SVMCSVC extends BaseService
     @lables = null
 
     #runtime variables
+    @svmModel = null
     @features = null
     @labels = null
 
     # Variables for Graphing Service
-
+    @mesh_grid_points = null
+    @mesh_grid_label = null
+    # features / labels
 
 
     # module hyperparameters
@@ -38,13 +42,33 @@ module.exports = class SVMCSVC extends BaseService
   saveData: (data) ->
     @features = data.features
     @lables = data.labels
-    console.log features
-    console.log labels
+    console.log @features
+    console.log @labels
 
   setParams: (newParams) ->
     @params = newParams
+    options =
+      C: newParams.c
+      tol: 10e-4
+      maxPasses: 10
+      maxIterations: 10000
+      kernel: newParams.kernel
+      kernelOptions: sigma: 0.5
+    @svmModel = new @svm options
+    # Start Training the svmModel
+    @svmModel.train(@features, @labels);
     return
 
+  updateGraphData: ->
+    #return the mesh_grid and training data for graphing service
+    @mesh_grid_points = @mesh_grid_2d_init(-4, 4, 0.1)
+    @mesh_grid_label = @mesh_grid_predict_label(@svmModel, @mesh_grid_points)
+    result:
+      mesh_grid_points: @mesh_grid_points
+      mesh_grid_labels: @mesh_grid_label
+      features: @features
+      labels: @labels
+    return result
 
   getUniqueLabels: (labels) -> labels.filter (x, i, a) -> i is a.indexOf x
 
@@ -56,3 +80,26 @@ module.exports = class SVMCSVC extends BaseService
   reset: ()->
     @done = off
     @iter = 0
+
+  # Mesh_grid related functions
+  mesh_grid_2d_init: (low_bound, high_bound, step_size) ->
+    # Initialize the mesh_grid points
+    grid_array = []
+    if low_bound >= high_bound
+      return []
+    i = low_bound
+    while i < high_bound
+      j = low_bound
+      while j < high_bound
+        grid_element = [i, j]
+        grid_array.push grid_element
+        j += step_size
+      i += step_size
+    return grid_array
+
+  mesh_grid_predict_label: (svmModel, mesh_grid) ->
+    # return the mesh_grid with the prediction label
+    pred = svmModel.predict(mesh_grid)
+    return pred
+
+
