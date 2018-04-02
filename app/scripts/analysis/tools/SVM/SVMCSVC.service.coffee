@@ -20,8 +20,12 @@ module.exports = class SVMCSVC extends BaseService
     @lables = null
 
     #runtime variables
-    @data = null
-    @predictions = null
+    @features = null
+    @labels = null
+
+    # Variables for Graphing Service
+
+
 
     # module hyperparameters
     @params =
@@ -30,6 +34,17 @@ module.exports = class SVMCSVC extends BaseService
 
   getName: -> @name
   getParams: -> @params
+
+  saveData: (data) ->
+    @features = data.features
+    @lables = data.labels
+    console.log features
+    console.log labels
+
+  setParams: (newParams) ->
+    @params = newParams
+    return
+
 
   getUniqueLabels: (labels) -> labels.filter (x, i, a) -> i is a.indexOf x
 
