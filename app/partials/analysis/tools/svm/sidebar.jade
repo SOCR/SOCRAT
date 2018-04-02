@@ -72,7 +72,7 @@ div(ng-controller="svmSidebarCtrl as sidebar")
           ng-show="sidebar.dataFrame && sidebar.ready"
           type="submit"
           aria-label="Run"
-          ng-click="sidebar.runSVM()"
+          ng-click="sidebar.startAlgorithm()"
           ng-disabled="sidebar.running || sidebar.chosenCols.length < 2 || sidebar.labelCol === null")
             | Run&nbsp;
             span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")
