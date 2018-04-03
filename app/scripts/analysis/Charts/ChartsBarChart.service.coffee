@@ -43,13 +43,13 @@ module.exports = class ChartsBarChart extends BaseService
         "mark": "bar",
         "encoding": {
           "x": {
-            "field": "labels.xLab.value",
+            "field": labels.xLab.value,
             "type": "ordinal",
             "axis": {"title": labels.xLab.value}
           },
           "y": {
             "aggregate": "mean",
-            "field": "labels.yLab.value",
+            "field": labels.yLab.value,
             "type": "quantitative",
             "axis": {"title": labels.yLab.value}
           },
@@ -68,7 +68,7 @@ module.exports = class ChartsBarChart extends BaseService
         "encoding": {
           "y": {
             "aggregate": "mean",
-            "field": "labels.yLab.value",
+            "field": labels.yLab.value,
             "type": "quantitative"
           },
           "color": {"value": "firebrick"},
@@ -77,10 +77,8 @@ module.exports = class ChartsBarChart extends BaseService
       }]
     }
 
-    if labels[2].zLab.value
-      vlSpec.encoding.color.field = labels.zLab.value
-      vlSpec.encoding.color.type = "nominal"
-      vlSpec.encoding.color.scale.scheme = "category20b"
+    if labels["zLab"].value
+      vlSpec["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
 
     opt =
       "actions": {export: true, source: false, editor: false}

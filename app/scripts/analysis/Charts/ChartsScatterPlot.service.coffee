@@ -50,9 +50,8 @@ module.exports = class ChartsScatterPlot extends BaseService
       }
     }
 
-#    if labels["zLab"].value
-#      vlSpec.encoding.color.field = labels.zLab.value
-#      vlSpec.encoding.color.type = "nominal"
+    if labels["zLab"].value
+      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal"}
 
     opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
 
