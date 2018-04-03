@@ -1,5 +1,5 @@
 div(ng-controller="statsMainCtrl as mainArea")
- 
+
 	div(ng-show='mainArea.selectedAlgorithm == "CI for One Mean"')
 		h6 Confidence Interval for One Mean &nbsp;
 			span.glyphicon.glyphicon-question-sign(
@@ -91,3 +91,45 @@ div(ng-controller="statsMainCtrl as mainArea")
 		//.row
 			h6 Interpretation: &nbsp;
 			b We are {{mainArea.cilevel}}% confident that the true value of proportion lies between {{mainArea.lowbound}} and {{mainArea.upbound}}.
+
+	div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
+		h6 Pilot Study &nbsp;
+			span.glyphicon.glyphicon-search(
+				aria-hidden="true"
+				uib-tooltip="calulator page"
+				tooltip-placement="right")
+		.row
+			.col-md-4
+				.form-inline
+					label Percent N is Under-Estimate: &nbsp;
+					input.form-control.input-sm.flat(
+						ng-model="mainArea.PILOTP"
+						ng-keypress="mainArea.PILOTPress($event)"
+						ng-disabled="mainArea.deployed"
+						type="number"
+						step="1"
+						name='PILOTP'
+					)
+					#PILOTPUI
+				.form-inline
+					label Risk of Exceeding Percentage: &nbsp;
+					input.form-control.input-sm.flat(
+						ng-model="mainArea.PILOTR"
+						ng-keypress="mainArea.PILOTPress($event)"
+						ng-disabled="mainArea.deployed"
+						type="number"
+						step="1"
+						name='PILOTR'
+					)
+					#PILOTRUI
+				.form-inline
+					label Degrees of Freedom: &nbsp;
+					input.form-control.input-sm.flat(
+						ng-model="mainArea.PILOTD"
+						ng-keypress="mainArea.PILOTPress($event)"
+						ng-disabled="mainArea.deployed"
+						type="number"
+						step="1"
+						name='PILOTD'
+					)
+					#PILOTDUI

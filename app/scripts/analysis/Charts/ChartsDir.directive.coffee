@@ -20,6 +20,7 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_tilfordTree',
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
+          'app_analysis_charts_tukeyBoxPlot',
           'app_analysis_charts_checkTime'
 
   initialize: ->
@@ -39,6 +40,7 @@ module.exports = class ChartsDir extends BaseDirective
     @bivariate = @app_analysis_charts_bivariateLineChart
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
+    @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -89,7 +91,7 @@ module.exports = class ChartsDir extends BaseDirective
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
           # trellis chart is called differently
-          if scheme.name is 'Trellis Chart' and newChartData.labels
+          if scheme.name is 'Trellis Chart'
             @trellis.drawTrellis(width, height, data, _graph, labels, container)
           # standard charts
           else
@@ -116,7 +118,9 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Bubble Chart'
                 @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
               when 'Histogram'
-                @histogram.drawHist(_graph,data,container,labels,width,height,ranges)
+                @histogram.drawHist(_graph, data, container, labels, width, height, ranges)
+              when 'Tukey Box Plot (1.5 IQR)'
+                @tukeyBoxPlot.drawBoxPlot(_graph, data, container, labels, width, height, ranges)
               when 'Ring Chart'
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,false)
