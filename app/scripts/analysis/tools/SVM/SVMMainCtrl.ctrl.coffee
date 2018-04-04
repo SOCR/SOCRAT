@@ -15,8 +15,8 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @customData = null
     @graphingData =
       state: "scatter"
-      data = null
-      labels = null
+      data: null
+      labels: null
 
     @$scope.$on 'svm:updateDataPoints', (event, data) =>
       console.log data
