@@ -36,6 +36,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
 
     # set up data controls
     @ready = off
+    @running = off
 
     # dataset-specific
     @dataFrame = null
@@ -122,8 +123,9 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
 
       obj =
-        data: data
+        features: data
         labels: labels
+
     else false
 
   parseData: (data) ->
@@ -138,10 +140,24 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
         @ready = on
 
   startAlgorithm: ->
-    algData = @sendData()
+    algData = @prepareData()
+    @running = on
+    # Send selectedAlgorithm and hyperparameters
+
+    if @algParams.c
+      hyperPar =
+        kernel: @selectedKernel
+        c: @c
+    
+    # Set data to model
+    @algorithmsService.passDataByName(@selectedAlgorithm, algData)
+
+    @algorithmsService.setParamsByName(@selectedAlgorithm, hyperPar)
+
     @msgService.broadcast 'svm:startAlgorithm',
-      dataFrame: algData.data
+      dataPoints: algData.data
       labels: algData.labels
+      model: @selectedAlgorithm
 
 
   reset: ->

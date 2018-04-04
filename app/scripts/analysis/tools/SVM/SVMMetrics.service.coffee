@@ -7,13 +7,13 @@ module.exports = class SVMMetrics extends BaseModuleDataService
   initialize: ->
 
     @metrics = [
-      name: 'Linear'
+      name: 'linear'
     ,
-      name: 'Poly'
+      name: 'poly'
     ,
-      name: 'RBF'
+      name: 'rbf'
     ,
-      name: 'Sigmoid'
+      name: 'sigmoid'
     ]
 
   getKernelNames: ->

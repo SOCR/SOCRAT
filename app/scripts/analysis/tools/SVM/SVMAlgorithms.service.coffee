@@ -26,7 +26,17 @@ module.exports = class SVMAlgorithms extends BaseModuleDataService
   getParamsByName: (algName) ->
     (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()
 
+  setParamsByName: (algName, dataIn) ->
+    (alg.setParams(dataIn) for alg in @algorithms when algName is alg.getName()).shift()
+
+  passDataByName: (algName, dataIn) ->
+    (alg.saveData(dataIn) for alg in @algorithms when algName is alg.getName()).shift()
+
   getDataTypes: ->
     @msgService.getSupportedDataTypes()
+
+
+
+
 
   reset: (algName) -> (alg.reset() for alg in @algorithms when algName is alg.getName()).shift()
