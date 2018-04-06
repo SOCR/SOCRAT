@@ -34,6 +34,11 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @$scope.$on 'svm:startAlgorithm', (event, data) =>
       @$timeout => @sendAlgorithmData(data)
 
+## need to listen or wait for algorithms to respond
+      #@$timeout => @sendAlgorithmFinished(data)
+
+
+  # organizeSend maybe not needed anymore
 
   # organizeSend: (data) ->
   #   if data? and data.dataPoints?
@@ -58,12 +63,24 @@ module.exports = class SVMMainCtrl extends BaseCtrl
         console.log(data)
         @graphingData.labels = data.labels
       @msgService.broadcast 'svm:sendScatterGraphing', @graphingData
+      # not sure if sending data to directive is
+      # with msgService.broadcast or just call function like
+      # with service
 
   sendAlgorithmData: (data) ->
     if data?
       console.log("starting algorithm step")
-      @graphingData.coords = data.dataFrame
+      @graphingData.coords = data.dataPoints
       @graphingData.labels = data.labels
       console.log(@graphingData)
       @graphingData.state = "svm"
-      @msgService.broadcast 'svm:sendAlgorithmGraphing', @graphingData
+      @algorithmsService.startAlgorithm(@graphingData)
+
+  # figure out when to call this
+  sendAlgorithmFinished: (data) ->
+    if data?
+      @graphingData.coords = data.dataPoints
+      @graphingData.labels = data.labels
+      # data.c or whatever the classification array is called
+      @graphingData.c = data.c
+      @graphingData.state = "svm"
