@@ -87,3 +87,4 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       @graphingData.c = data.c
       @graphingData.model = data.model
       @graphingData.state = "svm"
+      @msgService.broadcast 'svm:sendAlgorithmGraphing', @graphingData
