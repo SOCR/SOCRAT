@@ -24,14 +24,15 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       state: "scatter"
       coords: null
       labels: null
+      model: null
       c: null
 
     @$scope.$on 'svm:updateDataPoints', (event, data) =>
-      @selectedAlgorithm = data.model
       console.log("GOT SIGNAL TO UPDATE DATA")
       @$timeout => @sendGraphingData(data)
 
     @$scope.$on 'svm:startAlgorithm', (event, data) =>
+      @selectedAlgorithm = data.model
       @$timeout => @sendAlgorithmData(data)
 
 ## need to listen or wait for algorithms to respond
@@ -74,6 +75,7 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       @graphingData.labels = data.labels
       console.log(@graphingData)
       @graphingData.state = "svm"
+      @graphingData.model = data.model
       @algorithmsService.startAlgorithm(@graphingData)
 
   # figure out when to call this
@@ -83,4 +85,5 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       @graphingData.labels = data.labels
       # data.c or whatever the classification array is called
       @graphingData.c = data.c
+      @graphingData.model = data.model
       @graphingData.state = "svm"
