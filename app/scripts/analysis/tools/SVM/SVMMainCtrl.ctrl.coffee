@@ -23,14 +23,18 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @dataPoints = null
     @customData = null
     @graphingData =
-      state: null
-      coords: null
+      mesh_grid_points: null
+      mesh_grid_labels: null
+      features: null
       labels: null
-      model: null
-      c: null
+
     @newdata = 
       state: null
+      mesh_grid_points: null
+      mesh_grid_labels: null
       coords: null
+      labels: null
+      
 
     @$scope.$on 'svm:updateDataPoints', (event, data) =>
       #console.log("GOT SIGNAL TO UPDATE DATA")
@@ -85,19 +89,11 @@ module.exports = class SVMMainCtrl extends BaseCtrl
   sendAlgorithmData: (data) ->
     if data?
       console.log("starting algorithm step")
-      @graphingData.coords = data.dataPoints
-      @graphingData.labels = data.labels
-      console.log(@graphingData)
-      @graphingData.state = "svm"
-      @graphingData.model = data.model
-      @algorithmsService.startAlgorithm(@graphingData)
+      @graphingData = @algorithmsService.startAlgorithm(@selectedAlgorithm, data)
+      @newdata.coords = @graphingData.features
+      @newdata.mesh_grid_points = @graphingData.mesh_grid_points
+      @newdata.mesh_grid_labels = @graphingData.mesh_grid_labels
+      @newdata.state = 'svm'
+      @newdata.labels = @graphingData.labels
+      @svm.drawSVM(@newdata)
 
-  # figure out when to call this
-  sendAlgorithmFinished: (data) ->
-    if data?
-      @graphingData.coords = data.dataPoints
-      @graphingData.labels = data.labels
-      # data.c or whatever the classification array is called
-      @graphingData.c = data.c
-      @graphingData.model = data.model
-      @graphingData.state = "svm"
