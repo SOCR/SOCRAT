@@ -21,15 +21,23 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @dataPoints = null
     @customData = null
     @graphingData =
-      state: "scatter"
+      state: null
       coords: null
       labels: null
       model: null
       c: null
+    @newdata = 
+      state: null
+      coords: null
 
     @$scope.$on 'svm:updateDataPoints', (event, data) =>
-      console.log("GOT SIGNAL TO UPDATE DATA")
-      @$timeout => @sendGraphingData(data)
+      #console.log("GOT SIGNAL TO UPDATE DATA")
+
+      if data.dataPoints != undefined
+        @newdata.state = "scatter"
+        @newdata.coords = data.dataPoints
+        @graphingData = @newdata 
+      #@sendGraphingData(data)
 
     @$scope.$on 'svm:startAlgorithm', (event, data) =>
       @selectedAlgorithm = data.model
@@ -54,16 +62,18 @@ module.exports = class SVMMainCtrl extends BaseCtrl
   #         c: label
   #       return point
 
-  sendGraphingData: (data) ->
-    if data?
-      if data.dataPoints
-        console.log(data)
-        @graphingData.coords = data.dataPoints
-      if data.labels
-        console.log("LABELS")
-        console.log(data)
-        @graphingData.labels = data.labels
-      @msgService.broadcast 'svm:sendScatterGraphing', @graphingData
+ # sendGraphingData: (data) ->
+ #   if data?
+ #     if data.dataPoints
+ #       console.log(data)
+ #       @graphingData.coords = data.dataPoints
+  #    if data.labels
+  #      console.log("LABELS")
+  #      console.log(data)
+  #      @graphingData.labels = data.labels
+  #    console.log("broadcasting graphingData")
+  #    console.log(@graphingData)
+  #    @msgService.broadcast 'svm:sendScatterGraphing', @graphingData
       # not sure if sending data to directive is
       # with msgService.broadcast or just call function like
       # with service

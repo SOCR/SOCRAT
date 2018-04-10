@@ -86,6 +86,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       yCol = data.header.indexOf @yCol unless !@yCol?
       sendData = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
       labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+    
       @msgService.broadcast 'svm:updateDataPoints',
         dataPoints: sendData
         labels = labels
