@@ -4,6 +4,7 @@ BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class SVMMainCtrl extends BaseCtrl
   @inject 'app_analysis_svm_dataService',
+    'app_analysis_svm_svmgraph'
     'app_analysis_svm_msgService'
     'app_analysis_svm_algorithms'
     'app_analysis_svm_metrics'
@@ -16,6 +17,7 @@ module.exports = class SVMMainCtrl extends BaseCtrl
     @msgService = @app_analysis_svm_msgService
     @algorithmsService = @app_analysis_svm_algorithms
     @algorithms = @algorithmsService.getNames()
+    @svm = @app_analysis_svm_svmgraph
     @title = 'SVM'
     @dataType = ''
     @dataPoints = null
@@ -36,7 +38,9 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       if data.dataPoints != undefined
         @newdata.state = "scatter"
         @newdata.coords = data.dataPoints
-        @graphingData = @newdata 
+        @svm.drawSVM(@newdata)
+        #console.log("graphingData updated")
+        #@graphingData = @newdata 
       #@sendGraphingData(data)
 
     @$scope.$on 'svm:startAlgorithm', (event, data) =>
