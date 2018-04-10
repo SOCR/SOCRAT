@@ -43,7 +43,7 @@ module.exports = class SVMCSVC extends BaseService
     @features = data.features
     @lables = data.labels
 
-  train: () ->
+  train: (data) ->
     @svmModel.train(features, labels);
     return updateGraphData()
 

@@ -32,6 +32,9 @@ module.exports = class SVMAlgorithms extends BaseModuleDataService
   passDataByName: (algName, dataIn) ->
     (alg.saveData(dataIn) for alg in @algorithms when algName is alg.getName()).shift()
 
+  trainingByName: (algName, dataIn) ->
+    (alg.trainingByName(dataIn) for alg in @algorithms when algName is alg.getName()).shift()
+
   getDataTypes: ->
     @msgService.getSupportedDataTypes()
 
