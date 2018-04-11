@@ -62,7 +62,8 @@ module.exports = class SVMCSVC extends BaseService
   updateGraphData: ->
     #return the mesh_grid and training data for graphing service
     min_max = @get_boundary_from_feature()
-    @mesh_grid_points = @mesh_grid_2d_init(min_max['min_x'], min_max['min_y'], 0.1)
+    console.log min_max
+    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], 0.1)
     @mesh_grid_label = @mesh_grid_predict_label(@svmModel, @mesh_grid_points)
     result =
       mesh_grid_points: @mesh_grid_points
@@ -107,18 +108,17 @@ module.exports = class SVMCSVC extends BaseService
     # get minimum of x
     x_column = []
     y_column = []
+    result = []
     for x in @features
       x_column.push(parseFloat x[0])
       y_column.push(parseFloat x[1])
 
-    min_x = Math.min.apply(null, x_column);
-    min_y = Math.min.apply(null, y_column);
-    max_x = Math.max.apply(null, x_column);
-    max_y = Math.max.apply(null, y_column);
-    result =
-      min_x : min_x
-      max_x : max_x
-      min_y : min_y
-      max_y : max_y
-    return result
+    result.push(Math.min.apply(null, x_column))
+    result.push(Math.min.apply(null, y_column))
+    result.push(Math.max.apply(null, x_column))
+    result.push(Math.max.apply(null, y_column))
+    final = []
+    final.push(Math.min.apply(null, result))
+    final.push(Math.max.apply(null, result))
+    return final
 
