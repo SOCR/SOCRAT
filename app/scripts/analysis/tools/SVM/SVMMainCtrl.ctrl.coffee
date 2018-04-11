@@ -51,45 +51,10 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       @selectedAlgorithm = data.model
       @$timeout => @sendAlgorithmData(data)
 
-## need to listen or wait for algorithms to respond
-      #@$timeout => @sendAlgorithmFinished(data)
-
-
-  # organizeSend maybe not needed anymore
-
-  # organizeSend: (data) ->
-  #   if data? and data.dataPoints?
-  #     @customData = data.dataPoints.map (point, i) ->
-  #       if data.labels?
-  #         label = data.labels[i]
-  #       else
-  #         label = 0
-  #       point =
-  #         x_c: point[0]
-  #         y_c: point[1]
-  #         c: label
-  #       return point
-
- # sendGraphingData: (data) ->
- #   if data?
- #     if data.dataPoints
- #       console.log(data)
- #       @graphingData.coords = data.dataPoints
-  #    if data.labels
-  #      console.log("LABELS")
-  #      console.log(data)
-  #      @graphingData.labels = data.labels
-  #    console.log("broadcasting graphingData")
-  #    console.log(@graphingData)
-  #    @msgService.broadcast 'svm:sendScatterGraphing', @graphingData
-      # not sure if sending data to directive is
-      # with msgService.broadcast or just call function like
-      # with service
-
   sendAlgorithmData: (data) ->
     if data?
       console.log("starting algorithm step")
-      @graphingData = @algorithmsService.startAlgorithm(@selectedAlgorithm, data)
+      @graphingData = @algorithmsService.trainingByName(@selectedAlgorithm, data)
       @newdata.coords = @graphingData.features
       @newdata.mesh_grid_points = @graphingData.mesh_grid_points
       @newdata.mesh_grid_labels = @graphingData.mesh_grid_labels

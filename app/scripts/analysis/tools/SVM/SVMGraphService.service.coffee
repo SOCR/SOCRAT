@@ -89,7 +89,7 @@ module.exports = class SVMGraph extends BaseService
       type = "train"
       train_values = @mesh_grid_point(data.coords, data.labels,type)
       type = "mesh"
-      mesh_grid_values = @mesh_grid_point(data.model, data.c,type)
+      mesh_grid_values = @mesh_grid_point(data.mesh_grid_points, data.mesh_grid_labels,type)
       console.log train_values
       values = train_values
       values = values.concat mesh_grid_values
