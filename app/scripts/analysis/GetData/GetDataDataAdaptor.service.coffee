@@ -34,7 +34,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
       true
     else
       false
-  
+
   # accepts handsontable row-oriented table data as input and returns dataFrame
   ###
     @param {Array} tableData - array of objects
@@ -46,14 +46,14 @@ module.exports = class GetDataDataAdaptor extends BaseService
     # by default data types are not known at this step
     #  and should be defined at Clean Data step
     #colTypes = ('symbolic' for [1...tableData.nCols])
-        
+
     if Object.prototype.toString.call(tableData[0]) == "[object Object]"
       header = @getHeaders tableData[0]
       tableData = @extractData tableData
-      
+
     if header.length is 0
-      for i in [0...tableData[0]-1]
-        header.push(i)
+      for i in [0...tableData[0].length-1]
+        header.push(i.toString())
 
     #generating types for all columns
     tempDF =
@@ -62,7 +62,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
         nCols: header.length
         data: tableData
         dataType: @DATA_TYPES.FLAT
-        purpose: 'json' 
+        purpose: 'json'
     newDataFrame = @transformArraysToObject tempDF
     @dataService.inferTypes newDataFrame
     .then( (typesObj) =>
@@ -73,7 +73,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
         data: tableData
         dataType: @DATA_TYPES.FLAT
         types: typesObj.dataFrame.data
-        purpose: 'json'  
+        purpose: 'json'
     )
 
   ###
@@ -111,21 +111,21 @@ module.exports = class GetDataDataAdaptor extends BaseService
     # generate titles and references
     count data
     return _col
-  
+
   # @TODO : merge this function with jsonToFlatTable.
   extractData: (data)->
-    
+
     if not Array.isArray data
       throw new Error "not a valid array. Cannot extract data"
 
     parsedData = []
     headers = @getHeaders data[0]
-    
+
     getValue = (path,obj) ->
       if path.split('.').length == 1
-        if ( obj[path] == null or obj[path] == undefined ) 
-          return null 
-        else 
+        if ( obj[path] == null or obj[path] == undefined )
+          return null
+        else
           return obj[path]
       pathTokens = path.split('.')
       newObj = obj[pathTokens.shift()]
@@ -234,7 +234,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
 
   enforceTypes: (dataFrame, types=null) ->
     types = types || dataFrame.types
-    if types? and dataFrame?    
+    if types? and dataFrame?
       Object.keys(types).forEach (type)=>
         dataFrame.data.forEach (dataRow)=>
           switch types[type]
@@ -251,5 +251,5 @@ module.exports = class GetDataDataAdaptor extends BaseService
         # stats.js lib for a key "indicator.id" checks obj["indicator"]["id"]
         # to fix that, replacing all "." with "_"
         obj[h.replace('.','_')] = entry[key]
-      obj 
+      obj
     return Object.assign {}, dataFrame, {data:formattedData}
