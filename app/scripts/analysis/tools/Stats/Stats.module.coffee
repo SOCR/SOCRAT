@@ -30,6 +30,7 @@ module.exports = Stats = new Module
   state:
     # module name to show in UI
     name: 'Statistical Analysis'
-    url: '/tools/stats'
+    url: '/tools/Stats'
     mainTemplate: require 'partials/analysis/tools/Stats/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/Stats/sidebar.jade'
+
