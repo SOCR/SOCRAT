@@ -34,21 +34,13 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
     @chartData = null
     @barChartData = null
 
-    #variables needed for cfap only
-    @cfap_nn = 1
-    @cfap_me=0.09297
-    @cfap_n=101
-    @cfap_maxn=120
-    @cfap_maxme=0.12
-    @cfap_conf_level=0.95
-    @cfap_help=false
-    @cfap_click()
-    @cfap_submit()
-
+    # show help
+    @showHelp = false;
     @loadData()
 
     @$scope.$on 'powercalc:updateAlgorithm', (event, data)=>
       @selectedAlgorithm = data
+      @showHelp = false
       console.log("algorithms updated:", @selectedAlgorithm)
       @loadData()
       MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
@@ -105,6 +97,13 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
   syncPower: (dataIn) ->
     @algorithmService.setPowerByName(@selectedAlgorithm, dataIn)
     @loadData()
+
+  showHelpToggle: () ->
+    @showHelp = !@showHelp
+    return
+
+
+
 
   #cfap function only
   cfap_clk: (evt) ->
@@ -332,6 +331,9 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
         sl.slider("enable")
         sl.find('.ui-slider-handle').show()
 
+    onePropPowerUI.slider("disable")
+    onePropPowerUI.find('.ui-slider-handle').hide()
+
     return
 
   onePropReset: () ->
@@ -460,6 +462,10 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
       for sl in twoPropSlidersToDisable
         sl.slider("enable")
         sl.find('.ui-slider-handle').show()
+
+    twoPropPowerUI.slider("disable")
+    twoPropPowerUI.find('.ui-slider-handle').hide()
+
     return
 
   twoPropReset: () ->

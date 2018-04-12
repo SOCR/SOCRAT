@@ -18,6 +18,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
     @msgService = @app_analysis_stats_msgService
     @algorithmService = @app_analysis_stats_algorithms
     @title = "Stats Analysis Module"
+    @showHelp = false
 
     @selectedAlgorithm = "CI for One Mean"
 
@@ -59,6 +60,10 @@ module.exports = class StatsMainCtrl extends BaseCtrl
   syncData: (dataIn) ->
     @algorithmService.setParamsByName(@selectedAlgorithm, dataIn)
     @loadData()
+
+  showHelpToggle: () ->
+    @showHelp = !@showHelp
+    return
 
 
   # functions for CIOM only
