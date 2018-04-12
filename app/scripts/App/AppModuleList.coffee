@@ -40,6 +40,8 @@ module.exports = class AppModuleList
     require 'scripts/analysis/Charts/Charts.module.coffee'
   ,
     Tools: [
+      require 'scripts/analysis/tools/DimReduction/DimReduction.module.coffee'
+    ,
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'

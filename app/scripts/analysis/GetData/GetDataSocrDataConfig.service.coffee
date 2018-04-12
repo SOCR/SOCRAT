@@ -11,6 +11,10 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
       url: 'datasets/iris.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_052511_IrisSepalPetalClasses'
     ,
+    #   name: '2D Morphometry'
+    #   url: 'datasets/fibr_2d_morph_features_N.csv'
+    #   description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
+    # ,
       name: 'Simulated SOCR Knee Pain Centroid Location Data'
       url: 'datasets/knee_pain_data.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_KneePainData_041409'
