@@ -2,33 +2,24 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
 
   div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
     .row
+      h6 Test of One Proportion &nbsp;
+        span.glyphicon.glyphicon-question-sign(
+        aria-hidden="true"
+        uib-tooltip="This power analysis is used to test whether a proportion, p, is equal to a reference value, p_0"
+        tooltip-placement="bottom"
+        )
       .col-md-8
-        h6 Test of One Proportion &nbsp;
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="This power analysis is used to test whether a proportion, p, is equal to a reference value, p0"
-          tooltip-placement="bottom"
-          )
         power-calc-viz
         .form-inline
-          label Power: &nbsp;
-            input.form-control.input-sm.flat(
-            ng-model="mainArea.onePropPower"
-            ng-click="mainArea.onePropCalcPower()"
-            ng-keypress="mainArea.onePropPress($event)"
-            ng-disabled="mainArea.deployed"
-            type="number"
-            step="0.0001"
-            name='onePropPower'
-            )
+          label Power: {{mainArea.onePropPower}}
           #onePropPowerUI
       .col-md-4
           .form-inline
             label Mode: &nbsp;
             select.form-control(
-            ng-model="mainArea.onePropMode"
-            ng-change="mainArea.onePropSync()"
-            ng-options="mode for mode in mainArea.onePropModes"
+              ng-model="mainArea.onePropMode"
+              ng-change="mainArea.onePropSync()"
+              ng-options="mode for mode in mainArea.onePropModes"
             )
           .form-inline
             label P&nbsp;
@@ -74,16 +65,19 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
             label p-value: &nbsp;
               b {{mainArea.onePropPvalue}}
 
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
 
   div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
     .row
+      h6 Test of Two Proportions &nbsp;
       .col-md-8
-        h6 Test of Two Proportions &nbsp;
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="This calculator is useful for tests about whether the proportions for two samples are different."
-          tooltip-placement="bottom"
-          )
+        span.glyphicon.glyphicon-question-sign(
+        aria-hidden="true"
+        uib-tooltip="This calculator is useful for tests about whether the proportions for two samples are different."
+        tooltip-placement="bottom"
+        )
         power-calc-viz
         .form-inline
           label Power: &nbsp
@@ -164,6 +158,11 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
           .form-inline
             label p-value: &nbsp;
               b {{mainArea.twoPropPValue}}
+
+
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
 
   div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
     .row
@@ -251,6 +250,10 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
           label p-value: &nbsp;
             b {{mainArea.oneTestPvalue}}
 
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
+
   div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
     h3 Pilot Study
     p <i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study</i>
@@ -278,6 +281,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
         p the criterion employed in this dialog is the risk of underestimating N by a specified percentage 100*P.  This is approximately equal to the risk of underestimating sigma (pretty much regardless of what criterion -- power, CI width, etc. -- is used for sample-size determination). In a normal setting, this risk is a simple calculation on the chi-square distribution: risk = Pr{Q < (1-P)nu}, where Q is chi-square with nu d.f.
         <br>
         p The dialog has three sliders -- for 100P, for risk, and for nu.  If you vary P or nu, the risk is recomuted based on the above formula.  If you vary risk, nu is recomputed. (If the solve method fails, simply set the d.f. so the risk is in the ballpark, and try again
+
 
   div(ng-show='mainArea.selectedAlgorithm == "R-square (multiple correlation)"')
     h3 R-square (multiple correlation)
@@ -320,8 +324,8 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
         )
         #rSquarePowerUI
     div
-      input#RsuareGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.RsquareGUI_show_help();')
-      div(ng-show='mainArea.RsquareGUI_help == true;')
+      input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+      div(ng-show='mainArea.showHelp == true;')
         p The usual way to test a hypothesis about $ R^2 $ is to transform it to an F statistic:
         <br>
         p $$ F = \frac{(n-k-1)*R^2}{k*(1-R^2)} $$
@@ -339,6 +343,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
         p References:
         p Gatsonis, C. and Sampson, A. (1989),  Multiple correlation: Exact power and sample size calculations. Psychological Bulletin, 106, 516--524.
         p Benton, D. and Krishnamoorthy, K. (2003),  Computing discrete mixtures of continuous distributions..., Computational Statistics and Data Analysis, 43, 249--267
+
 
   div(ng-show='mainArea.selectedAlgorithm == "Generic chi-square test"')
     h3 Generic chi-square test
@@ -392,18 +397,9 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
         )
         #chi2PowerUI
 
-  div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
-
-    div
-      p The GUI components are as follows:
-      p lambda0: The value of the Poisson parameter under the null hypothesis.
-      p alternative: Choose a two-tailed alternative (lambda != lambda0) or one of the one-tailed alternatives.
-      p Boundaries of acceptance region (output values):  These are the lower and/or upper values of x for which the null hypothesis would NOT be rejected.
-      p size (output value):  The actual probability of the critical region under the null hypothesis.
-      p lambda: The Poisson parameter at which the power is to be calculated.
-      p n: The sample size.
-      p power: The probability of the critical region, given lambda and n.
-
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
 
   div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
     h3 Power of a Simple Poisson Test
@@ -455,6 +451,10 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
           )
         #poissonPowerUI
 
+
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
 
   div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
     .row
@@ -575,4 +575,7 @@ div(ng-controller="powerCalcMainCtrl as mainArea")
         .form-inline
           label p-value: &nbsp;
             b {{mainArea.twoTestPvalue}}
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
 
