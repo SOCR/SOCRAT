@@ -43,6 +43,7 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
     if @algorithms.length > 0
       @selectedAlgorithm = @algorithms[0]
       @updateAlgControls()
+      @initConfLevelSlider()
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
@@ -64,22 +65,40 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
   updateAlgControls: () ->
     @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
-  updateDataPoints: (data=null, means=null, labels=null) ->
+  initConfLevelSlider: () ->
+    # add segments to a slider
+    # https://designmodo.github.io/Flat-UI/docs/components.html#fui-slider
+    $.fn.addSliderSegments = (amount, orientation) ->
+      @.each () ->
+        if orientation is "vertical"
+          output = ''
+          for i in [0..amount-2]
+            output += '<div class="ui-slider-segment" style="top:' + 100 / (amount - 1) * i + '%;"></div>'
+          $(this).prepend(output)
+        else
+          segmentGap = 100 / (amount - 1) + "%"
+          segment = '<div class="ui-slider-segment" style="margin-left: ' + segmentGap + ';"></div>'
+          $(this).prepend(segment.repeat(amount - 2))
+
+    $slider = $("#slider")
+    if $slider.length > 0
+      $slider.slider(
+        min: 5
+        max: 30
+        step: 5
+        value: 10
+        orientation: "horizontal"
+        range: "min"
+        slide: (event, ui) => @$timeout => @perplex = ui.value
+      ).addSliderSegments($slider.slider("option").max)
+
+  updateDataPoints: (data, labels=null) ->
     if data
-      trueLabels = null
-      if @labelCol
-        trueLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
-        @uniqueLabels =
-          num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
-          labelCol: @labelCol
-      xCol = data.header.indexOf @xCol unless !@xCol?
-      yCol = data.header.indexOf @yCol unless !@yCol?
-      data = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
-    @msgService.broadcast 'dimReduction:updateDataPoints',
-      dataPoints: data
-      means: means
-      labels: labels
-      trueLabels: trueLabels
+      @msgService.broadcast 'dimReduction:updateDataPoints',
+        dataPoints: data
+        labels: labels
+    else
+      false
 
   # update data-driven sidebar controls
   updateSidebarControls: (data) ->
@@ -98,8 +117,8 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
       @uniqueLabels =
         num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
         labelCol: @labelCol
-    @$timeout =>
-      @updateDataPoints data
+    # @$timeout =>
+    #   @updateDataPoints data
 
   updateChosenCols: () ->
     axis = [@xCol, @yCol]
@@ -116,29 +135,6 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
     @updateDataPoints @dataFrame
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
-
-  detectK: () ->
-    detectedK = @detectKValue()
-    @setDetectedKValue detectedK
-
-  setDetectedKValue: (detectedK) ->
-    if detectedK.num <= 10
-      @uniqueLabels = detectedK
-      @k = detectedK.num
-      # TODO: add success messages
-    else
-      # TODO: create popup with warning message
-      console.log 'KMEANS: k is more than 10'
-
-  detectKValue: () ->
-    # extra check that labels are on
-    if @dataFrame and @labelCol
-      labelCol = @dataFrame.header.indexOf @labelCol
-      labels = (row[labelCol] for row in @dataFrame.data)
-      uniqueLabels = @uniqueVals labels
-      uniqueLabels =
-        labelCol: @labelCol
-        num: uniqueLabels.length
 
   ## Data preparation methods
 
@@ -162,16 +158,11 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
 
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
 
-      # re-check if possible to compute accuracy
-      if @k is @uniqueLabels.num and @accuracyon
-        acc = on
-
       obj =
         data: data
         labels: labels
         xCol: xCol
         yCol: yCol
-        acc: acc
 
     else false
 
@@ -186,29 +177,26 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
         @updateDataPoints(df)
         @ready = on
 
-  ## Interface method to run clustering
+  getParams: () ->
+    params =
+      perplexity: @perplex
+      metric: @distance
 
-  runClustering: ->
-    clustData = @prepareData()
-    @kmeanson = on
-    @running = 'spinning'
-    res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
-      xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
-      @updateDataPoints null, xyMeans, res.labels
-      @$timeout =>
-        @kmeanson = off
-        @running = 'hidden'
-
-  stepClustering: ->
-    clustData = @prepareData()
-    @kmeanson = on
-    @running = 'spinning'
-    res = @algorithmsService.clusterStep @selectedAlgorithm, clustData, @k, @initMethod, @distance
-    xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
-    @updateDataPoints null, xyMeans, res.labels
-    @$timeout =>
-      @kmeanson = off
-      @running = 'hidden'
+  ## Interface method to run algorithms
+  run: ->
+    data = @prepareData()
+    if data and data.data
+      runParams = @getParams()
+      @algOn = on
+      @running = 'spinning'
+      runData = (row.map(Number) for row in data.data)
+      res = @algorithmsService.run @selectedAlgorithm, runData, runParams, (res) =>
+        @updateDataPoints res, data.labels
+        @$timeout =>
+          @algOn = off
+          @running = 'hidden'
+    else
+      false
 
   reset: ->
     @algorithmsService.reset @selectedAlgorithm

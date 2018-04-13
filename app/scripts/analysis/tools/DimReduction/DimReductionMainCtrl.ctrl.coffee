@@ -46,15 +46,13 @@ module.exports = class DimReductionMainCtrl extends BaseCtrl
 
   updateChartData: (data) ->
     if data.dataPoints?
-      if data.trueLabels?
+      if data.labels?
         @dataPoints = data.dataPoints.map((row, i) ->
-          row.push(data.trueLabels[i])
+          row.push(data.labels[i])
           return row
         )
       else
         @dataPoints = data.dataPoints
-    @means = data.means
-    @assignments = data.labels
 
   finish: (results=null) ->
     @msgManager.broadcast 'dimReduction:done', results

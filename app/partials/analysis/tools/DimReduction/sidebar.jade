@@ -51,7 +51,7 @@ div(ng-controller="dimReductionSidebarCtrl as sidebar")
           ng-show="sidebar.dataFrame && sidebar.ready"
           type="submit"
           aria-label="Run"
-          ng-click="sidebar.runClustering()"
+          ng-click="sidebar.run()"
           ng-disabled="sidebar.clusterRunning || sidebar.chosenCols.length < 2")
             | Run&nbsp;
             span.glyphicon.glyphicon-refresh(aria-hidden="true", ng-class="running")

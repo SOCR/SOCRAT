@@ -41,11 +41,6 @@ module.exports = class DimReductionVizDir extends BaseDirective
           drawDataPoints newDataPoints
       , on
 
-      scope.$watchCollection 'mainArea.assignments', (newAssignments) =>
-        if newAssignments
-          redraw scope.mainArea.dataPoints, scope.mainArea.means, newAssignments
-        else reset()
-
       drawDataPoints = (dataPoints) ->
         meanLayer.selectAll('.meanDots').remove()
         meanLayer.selectAll('.assignmentLines').remove()

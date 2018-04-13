@@ -20,7 +20,7 @@ module.exports = class DimReductionTSne extends BaseService
     @lables = null
     @iter = 0
     @done = off
-    @maxIter = 200
+    @maxIter = 100
     @perplexity = 10
 
     @distances = [
@@ -48,7 +48,7 @@ module.exports = class DimReductionTSne extends BaseService
     b = y.slice().sort()
     a.length is b.length and a.every (elem, i) -> elem is b[i]
 
-  run: (params, inputData) ->
+  run: (inputData, params) ->
     model = new @tsne
       dim: 2
       perplexity: params.perplexity
