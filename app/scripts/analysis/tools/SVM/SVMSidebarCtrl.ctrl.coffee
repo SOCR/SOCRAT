@@ -73,7 +73,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     if @algParams.c
       [minC, ..., maxC] = @algParams.c
     # Will probably make a longer if for each type of hyperparameter
-    
+
     @$timeout =>
       #@updateDataPoints data
 
@@ -86,7 +86,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       yCol = data.header.indexOf @yCol unless !@yCol?
       sendData = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
       labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
-    
+
       @msgService.broadcast 'svm:updateDataPoints',
         dataPoints: sendData
         labels = labels
@@ -119,10 +119,14 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       # if usage of labels is on
 
       labelColIdx = data.header.indexOf @labelCol
-      labels = (row[labelColIdx] for row in data.data)
+      labels = (parseInt row[labelColIdx] for row in data.data)
 
-      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+      data = ( row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+      for value, index in data
+        for d_val, d_index in value
+          data[index][d_index] = parseFloat d_val
 
+      console.log data
       obj =
         features: data
         labels: labels
@@ -149,7 +153,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       hyperPar =
         kernel: @selectedKernel
         c: @c
-    
+
     # Set data to model
     @algorithmsService.passDataByName(@selectedAlgorithm, algData)
 
