@@ -48,7 +48,7 @@ module.exports = class DimReductionVizDir extends BaseDirective
           "mark": "circle",
           "encoding":
             "x":
-              "field": "x t-SNE", "type": "quantitative", "axis": {"title": 'x tSNE'}
+              "field": "x t-SNE", "type": "quantitative", "axis": {"title": 'x t-SNE'}
             "y":
               "field": "y t-SNE", "type": "quantitative", "axis": {"title": 'y t-SNE'}
 
