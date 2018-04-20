@@ -38,7 +38,6 @@ div(ng-controller="dimReductionSidebarCtrl as sidebar")
             select.form-control(
             ng-model="sidebar.labelCol"
             ng-options="col for col in sidebar.categoricalCols"
-            ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             ng-init="sidebar.labelCol = null"
             )
               option(value="") No labels

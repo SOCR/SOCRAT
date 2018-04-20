@@ -95,8 +95,9 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
   updateDataPoints: (data, labels=null) ->
     if data
       @msgService.broadcast 'dimReduction:updateDataPoints',
-        dataPoints: data
+        data: data
         labels: labels
+        header: ['x', 'y', @labelCol]
     else
       false
 
@@ -132,7 +133,7 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
         upd = if @chosenCols.length > 1 then @chosenCols.find (e, i) -> i isnt presentCols[0][1] else null
         [@xCol, @yCol] = axis.map (c) -> if c isnt presentCols[0][0] then upd else c
 
-    @updateDataPoints @dataFrame
+    # @updateDataPoints @dataFrame
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
@@ -174,7 +175,7 @@ module.exports = class DimReductionSidebarCtrl extends BaseCtrl
         for type, idx in df.types
          df.types[idx] = resp.dataFrame.data[idx]
         @updateSidebarControls(df)
-        @updateDataPoints(df)
+        # @updateDataPoints(df)
         @ready = on
 
   getParams: () ->

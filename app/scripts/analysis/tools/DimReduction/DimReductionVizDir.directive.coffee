@@ -7,85 +7,60 @@ module.exports = class DimReductionVizDir extends BaseDirective
 
   initialize: ->
     @restrict = 'E'
-    @template = "<svg width='100%' height='600'></svg>"
+    @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
+    # @template = "<svg width='100%' height='600'></svg>"
     @replace = true # replace the directive element with the output of the template
+
+    @ve = require 'vega-embed'
 
     # The link method does the work of setting the directive
     #  up, things like bindings, jquery calls, etc are done in here
     @link = (scope, elem, attr) =>
 
-      MARGIN_LEFT = 40
-      MARGIN_TOP = 20
-
-      graph = null
-      xScale = null
-      yScale = null
-      color = null
-      meanLayer = null
-
-      svg = d3.select(elem[0])
-      graph = svg.append('g').attr('transform', 'translate(' +  MARGIN_LEFT + ',' + MARGIN_TOP + ')')
-      meanLayer = graph.append('g')
-      color = d3.scale.category10()
-
       scope.$watch 'mainArea.dataPoints', (newDataPoints) =>
         if newDataPoints
-          xDataPoints = (Number(row[0]) for row in newDataPoints)
-          yDataPoints = (Number(row[1]) for row in newDataPoints)
-          minXDataPoint = d3.min xDataPoints
-          maxXDataPoint = d3.max xDataPoints
-          minYDataPoint = d3.min yDataPoints
-          maxYDataPoint = d3.max yDataPoints
-          xScale = d3.scale.linear().domain([minXDataPoint, maxXDataPoint]).range([0, 600])
-          yScale = d3.scale.linear().domain([minYDataPoint, maxYDataPoint]).range([0, 500])
           drawDataPoints newDataPoints
       , on
 
-      drawDataPoints = (dataPoints) ->
-        meanLayer.selectAll('.meanDots').remove()
-        meanLayer.selectAll('.assignmentLines').remove()
+      drawDataPoints = (dataPoints) =>
 
-        pointDots = graph.selectAll('.pointDots').data(dataPoints)
-        pointDots.enter().append('circle').attr('class','pointDots')
-        .attr('r', 3)
-        .attr('cx', (d) -> xScale(d[0]))
-        .attr('cy', (d) -> yScale(d[1]))
-        .attr('fill', (d) -> if d[2]? then color(d[2]) else 'black')
+        fields = ['x t-SNE', 'y t-SNE']
+        ordinal = dataPoints.header[2]
 
-        pointDots.transition().duration(100)
-        .attr('cx', (d) -> xScale(d[0]))
-        .attr('cy', (d) -> yScale(d[1]))
-        .attr('fill', (d) -> if d[2]? then color(d[2]) else 'black')
-        pointDots.exit().remove()
+        d = []
+        for row, row_ind in dataPoints.data
+          row_obj = {}
+          for label, lbl_idx in fields
+            row_obj[label] = row[lbl_idx]
+          if dataPoints.labels
+            row_obj[ordinal] = dataPoints.labels[row_ind]
+          d.push row_obj
 
-      reset = () ->
-        meanLayer.selectAll('.meanDots').remove()
-        meanLayer.selectAll('.assignmentLines').remove()
 
-      redraw = (dataPoints, means, assignments) ->
-        assignmentLines = meanLayer.selectAll('.assignmentLines').data(assignments)
-        assignmentLines.enter().append('line').attr('class','assignmentLines')
-        .attr('x1', (d, i) -> xScale(dataPoints[i][0]))
-        .attr('y1', (d, i) -> yScale(dataPoints[i][1]))
-        .attr('x2', (d, i) -> xScale(means[d][0]))
-        .attr('y2', (d, i) -> yScale(means[d][1]))
-        .attr('stroke', (d) -> color(d))
+        vlSpec =
+          "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+          "width": 500,
+          "height": 500,
+          "data": {"values": d},
+          "selection":
+            "grid":
+              "type": "interval", "bind": "scales"
+          "mark": "circle",
+          "encoding":
+            "x":
+              "field": "x t-SNE", "type": "quantitative", "axis": {"title": 'x tSNE'}
+            "y":
+              "field": "y t-SNE", "type": "quantitative", "axis": {"title": 'y t-SNE'}
 
-        assignmentLines.transition().duration(500)
-        .attr('x2', (d, i) -> xScale(means[d][0]))
-        .attr('y2', (d, i) -> yScale(means[d][1]))
-        .attr('stroke', (d) -> color(d))
+        if dataPoints.labels
+          vlSpec['encoding']['color'] =
+            "field": ordinal
+            "type": "nominal"
 
-        meanDots = meanLayer.selectAll('.meanDots').data(means)
-        meanDots.enter().append('circle').attr('class','meanDots')
-        .attr('r', 5)
-        .attr('stroke', (d, i) -> color(i))
-        .attr('stroke-width', 3)
-        .attr('fill', 'white')
-        .attr('cx', (d) -> xScale(d[0]))
-        .attr('cy', (d) -> yScale(d[1]))
+        opt =
+          "actions": {export: true, source: false, editor: false}
 
-        meanDots.transition().duration(500)
-        .attr('cx', (d) -> xScale(d[0]))
-        .attr('cy', (d) -> yScale(d[1]))
-        meanDots.exit().remove()
+        @ve '#vis', vlSpec, opt, (error, result) ->
+          # Callback receiving the View instance and parsed Vega spec
+          # result.view is the View, which resides under the '#vis' element
+          return
