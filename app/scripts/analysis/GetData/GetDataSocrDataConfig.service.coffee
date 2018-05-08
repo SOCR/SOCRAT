@@ -11,10 +11,30 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
       url: 'datasets/iris.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_052511_IrisSepalPetalClasses'
     ,
-    #   name: '2D Morphometry'
-    #   url: 'datasets/fibr_2d_morph_features_N.csv'
-    #   description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
-    # ,
+      name: '2D Fibroblast Voxel Morphometry'
+      url: 'datasets/fibr_2d_morph_features.csv'
+      description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
+    ,
+      name: '3D Fibroblast Voxel Morphometry'
+      url: 'datasets/fibr_3d_morph_features.csv'
+      description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
+    ,
+      name: '3D Fibroblast Surface Morphometry'
+      url: 'datasets/fibr_c0c1_3dsurf_nokurt.csv'
+      description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
+    ,
+      name: '2D PC3 Voxel Morphometry'
+      url: 'datasets/pc3_2d_morph_features.csv'
+      description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
+    ,
+      name: '3D PC3 Voxel Morphometry'
+      url: 'datasets/pc3_3d_morph_features.csv'
+      description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
+    ,
+      name: '3D PC3 Surface Morphometry'
+      url: 'datasets/pc3_c0c1_3dsurf_nokurt.csv'
+      description: 'http://www.socr.umich.edu/projects/3d-cell-morphometry/data.html'
+    ,
       name: 'Simulated SOCR Knee Pain Centroid Location Data'
       url: 'datasets/knee_pain_data.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_KneePainData_041409'
