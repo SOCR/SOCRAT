@@ -42,6 +42,20 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-options="col for col in sidebar.rCols"
         ng-init="sidebar.rCol = sidebar.rCols[0]"
         )
+      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph'")
+        label
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="toggle horizontal chart"
+          tooltip-placement="right"
+          ) &nbsp;
+          | Toggle Horizontal Graph &nbsp;
+        input(
+        type="checkbox"
+        data-toggle="switch"
+        id="toggleHorizontalBarGraph"
+        ng-model="sidebar.horizontalToggle"
+        )
     div(ng-show="!sidebar.selectedGraph.x")
       select.form-control(
       multiple
