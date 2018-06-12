@@ -37,6 +37,8 @@ module.exports = class ChartsBoxPlot extends BaseService
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "width": 100,
+      "height": 300,
       "description": "A vertical 2D box plot showing median, min, and max.",
       "data":
         "values": data,
@@ -147,7 +149,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "ordinal"
             },
             "size": {
-              "value": 5
+              "value": 20
             }
           }
         },
@@ -169,12 +171,24 @@ module.exports = class ChartsBoxPlot extends BaseService
               "value": "white"
             },
             "size": {
-              "value": 5
+              "value": 20
             }
           }
         }
       ]
     }
+
+    vlSpec["config"] =
+      "axis":
+        "titleFontSize": 24
+        "labelFontSize": 24
+      "title":
+        "titleFontSize": 24
+      "legend":
+          "labelFontSize": 24
+          "titleFontSize": 24
+      "mark":
+        "strokeWidth": 3
 
     opt =
       "actions": {export: true, source: false, editor: false}

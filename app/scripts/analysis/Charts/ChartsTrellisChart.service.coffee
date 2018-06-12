@@ -76,6 +76,18 @@ module.exports = class ChartsTrellisChart extends BaseService
       }
     }
 
+    vlSpec["config"] =
+      "axis":
+        "titleFontSize": 16
+        "labelFontSize": 16
+      "title":
+        "titleFontSize": 16
+      "legend":
+          "labelFontSize": 16
+          "titleFontSize": 16
+      "point":
+        "size": 80
+
     if labels
       vlSpec['spec']['encoding']['color'] = {
         "condition": {
