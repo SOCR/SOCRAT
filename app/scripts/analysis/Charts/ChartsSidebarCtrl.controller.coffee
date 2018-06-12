@@ -11,7 +11,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
     'app_analysis_charts_msgService',
-    '$timeout'
+    '$timeout',
+    '$scope'
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
@@ -24,6 +25,12 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @graphs = []
     @selectedGraph = null
     @maxColors = 10
+
+    # chart-specific
+    @horizontalToggle = false;
+#    @flags =
+#        "Bar Chart":
+#          "Horizontal": false
 
     # dataset-specific
     @dataFrame = null
@@ -54,6 +61,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       scheme: ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"]
     ]
 
+
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType?
         dataFrame = obj.dataFrame
@@ -70,6 +78,12 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @data = dataFrame.data
             @dataType = @DATA_TYPES.NESTED
             @header = {key: 0, value: "initiate"}
+
+
+    @$scope.$watch () ->
+      return horizontalToggle
+    , () =>
+      @updateDataPoints()
 
   parseData: (data) ->
     df = data
@@ -95,6 +109,14 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     # Determine a list of variables that has more than 20 unique values
     # This list will be excluded from zCols if zLabel is color
     forbiddenVarIdx = []
+
+    if @selectedGraph.hLabel is "Toggle horizontal"
+      # modes
+      $("#toggleHorizontalBarGraph").bootstrapSwitch()
+      $("#toggleHorizontalBarGraph").on 'switchChange.bootstrapSwitch', () =>
+        @horizontalToggle = !@horizontalToggle
+    # end if
+
     if @selectedGraph.zLabel is "Color"
 
       VarForChecking = []
@@ -210,6 +232,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       dataPoints: data
       graph: @selectedGraph
       labels: labels
+      chartFlags: @horizontalToggle
+      #horizontal: @horizontalToggle
 
 #  changeGraph: () ->
 #    if @graphSelect.name is "Stream Graph"

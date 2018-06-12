@@ -18,10 +18,12 @@ module.exports = class ChartsList extends BaseService
       x: ['integer', 'number', 'string']
       y: ['integer', 'number', 'string']
       z: ['integer', 'string']
+      h: true
       message: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
       xLabel: "X"
       yLabel: "Y"
       zLabel: "Color"
+      hLabel: "Toggle horizontal"
     ,
       name: 'Scatter Plot'
       value: 2
