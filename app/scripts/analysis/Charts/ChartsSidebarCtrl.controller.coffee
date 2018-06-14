@@ -26,11 +26,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @selectedGraph = null
     @maxColors = 10
 
-    # chart-specific
-    @horizontalToggle = false;
-#    @flags =
-#        "Bar Chart":
-#          "Horizontal": false
+    # chart-specific flags (update dictionary as more flags added)
+    @flags =
+        BarChart:
+          Horizontal: false
 
     # dataset-specific
     @dataFrame = null
@@ -80,10 +79,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @header = {key: 0, value: "initiate"}
 
 
-    @$scope.$watch () ->
-      return horizontalToggle
-    , () =>
+    @$scope.$watch 'sidebar.flags'
+    , =>
       @updateDataPoints()
+    , true
 
   parseData: (data) ->
     df = data
@@ -113,8 +112,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.hLabel is "Toggle horizontal"
       # modes
       $("#toggleHorizontalBarGraph").bootstrapSwitch()
-      $("#toggleHorizontalBarGraph").on 'switchChange.bootstrapSwitch', () =>
-        @horizontalToggle = !@horizontalToggle
+
     # end if
 
     if @selectedGraph.zLabel is "Color"
@@ -232,8 +230,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       dataPoints: data
       graph: @selectedGraph
       labels: labels
-      chartFlags: @horizontalToggle
-      #horizontal: @horizontalToggle
+      chartFlags: @flags
 
 #  changeGraph: () ->
 #    if @graphSelect.name is "Stream Graph"

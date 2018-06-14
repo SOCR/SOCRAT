@@ -26,8 +26,6 @@ module.exports = class ChartsBarChart extends BaseService
     @ve = require 'vega-embed'
 
   drawBar: (width,height,data,_graph,labels,ranges,flags) ->
-    console.log(flags)
-
     for item in data
       item["x_vals"] = item["x"]
       item["y_vals"] = item["y"]
@@ -35,7 +33,7 @@ module.exports = class ChartsBarChart extends BaseService
 
     # end if
     if data[0]["z"]
-      if flags
+      if flags.Horizontal
         vlSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
           "width": 500,
@@ -173,7 +171,7 @@ module.exports = class ChartsBarChart extends BaseService
           }
         }
     else
-      if flags
+      if flags.Horizontal
         vlSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
           "width": 500,

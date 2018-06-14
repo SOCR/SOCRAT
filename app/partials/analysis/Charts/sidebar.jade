@@ -51,10 +51,11 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
           ) &nbsp;
           | Toggle Horizontal Graph &nbsp;
         input(
+        bs-switch
         type="checkbox"
         data-toggle="switch"
         id="toggleHorizontalBarGraph"
-        ng-model="sidebar.horizontalToggle"
+        ng-model="sidebar.flags.BarChart.Horizontal"
         )
     div(ng-show="!sidebar.selectedGraph.x")
       select.form-control(
