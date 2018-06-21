@@ -45,9 +45,10 @@ module.exports = class ChartsDir extends BaseDirective
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
 
-    @link = (scope) =>
+    @link = (scope, elem) =>
       data = null
       labels = null
+      container = null
 
       # add segments to a slider
       # https://designmodo.github.io/Flat-UI/docs/components.html#fui-slider
@@ -69,6 +70,10 @@ module.exports = class ChartsDir extends BaseDirective
           labels = newChartData.labels
           scheme = newChartData.graph
 
+          container = d3.select(elem.find('div')[0])
+          container.selectAll('*').remove()
+          console.log(container)
+
           # trellis chart is called differently
           if scheme.name is 'Trellis Chart'
             @trellis.drawTrellis(data,labels,container)
@@ -80,9 +85,9 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Bar Graph'
                 @bar.drawBar(data,labels)
               when 'Bubble Chart'
-                @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
+                @bubble.drawBubble(data,labels)
               when 'Histogram'
-                @histogram.drawHist(_graph, data, container, labels, width, height, ranges)
+                @histogram.drawHist(data,labels)
               when 'Tukey Box Plot (1.5 IQR)'
                 @tukeyBoxPlot.drawBoxPlot(_graph, data, container, labels, width, height, ranges)
               when 'Ring Chart'
@@ -95,11 +100,11 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Stream Graph'
                 @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
               when 'Area Chart'
-                @area.drawArea(height,width,_graph, data, labels)
+                @area.drawArea(data, labels)
               when 'Treemap'
                 @treemap.drawTreemap(svg, width, height, container, data)
               when 'Line Chart'
-                @line.lineChart(data,ranges,width,height,_graph, labels,container)
+                @line.lineChart(data,labels)
               when 'Bivariate Area Chart'
                 # @time.checkTimeChoice(data)
                 @bivariate.bivariateChart(height,width,_graph, data, labels)

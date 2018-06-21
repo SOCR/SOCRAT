@@ -24,67 +24,39 @@ module.exports = class ChartsBubbleChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
-    
-  drawBubble: (width,height,_graph,data,labels,container,ranges) ->
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-    if (data[0]["r"] && data[0]["z"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "point",
-        "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "color": {"field": "z", "type": "nominal"},
-          "size": {"field": "r", "type": "quantitative"}
+  drawBubble: (data,labels) ->
+    vlSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "width": 500,
+      "height": 500,
+      "data": {"values": data},
+      "mark": "point",
+      "encoding": {
+        "x": {
+          "field": labels.xLab.value,
+          "type": "quantitative",
+          "axis": {"title": labels.xLab.value}
+        },
+        "y": {
+          "field": labels.yLab.value,
+          "type": "quantitative",
+          "axis": {"title": labels.yLab.value}
         }
       }
-    else if (data[0]["r"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "point",
-        "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "size": {"field": "r", "type": "quantitative"}
-        }
-      }
-    else if (data[0]["z"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "point",
-        "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "color": {"field": "z", "type": "nominal"}
-        }
-      }
-    else
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "point",
-        "encoding": {
-          "x": {"field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
-        }
-      }
+    }
+
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
+      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
+
+    if labels["rLab"].value and labels["rLab"].value isnt "None"
+      vlSpec["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
 
 
     opt =
       "actions": {export: true, source: false, editor: false}
-    
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )
