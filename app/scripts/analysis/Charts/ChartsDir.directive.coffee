@@ -78,6 +78,7 @@ module.exports = class ChartsDir extends BaseDirective
           data = newChartData.dataPoints
           labels = newChartData.labels
           scheme = newChartData.graph
+          flags = newChartData.chartFlags
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
@@ -114,7 +115,7 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Area Trellis Chart'
                 @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
               when 'Bar Graph'
-                @bar.drawBar(width,height,data,_graph,labels,ranges)
+                @bar.drawBar(width,height,data,_graph,labels,ranges,flags.BarChart)
               when 'Bubble Chart'
                 @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
               when 'Histogram'

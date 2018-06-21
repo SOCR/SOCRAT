@@ -1,252 +1,255 @@
 div(ng-controller="powerCalcSidebarCtrl as sidebar")
-	form
-		legend Parameters &nbsp;
-			.form-group
-				label(
-					style=''
-				) Calculator &nbsp;
-				select.form-control(
-					ng-model="sidebar.selectedAlgorithm"
-					ng-options="method for method in sidebar.algorithms"
-					ng-change="sidebar.updateAlgControls()"
-				)
-			.form-group(ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" + 
-				"sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " + 
-				"sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+ 
-				"sidebar.selectedAlgorithm == 'Test of Two Proportions' ||"+
-				"sidebar.selectedAlgorithm == 'Generic chi-square test'" 
-				ng-disabled="sidebar.deployed")
-				.row.form-inline.bootstrap-switch-square
-					label
-						span.glyphicon.glyphicon-question-sign(
-						aria-hidden="true"
-						uib-tooltip="load data from db"
-						tooltip-placement="right"
-						) &nbsp;
-						| Use data&nbsp;
-					input(
-						type="checkbox"
-						data-toggle="switch"
-						id="toggleDataDriven"
-						ng-model="sidebar.deployed"
-					)
-				.row.form-inline
-					label
-						span.glyphicon.glyphicon-question-sign(
-						aria-hidden="true"
-						uib-tooltip="confidence level"
-						tooltip-placement="right"
-						) &nbsp;
-						| α&nbsp;&nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="sidebar.alpha"
-						ng-keypress="sidebar.changeValue($event)"
-						ng-click="sidebar.slider()"
-						type="number"
-						name='alpha'
-						step="0.001"
-						)
-					#alphaUI
+  form
+    legend Parameters &nbsp;
+      .form-group
+        label(
+          style=''
+        ) Calculator &nbsp;
+        select.form-control(
+          ng-model="sidebar.selectedAlgorithm"
+          ng-options="method for method in sidebar.algorithms"
+          ng-change="sidebar.updateAlgControls()"
+        )
+      .form-group(
+        ng-show= "sidebar.selectedAlgorithm == 'Two-sample t test (general case)' ||" +
+        "sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test'  || " +
+        "sidebar.selectedAlgorithm == 'Test of One Proportion' ||"+
+        "sidebar.selectedAlgorithm == 'Test of Two Proportions' ||"+
+        "sidebar.selectedAlgorithm == 'Generic chi-square test' ||" +
+        "sidebar.selectedAlgorithm == 'R-square (multiple correlation)'"
+        ng-disabled="sidebar.deployed"
+        )
+        .row.form-inline.bootstrap-switch-square
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="load data from db"
+            tooltip-placement="right"
+            ) &nbsp;
+            | Use data&nbsp;
+          input(
+            type="checkbox"
+            data-toggle="switch"
+            id="toggleDataDriven"
+            ng-model="sidebar.deployed"
+          )
+        .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="confidence level"
+            tooltip-placement="right"
+            ) &nbsp;
+            | α&nbsp;&nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="sidebar.alpha"
+            ng-keypress="sidebar.changeValue($event)"
+            ng-click="sidebar.slider()"
+            type="number"
+            name='alpha'
+            step="0.001"
+            )
+          #alphaUI
 
-		fieldset(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' && sidebar.deployed")
-			legend Data
-			.form-group
-				label Columns
-				select.form-control(
-				multiple
-				ng-model="sidebar.chosenColsTwo"
-				ng-options="col for col in sidebar.numericalCols"
-				ng-change="sidebar.run()"
-				)
-			.form-group
-				label Categories &nbsp;
-				select.form-control(
-					ng-model="sidebar.chosenCats"
-					ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
-					ng-options="col for col in sidebar.categoricalCols"
-					ng-change="sidebar.update()"
-					id = "twoTestCat"
-				)
-			.form-group
-				label Subcategories
-				select.form-control(
-				multiple
-				ng-model="sidebar.chosenSubCatsTwo"
-				ng-options="col for col in sidebar.subCategoricalCols"
-				ng-change="sidebar.run()"
-				id = "twoTestSubCat"
-				)
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'Two-sample t test (general case)' && sidebar.deployed")
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        multiple
+        ng-model="sidebar.chosenColsTwo"
+        ng-options="col for col in sidebar.numericalCols"
+        ng-change="sidebar.run()"
+        )
+      .form-group
+        label Categories &nbsp;
+        select.form-control(
+          ng-model="sidebar.chosenCats"
+          ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
+          ng-options="col for col in sidebar.categoricalCols"
+          ng-change="sidebar.update()"
+          id = "twoTestCat"
+        )
+      .form-group
+        label Subcategories
+        select.form-control(
+        multiple
+        ng-model="sidebar.chosenSubCatsTwo"
+        ng-options="col for col in sidebar.subCategoricalCols"
+        ng-change="sidebar.run()"
+        id = "twoTestSubCat"
+        )
 
-		fieldset(ng-show="sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test' && sidebar.deployed")
-			legend Data
-			.form-group
-				label Columns
-				select.form-control(
-				ng-model="sidebar.chosenColsOne"
-				ng-options="col for col in sidebar.numericalCols"
-				ng-change="sidebar.run()"
-				)
-			.form-group
-				label Category &nbsp;
-				select.form-control(
-					ng-model="sidebar.chosenCats"
-					ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
-					ng-options="col for col in sidebar.categoricalCols"
-					ng-change="sidebar.update()"
-				)
-			.form-group
-				label Subcategory
-				select.form-control(
-				ng-model="sidebar.chosenSubCatsOne"
-				ng-options="col for col in sidebar.subCategoricalCols"
-				ng-change="sidebar.run()"
-				)
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'One-Sample (or Paired) t Test' && sidebar.deployed")
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenColsOne"
+        ng-options="col for col in sidebar.numericalCols"
+        ng-change="sidebar.run()"
+        )
+      .form-group
+        label Category &nbsp;
+        select.form-control(
+          ng-model="sidebar.chosenCats"
+          ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
+          ng-options="col for col in sidebar.categoricalCols"
+          ng-change="sidebar.update()"
+        )
+      .form-group
+        label Subcategory
+        select.form-control(
+        ng-model="sidebar.chosenSubCatsOne"
+        ng-options="col for col in sidebar.subCategoricalCols"
+        ng-change="sidebar.run()"
+        )
 
-		fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of One Proportion' && sidebar.deployed")
-			.form-group.bootstrap-switch-square
-				label
-					| Threshold Mode&nbsp;
-				input(
-					type="checkbox"
-					data-toggle="switch"
-					id="toggleThresh"
-					ng-model="sidebar.threshMode"
-				)
-			fieldset(ng-show="sidebar.threshMode")
-				.form-group
-					label Threshold &nbsp;
-					select.form-control(
-						ng-model="sidebar.threshTypeMode"
-						ng-init="sidebar.preciseMode = 'larger'"
-						ng-options="mode for mode in sidebar.threshTypeModes"
-						ng-change="sidebar.run()"
-					)
-				.form-group
-					.row.form-inline
-					label
-						span.glyphicon.glyphicon-question-sign(
-						aria-hidden="true"
-						uib-tooltip="threshhold"
-						tooltip-placement="right"
-						) &nbsp;
-						| Threshold&nbsp;&nbsp;
-						input.form-control.input-sm.flat(
-							disabled
-							ng-model="sidebar.thresh"
-							ng-keypress="sidebar.changeValue($event)"
-							type="number"
-							name='thresh'
-						 )
-					#onePropThreshUI
-			h5 Data
-			.form-group
-				label Columns
-				select.form-control(
-				ng-model="sidebar.chosenColsOne"
-				ng-options="col for col in sidebar.numericalCols"
-				ng-change="sidebar.run()"
-				)
-			.form-group
-				label Category &nbsp;
-				select.form-control(
-					ng-model="sidebar.chosenCats"
-					ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
-					ng-options="col for col in sidebar.categoricalCols"
-					ng-change="sidebar.update()"
-				)
-			.form-group
-				label Subcategory
-				select.form-control(
-				ng-model="sidebar.chosenSubCatsOne"
-				ng-options="col for col in sidebar.subCategoricalCols"
-				ng-change="sidebar.run()"
-				)
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of One Proportion' && sidebar.deployed")
+      .form-group.bootstrap-switch-square
+        label
+          | Threshold Mode&nbsp;
+        input(
+          type="checkbox"
+          data-toggle="switch"
+          id="toggleThresh"
+          ng-model="sidebar.threshMode"
+        )
+      fieldset(ng-show="sidebar.threshMode")
+        .form-group
+          label Threshold &nbsp;
+          select.form-control(
+            ng-model="sidebar.threshTypeMode"
+            ng-init="sidebar.preciseMode = 'larger'"
+            ng-options="mode for mode in sidebar.threshTypeModes"
+            ng-change="sidebar.run()"
+          )
+        .form-group
+          .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="threshhold"
+            tooltip-placement="right"
+            ) &nbsp;
+            | Threshold&nbsp;&nbsp;
+            input.form-control.input-sm.flat(
+              disabled
+              ng-model="sidebar.thresh"
+              ng-keypress="sidebar.changeValue($event)"
+              type="number"
+              name='thresh'
+             )
+          #onePropThreshUI
+      h5 Data
+      .form-group
+        label Columns
+        select.form-control(
+        ng-model="sidebar.chosenColsOne"
+        ng-options="col for col in sidebar.numericalCols"
+        ng-change="sidebar.run()"
+        )
+      .form-group
+        label Category &nbsp;
+        select.form-control(
+          ng-model="sidebar.chosenCats"
+          ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
+          ng-options="col for col in sidebar.categoricalCols"
+          ng-change="sidebar.update()"
+        )
+      .form-group
+        label Subcategory
+        select.form-control(
+        ng-model="sidebar.chosenSubCatsOne"
+        ng-options="col for col in sidebar.subCategoricalCols"
+        ng-change="sidebar.run()"
+        )
 
-		fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of Two Proportions' && sidebar.deployed")
-			.form-group.bootstrap-switch-square
-				label
-					| Threshold Mode&nbsp;
-				input(
-					type="checkbox"
-					data-toggle="switch"
-					id="twoPropToggleThresh"
-					ng-model="sidebar.threshMode"
-				)
-			fieldset(ng-show="sidebar.threshMode")
-				.form-group
-					label Threshold1 &nbsp;
-					select.form-control(
-						ng-model="sidebar.threshTypeMode1"
-						ng-init="sidebar.preciseMode = 'larger'"
-						ng-options="mode for mode in sidebar.threshTypeModes"
-						ng-change="sidebar.run()"
-					)
-				.form-group
-					.row.form-inline
-					label
-						span.glyphicon.glyphicon-question-sign(
-						aria-hidden="true"
-						uib-tooltip="threshhold"
-						tooltip-placement="right"
-						) &nbsp;
-						| Threshold1&nbsp;&nbsp;
-						input.form-control.input-sm.flat(
-							disabled
-							ng-model="sidebar.twoPropThresh1"
-							ng-keypress="sidebar.changeValue($event)"
-							type="number"
-							name='thresh'
-						 )
-					#twoPropThresh1UI
-				.form-group
-					label Threshold2 &nbsp;
-					select.form-control(
-						ng-model="sidebar.threshTypeMode2"
-						ng-init="sidebar.preciseMode = 'larger'"
-						ng-options="mode for mode in sidebar.threshTypeModes"
-						ng-change="sidebar.run()"
-					)
-				.form-group
-					.row.form-inline
-					label
-						span.glyphicon.glyphicon-question-sign(
-						aria-hidden="true"
-						uib-tooltip="threshhold"
-						tooltip-placement="right"
-						) &nbsp;
-						| Threshold2&nbsp;&nbsp;
-						input.form-control.input-sm.flat(
-							disabled
-							ng-model="sidebar.twoPropThresh2"
-							ng-keypress="sidebar.changeValue($event)"
-							type="number"
-							name='thresh'
-						)
-					#twoPropThresh2UI
-			legend Data
-			.form-group
-				label Columns
-				select.form-control(
-				multiple
-				ng-model="sidebar.chosenColsTwo"
-				ng-options="col for col in sidebar.numericalCols"
-				ng-change="sidebar.run()"
-				)
-			.form-group
-				label Category &nbsp;
-				select.form-control(
-					ng-model="sidebar.chosenCats"
-					ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
-					ng-options="col for col in sidebar.categoricalCols"
-					ng-change="sidebar.update()"
-					id="twoPropCat"
-				)
-			.form-group
-				label SubCategories
-				select.form-control(
-				multiple
-				ng-model="sidebar.chosenSubCatsTwo"
-				ng-options="col for col in sidebar.subCategoricalCols"
-				ng-change="sidebar.run()"
-				id="twoPropSubCat"
-				)
+    fieldset(ng-show="sidebar.selectedAlgorithm == 'Test of Two Proportions' && sidebar.deployed")
+      .form-group.bootstrap-switch-square
+        label
+          | Threshold Mode&nbsp;
+        input(
+          type="checkbox"
+          data-toggle="switch"
+          id="twoPropToggleThresh"
+          ng-model="sidebar.threshMode"
+        )
+      fieldset(ng-show="sidebar.threshMode")
+        .form-group
+          label Threshold1 &nbsp;
+          select.form-control(
+            ng-model="sidebar.threshTypeMode1"
+            ng-init="sidebar.preciseMode = 'larger'"
+            ng-options="mode for mode in sidebar.threshTypeModes"
+            ng-change="sidebar.run()"
+          )
+        .form-group
+          .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="threshhold"
+            tooltip-placement="right"
+            ) &nbsp;
+            | Threshold1&nbsp;&nbsp;
+            input.form-control.input-sm.flat(
+              disabled
+              ng-model="sidebar.twoPropThresh1"
+              ng-keypress="sidebar.changeValue($event)"
+              type="number"
+              name='thresh'
+             )
+          #twoPropThresh1UI
+        .form-group
+          label Threshold2 &nbsp;
+          select.form-control(
+            ng-model="sidebar.threshTypeMode2"
+            ng-init="sidebar.preciseMode = 'larger'"
+            ng-options="mode for mode in sidebar.threshTypeModes"
+            ng-change="sidebar.run()"
+          )
+        .form-group
+          .row.form-inline
+          label
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="threshhold"
+            tooltip-placement="right"
+            ) &nbsp;
+            | Threshold2&nbsp;&nbsp;
+            input.form-control.input-sm.flat(
+              disabled
+              ng-model="sidebar.twoPropThresh2"
+              ng-keypress="sidebar.changeValue($event)"
+              type="number"
+              name='thresh'
+            )
+          #twoPropThresh2UI
+      legend Data
+      .form-group
+        label Columns
+        select.form-control(
+        multiple
+        ng-model="sidebar.chosenColsTwo"
+        ng-options="col for col in sidebar.numericalCols"
+        ng-change="sidebar.run()"
+        )
+      .form-group
+        label Category &nbsp;
+        select.form-control(
+          ng-model="sidebar.chosenCats"
+          ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
+          ng-options="col for col in sidebar.categoricalCols"
+          ng-change="sidebar.update()"
+          id="twoPropCat"
+        )
+      .form-group
+        label SubCategories
+        select.form-control(
+        multiple
+        ng-model="sidebar.chosenSubCatsTwo"
+        ng-options="col for col in sidebar.subCategoricalCols"
+        ng-change="sidebar.run()"
+        id="twoPropSubCat"
+        )
