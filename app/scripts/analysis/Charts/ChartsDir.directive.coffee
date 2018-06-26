@@ -21,7 +21,8 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
           'app_analysis_charts_tukeyBoxPlot',
-          'app_analysis_charts_checkTime'
+          'app_analysis_charts_checkTime',
+          'app_analysis_charts_binnedHeatmap'
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
@@ -41,6 +42,7 @@ module.exports = class ChartsDir extends BaseDirective
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
     @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
+    @binnedHeatmap = @app_analysis_charts_binnedHeatmap
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -114,6 +116,8 @@ module.exports = class ChartsDir extends BaseDirective
             switch scheme.name
               when 'Area Trellis Chart'
                 @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
+              when 'Binned Heatmap'
+                @binnedHeatmap.drawHeatmap(data, ranges, width, height, _graph, labels, flags.BinnedHeatmap)
               when 'Bar Graph'
                 @bar.drawBar(width,height,data,_graph,labels,ranges,flags.BarChart)
               when 'Bubble Chart'

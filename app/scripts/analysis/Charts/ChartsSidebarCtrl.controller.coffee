@@ -30,6 +30,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @flags =
         BarChart:
           Horizontal: false
+          Stacked: false
+        BinnedHeatmap:
+          yBin: null
+          xBin: null
 
     # dataset-specific
     @dataFrame = null
@@ -112,6 +116,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.hLabel is "Toggle horizontal"
       # modes
       $("#toggleHorizontalBarGraph").bootstrapSwitch()
+
+    if @selectedGraph.h
+      $("#toggleStackedBarGraph").bootstrapSwitch()
 
     # end if
 

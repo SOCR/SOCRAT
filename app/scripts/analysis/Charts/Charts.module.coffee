@@ -16,6 +16,7 @@ module.exports = charts = new Module
       'app_analysis_charts_areaChart': require 'scripts/analysis/Charts/ChartsAreaChart.service.coffee'
       'app_analysis_charts_barChart': require 'scripts/analysis/Charts/ChartsBarChart.service.coffee'
       'app_analysis_charts_trellisChart': require 'scripts/analysis/Charts/ChartsTrellisChart.service.coffee'
+      'app_analysis_charts_binnedHeatmap' : require 'scripts/analysis/Charts/ChartsBinnedHeatmapChart.service.coffee'
       'app_analysis_charts_bivariateLineChart': require 'scripts/analysis/Charts/ChartsBivariateLineChart.service.coffee'
       'app_analysis_charts_bubbleChart': require 'scripts/analysis/Charts/ChartsBubbleChart.service.coffee'
       'app_analysis_charts_histogram': require 'scripts/analysis/Charts/ChartsHistogram.service.coffee'

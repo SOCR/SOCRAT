@@ -136,6 +136,23 @@ module.exports = class ChartsList extends BaseService
       xLabel: "X (date)"
       yLabel: "Y"
       zLabel: "Key"
+    ,
+      name: 'Binned Heatmap'
+      value: 12
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
+      z: ['integer', 'string']
+      xbin: ['integer']
+      ybin: ['integer']
+      message: "Choose x, y, and z variables, along with max bin values."
+      xLabel: "X"
+      yLabel: "Y"
+      zLabel: "Z"
+      xbinLabel: "X Bin"
+      ybinLabel: "Y Bin"
+
     ]
 
   getNested: () ->

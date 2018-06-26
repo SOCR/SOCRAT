@@ -42,6 +42,18 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-options="col for col in sidebar.rCols"
         ng-init="sidebar.rCol = sidebar.rCols[0]"
         )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.xbin")
+        label(for = "xbin") {{sidebar.selectedGraph.xbinLabel}} &nbsp;
+        input#xbin.form-control(
+        type="text"
+        ng-model="sidebar.flags.BinnedHeatmap.xBin"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.ybin")
+        label(for = "ybin") {{sidebar.selectedGraph.ybinLabel}} &nbsp;
+        input#ybin.form-control(
+        type="text"
+        ng-model="sidebar.flags.BinnedHeatmap.yBin"
+        )
       div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph'")
         label
           span.glyphicon.glyphicon-question-sign(
@@ -56,6 +68,21 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         data-toggle="switch"
         id="toggleHorizontalBarGraph"
         ng-model="sidebar.flags.BarChart.Horizontal"
+        )
+      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph'")
+        label
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="toggle stacked chart"
+          tooltip-placement="right"
+          ) &nbsp;
+          | Toggle Stacked Bar Graph &nbsp;
+        input(
+        bs-switch
+        type="checkbox"
+        data-toggle="switch"
+        id="toggleStackedBarGraph"
+        ng-model="sidebar.flags.BarChart.Stacked"
         )
     div(ng-show="!sidebar.selectedGraph.x")
       select.form-control(

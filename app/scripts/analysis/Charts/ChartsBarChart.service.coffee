@@ -32,145 +32,282 @@ module.exports = class ChartsBarChart extends BaseService
 
 
     # end if
+    # third variable true (grouping or stacked)
     if data[0]["z"]
-      if flags.Horizontal
-        vlSpec = {
-          "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-          "width": 500,
-          "height": 500,
-          "data": {"values": data},
-          "facet": {
-            "column": {
-              "field": "x_vals",
-              "type": "ordinal",
-              "header": {
-                "title": labels.xLab.value
-              }
-            }
-          },
-          "spec": {
-            "layer": [{
-              "selection": {
-                "brush": {
-                  "type": "interval",
-                  "encodings": ["x"]
+      #stacked bar chart true
+      if flags.Stacked
+        #horizontal bar chart true
+        if flags.Horizontal
+          vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "width": 500,
+            "height": 500,
+            "data": {"values": data},
+            "facet": {
+              "column": {
+                "field": "x_vals",
+                "type": "ordinal",
+                "header": {
+                  "title": labels.xLab.value
                 }
-              },
-              "mark": "bar",
-              "encoding": {
-                "x": {
-                  "field": "z",
-                  "type": "nominal",
-                  "axis": {"title": ""}
-                },
-                "y": {
-                  "aggregate": "mean",
-                  "field": "y_vals",
-                  "type": "quantitative",
-                  "axis": {"title": labels.yLab.value}
-                },
-                "color": {
-                  "field": "z",
-                  "type": "nominal",
-                  "legend": {
-                    "title": labels.zLab.value
+              }
+            },
+            "spec": {
+              "layer": [{
+                "selection": {
+                  "brush": {
+                    "type": "interval",
+                    "encodings": ["x"]
                   }
-                  "scale": {"scheme": "category20b"}
                 },
-                "opacity": {
-                  "condition": {
-                    "selection": "brush", "value": 1
+                "mark": "bar",
+                "encoding": {
+                  "x": {
+                    "field": "z",
+                    "type": "nominal",
+                    "axis": {"title": ""}
                   },
-                  "value": 0.7
+                  "y": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative",
+                    "axis": {"title": labels.yLab.value}
+                  },
+                  "color": {
+                    "field": "z",
+                    "type": "nominal",
+                    "legend": {
+                      "title": labels.zLab.value
+                    }
+                    "scale": {"scheme": "category20b"}
+                  },
+                  "opacity": {
+                    "condition": {
+                      "selection": "brush", "value": 1
+                    },
+                    "value": 0.7
+                  }
                 }
-              }
-            }, {
-              "transform": [{
-                "filter": {"selection": "brush"}
-              }],
-              "mark": "rule",
-              "encoding": {
-                "y": {
-                  "aggregate": "mean",
-                  "field": "y_vals",
-                  "type": "quantitative"
-                },
-                "color": {"value": "firebrick"},
-                "size": {"value": 3}
-              }
-            }]
+              }, {
+                "transform": [{
+                  "filter": {"selection": "brush"}
+                }],
+                "mark": "rule",
+                "encoding": {
+                  "y": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative"
+                  },
+                  "color": {"value": "firebrick"},
+                  "size": {"value": 3}
+                }
+              }]
+            }
           }
-        }
-
+        #horizontal bar chart false - vertical
+        else
+          vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "width": 500,
+            "height": 500,
+            "data": {"values": data},
+            "spec": {
+              "layer": [{
+                "selection": {
+                  "brush": {
+                    "type": "interval",
+                    "encodings": ["x"]
+                  }
+                },
+                "mark": "bar",
+                "encoding": {
+                  "x": {
+                    "field": "x_vals",
+                    "type": "ordinal",
+                    "axis": {"title": labels.xLab.value}
+                  },
+                  "y": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative",
+                    "axis": {"title": labels.yLab.value}
+                  },
+                  "color": {
+                    "field": "z",
+                    "type": "nominal",
+                    "legend": {
+                      "title": labels.zLab.value
+                    }
+                    "scale": {"scheme": "category20b"}
+                  },
+                  "opacity": {
+                    "condition": {
+                      "selection": "brush", "value": 1
+                    },
+                    "value": 0.7
+                  }
+                }
+              }, {
+                "transform": [{
+                  "filter": {"selection": "brush"}
+                }],
+                "mark": "rule",
+                "encoding": {
+                  "y": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative"
+                  },
+                  "color": {"value": "firebrick"},
+                  "size": {"value": 3}
+                }
+              }]
+            }
+          }
+      #stacked bar chart false - double/.../n-le bar chart
       else
-        vlSpec = {
-          "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-          "width": 500,
-          "height": 500,
-          "data": {"values": data},
-          "facet": {
-            "column": {
-              "field": "x_vals",
-              "type": "ordinal",
-              "header": {
-                "title": labels.xLab.value
-              }
-            }
-          },
-          "spec": {
-            "layer": [{
-              "selection": {
-                "brush": {
-                  "type": "interval",
-                  "encodings": ["x"]
+        #horizontal bar chart true
+        if flags.Horizontal
+          vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "width": 500,
+            "height": 500,
+            "data": {"values": data},
+            "facet": {
+              "row": {
+                "field": "x_vals",
+                "type": "ordinal",
+                "header": {
+                  "title": labels.xLab.value
                 }
-              },
-              "mark": "bar",
-              "encoding": {
-                "x": {
-                  "field": "z",
-                  "type": "nominal",
-                  "axis": {"title": ""}
-                },
-                "y": {
-                  "aggregate": "mean",
-                  "field": "y_vals",
-                  "type": "quantitative",
-                  "axis": {"title": labels.yLab.value}
-                },
-                "color": {
-                  "field": "z",
-                  "type": "nominal",
-                  "legend": {
-                    "title": labels.zLab.value
+              }
+            },
+            "spec": {
+              "layer": [{
+                "selection": {
+                  "brush": {
+                    "type": "interval",
+                    "encodings": ["x"]
                   }
-                  "scale": {"scheme": "category20b"}
                 },
-                "opacity": {
-                  "condition": {
-                    "selection": "brush", "value": 1
+                "mark": "bar",
+                "encoding": {
+                  "x": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative",
+                    "axis": {"title": labels.yLab.value}
                   },
-                  "value": 0.7
+                  "y": {
+                    "field": "z",
+                    "type": "nominal",
+                    "axis": {"title": ""}
+                  },
+                  "color": {
+                    "field": "z",
+                    "type": "nominal",
+                    "legend": {
+                      "title": labels.zLab.value
+                    }
+                    "scale": {"scheme": "category20b"}
+                  },
+                  "opacity": {
+                    "condition": {
+                      "selection": "brush", "value": 1
+                    },
+                    "value": 0.7
+                  }
+                }
+              }, {
+                "transform": [{
+                  "filter": {"selection": "brush"}
+                }],
+                "mark": "rule",
+                "encoding": {
+                  "x": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative"
+                  },
+                  "color": {"value": "firebrick"},
+                  "size": {"value": 3}
+                }
+              }]
+            }
+          }
+        #horizontal bar chart false - vertical
+        else
+          vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "width": 500,
+            "height": 500,
+            "data": {"values": data},
+            "facet": {
+              "column": {
+                "field": "x_vals",
+                "type": "ordinal",
+                "header": {
+                  "title": labels.xLab.value
                 }
               }
-            }, {
-              "transform": [{
-                "filter": {"selection": "brush"}
-              }],
-              "mark": "rule",
-              "encoding": {
-                "y": {
-                  "aggregate": "mean",
-                  "field": "y_vals",
-                  "type": "quantitative"
+            },
+            "spec": {
+              "layer": [{
+                "selection": {
+                  "brush": {
+                    "type": "interval",
+                    "encodings": ["x"]
+                  }
                 },
-                "color": {"value": "firebrick"},
-                "size": {"value": 3}
-              }
-            }]
+                "mark": "bar",
+                "encoding": {
+                  "x": {
+                    "field": "z",
+                    "type": "nominal",
+                    "axis": {"title": ""}
+                  },
+                  "y": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative",
+                    "axis": {"title": labels.yLab.value}
+                  },
+                  "color": {
+                    "field": "z",
+                    "type": "nominal",
+                    "legend": {
+                      "title": labels.zLab.value
+                    }
+                    "scale": {"scheme": "category20b"}
+                  },
+                  "opacity": {
+                    "condition": {
+                      "selection": "brush", "value": 1
+                    },
+                    "value": 0.7
+                  }
+                }
+              }, {
+                "transform": [{
+                  "filter": {"selection": "brush"}
+                }],
+                "mark": "rule",
+                "encoding": {
+                  "y": {
+                    "aggregate": "mean",
+                    "field": "y_vals",
+                    "type": "quantitative"
+                  },
+                  "color": {"value": "firebrick"},
+                  "size": {"value": 3}
+                }
+              }]
+            }
           }
-        }
+    # third variable false (no grouping/stacked)
     else
+      # horizontal bar chart
       if flags.Horizontal
         vlSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -189,7 +326,7 @@ module.exports = class ChartsBarChart extends BaseService
               "y": {
                 "field": "x_vals",
                 "type": "ordinal",
-                "axis": {"title": "test"}
+                "axis": {"title": labels.xLab.value}
               },
               "x": {
                 "aggregate": "mean",
@@ -220,6 +357,7 @@ module.exports = class ChartsBarChart extends BaseService
             }
           }]
         }
+      # vertical bar chart
       else
         vlSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
