@@ -70,9 +70,8 @@ module.exports = class ChartsDir extends BaseDirective
           labels = newChartData.labels
           scheme = newChartData.graph
 
-          container = d3.select(elem.find('div')[0])
-          container.selectAll('*').remove()
-          console.log(container)
+          d3charts = d3.select(elem.find('div')[0]).node().parentNode
+          container = d3.select(d3charts)
 
           # trellis chart is called differently
           if scheme.name is 'Trellis Chart'
@@ -83,28 +82,28 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Area Trellis Chart'
                 @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
               when 'Bar Graph'
-                @bar.drawBar(data,labels)
+                @bar.drawBar(data,labels,container)
               when 'Bubble Chart'
-                @bubble.drawBubble(data,labels)
+                @bubble.drawBubble(data,labels,container)
               when 'Histogram'
-                @histogram.drawHist(data,labels)
+                @histogram.drawHist(data,labels, container)
               when 'Tukey Box Plot (1.5 IQR)'
                 @tukeyBoxPlot.drawBoxPlot(_graph, data, container, labels, width, height, ranges)
               when 'Ring Chart'
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,false)
               when 'Scatter Plot'
-                @scatterPlot.drawScatterPlot(data,labels)
+                @scatterPlot.drawScatterPlot(data,labels,container)
               when 'Stacked Bar Chart'
                 @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
               when 'Stream Graph'
                 @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
               when 'Area Chart'
-                @area.drawArea(data, labels)
+                @area.drawArea(data,labels,container)
               when 'Treemap'
                 @treemap.drawTreemap(svg, width, height, container, data)
               when 'Line Chart'
-                @line.lineChart(data,labels)
+                @line.lineChart(data,labels,container)
               when 'Bivariate Area Chart'
                 # @time.checkTimeChoice(data)
                 @bivariate.bivariateChart(height,width,_graph, data, labels)

@@ -39,10 +39,11 @@ module.exports = class ChartsList extends BaseService
       v: false
       w: false
       x: ['integer', 'number']
-      y: false
+      y: ['integer', 'number']
       z: false
       message: "Choose an x variable. Use the slider below the histogram to adjust the number of bins."
       xLabel: "X"
+      yLabel: "Y"
     ,
       name: 'Tukey Box Plot (1.5 IQR)'
       value: 4
@@ -112,6 +113,8 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Line Chart'
       value: 10
+      x: ['date']
+      y: ['integer', 'number']
       z: ['string']
       message: "Choose a continuous variable for x and a numerical variable for y"
       xLabel: "X (date)"

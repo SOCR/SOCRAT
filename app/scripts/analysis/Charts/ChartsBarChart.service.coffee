@@ -26,7 +26,10 @@ module.exports = class ChartsBarChart extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawBar: (data, labels) ->
+  drawBar: (data, labels, container) ->
+
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -77,7 +80,7 @@ module.exports = class ChartsBarChart extends BaseService
       }]
     }
 
-    if labels["zLab"].value
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
       vlSpec["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
 
     opt =

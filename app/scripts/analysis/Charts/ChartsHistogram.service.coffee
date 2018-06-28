@@ -1,182 +1,79 @@
 'use strict'
 
+require 'vega-tooltip/build/vega-tooltip.css'
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsHistogram extends BaseService
+module.exports = class ChartsScatterPlot extends BaseService
+  @inject '$q',
+    '$stateParams',
+    'app_analysis_charts_dataTransform',
+    'app_analysis_charts_list',
+    'app_analysis_charts_sendData',
+    'app_analysis_charts_checkTime',
+    'app_analysis_charts_dataService',
+    'app_analysis_charts_msgService'
 
   initialize: ->
+    @msgService = @app_analysis_charts_msgService
+    @dataService = @app_analysis_charts_dataService
+    @dataTransform = @app_analysis_charts_dataTransform
+    @list = @app_analysis_charts_list
+    @sendData = @app_analysis_charts_sendData
+    @checkTime = @app_analysis_charts_checkTime
+    @DATA_TYPES = @dataService.getDataTypes()
 
-  @median = null;
-  @mean = null;
-  getMedian: (arr) ->
-    arr.sort  (a,b) -> return a - b
-    half = Math.floor arr.length/2
-    if arr.length % 2
-      return arr[half]
-    else
-      return (arr[half-1] + arr[half]) / 2.0
+    @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  getMean: (arr) ->
-    sum = 0
-    sum += a for a in arr
-    return (sum/arr.length).toFixed 2
+  plotHist: (bins, data, labels) ->
 
+    vlSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "width": 500,
+      "height": 500,
+      "data": {"values": data},
+      "mark": "bar",
+      "encoding": {
+        "x": {
+          "bin": {"maxbins": bins},
+          "field": labels.xLab.value,
+          "type": "quantitative",
+          "axis": {"title": labels.xLab.value}
+        },
+        "y": {
+          "field": labels.yLab.value,
+          "type": "quantitative",
+          "axis": {"title": labels.yLab.value}
+        }
+      }
+    }
 
+    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}
 
-  plotHist: (bins, container, arr, _graph, gdata, x, height, width, data, median, mean) ->
-
-#    tooltip
-    $('#tooltip').remove();
-    # slider
-    $('#slidertext').remove()
-    container.append('text').attr('id', 'slidertext').text('Bin Slider: '+bins).attr('position','relative').attr('left', '50px')
-    dataHist = d3.layout.histogram().bins(bins)(arr)
-    console.log dataHist #array for each bin, each array has all data points
-
-    #create array of objects that store mean and median of each set
-    stats = []
-    for a in dataHist
-      stats.push({mean: @getMean(a), median: @getMedian(a)})
-
-    console.log stats
-
-    xMean = (d, i) -> stats[i].mean
-    xMedian = (d, i) -> stats[i].median
-    xLength = (d, i) -> dataHist[i].length
-
-    _graph.selectAll('g').remove()
-    _graph.select('.x axis').remove()
-    _graph.select('.y axis').remove()
-
-    padding = 50
-    x = d3.scale.linear().range([ padding, width - padding ])
-    y = d3.scale.linear().range([ height - padding, padding ])
-
-    x.domain([d3.min(data, (d)->parseFloat d.x), d3.max(data, (d)->parseFloat d.x)])
-    y.domain([0, (d3.max dataHist.map (i) -> i.length)])
-
-    yAxis = d3.svg.axis().scale(y).orient("left")
-    xAxis = d3.svg.axis().scale(x).orient("bottom")
-
-    getColor = d3.scale.category10()
-
-
-
-    # add the tooltip area to the webpage
-    tooltip = container
-      .append('div')
-      .attr('class', 'tooltip')
-      .attr('id', 'tooltip')
-
-    # x axis
-    _graph.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + (height - padding) + ")")
-    .call xAxis
-    .style('font-size', '16px')
-
-    # y axis
-    _graph.append("g")
-    .attr("class", "y axis")
-    .attr('transform', 'translate(' + padding + ',0)' )
-    .call(yAxis)
-    .style('font-size', '16px')
-
-    # make x y axis thin
-    _graph.selectAll('.x.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-    _graph.selectAll('.y.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-
-    # rotate text on x axis
-    _graph.selectAll('.x.axis text')
-    .attr('transform', (d) ->
-       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-    .style('font-size', '16px')
-
-    # Title on x-axis
-    _graph.append('text')
-    .attr('class', 'label')
-    .attr('text-anchor', 'middle')
-    .attr('transform', 'translate(' + width + ',' + (height-padding/2) + ')')
-    .text gdata.xLab.value
-
-    # Title on y-axis
-    _graph.append("text")
-    .attr('class', 'label')
-    .attr('text-anchor', 'middle')
-    .attr('transform', 'translate(0,' + padding/2 + ')')
-    .text "Counts"
-
-    # bar elements
-    bar = _graph.selectAll('.bar')
-    .data(dataHist)
-
-    bar.enter()
-    .append("g")
-
-    rect_width = (width - 2*padding)/bins
-    bar.append('rect')
-    .attr('x', (d) -> x d.x)
-    .attr('y', (d) -> y d.y)
-    .attr('width', rect_width)
-    .attr('height', (d) -> Math.abs(height - y d.y) - padding)
-    .attr("stroke", "white")
-    .attr("stroke-width", 1)
-    .style('fill', getColor(0))
-    .on('mouseover', (d, i) ->
-        d3.select(this)
-          .transition()
-          .style('fill', getColor(1))
-
-
-        tooltip.transition().duration(200).style('opacity', .9)
-
-
-        tooltip.html('<div style="background-color:white; padding:5px; border-radius: 5px">'+gdata.xLab.value+'</br>'+'Median: '+ xMedian(d,i)+'</br>'+'Mean: '+xMean(d,i)+'</br>'+"N: "+xLength(d, i)+'</div>')
-          .attr('value', stats[i].mean)
-          .style('display', 'block')
-          .style('opacity', .4)
-          .style('padding', 2)
-          .style('border', 0)
-          .style('border-radius', 8)
-          .style('left', d3.select(this).attr('x') + 'px')
-          .style('top', d3.select(this).attr('y') + 'px')
-#          .text("Mean1: "+ stats[i].mean + '</br>'+ "Median: " + stats[i].median)
-
-#        tooltip.append("p")
-#          .text("Mean: "+ stats[i].mean)
-#          .append("br")
-#          .append("p")
-#          .text("Median: "+ stats[i].median)
-
-#        tooltip.append("/br")
-
-    )
-    .on('mouseout', () -> 
-      d3.select(this).transition().style('fill', getColor(0))
-      tooltip.style('display', 'none')
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
     )
 
-    bar.append('text')
-    .attr('x', (d) -> x d.x)
-    .attr('y', (d) -> (y d.y) - 25)
-    .attr('dx', (d) -> .5 * rect_width)
-    .attr('dy', '20px')
-    .attr('fill', 'black')
-    .attr('text-anchor', 'middle')
-    .attr('z-index', 1)
-    .text (d) -> d.y
+  drawHist: (data, labels, container) ->
+#    to find the min and max of a certain key in a list of objects
+#    [
+#      {x: 1, y: 4},
+#      {x: 2, y: 3},
+#      {x: 3, y: 1},
+#      {x: 4, y: 2}
+#    ]
+#    min = Math.min.apply Math, data.map((o) -> o[labels.xLab.value])
+#    max = Math.max.apply Math, data.map((o) -> o[labels.xLab.value])
 
-  drawHist: (_graph, data, container, gdata, width, height, ranges) ->
-    #pre-set value of slider
-    container.append('div').attr('id', 'slider')
-    $slider = $("#slider")
     bins = 5
-    arr = data.map (d) -> parseFloat d.x
-    median = @getMedian(arr)
-    mean = @getMean(arr)
-    @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean
+    @plotHist(bins, data,labels)
+
+    container.select("#slider").remove()
+    container.append('div').attr('id', 'slider')
+    container.select("#maxbins").remove()
+    container.append('div').attr('id', 'maxbins').text('Max bins: 5')
+
+    $slider = $("#slider")
 
     if $slider.length > 0
       $slider.slider(
@@ -187,7 +84,9 @@ module.exports = class ChartsHistogram extends BaseService
         range: "min"
         change: ->
       ).addSliderSegments($slider.slider("option").max)
-    $slider.on "slidechange", (event, ui) =>
+
+    $slider.on "slide", (event, ui) =>
       bins = parseInt ui.value
-#      tooltip.html()
-      @plotHist bins, container, arr, _graph, gdata, x, height, width, data, median, mean
+      d3.select('div#maxbins').text('Max bins: ' + bins)
+      @plotHist(bins, data,labels)
+

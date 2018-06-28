@@ -26,7 +26,11 @@ module.exports = class ChartsBubbleChart extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawBubble: (data,labels) ->
+  drawBubble: (data,labels,container) ->
+
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
+
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "width": 500,

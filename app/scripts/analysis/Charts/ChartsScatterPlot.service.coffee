@@ -25,9 +25,10 @@ module.exports = class ChartsScatterPlot extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawScatterPlot: (data,labels) ->
+  drawScatterPlot: (data,labels,container) ->
 
-    console.log(labels)
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -50,10 +51,10 @@ module.exports = class ChartsScatterPlot extends BaseService
       }
     }
 
-    if labels["zLab"].value
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
       vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal"}
 
-    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
+    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
