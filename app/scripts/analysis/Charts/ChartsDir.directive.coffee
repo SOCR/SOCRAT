@@ -22,7 +22,9 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_treemap',
           'app_analysis_charts_tukeyBoxPlot',
           'app_analysis_charts_checkTime',
-          'app_analysis_charts_binnedHeatmap'
+          'app_analysis_charts_binnedHeatmap',
+          'app_analysis_charts_stripPlot'
+
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
@@ -43,6 +45,7 @@ module.exports = class ChartsDir extends BaseDirective
     @pie = @app_analysis_charts_pieChart
     @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
     @binnedHeatmap = @app_analysis_charts_binnedHeatmap
+    @stripPlot = @app_analysis_charts_stripPlot
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -135,6 +138,8 @@ module.exports = class ChartsDir extends BaseDirective
                 @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
               when 'Stream Graph'
                 @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
+              when 'Strip Plot'
+                @stripPlot.drawStripPlot(data,ranges,width,height,_graph,labels)
               when 'Area Chart'
                 @area.drawArea(height,width,_graph, data, labels)
               when 'Treemap'

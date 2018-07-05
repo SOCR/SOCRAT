@@ -43,67 +43,57 @@ module.exports = class ChartsBarChart extends BaseService
             "width": 500,
             "height": 500,
             "data": {"values": data},
-            "facet": {
-              "column": {
-                "field": "x_vals",
-                "type": "ordinal",
-                "header": {
-                  "title": labels.xLab.value
+            "layer": [{
+              "selection": {
+                "brush": {
+                  "type": "interval",
+                  "encodings": ["x"]
+                }
+              },
+              "mark": "bar",
+              "encoding": {
+                "row": {
+                  "field": "z",
+                  "type": "ordinal",
+                },
+                "x": {
+                  "field": "y_vals",
+                  "type": "quantitative",
+                  "axis": {"title": labels.yLab.value}
+                },
+                "y": {
+                  "aggregate": "mean",
+                  "field": "x_vals",
+                  "type": "ordinal",
+                  "axis": {"title": labels.xLab.value}
+                },
+                "color": {
+                  "field": "z",
+                  "type": "nominal",
+                  "scale": {"scheme": "category20b"}
+                },
+                "opacity": {
+                  "condition": {
+                    "selection": "brush", "value": 1
+                  },
+                  "value": 0.7
                 }
               }
-            },
-            "spec": {
-              "layer": [{
-                "selection": {
-                  "brush": {
-                    "type": "interval",
-                    "encodings": ["x"]
-                  }
+            }, {
+              "transform": [{
+                "filter": {"selection": "brush"}
+              }],
+              "mark": "rule",
+              "encoding": {
+                "y": {
+                  "aggregate": "mean",
+                  "field": "y_vals",
+                  "type": "quantitative"
                 },
-                "mark": "bar",
-                "encoding": {
-                  "x": {
-                    "field": "z",
-                    "type": "nominal",
-                    "axis": {"title": ""}
-                  },
-                  "y": {
-                    "aggregate": "mean",
-                    "field": "y_vals",
-                    "type": "quantitative",
-                    "axis": {"title": labels.yLab.value}
-                  },
-                  "color": {
-                    "field": "z",
-                    "type": "nominal",
-                    "legend": {
-                      "title": labels.zLab.value
-                    }
-                    "scale": {"scheme": "category20b"}
-                  },
-                  "opacity": {
-                    "condition": {
-                      "selection": "brush", "value": 1
-                    },
-                    "value": 0.7
-                  }
-                }
-              }, {
-                "transform": [{
-                  "filter": {"selection": "brush"}
-                }],
-                "mark": "rule",
-                "encoding": {
-                  "y": {
-                    "aggregate": "mean",
-                    "field": "y_vals",
-                    "type": "quantitative"
-                  },
-                  "color": {"value": "firebrick"},
-                  "size": {"value": 3}
-                }
-              }]
-            }
+                "color": {"value": "firebrick"},
+                "size": {"value": 3}
+              }
+            }]
           }
         #horizontal bar chart false - vertical
         else
@@ -112,58 +102,53 @@ module.exports = class ChartsBarChart extends BaseService
             "width": 500,
             "height": 500,
             "data": {"values": data},
-            "spec": {
-              "layer": [{
-                "selection": {
-                  "brush": {
-                    "type": "interval",
-                    "encodings": ["x"]
-                  }
+            "layer": [{
+              "selection": {
+                "brush": {
+                  "type": "interval",
+                  "encodings": ["x"]
+                }
+              },
+              "mark": "bar",
+              "encoding": {
+                "x": {
+                  "field": "x_vals",
+                  "type": "ordinal",
+                  "axis": {"title": labels.xLab.value}
                 },
-                "mark": "bar",
-                "encoding": {
-                  "x": {
-                    "field": "x_vals",
-                    "type": "ordinal",
-                    "axis": {"title": labels.xLab.value}
+                "y": {
+                  "aggregate": "mean",
+                  "field": "y_vals",
+                  "type": "quantitative",
+                  "axis": {"title": labels.yLab.value}
+                },
+                "color": {
+                  "field": "z",
+                  "type": "nominal",
+                  "scale": {"scheme": "category20b"}
+                },
+                "opacity": {
+                  "condition": {
+                    "selection": "brush", "value": 1
                   },
-                  "y": {
-                    "aggregate": "mean",
-                    "field": "y_vals",
-                    "type": "quantitative",
-                    "axis": {"title": labels.yLab.value}
-                  },
-                  "color": {
-                    "field": "z",
-                    "type": "nominal",
-                    "legend": {
-                      "title": labels.zLab.value
-                    }
-                    "scale": {"scheme": "category20b"}
-                  },
-                  "opacity": {
-                    "condition": {
-                      "selection": "brush", "value": 1
-                    },
-                    "value": 0.7
-                  }
+                  "value": 0.7
                 }
-              }, {
-                "transform": [{
-                  "filter": {"selection": "brush"}
-                }],
-                "mark": "rule",
-                "encoding": {
-                  "y": {
-                    "aggregate": "mean",
-                    "field": "y_vals",
-                    "type": "quantitative"
-                  },
-                  "color": {"value": "firebrick"},
-                  "size": {"value": 3}
-                }
-              }]
-            }
+              }
+            }, {
+              "transform": [{
+                "filter": {"selection": "brush"}
+              }],
+              "mark": "rule",
+              "encoding": {
+                "y": {
+                  "aggregate": "mean",
+                  "field": "y_vals",
+                  "type": "quantitative"
+                },
+                "color": {"value": "firebrick"},
+                "size": {"value": 3}
+              }
+            }]
           }
       #stacked bar chart false - double/.../n-le bar chart
       else

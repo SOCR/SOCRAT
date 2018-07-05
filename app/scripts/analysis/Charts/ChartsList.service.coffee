@@ -152,6 +152,17 @@ module.exports = class ChartsList extends BaseService
       zLabel: "Z"
       xbinLabel: "X Bin"
       ybinLabel: "Y Bin"
+    ,
+      name: 'Strip Plot'
+      value: 13
+      v: false
+      w: false
+      x: ['integer', 'number']
+      y: ['integer', 'number']
+      z: false
+      message: "Choose x and y variables."
+      xLabel: "X"
+      yLabel: "Y"
 
     ]
 

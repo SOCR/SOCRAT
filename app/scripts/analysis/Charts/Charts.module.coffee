@@ -25,6 +25,7 @@ module.exports = charts = new Module
       'app_analysis_charts_pieChart': require 'scripts/analysis/Charts/ChartsPieChart.service.coffee'
       'app_analysis_charts_scatterPlot': require 'scripts/analysis/Charts/ChartsScatterPlot.service.coffee'
       'app_analysis_charts_streamChart': require 'scripts/analysis/Charts/ChartsStreamChart.service.coffee'
+      'app_analysis_charts_stripPlot' : require 'scripts/analysis/Charts/ChartsStripPlot.service.coffee'
       'app_analysis_charts_stackedBar': require 'scripts/analysis/Charts/ChartsStackedBar.service.coffee'
       'app_analysis_charts_tilfordTree': require 'scripts/analysis/Charts/ChartsTilfordTree.service.coffee'
       'app_analysis_charts_treemap': require 'scripts/analysis/Charts/ChartsTreemap.service.coffee'
