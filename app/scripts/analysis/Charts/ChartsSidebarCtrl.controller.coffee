@@ -34,6 +34,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         BinnedHeatmap:
           yBin: null
           xBin: null
+          marginalHistogram: false
+        ScatterPlot:
+          showSTDEV: false
 
     # dataset-specific
     @dataFrame = null
@@ -120,6 +123,11 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.h
       $("#toggleStackedBarGraph").bootstrapSwitch()
 
+    if @selectedGraph.s
+      $("#toggleScatterStdev").bootstrapSwitch()
+
+    if @selectedGraph.m
+      $("#toggleMarginalHistogram").bootstrapSwitch()
     # end if
 
     if @selectedGraph.zLabel is "Color"

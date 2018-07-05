@@ -133,7 +133,7 @@ module.exports = class ChartsDir extends BaseDirective
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,false)
               when 'Scatter Plot'
-                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels)
+                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels, flags.ScatterPlot)
               when 'Stacked Bar Chart'
                 @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
               when 'Stream Graph'

@@ -84,6 +84,36 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         id="toggleStackedBarGraph"
         ng-model="sidebar.flags.BarChart.Stacked"
         )
+      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Scatter Plot'")
+        label
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="Toggle standard deviation"
+          tooltip-placement="right"
+          ) &nbsp;
+          | Toggle Standard Deviation &nbsp;
+        input(
+        bs-switch
+        type="checkbox"
+        data-toggle="switch"
+        id="toggleScatterStdev"
+        ng-model="sidebar.flags.ScatterPlot.showSTDEV"
+        )
+      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Binned Heatmap'")
+        label
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="Toggle marginal histograms"
+          tooltip-placement="right"
+          ) &nbsp;
+          | Toggle Marginal Histograms &nbsp;
+        input(
+        bs-switch
+        type="checkbox"
+        data-toggle="switch"
+        id="toggleMarginalHistogram"
+        ng-model="sidebar.flags.BinnedHeatmap.marginalHistogram"
+        )
     div(ng-show="!sidebar.selectedGraph.x")
       select.form-control(
       multiple

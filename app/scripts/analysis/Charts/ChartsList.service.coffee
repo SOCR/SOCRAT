@@ -32,6 +32,7 @@ module.exports = class ChartsList extends BaseService
       x: ['integer', 'number']
       y: ['integer', 'number']
       z: ['string']
+      s: true
       message: "Choose an x variable and a y variable. If you'd like, also choose a z variable to denote color."
       xLabel: "X"
       yLabel: "Y"
@@ -144,6 +145,7 @@ module.exports = class ChartsList extends BaseService
       x: ['integer', 'number', 'string']
       y: ['integer', 'number', 'string']
       z: ['integer', 'string']
+      m: true
       xbin: ['integer']
       ybin: ['integer']
       message: "Choose x, y, and z variables, along with max bin values."

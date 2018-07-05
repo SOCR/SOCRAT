@@ -26,38 +26,118 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
 
   drawHeatmap: (data, ranges, width, height, _graph, labels, flags) ->
 
-    vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "data": {"values": data},
-      "mark": "rect",
-      "width": 500,
-      "height": 500,
-      "encoding": {
-        "x": {
-          "bin" : {"maxbins" : flags.xBin}
-          "field": "x",
-          "type": "quantitative",
-          "axis": {"title": labels.xLab.value}
-        },
-        "y": {
-          "bin" : {"maxbins" : flags.yBin}
-          "field": "y",
-          "type": "quantitative",
-          "axis": {"title": labels.yLab.value}
-        },
-        "color": {
-          "aggregate" : "mean",
-          "field" : "z",
-          "type": "quantitative",
-          "legend": {
-            "title": labels.zLab.value
+    if flags.marginalHistogram
+      vlSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "data": {"values" : data},
+        "spacing": 15,
+        "bounds": "flush",
+        "vconcat": [{
+          "mark": "bar",
+          "width" : 500,
+          "height": 100,
+          "encoding": {
+            "x": {
+              "bin": {"maxbins" : flags.xBin},
+              "field": "x",
+              "type": "quantitative",
+              "axis": null
+            },
+            "y": {
+              "aggregate": "count",
+              "type": "quantitative",
+              "title": ""
+            }
+          }
+        }, {
+          "spacing": 15,
+          "bounds": "flush",
+          "hconcat": [{
+            "width" : 500,
+            "height" : 500,
+            "mark": "rect",
+            "encoding": {
+              "x": {
+                "bin": {"maxbins" : flags.xBin},
+                "field": "x",
+                "type": "quantitative",
+                "axis": {"title": labels.xLab.value}
+              },
+              "y": {
+                "bin": {"maxbins" : flags.yBin},
+                "field": "y",
+                "type": "quantitative",
+                "axis": {"title": labels.yLab.value}
+              },
+              "color": {
+                "field" : "z"
+                "aggregate": "mean",
+                "type": "quantitative",
+                "legend": {
+                  "title": labels.zLab.value
+                }
+              }
+            }
+          }, {
+            "mark": "bar",
+            "height" : 500,
+            "width": 100,
+            "encoding": {
+              "y": {
+                "bin": {"maxbins" : flags.yBin},
+                "field": "y",
+                "type": "quantitative",
+                "axis": null
+              },
+              "x": {
+                "aggregate": "count",
+                "type": "quantitative",
+                "title": ""
+              }
+            }
+          }]
+        }],
+        "config": {
+          "range": {
+            "heatmap": {
+              "scheme": "greenblue"
+            }
           }
         }
-      },
-      "config" : {
-        "range" : {"heatmap" : {"scheme" : "greenblue"}}
       }
-    }
+    else
+      vlSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "data": {"values": data},
+        "mark": "rect",
+        "width": 500,
+        "height": 500,
+        "encoding": {
+          "x": {
+            "bin" : {"maxbins" : flags.xBin}
+            "field": "x",
+            "type": "quantitative",
+            "axis": {"title": labels.xLab.value}
+          },
+          "y": {
+            "bin" : {"maxbins" : flags.yBin}
+            "field": "y",
+            "type": "quantitative",
+            "axis": {"title": labels.yLab.value}
+          },
+          "color": {
+            "aggregate" : "mean",
+            "field" : "z",
+            "type": "quantitative",
+            "legend": {
+              "title": labels.zLab.value
+            }
+          }
+        },
+        "config" : {
+          "range" : {"heatmap" : {"scheme" : "greenblue"}}
+        }
+      }
 
     opt =
       "actions": {export: true, source: false, editor: false}
