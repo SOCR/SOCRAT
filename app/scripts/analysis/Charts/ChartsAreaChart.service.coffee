@@ -50,8 +50,6 @@ module.exports = class ChartsAreaChart extends BaseService
     opt =
       "actions": {export: true, source: false, editor: false}
 
-    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
-
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
     )

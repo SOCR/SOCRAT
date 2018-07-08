@@ -81,7 +81,7 @@ module.exports = class ChartsDir extends BaseDirective
 
           # trellis chart is called differently
           if scheme.name is 'Trellis Chart'
-            @trellis.drawTrellis(data,labels)
+            @trellis.drawTrellis(data, labels, container)
           # standard charts
           else
             switch scheme.name
@@ -97,15 +97,12 @@ module.exports = class ChartsDir extends BaseDirective
                 @histogram.drawHist(data,labels, container)
               when 'Tukey Box Plot (1.5 IQR)'
                 @tukeyBoxPlot.drawBoxPlot(data, container, labels)
-              when 'Ring Chart'
-                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-                @pie.drawPie(data,width,height,_graph,false)
               when 'Scatter Plot'
                 @scatterPlot.drawScatterPlot(data,labels,container)
               when 'Stacked Bar Chart'
-                @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
+                @stackBar.stackedBar(data, labels, container)
               when 'Stream Graph'
-                @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
+                @streamGraph.streamGraph(data, labels, container)
               when 'Strip Plot'
                 @stripPlot.drawStripPlot(data, labels, container)
               when 'Area Chart'

@@ -175,6 +175,16 @@ module.exports = class ChartsList extends BaseService
       message: "Choose x and y variables."
       xLabel: "X"
       yLabel: "Y"
+    ,
+      name: 'Stacked Bar Chart'
+      value: 13
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      z: ['integer', 'string']
+      message: "Choose x and y variables."
+      xLabel: "X"
+      zLabel: "Z"
     ]
 
   getNested: () ->
