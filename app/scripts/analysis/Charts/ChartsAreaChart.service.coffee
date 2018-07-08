@@ -24,6 +24,7 @@ module.exports = class ChartsAreaChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
   drawArea: (data, labels, container) ->
 

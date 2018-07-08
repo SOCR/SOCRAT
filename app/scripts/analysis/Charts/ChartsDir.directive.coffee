@@ -81,14 +81,14 @@ module.exports = class ChartsDir extends BaseDirective
 
           # trellis chart is called differently
           if scheme.name is 'Trellis Chart'
-            @trellis.drawTrellis(data,labels,container)
+            @trellis.drawTrellis(data,labels)
           # standard charts
           else
             switch scheme.name
               when 'Area Trellis Chart'
                 @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
               when 'Binned Heatmap'
-                @binnedHeatmap.drawHeatmap(data, ranges, width, height, _graph, labels, flags.BinnedHeatmap)
+                @binnedHeatmap.drawHeatmap(data, labels, flags.BinnedHeatmap, container)
               when 'Bar Graph'
                 @bar.drawBar(data,labels,container)
               when 'Bubble Chart'
@@ -96,7 +96,7 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Histogram'
                 @histogram.drawHist(data,labels, container)
               when 'Tukey Box Plot (1.5 IQR)'
-                @tukeyBoxPlot.drawBoxPlot(_graph, data, container, labels, width, height, ranges)
+                @tukeyBoxPlot.drawBoxPlot(data, container, labels)
               when 'Ring Chart'
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,false)
@@ -107,7 +107,7 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Stream Graph'
                 @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
               when 'Strip Plot'
-                @stripPlot.drawStripPlot(data,ranges,width,height,_graph,labels)
+                @stripPlot.drawStripPlot(data, labels, container)
               when 'Area Chart'
                 @area.drawArea(data,labels,container)
               when 'Treemap'

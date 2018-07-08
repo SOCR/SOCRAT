@@ -23,45 +23,33 @@ module.exports = class ChartsAreaTrellisChart extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  areaTrellisChart: (data,ranges,width,height,_graph,labels,container) ->
+  areaTrellisChart: (data, labels, container) ->
 
-    if (data[0]["z"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "line",
-        "encoding": {
-          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
-          "color": {"field": "z", "type": "nominal", "legend": null},
-          "row": {
-            "field": "z",
-            "type": "nominal",
-            "header": {"title": "z"}
-          }
-        }
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
+
+    vlSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "width": 500,
+      "height": 500,
+      "data": {"values": data},
+      "mark": "line",
+      "encoding": {
+        "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
+        "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
       }
-    else
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "line",
-        "encoding": {
-          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
-        }
-      }
+    }
 
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
+      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "legend": null}
+      vlSpec["encoding"]["row"] = {"field": "labels.zLab.value", "type": "nominal", "header": {"title": "labels.zLab.value"}
+      }
 
     opt =
       "actions": {export: true, source: false, editor: false}
-    
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )

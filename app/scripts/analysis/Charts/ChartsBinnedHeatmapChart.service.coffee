@@ -23,8 +23,12 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawHeatmap: (data, ranges, width, height, _graph, labels, flags) ->
+  drawHeatmap: (data, labels, flags, container) ->
+
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     if flags.marginalHistogram
       vlSpec = {
@@ -39,7 +43,7 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
           "encoding": {
             "x": {
               "bin": {"maxbins" : flags.xBin},
-              "field": "x",
+              "field": labels.xLab.value,
               "type": "quantitative",
               "axis": null
             },
@@ -59,18 +63,18 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
             "encoding": {
               "x": {
                 "bin": {"maxbins" : flags.xBin},
-                "field": "x",
+                "field": labels.xLab.value,
                 "type": "quantitative",
                 "axis": {"title": labels.xLab.value}
               },
               "y": {
                 "bin": {"maxbins" : flags.yBin},
-                "field": "y",
+                "field": labels.yLab.value,
                 "type": "quantitative",
                 "axis": {"title": labels.yLab.value}
               },
               "color": {
-                "field" : "z"
+                "field" : labels.zLab.value
                 "aggregate": "mean",
                 "type": "quantitative",
                 "legend": {
@@ -85,7 +89,7 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
             "encoding": {
               "y": {
                 "bin": {"maxbins" : flags.yBin},
-                "field": "y",
+                "field": labels.yLab.value,
                 "type": "quantitative",
                 "axis": null
               },
@@ -115,19 +119,19 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
         "encoding": {
           "x": {
             "bin" : {"maxbins" : flags.xBin}
-            "field": "x",
+            "field": labels.xLab.value,
             "type": "quantitative",
             "axis": {"title": labels.xLab.value}
           },
           "y": {
             "bin" : {"maxbins" : flags.yBin}
-            "field": "y",
+            "field": labels.yLab.value,
             "type": "quantitative",
             "axis": {"title": labels.yLab.value}
           },
           "color": {
             "aggregate" : "mean",
-            "field" : "z",
+            "field" : labels.zLab.value,
             "type": "quantitative",
             "legend": {
               "title": labels.zLab.value
@@ -142,7 +146,6 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
     opt =
       "actions": {export: true, source: false, editor: false}
 
-    @ve '#vis', vlSpec, opt, (error, result) ->
-    # Callback receiving the View instance and parsed Vega spec
-    # result.view is the View, which resides under the '#vis' element
-      return
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )

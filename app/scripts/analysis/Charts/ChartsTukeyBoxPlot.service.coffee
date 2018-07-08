@@ -24,49 +24,38 @@ module.exports = class ChartsBoxPlot extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawBoxPlot: (_graph, data, container, labels, width, height, ranges) ->
+  drawBoxPlot: (data, container, labels) ->
 
-    # do not bin categorical X
-    if labels.xLab.type is 'string'
-      binX = off
-      fieldX = 'x'
-    else
-      binX = on
-      fieldX = 'bin_x'
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "description": "A vertical 2D box plot showing median, min, and max.",
-      "data":
-        "values": data,
+      "width": 500,
+      "height": 500,
+      "data": {"values": data},
       "transform": [
-        {
-          "bin": binX,
-          "field": "x",
-          "as": fieldX
-        },
         {
           "aggregate": [
             {
               "op": "q1",
-              "field": "y",
+              "field": labels.yLab.value,
               "as": "lowerBox"
             },
             {
               "op": "q3",
-              "field": "y",
+              "field": labels.yLab.value,
               "as": "upperBox"
             },
             {
               "op": "median",
-              "field": "y",
+              "field": labels.yLab.value,
               "as": "midBox"
             }
           ],
-          "groupby": [
-            fieldX
-          ]
+          "groupby": [ labels.xLab.value ]
         },
         {
           "calculate": "datum.upperBox - datum.lowerBox",
@@ -100,11 +89,8 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              "field": fieldX,
-              "type": "ordinal",
-              "axis": {
-                "title": labels.xLab.value
-              }
+              "field": labels.xLab.value,
+              "type": "ordinal"
             }
           }
         },
@@ -123,7 +109,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              "field": fieldX,
+              "field": labels.xLab.value,
               "type": "ordinal"
             }
           }
@@ -143,7 +129,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              "field": fieldX,
+              "field": labels.xLab.value,
               "type": "ordinal"
             },
             "size": {
@@ -162,7 +148,7 @@ module.exports = class ChartsBoxPlot extends BaseService
               "type": "quantitative"
             },
             "x": {
-              "field": fieldX,
+              "field": labels.xLab.value,
               "type": "ordinal"
             },
             "color": {
@@ -179,7 +165,6 @@ module.exports = class ChartsBoxPlot extends BaseService
     opt =
       "actions": {export: true, source: false, editor: false}
 
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )
