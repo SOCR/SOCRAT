@@ -207,8 +207,6 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         obj[h] = row[index]
       transformed_data.push obj
 
-    data = transformed_data
-
     if @selectedGraph.x
       # Remove the variables that are already chosen for one field
       # isX is a boolean. This is used to determine if to include 'None' or not
@@ -237,18 +235,20 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             value: @rCol
             type: rType
 
+      data = transformed_data
+
     # if trellis plot
-#    else if @chosenCols.length > 1
-#      if @labelCol
-#        labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
-#        labels.splice 0, 0, @labelCol
-#      else labels = null
-#
-#      chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
-#      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
-#      data.splice 0, 0, @chosenCols
-#
-#    else data = null
+    else if @chosenCols.length > 1
+      if @labelCol
+        labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+        labels.splice 0, 0, @labelCol
+      else labels = null
+
+      chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
+      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+      data.splice 0, 0, @chosenCols
+
+    else data = null
 
     @msgService.broadcast 'charts:updateGraph',
       dataPoints: data

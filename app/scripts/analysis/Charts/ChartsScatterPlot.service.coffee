@@ -54,7 +54,7 @@ module.exports = class ChartsScatterPlot extends BaseService
     if labels["zLab"].value and labels["zLab"].value isnt "None"
       vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal"}
 
-    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}
+    opt = {"actions": {export: true, source: false, editor: false}}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)

@@ -51,8 +51,7 @@ module.exports = class ChartsTrellisChart extends BaseService
         "column": fields
       },
       "spec": {
-        "data":
-          "values": d,
+        "data": {"values": d},
         "mark": "point",
         "selection": {
           "brush": {
@@ -71,9 +70,8 @@ module.exports = class ChartsTrellisChart extends BaseService
           }
         },
         "encoding": {
-          "x": {"field": {"repeat": "column"},"type": "quantitative"},
-          "y": {"field": {"repeat": "row"},"type": "quantitative"},
-          "color": null
+          "x": {"field": {"repeat": "column"}, "type": "quantitative"},
+          "y": {"field": {"repeat": "row"}, "type": "quantitative"}
         }
       }
     }
@@ -87,8 +85,6 @@ module.exports = class ChartsTrellisChart extends BaseService
         },
         "value": "grey"
       }
-    else
-      vlSpec['spec']['encoding']['color'] = null
 
     opt =
       "actions": {export: true, source: false, editor: false}
