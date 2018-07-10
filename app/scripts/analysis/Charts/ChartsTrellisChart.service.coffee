@@ -28,10 +28,25 @@ module.exports = class ChartsTrellisChart extends BaseService
 
   drawTrellis: (data, labels, container) ->
 
+    # labels here is different from that for other charts
+    # fields are the same as labels for other charts
+
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
     fields = data.splice(0, 1)[0]
+
+    index_x = fields.indexOf("x");
+    index_y = fields.indexOf("y");
+
+    if index_x isnt -1
+      fields[index_x] = "x_vals"
+
+    if index_y isnt -1
+      fields[index_y] = "y_vals"
+
+    console.log(fields)
+
     if labels
       ordinal = labels.splice(0, 1)[0]
 

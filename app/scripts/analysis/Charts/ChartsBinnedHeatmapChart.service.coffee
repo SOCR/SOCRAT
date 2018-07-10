@@ -25,7 +25,7 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawHeatmap: (data, labels, flags, container) ->
+  drawHeatmap: (data, labels, container, flags) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()

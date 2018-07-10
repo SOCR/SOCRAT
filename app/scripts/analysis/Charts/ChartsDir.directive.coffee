@@ -79,45 +79,40 @@ module.exports = class ChartsDir extends BaseDirective
           d3charts = d3.select(elem.find('div')[0]).node().parentNode
           container = d3.select(d3charts)
 
-          # console.log('in dir' + labels)
-
-          # trellis chart is called differently
-          if scheme.name is 'Trellis Chart'
-            @trellis.drawTrellis(data, labels, container)
-          # standard charts
-          else
-            switch scheme.name
-              when 'Area Trellis Chart'
-                @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
-              when 'Binned Heatmap'
-                @binnedHeatmap.drawHeatmap(data, labels, flags.BinnedHeatmap, container)
-              when 'Bar Graph'
-                @bar.drawBar(data,labels,container)
-              when 'Bubble Chart'
-                @bubble.drawBubble(data,labels,container)
-              when 'Histogram'
-                @histogram.drawHist(data,labels, container)
-              when 'Tukey Box Plot (1.5 IQR)'
-                @tukeyBoxPlot.drawBoxPlot(data, container, labels)
-              when 'Scatter Plot'
-                @scatterPlot.drawScatterPlot(data,labels,container)
-              when 'Stacked Bar Chart'
-                @stackBar.stackedBar(data, labels, container)
-              when 'Stream Graph'
-                @streamGraph.streamGraph(data, labels, container)
-              when 'Strip Plot'
-                @stripPlot.drawStripPlot(data, labels, container)
-              when 'Area Chart'
-                @area.drawArea(data,labels,container)
-              when 'Treemap'
-                @treemap.drawTreemap(svg, width, height, container, data)
-              when 'Line Chart'
-                @line.lineChart(data,labels,container)
-              when 'Bivariate Area Chart'
-                # @time.checkTimeChoice(data)
-                @bivariate.bivariateChart(height,width,_graph, data, labels)
-              when 'Normal Distribution'
-                @normal.drawNormalCurve(data, width, height, _graph)
-              when 'Pie Chart'
-                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-                @pie.drawPie(data,width,height,_graph,true)
+          switch scheme.name
+            when 'Trellis Chart'
+              @trellis.drawTrellis(data, labels, container)
+            when 'Area Trellis Chart'
+              @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
+            when 'Binned Heatmap'
+              @binnedHeatmap.drawHeatmap(data, labels, container, flags.BinnedHeatmap)
+            when 'Bar Graph'
+              @bar.drawBar(data, labels, container, flags.BarChart)
+            when 'Bubble Chart'
+              @bubble.drawBubble(data, labels, container)
+            when 'Histogram'
+              @histogram.drawHist(data, labels, container)
+            when 'Tukey Box Plot (1.5 IQR)'
+              @tukeyBoxPlot.drawBoxPlot(data, labels, container)
+            when 'Scatter Plot'
+              @scatterPlot.drawScatterPlot(data, labels, container, flags.ScatterPlot)
+            when 'Stacked Bar Chart'
+              @stackBar.stackedBar(data, labels, container)
+            when 'Stream Graph'
+              @streamGraph.streamGraph(data, labels, container)
+            when 'Strip Plot'
+              @stripPlot.drawStripPlot(data, labels, container)
+            when 'Area Chart'
+              @area.drawArea(data, labels, container)
+            when 'Treemap'
+              @treemap.drawTreemap(svg, width, height, container, data)
+            when 'Line Chart'
+              @line.lineChart(data, labels, container)
+            when 'Bivariate Area Chart'
+              # @time.checkTimeChoice(data)
+              @bivariate.bivariateChart(height,width,_graph, data, labels)
+            when 'Normal Distribution'
+              @normal.drawNormalCurve(data, labels, container)
+            when 'Pie Chart'
+              _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
+              @pie.drawPie(data,width,height,_graph,true)

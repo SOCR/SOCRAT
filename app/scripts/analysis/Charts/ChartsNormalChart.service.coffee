@@ -2,168 +2,298 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsNormalChart extends BaseService
+module.exports = class ChartsAreaChart extends BaseService
+  @inject '$q',
+    '$stateParams',
+    'app_analysis_charts_dataTransform',
+    'app_analysis_charts_list',
+    'app_analysis_charts_sendData',
+    'app_analysis_charts_checkTime',
+    'app_analysis_charts_dataService',
+    'app_analysis_charts_msgService',
+    'app_analysis_charts_scatterPlot'
 
   initialize: ->
-    @distanceFromMean = 5
+    @msgService = @app_analysis_charts_msgService
+    @dataService = @app_analysis_charts_dataService
+    @dataTransform = @app_analysis_charts_dataTransform
+    @list = @app_analysis_charts_list
+    @sendData = @app_analysis_charts_sendData
+    @checkTime = @app_analysis_charts_checkTime
+    @DATA_TYPES = @dataService.getDataTypes()
+    @scatterPlot = @app_analysis_charts_scatterPlot
 
-  extract: (data, variable) ->
-    tmp = []
-    for d in data
-      tmp.push +d[variable]
-    tmp
+    @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  getRightBound: (middle,step) ->
-    middle + step * @distanceFromMean
+  drawNormalCurve: (data, labels, container) ->
 
-  getLeftBound: (middle,step) ->
-    middle - step * @distanceFromMean
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
-  sort: (values) ->
-    values.sort (a, b) -> a-b
+    console.log(labels)
 
-  getVariance: (values, mean) ->
-    temp = 0
-    numberOfValues = values.length
-    while( numberOfValues--)
-      temp += Math.pow( (values[numberOfValues ] - mean), 2 )
+    vSpec = {
+      "$schema": "https://vega.github.io/schema/vega/v3.json",
+      "width": 300,
+      "height": 300,
+      "padding": 5,
+      "signals": [
+        {
+          "name": "bandwidth",
+          "value": 0,
+          "bind": {
+            "input": "range",
+            "min": 0,
+            "max": 0.1,
+            "step": 0.001
+          }
+        },
+        {
+          "name": "steps",
+          "value": 100,
+          "bind": {
+            "input": "range",
+            "min": 10,
+            "max": 500,
+            "step": 1
+          }
+        },
+        {
+          "name": "method",
+          "value": "pdf",
+          "bind": {
+            "input": "radio",
+            "options": [
+              "pdf",
+              "cdf"
+            ]
+          }
+        }
+      ],
+      "data": [
+        {
+          "name": "points",
+          "values": data
+        },
+        {
+          "name": "summary",
+          "source": "points",
+          "transform": [
+            {
+              "type": "aggregate",
+              "fields": [
+                labels.xLab.value,
+                labels.xLab.value
+              ],
+              "ops": [
+                "mean",
+                "stdev"
+              ],
+              "as": [
+                "mean",
+                "stdev"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "density",
+          "source": "points",
+          "transform": [
+            {
+              "type": "density",
+              "extent": {
+                "signal": "domain('xscale')"
+              },
+              "steps": {
+                "signal": "steps"
+              },
+              "method": {
+                "signal": "method"
+              },
+              "distribution": {
+                "function": "kde",
+                "field": labels.xLab.value,
+                "bandwidth": {
+                  "signal": "bandwidth"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "normal",
+          "transform": [
+            {
+              "type": "density",
+              "extent": {
+                "signal": "domain('xscale')"
+              },
+              "steps": {
+                "signal": "steps"
+              },
+              "method": {
+                "signal": "method"
+              },
+              "distribution": {
+                "function": "normal",
+                "mean": {
+                  "signal": "data('summary')[0].mean"
+                },
+                "stdev": {
+                  "signal": "data('summary')[0].stdev"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "scales": [
+        {
+          "name": "xscale",
+          "type": "linear",
+          "range": "width",
+          "domain": {
+            "data": "points",
+            "field": labels.xLab.value
+          },
+          "nice": true
+        },
+        {
+          "name": "yscale",
+          "type": "linear",
+          "range": "height",
+          "round": true,
+          "domain": {
+            "fields": [
+              {
+                "data": "density",
+                "field": "density"
+              },
+              {
+                "data": "normal",
+                "field": "density"
+              }
+            ]
+          }
+        },
+        {
+          "name": "color",
+          "type": "ordinal",
+          "domain": [
+            "Normal Estimate",
+            "Kernel Density Estimate"
+          ],
+          "range": [
+            "#444",
+            "steelblue"
+          ]
+        }
+      ],
+      "axes": [
+        {
+          "orient": "bottom",
+          "scale": "xscale",
+          "zindex": 1
+        }
+      ],
+      "legends": [
+        {
+          "orient": "top-left",
+          "fill": "color",
+          "offset": 0,
+          "zindex": 1
+        }
+      ],
+      "marks": [
+        {
+          "type": "area",
+          "from": {
+            "data": "density"
+          },
+          "encode": {
+            "update": {
+              "x": {
+                "scale": "xscale",
+                "field": "value"
+              },
+              "y": {
+                "scale": "yscale",
+                "field": "density"
+              },
+              "y2": {
+                "scale": "yscale",
+                "value": 0
+              },
+              "fill": {
+                "signal": "scale('color', 'Kernel Density Estimate')"
+              }
+            }
+          }
+        },
+        {
+          "type": "line",
+          "from": {
+            "data": "normal"
+          },
+          "encode": {
+            "update": {
+              "x": {
+                "scale": "xscale",
+                "field": "value"
+              },
+              "y": {
+                "scale": "yscale",
+                "field": "density"
+              },
+              "stroke": {
+                "signal": "scale('color', 'Normal Estimate')"
+              },
+              "strokeWidth": {
+                "value": 2
+              }
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "from": {
+            "data": "points"
+          },
+          "encode": {
+            "enter": {
+              "x": {
+                "scale": "xscale",
+                "field": labels.xLab.value
+              },
+              "width": {
+                "value": 1
+              },
+              "y": {
+                "value": 25,
+                "offset": {
+                  "signal": "height"
+                }
+              },
+              "height": {
+                "value": 5
+              },
+              "fill": {
+                "value": "steelblue"
+              },
+              "fillOpacity": {
+                "value": 0.4
+              }
+            }
+          }
+        }
+      ]
+    }
 
-    return temp / values.length
+    opt =
+      "actions": {export: true, source: false, editor: false}
 
-  getSum: (values) ->
-    values.reduce (previousValue, currentValue) -> previousValue + currentValue
-
-  getGaussianFunctionPoints: (std, mean, variance, leftBound, rightBound) ->
-    data = []
-    for i in [leftBound...rightBound] by 1
-      data.push
-        x: i
-        y:(1 / (std * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(i - mean, 2) / (2 * variance)))
-    data
-
-  getMean: (valueSum, numberOfOccurrences) ->
-    valueSum / numberOfOccurrences
-
-  getZ: (x, mean, standardDerivation) ->
-    (x - mean) / standardDerivation
-
-  getWeightedValues: (values) ->
-    weightedValues= {}
-    data= []
-    lengthValues = values.length
-    for i in [0...lengthValues] by 1
-      label = values[i].toString()
-      if(weightedValues[label])
-        weightedValues[label].weight++
-      else
-        weightedValues[label]={weight :1,value :label}
-        data.push(weightedValues[label])
-    return data
-
-  getRandomNumber: (min,max) ->
-    Math.round((max-min) * Math.random() + min)
-
-  getRandomValueArray: (data) ->
-    values = []
-    length = data.length
-    for i in [1...length]
-      values.push data[Math.floor(Math.random() * data.length)]
-    return values
-
-  drawNormalCurve: (data, width, height, _graph) ->
-
-    toolTipElement = _graph.append('div')
-    .attr('class', 'tooltipGauss')
-    .attr('position', 'absolute')
-    .attr('width', 15)
-    .attr('height', 10)
-
-    showToolTip: (value, positionX, positionY) ->
-      toolTipElement.style('display', 'block')
-      toolTipElement.style('top', positionY+10+"px")
-      toolTipElement.style('left', positionX+10+"px")
-      toolTipElement.innerHTML = " Z = "+value
-
-    hideToolTip: () ->
-      toolTipElement.style('display', 'none')
-      toolTipElement.innerHTML = " "
-
-    sample = @sort(@getRandomValueArray(@extract(data,"x")))
-    sum = @getSum(sample)
-    min = sample[0]
-    max = sample[sample.length - 1]
-    mean = @getMean(sum, sample.length)
-    variance = @getVariance(sample, mean)
-    standardDerivation =  Math.sqrt(variance)
-    rightBound = @getRightBound(mean, standardDerivation)
-    leftBound = @getLeftBound(mean,standardDerivation)
-    bottomBound = 0
-    topBound = 1 / (standardDerivation * Math.sqrt(Math.PI * 2))
-    gaussianCurveData = @getGaussianFunctionPoints(standardDerivation,mean,variance,leftBound,rightBound)
-    radiusCoef = 5
-
-    padding = 50
-    xScale = d3.scale.linear().range([0, width]).domain([leftBound, rightBound])
-    yScale = d3.scale.linear().range([height-padding, 0]).domain([bottomBound, topBound])
-
-    xAxis = d3.svg.axis().ticks(20)
-    .scale(xScale)
-
-    yAxis = d3.svg.axis()
-    .scale(yScale)
-    .ticks(12)
-    .tickPadding(0)
-    .orient("right")
-
-    lineGen = d3.svg.line()
-    .x (d) -> xScale(d.x)
-    .y (d) -> yScale(d.y)
-    .interpolate("basis")
-
-    _graph.append('svg:path')
-    .attr('d', lineGen(gaussianCurveData))
-    .data([gaussianCurveData])
-    .attr('stroke', 'black')
-    .attr('stroke-width', 0)
-    .on('mousemove', (d) -> showToolTip(getZ(xScale.invert(d3.event.x),mean,standardDerivation).toLocaleString(),d3.event.x,d3.event.y))
-    .on('mouseout', (d) -> hideToolTip())
-    .attr('fill', "aquamarine")
-
-
-    _graph.append("svg:g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + (height - padding) + ")")
-    .call(xAxis)
-
-    _graph.append("svg:g")
-    .attr("class", "y axis")
-    .attr("transform", "translate(" + (xScale(mean)) + ",0)")
-    .call(yAxis)
-
-    # make x y axis thin
-    _graph.selectAll('.x.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-    _graph.selectAll('.y.axis path')
-    .style({'fill' : 'none', 'stroke' : 'black', 'shape-rendering' : 'crispEdges', 'stroke-width': '1px'})
-
-
-    _graph.append("svg:g")
-    .append("text")      #text label for the x axis
-    .attr("x", width/2 + width/4  )
-    .attr("y", 20  )
-    .style("text-anchor", "middle")
-    .style("fill", "white")
-
-    # rotate text on x axis
-    _graph.selectAll('.x.axis text')
-    .attr('transform', (d) ->
-       'translate(' + this.getBBox().height*-2 + ',' + this.getBBox().height + ')rotate(-40)')
-    .style('font-size', '16px')
-
-    # make y axis ticks not intersect with x-axis, ticks on x and y axes
-    # appear to be the same size
-    _graph.selectAll('.y.axis text')
-    .attr('transform', (d) ->
-       'translate(' + (this.getBBox().height*-2-5) + ',' + (this.getBBox().height-30) + ')')
-    .style('font-size', '15.7px')
-
+    @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vega(result.view)
+    )

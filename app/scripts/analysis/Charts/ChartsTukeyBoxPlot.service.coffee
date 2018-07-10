@@ -26,7 +26,7 @@ module.exports = class ChartsBoxPlot extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawBoxPlot: (data, container, labels) ->
+  drawBoxPlot: (data, labels, container) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
