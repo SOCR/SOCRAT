@@ -93,16 +93,6 @@ module.exports = class ChartsList extends BaseService
       message: "Choose one variable. This chart assumes there is a normal distribution."
       xLabel: "Category"
     ,
-      name: 'Ring Chart'
-      value: 8
-      v: false
-      w: false
-      x: ['integer', 'number', 'string']
-      y: false
-      z: false
-      message: "Choose one variable to put into a pie chart."
-      xLabel: "Category"
-    ,
       name: 'Area Chart'
       value: 9
       v: false
@@ -185,6 +175,20 @@ module.exports = class ChartsList extends BaseService
       message: "Choose x and y variables."
       xLabel: "X"
       zLabel: "Z"
+    ,
+      name: 'Treemap'
+      value: 14
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
+      z: ['string']
+      r: ['string']
+      message: ""
+      xLabel: "Key"
+      yLabel: "Parent"
+      zLabel: "Name"
+      rLabel: "Size"
     ]
 
   getNested: () ->

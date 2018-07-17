@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsBoxPlot extends BaseService
+module.exports = class ChartsTukeyBoxPlot extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',

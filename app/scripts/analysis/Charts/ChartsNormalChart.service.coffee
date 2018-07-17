@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsAreaChart extends BaseService
+module.exports = class ChartsNormalChart extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
@@ -30,8 +30,6 @@ module.exports = class ChartsAreaChart extends BaseService
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
-
-    console.log(labels)
 
     vSpec = {
       "$schema": "https://vega.github.io/schema/vega/v3.json",

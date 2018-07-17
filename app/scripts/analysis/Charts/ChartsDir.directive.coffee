@@ -105,7 +105,7 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Area Chart'
               @area.drawArea(data, labels, container)
             when 'Treemap'
-              @treemap.drawTreemap(svg, width, height, container, data)
+              @treemap.drawTreemap(data, labels, container)
             when 'Line Chart'
               @line.lineChart(data, labels, container)
             when 'Bivariate Area Chart'
@@ -114,5 +114,4 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Normal Distribution'
               @normal.drawNormalCurve(data, labels, container)
             when 'Pie Chart'
-              _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-              @pie.drawPie(data,width,height,_graph,true)
+              @pie.drawPie(data, labels, container)

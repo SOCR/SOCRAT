@@ -45,8 +45,6 @@ module.exports = class ChartsTrellisChart extends BaseService
     if index_y isnt -1
       fields[index_y] = "y_vals"
 
-    console.log(fields)
-
     if labels
       ordinal = labels.splice(0, 1)[0]
 

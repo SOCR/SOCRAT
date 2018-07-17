@@ -3,7 +3,7 @@
 require 'vega-tooltip/build/vega-tooltip.css'
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsScatterPlot extends BaseService
+module.exports = class ChartsHistogram extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',

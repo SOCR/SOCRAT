@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsAreaChart extends BaseService
+module.exports = class ChartsStackedBar extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
