@@ -44,8 +44,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     sumRows = []
     sumCols = []
     @chiSquareN = 0
-    @chiSquareDf = (numRows-1) * (numCols-1)    
-
+    @chiSquareDf = (numRows-1) * (numCols-1)
     expCount = []
 
     for i in [0...numRows]
@@ -75,7 +74,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     return @name
 
   getParams: () ->
-    @parameters = 
+    @parameters =
       power: @chiSquarePower
       chi2: @chiSquareChi2
       chi2Max: @chiSquareChi2Max
@@ -110,7 +109,7 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
       @chiSquareChi2 = Math.pow(@chiSquareEffSize,2) * @chiSquareN
 
     # update power
-    input = 
+    input =
       chi2: @chiSquareChi2
       proN: @chiSquareN / @chiSquareEffSize
       n: @chiSquareN

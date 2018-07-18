@@ -21,7 +21,10 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
           'app_analysis_charts_tukeyBoxPlot',
-          'app_analysis_charts_checkTime'
+          'app_analysis_charts_checkTime',
+          'app_analysis_charts_binnedHeatmap',
+          'app_analysis_charts_stripPlot'
+
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
@@ -41,6 +44,8 @@ module.exports = class ChartsDir extends BaseDirective
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
     @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
+    @binnedHeatmap = @app_analysis_charts_binnedHeatmap
+    @stripPlot = @app_analysis_charts_stripPlot
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -78,6 +83,7 @@ module.exports = class ChartsDir extends BaseDirective
           data = newChartData.dataPoints
           labels = newChartData.labels
           scheme = newChartData.graph
+          flags = newChartData.chartFlags
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
@@ -113,8 +119,10 @@ module.exports = class ChartsDir extends BaseDirective
             switch scheme.name
               when 'Area Trellis Chart'
                 @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
+              when 'Binned Heatmap'
+                @binnedHeatmap.drawHeatmap(data, ranges, width, height, _graph, labels, flags.BinnedHeatmap)
               when 'Bar Graph'
-                @bar.drawBar(width,height,data,_graph,labels,ranges)
+                @bar.drawBar(width,height,data,_graph,labels,ranges,flags.BarChart)
               when 'Bubble Chart'
                 @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
               when 'Histogram'
@@ -125,11 +133,13 @@ module.exports = class ChartsDir extends BaseDirective
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,false)
               when 'Scatter Plot'
-                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels)
+                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels, flags.ScatterPlot)
               when 'Stacked Bar Chart'
                 @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
               when 'Stream Graph'
                 @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
+              when 'Strip Plot'
+                @stripPlot.drawStripPlot(data,ranges,width,height,_graph,labels)
               when 'Area Chart'
                 @area.drawArea(height,width,_graph, data, labels)
               when 'Treemap'
