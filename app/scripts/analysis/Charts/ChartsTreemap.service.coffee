@@ -59,7 +59,7 @@ module.exports = class ChartsTreemap extends BaseService
       "data": [
         {
           "name": "tree",
-          "url": "https://github.com/vega/vega/blob/master/docs/data/flare.json",
+          "values": data,
           "transform": [
             {
               "type": "stratify",
@@ -175,7 +175,7 @@ module.exports = class ChartsTreemap extends BaseService
 
 
     opt =
-      "actions": {export: true, source: false, editor: true}
+      "actions": {export: true, source: false, editor: false}
 
     @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
       @vt.vega(result.view)

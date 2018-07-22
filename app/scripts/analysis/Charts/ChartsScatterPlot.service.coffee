@@ -31,6 +31,16 @@ module.exports = class ChartsScatterPlot extends BaseService
     container.select("#maxbins").remove()
 
     if flags.showSTDEV
+
+#      mean_x = "mean_" + labels.xLab.value
+#      std_x = "standard_deviation_" + labels.xLab.value
+#      upper_x = "upper_" + labels.xLab.value
+#      lower_x = "lower_" + labels.xLab.value
+#      mean_y = "mean_" + labels.yLab.value
+#      std_y = "standard_deviation_" + labels.yLab.value
+#      upper_y = "upper_" + labels.yLab.value
+#      lower_y = "lower_" + labels.yLab.value
+
       vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
         "description": "A scatterplot",
@@ -43,42 +53,67 @@ module.exports = class ChartsScatterPlot extends BaseService
             "x": {"field": labels.xLab.value,"type": "quantitative", "axis": {"title": labels.xLab.value}},
             "y": {"field": labels.yLab.value,"type": "quantitative", "axis": {"title": labels.yLab.value}}
           }
-        },{
+        },
+        {
           "transform": [
             {
               "aggregate": [
-                {"op": "mean", "field": labels.yLab.value, "as": "mean_"},
-                {"op": "stdev", "field": labels.yLab.value, "as": "dev_"}
+                {"op": "mean", "field": labels.yLab.value, "as": "mean_y"},
+                {"op": "stdev", "field": labels.yLab.value, "as": "stdev_y"},
+                {"op": "mean", "field": labels.xLab.value, "as": "mean_x"},
+                {"op": "stdev", "field": labels.xLab.value, "as": "stdev_x"}
               ],
               "groupby": []
             },
             {
-              "calculate": "datum.mean_-datum.dev_",
-              "as": "lower"
+              "calculate": "datum.mean_y-datum.stdev_y",
+              "as": "lower_y"
             },
             {
-              "calculate": "datum.mean_+datum.dev_",
-              "as": "upper"
+              "calculate": "datum.mean_y+datum.stdev_y",
+              "as": "upper_y"
+            },
+            {
+              "calculate": "datum.mean_x-datum.stdev_x",
+              "as": "lower_x"
+            },
+            {
+              "calculate": "datum.mean_x+datum.stdev_x",
+              "as": "upper_x"
             }
           ],
-          "layer": [{
-            "mark": "rule",
-            "encoding": {
-              "y": {"field": "mean_","type": "quantitative", "axis": null}
-            }
-          },{
-            "selection": {
-              "grid": {
-                "type": "interval", "bind": "scales"
+          "layer": [
+            {
+              "mark": "rule",
+              "encoding": {
+                "x": {"field": "mean_x", "type": "quantitative", "axis": null}
               }
             },
-            "mark": "rect",
-            "encoding": {
-              "y": {"field": "lower","type": "quantitative", "axis": null},
-              "y2": {"field": "upper","type": "quantitative"},
-              "opacity": {"value": 0.2}
+            {
+              "mark": "rule",
+              "encoding": {
+                "y": {"field": "mean_y", "type": "quantitative", "axis": null}
+              }
+            },
+            {
+              "selection": {"grid": {"type": "interval", "bind": "scales"}},
+              "mark": "rect",
+              "encoding": {
+                "y": {"field": "lower_y", "type": "quantitative", "axis": null},
+                "y2": {"field": "upper_y", "type": "quantitative"},
+                "opacity": {"value": 0.2}
+              }
+            },
+            {
+              "selection": {"grid_x": {"type": "interval", "bind": "scales"}},
+              "mark": "rect",
+              "encoding": {
+                "x": {"field": "lower_x", "type": "quantitative", "axis": null},
+                "x2": {"field": "upper_x", "type": "quantitative"},
+                "opacity": {"value": 0.2}
+              }
             }
-          }]
+          ]
         }]
       }
       if labels["zLab"].value and labels["zLab"].value isnt "None"

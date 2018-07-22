@@ -207,82 +207,45 @@ module.exports = class ChartsNormalChart extends BaseService
       "marks": [
         {
           "type": "area",
-          "from": {
-            "data": "density"
-          },
+          "from": {"data": "density"},
           "encode": {
             "update": {
-              "x": {
-                "scale": "xscale",
-                "field": "value"
-              },
-              "y": {
-                "scale": "yscale",
-                "field": "density"
-              },
-              "y2": {
-                "scale": "yscale",
-                "value": 0
-              },
-              "fill": {
-                "signal": "scale('color', 'Kernel Density Estimate')"
-              }
+              "x": {"scale": "xscale", "field": "value"},
+              "y": {"scale": "yscale", "field": "density"},
+              "y2": {"scale": "yscale", "value": 0},
+              "fill": {"signal": "scale('color', 'Kernel Density Estimate')"}
+            },
+            "enter": {
+              "tooltip": {"signal": "datum"}
             }
           }
         },
         {
           "type": "line",
-          "from": {
-            "data": "normal"
-          },
+          "from": {"data": "normal"},
           "encode": {
             "update": {
-              "x": {
-                "scale": "xscale",
-                "field": "value"
-              },
-              "y": {
-                "scale": "yscale",
-                "field": "density"
-              },
-              "stroke": {
-                "signal": "scale('color', 'Normal Estimate')"
-              },
-              "strokeWidth": {
-                "value": 2
-              }
+              "x": {"scale": "xscale", "field": "value"},
+              "y": {"scale": "yscale", "field": "density"},
+              "stroke": {"signal": "scale('color', 'Normal Estimate')"},
+              "strokeWidth": {"value": 2}
+            },
+            "enter": {
+              "tooltip": {"signal": "datum"}
             }
           }
         },
         {
           "type": "rect",
-          "from": {
-            "data": "points"
-          },
+          "from": {"data": "points"},
           "encode": {
             "enter": {
-              "x": {
-                "scale": "xscale",
-                "field": labels.xLab.value
-              },
-              "width": {
-                "value": 1
-              },
-              "y": {
-                "value": 25,
-                "offset": {
-                  "signal": "height"
-                }
-              },
-              "height": {
-                "value": 5
-              },
-              "fill": {
-                "value": "steelblue"
-              },
-              "fillOpacity": {
-                "value": 0.4
-              }
+              "x": {"scale": "xscale", "field": "Sepal_Length"},
+              "width": {"value": 1},
+              "y": {"value": 25, "offset": {"signal": "height"}},
+              "height": {"value": 5},
+              "fill": {"value": "steelblue"},
+              "fillOpacity": {"value": 0.4}
             }
           }
         }
@@ -290,8 +253,8 @@ module.exports = class ChartsNormalChart extends BaseService
     }
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vega(result.view)
+      # @vt.vega(result.view)
     )
