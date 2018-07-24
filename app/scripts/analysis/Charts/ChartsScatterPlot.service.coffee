@@ -116,6 +116,12 @@ module.exports = class ChartsScatterPlot extends BaseService
           ]
         }]
       }
+
+      if flags.binned
+        vlSpec["layer"][0]["encoding"]["x"]["bin"] = {"maxbins": 10}
+        vlSpec["layer"][0]["encoding"]["y"]["bin"] = {"maxbins": 10}
+        vlSpec["layer"][0]["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
+
       if labels["zLab"].value and labels["zLab"].value isnt "None"
         vlSpec["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
 
@@ -140,6 +146,12 @@ module.exports = class ChartsScatterPlot extends BaseService
           }
         }
       }
+
+      if flags.binned
+        vlSpec["encoding"]["x"]["bin"] = {"maxbins": 10}
+        vlSpec["encoding"]["y"]["bin"] = {"maxbins": 10}
+        vlSpec["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
+
       if labels["zLab"].value and labels["zLab"].value isnt "None"
         vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
 

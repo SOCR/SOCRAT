@@ -24,6 +24,8 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_checkTime',
           'app_analysis_charts_binnedHeatmap',
           'app_analysis_charts_stripPlot'
+          'app_analysis_charts_scatterMatrix'
+          'app_analysis_charts_divergingStackedBar'
 
 
   initialize: ->
@@ -46,6 +48,8 @@ module.exports = class ChartsDir extends BaseDirective
     @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
     @binnedHeatmap = @app_analysis_charts_binnedHeatmap
     @stripPlot = @app_analysis_charts_stripPlot
+    @scatterMatrix = @app_analysis_charts_scatterMatrix
+    @divergingStackedBar = @app_analysis_charts_divergingStackedBar
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -115,3 +119,7 @@ module.exports = class ChartsDir extends BaseDirective
               @normal.drawNormalCurve(data, labels, container)
             when 'Pie Chart'
               @pie.drawPie(data, labels, container)
+            when 'Scatter Plot Matrix'
+              @scatterMatrix.drawScatterMatrix(data, labels, container)
+            when 'Diverging Stacked Bar Chart'
+              @divergingStackedBar.drawDivergingStackedBar(data, labels, container)

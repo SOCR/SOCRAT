@@ -42,7 +42,7 @@ module.exports = class ChartsBarChart extends BaseService
       labels.yLab.value = "y_vals"
 
     # third variable true (grouping or stacked)
-    if labels.zLab.value
+    if labels.zLab.value and labels["zLab"].value isnt "None"
 #stacked bar chart true
       if flags.Stacked
 #horizontal bar chart true
@@ -56,7 +56,7 @@ module.exports = class ChartsBarChart extends BaseService
               "selection": {
                 "brush": {
                   "type": "interval",
-                  "encodings": ["x"]
+                  "encodings": ["y"]
                 }
               },
               "mark": "bar",
@@ -94,7 +94,7 @@ module.exports = class ChartsBarChart extends BaseService
               }],
               "mark": "rule",
               "encoding": {
-                "y": {
+                "x": {
                   "aggregate": "mean",
                   "field": labels.yLab.value,
                   "type": "quantitative"
@@ -104,6 +104,33 @@ module.exports = class ChartsBarChart extends BaseService
               }
             }]
           }
+          if flags.Normalized
+            vlSpec = {
+              "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+              "width": 500,
+              "height": 500,
+              "data": {"values": data},
+              "mark": "bar",
+              "encoding": {
+                "x": {
+                  "field": labels.yLab.value,
+                  "type": "quantitative",
+                  "axis": {"title": labels.yLab.value}
+                  "stack": "normalize"
+                },
+                "y": {
+                  "aggregate": "mean",
+                  "field": labels.xLab.value,
+                  "type": "ordinal",
+                  "axis": {"title": labels.xLab.value}
+                },
+                "color": {
+                  "field": labels.zLab.value,
+                  "type": "nominal",
+                  "scale": {"scheme": "category20b"}
+                }
+              }
+            }
 #horizontal bar chart false - vertical
         else
           vlSpec = {
@@ -159,6 +186,33 @@ module.exports = class ChartsBarChart extends BaseService
               }
             }]
           }
+          if flags.Normalized
+            vlSpec = {
+              "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+              "width": 500,
+              "height": 500,
+              "data": {"values": data},
+              "mark": "bar",
+              "encoding": {
+                "x": {
+                  "field": labels.xLab.value,
+                  "type": "ordinal",
+                  "axis": {"title": labels.xLab.value}
+                },
+                "y": {
+                  "aggregate": "mean",
+                  "field": labels.yLab.value,
+                  "type": "quantitative",
+                  "axis": {"title": labels.yLab.value}
+                  "stack": "normalize"
+                },
+                "color": {
+                  "field": labels.zLab.value,
+                  "type": "nominal",
+                  "scale": {"scheme": "category20b"}
+                }
+              }
+            }
 #stacked bar chart false - double/.../n-le bar chart
       else
 #horizontal bar chart true

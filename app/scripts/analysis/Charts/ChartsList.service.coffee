@@ -8,7 +8,7 @@ module.exports = class ChartsList extends BaseService
 
   getFlat: () ->
     flat = [
-      name: 'Trellis Chart'
+      name: 'Scatter Plot Matrix'
       value: 0
     ,
       name: 'Bar Graph'
@@ -19,6 +19,7 @@ module.exports = class ChartsList extends BaseService
       y: ['integer', 'number', 'string']
       z: ['integer', 'string']
       h: true
+      n: true
       message: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
       xLabel: "X"
       yLabel: "Y"
@@ -33,6 +34,7 @@ module.exports = class ChartsList extends BaseService
       y: ['integer', 'number']
       z: ['string']
       s: true
+      b: true
       message: "Choose an x variable and a y variable. If you'd like, also choose a z variable to denote color."
       xLabel: "X"
       yLabel: "Y"
@@ -189,6 +191,34 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Parent"
       zLabel: "Name"
       rLabel: "Size"
+    ,
+      name: 'Trellis Chart'
+      value: 15
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
+      z: ['string']
+      r: ['string']
+      message: ""
+      xLabel: "X"
+      yLabel: "Y"
+      zLabel: "Color"
+      rLabel: "Row"
+    ,
+      name: 'Diverging Stacked Bar Chart'
+      value: 16
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
+      z: ['string']
+      r: ['integer', 'number']
+      message: ""
+      xLabel: "Percentage Start"
+      yLabel: "Y"
+      zLabel: "Color"
+      rLabel: "Percentage End"
     ]
 
   getNested: () ->

@@ -28,76 +28,32 @@ module.exports = class ChartsTrellisChart extends BaseService
 
   drawTrellis: (data, labels, container) ->
 
-    # labels here is different from that for other charts
-    # fields are the same as labels for other charts
-
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
-    fields = data.splice(0, 1)[0]
-
-    index_x = fields.indexOf("x");
-    index_y = fields.indexOf("y");
-
-    if index_x isnt -1
-      fields[index_x] = "x_vals"
-
-    if index_y isnt -1
-      fields[index_y] = "y_vals"
-
-    if labels
-      ordinal = labels.splice(0, 1)[0]
-
-    d = []
-    for row, row_ind in data
-      row_obj = {}
-      for label, lbl_idx in fields
-        row_obj[label] = row[lbl_idx]
-      if labels
-        row_obj[ordinal] = labels[row_ind]
-      d.push row_obj
-
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "repeat": {
-        "row": fields,
-        "column": fields
-      },
-      "spec": {
-        "data": {"values": d},
-        "mark": "point",
-        "selection": {
-          "brush": {
-            "type": "interval",
-            "resolve": "union",
-            "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel![event.shiftKey]"
-          },
-          "grid": {
-            "type": "interval",
-            "resolve": "global",
-            "bind": "scales",
-            "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel![!event.shiftKey]"
-          }
+      "data": {"values": data},
+      "mark": "point",
+      "encoding": {
+        "row": {
+          "field": labels.rLab.value, "type": "ordinal",
+          "sort": {"op": "median", "field": labels.xLab.value}
         },
-        "encoding": {
-          "x": {"field": {"repeat": "column"}, "type": "quantitative"},
-          "y": {"field": {"repeat": "row"}, "type": "quantitative"}
+        "x": {
+          "aggregate": "median", "field": labels.xLab.value, "type": "quantitative",
+          "scale": {"zero": false}
+        },
+        "y": {
+          "field": labels.yLab.value, "type": "ordinal",
+          "sort": {"field": labels.xLab.value,"op": "median", "order": "descending"},
+          "scale": {"rangeStep": 12}
         }
       }
     }
 
-    if labels
-      vlSpec['spec']['encoding']['color'] = {
-        "condition": {
-          "selection": "brush",
-          "field": ordinal,
-          "type": "nominal"
-        },
-        "value": "grey"
-      }
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
+      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
 
     opt =
       "actions": {export: true, source: false, editor: false}

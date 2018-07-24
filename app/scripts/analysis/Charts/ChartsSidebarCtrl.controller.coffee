@@ -31,12 +31,14 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         BarChart:
           Horizontal: false
           Stacked: false
+          Normalized: false
         BinnedHeatmap:
           yBin: null
           xBin: null
           marginalHistogram: false
         ScatterPlot:
           showSTDEV: false
+          binned: false
 
     # dataset-specific
     @dataFrame = null
@@ -123,8 +125,14 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.h
       $("#toggleStackedBarGraph").bootstrapSwitch()
 
+    if @selectedGraph.n
+      $('#toggleNormalizedStackedBarGraph').bootstrapSwitch()
+
     if @selectedGraph.s
       $("#toggleScatterStdev").bootstrapSwitch()
+
+    if @selectedGraph.b
+      $("#toggleScatterBinned").bootstrapSwitch()
 
     if @selectedGraph.m
       $("#toggleMarginalHistogram").bootstrapSwitch()
@@ -152,7 +160,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
       @xCol = @xCols[0]
-    # trellis chart
+    # Scatter Plot Matrix
     else if @numericalCols.length > 1
       @chosenCols = @numericalCols.slice(0, 2)
       if @categoricalCols.length > 0
@@ -237,7 +245,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
       data = transformed_data
 
-    # if trellis plot
+    # if scatter plot matrix
     else if @chosenCols.length > 1
       if @labelCol
         labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
