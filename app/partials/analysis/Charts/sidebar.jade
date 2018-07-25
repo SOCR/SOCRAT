@@ -84,21 +84,21 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         id="toggleStackedBarGraph"
         ng-model="sidebar.flags.BarChart.Stacked"
         )
-        div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph' && sidebar.flags.BarChart.Stacked == true")
-          label
-            span.glyphicon.glyphicon-question-sign(
-            aria-hidden="true"
-            uib-tooltip="toggle stacked chart"
-            tooltip-placement="right"
-            ) &nbsp;
-            | Toggle Normalized Stacked Bar Graph &nbsp;
-          input(
-          bs-switch
-          type="checkbox"
-          data-toggle="switch"
-          id="toggleNormalizedStackedBarGraph"
-          ng-model="sidebar.flags.BarChart.Normalized"
-          )
+      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph' && sidebar.flags.BarChart.Stacked == true && sidebar.zCol && sidebar.zCol != 'None'")
+        label
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="toggle stacked chart"
+          tooltip-placement="right"
+          ) &nbsp;
+          | Toggle Normalized Stacked Bar Graph &nbsp
+        input(
+        bs-switch
+        type="checkbox"
+        data-toggle="switch"
+        id="toggleNormalizedStackedBarGraph"
+        ng-model="sidebar.flags.BarChart.Normalized"
+        )
       div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Scatter Plot'")
         label
           span.glyphicon.glyphicon-question-sign(
