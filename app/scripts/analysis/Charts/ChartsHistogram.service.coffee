@@ -32,20 +32,33 @@ module.exports = class ChartsHistogram extends BaseService
       "width": 500,
       "height": 500,
       "data": {"values": data},
-      "mark": "bar",
-      "encoding": {
-        "x": {
-          "bin": {"maxbins": bins},
-          "field": labels.xLab.value,
-          "type": "quantitative",
-          "axis": {"title": labels.xLab.value}
-        },
-        "y": {
-          "field": labels.yLab.value,
-          "type": "quantitative",
-          "axis": {"title": labels.yLab.value}
+      "layer": [{
+        "mark": "bar",
+        "encoding": {
+          "x": {
+            "bin": {"maxbins": bins},
+            "field": labels.xLab.value,
+            "type": "quantitative",
+            "axis": {"title": labels.xLab.value}
+          },
+          "y": {
+            "field": labels.yLab.value,
+            "type": "quantitative",
+            "axis": {"title": labels.yLab.value}
+          }
         }
-      }
+      }, {
+        "mark": "rule",
+        "encoding": {
+          "x": {
+            "aggregate": "mean",
+            "field": labels.xLab.value,
+            "type": "quantitative"
+          },
+          "color": {"value": "red"},
+          "size": {"value": 5}
+        }
+      }]
     }
 
     opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}

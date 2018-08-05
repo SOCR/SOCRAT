@@ -26,6 +26,8 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_stripPlot'
           'app_analysis_charts_scatterMatrix'
           'app_analysis_charts_divergingStackedBar'
+          'app_analysis_charts_rangedDotPlot'
+          'app_analysis_charts_bulletChart'
 
 
   initialize: ->
@@ -50,6 +52,8 @@ module.exports = class ChartsDir extends BaseDirective
     @stripPlot = @app_analysis_charts_stripPlot
     @scatterMatrix = @app_analysis_charts_scatterMatrix
     @divergingStackedBar = @app_analysis_charts_divergingStackedBar
+    @rangedDotPlot = @app_analysis_charts_rangedDotPlot
+    @bulletChart = @app_analysis_charts_bulletChart
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -123,3 +127,7 @@ module.exports = class ChartsDir extends BaseDirective
               @scatterMatrix.drawScatterMatrix(data, labels, container)
             when 'Diverging Stacked Bar Chart'
               @divergingStackedBar.drawDivergingStackedBar(data, labels, container)
+            when 'Ranged Dot Plot'
+              @rangedDotPlot.drawRangedDotPlot(data, labels, container)
+            when 'Bullet Chart'
+              @bulletChart.drawBulletChart(data, labels, container)

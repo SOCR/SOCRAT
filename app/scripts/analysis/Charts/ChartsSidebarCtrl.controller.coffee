@@ -32,6 +32,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           Horizontal: false
           Stacked: false
           Normalized: false
+          threshold: 0
         BinnedHeatmap:
           yBin: null
           xBin: null

@@ -54,6 +54,12 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         type="text"
         ng-model="sidebar.flags.BinnedHeatmap.yBin"
         )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.threshold")
+        label(for = "threshold") {{sidebar.selectedGraph.thresholdLabel}} &nbsp;
+        input#threshold.form-control(
+        type="text"
+        ng-model="sidebar.flags.BarChart.threshold"
+        )
       div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph'")
         label
           span.glyphicon.glyphicon-question-sign(

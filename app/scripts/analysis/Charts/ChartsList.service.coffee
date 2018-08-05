@@ -20,7 +20,9 @@ module.exports = class ChartsList extends BaseService
       z: ['integer', 'string']
       h: true
       n: true
+      threshold: ['integer', 'number']
       message: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
+      thresholdLabel: "Threshold"
       xLabel: "X"
       yLabel: "Y"
       zLabel: "Color"
@@ -219,6 +221,32 @@ module.exports = class ChartsList extends BaseService
       yLabel: "Y"
       zLabel: "Color"
       rLabel: "Percentage End"
+    ,
+      name: 'Ranged Dot Plot'
+      value: 17
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
+      z: ['string']
+      r: false
+      message: ""
+      xLabel: "X"
+      yLabel: "Y"
+      zLabel: "Z"
+    ,
+      name: 'Bullet Chart'
+      value: 18
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
+      z: false
+      r: ['string']
+      message: ""
+      xLabel: "X"
+      yLabel: "Y"
+      rLabel: "Row"
     ]
 
   getNested: () ->

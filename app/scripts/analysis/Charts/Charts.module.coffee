@@ -37,6 +37,8 @@ module.exports = charts = new Module
       'app_analysis_charts_tukeyBoxPlot': require 'scripts/analysis/Charts/ChartsTukeyBoxPlot.service.coffee'
       'app_analysis_charts_scatterMatrix': require 'scripts/analysis/Charts/ChartsScatterMatrix.service.coffee'
       'app_analysis_charts_divergingStackedBar': require 'scripts/analysis/Charts/ChartsDivergingStackedBar.service.coffee'
+      'app_analysis_charts_rangedDotPlot': require 'scripts/analysis/Charts/ChartsRangedDotPlot.service.coffee'
+      'app_analysis_charts_bulletChart': require 'scripts/analysis/Charts/ChartsBulletChart.service.coffee'
 
     controllers:
       'ChartsSidebarCtrl': require 'scripts/analysis/Charts/ChartsSidebarCtrl.controller.coffee'

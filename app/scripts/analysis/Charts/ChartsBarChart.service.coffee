@@ -31,433 +31,242 @@ module.exports = class ChartsBarChart extends BaseService
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
-    for item in data
-      item["x_vals"] = item["x"]
-      item["y_vals"] = item["y"]
-
     if labels.xLab.value is "x"
       labels.xLab.value = "x_vals"
+      for item in data
+        item["x_vals"] = item["x"]
 
     if labels.yLab.value is "y"
       labels.yLab.value = "y_vals"
+      for item in data
+        item["y_vals"] = item["y"]
 
-    # third variable true (grouping or stacked)
-    if labels.zLab.value and labels["zLab"].value isnt "None"
-#stacked bar chart true
+    # vertical
+    if !flags.Horizontal
+      # stack: aggregate with count, no mean/threshold overlay
+      # if color, can toggle normalize option
       if flags.Stacked
-#horizontal bar chart true
-        if flags.Horizontal
-          vlSpec = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "width": 500,
-            "height": 500,
-            "data": {"values": data},
-            "layer": [{
-              "selection": {
-                "brush": {
-                  "type": "interval",
-                  "encodings": ["y"]
-                }
-              },
-              "mark": "bar",
-              "encoding": {
-                "row": {
-                  "field": labels.zLab.value,
-                  "type": "ordinal",
-                },
-                "x": {
-                  "field": labels.yLab.value,
-                  "type": "quantitative",
-                  "axis": {"title": labels.yLab.value}
-                },
-                "y": {
-                  "aggregate": "mean",
-                  "field": labels.xLab.value,
-                  "type": "ordinal",
-                  "axis": {"title": labels.xLab.value}
-                },
-                "color": {
-                  "field": labels.zLab.value,
-                  "type": "nominal",
-                  "scale": {"scheme": "category20b"}
-                },
-                "opacity": {
-                  "condition": {
-                    "selection": "brush", "value": 1
-                  },
-                  "value": 0.7
-                }
-              }
-            }, {
-              "transform": [{
-                "filter": {"selection": "brush"}
-              }],
-              "mark": "rule",
-              "encoding": {
-                "x": {
-                  "aggregate": "mean",
-                  "field": labels.yLab.value,
-                  "type": "quantitative"
-                },
-                "color": {"value": "firebrick"},
-                "size": {"value": 3}
-              }
-            }]
-          }
-          if flags.Normalized
-            vlSpec = {
-              "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-              "width": 500,
-              "height": 500,
-              "data": {"values": data},
-              "mark": "bar",
-              "encoding": {
-                "x": {
-                  "field": labels.yLab.value,
-                  "type": "quantitative",
-                  "axis": {"title": labels.yLab.value}
-                  "stack": "normalize"
-                },
-                "y": {
-                  "aggregate": "mean",
-                  "field": labels.xLab.value,
-                  "type": "ordinal",
-                  "axis": {"title": labels.xLab.value}
-                },
-                "color": {
-                  "field": labels.zLab.value,
-                  "type": "nominal",
-                  "scale": {"scheme": "category20b"}
-                }
-              }
+        vlSpec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+          "width": 500,
+          "height": 500,
+          "data": {"values": data},
+          "mark": "bar",
+          "encoding": {
+            "x": {
+              "field": labels.xLab.value,
+              "type": "ordinal",
+              "axis": {"title": labels.xLab.value}
+            },
+            "y": {
+              "aggregate": "count",
+              "type": "quantitative"
             }
-#horizontal bar chart false - vertical
-        else
-          vlSpec = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "width": 500,
-            "height": 500,
-            "data": {"values": data},
-            "layer": [{
-              "selection": {
-                "brush": {
-                  "type": "interval",
-                  "encodings": ["x"]
-                }
-              },
-              "mark": "bar",
-              "encoding": {
-                "x": {
-                  "field": labels.xLab.value,
-                  "type": "ordinal",
-                  "axis": {"title": labels.xLab.value}
-                },
-                "y": {
-                  "aggregate": "mean",
-                  "field": labels.yLab.value,
-                  "type": "quantitative",
-                  "axis": {"title": labels.yLab.value}
-                },
-                "color": {
-                  "field": labels.zLab.value,
-                  "type": "nominal",
-                  "scale": {"scheme": "category20b"}
-                },
-                "opacity": {
-                  "condition": {
-                    "selection": "brush", "value": 1
-                  },
-                  "value": 0.7
-                }
-              }
-            }, {
-              "transform": [{
-                "filter": {"selection": "brush"}
-              }],
-              "mark": "rule",
-              "encoding": {
-                "y": {
-                  "aggregate": "mean",
-                  "field": labels.yLab.value,
-                  "type": "quantitative"
-                },
-                "color": {"value": "firebrick"},
-                "size": {"value": 3}
-              }
-            }]
           }
-          if flags.Normalized
-            vlSpec = {
-              "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-              "width": 500,
-              "height": 500,
-              "data": {"values": data},
-              "mark": "bar",
-              "encoding": {
-                "x": {
-                  "field": labels.xLab.value,
-                  "type": "ordinal",
-                  "axis": {"title": labels.xLab.value}
-                },
-                "y": {
-                  "aggregate": "mean",
-                  "field": labels.yLab.value,
-                  "type": "quantitative",
-                  "axis": {"title": labels.yLab.value}
-                  "stack": "normalize"
-                },
-                "color": {
-                  "field": labels.zLab.value,
-                  "type": "nominal",
-                  "scale": {"scheme": "category20b"}
-                }
-              }
-            }
-#stacked bar chart false - double/.../n-le bar chart
+        }
+      # not stacked
       else
-#horizontal bar chart true
-        if flags.Horizontal
-          vlSpec = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "width": 500,
-            "height": 500,
-            "data": {"values": data},
-            "facet": {
-              "row": {
-                "field": labels.xLab.value,
-                "type": "ordinal",
-                "header": {
-                  "title": labels.xLab.value
-                }
-              }
-            },
-            "spec": {
-              "layer": [{
-                "selection": {
-                  "brush": {
-                    "type": "interval",
-                    "encodings": ["x"]
+        vlSpec = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+          "layer": [
+            {
+              "data": {"values": data},
+              "layer": [
+                {
+                  "selection": {
+                    "brush": {
+                      "type": "interval",
+                      "encodings": ["x"]
+                    }
+                  },
+                  "mark": "bar",
+                  "encoding": {
+                    "x": {
+                      "field": labels.xLab.value,
+                      "type": "ordinal",
+                      "axis": {"labelAngle": 0, "title": labels.xLab.value}
+                    },
+                    "y": {
+                      "field": labels.yLab.value,
+                      "type": "quantitative",
+                      "title": labels.yLab.value
+                    }
                   }
                 },
-                "mark": "bar",
-                "encoding": {
-                  "x": {
-                    "aggregate": "mean",
-                    "field": labels.yLab.value,
-                    "type": "quantitative",
-                    "axis": {"title": labels.yLab.value}
-                  },
-                  "y": {
-                    "field": labels.zLab.value,
-                    "type": "nominal",
-                    "axis": {"title": ""}
-                  },
-                  "color": {
-                    "field": labels.zLab.value,
-                    "type": "nominal",
-                    "legend": {
-                      "title": labels.zLab.value
-                    }
-                    "scale": {"scheme": "category20b"}
-                  },
-                  "opacity": {
-                    "condition": {
-                      "selection": "brush", "value": 1
-                    },
-                    "value": 0.7
-                  }
-                }
-              }, {
-                "transform": [{
-                  "filter": {"selection": "brush"}
-                }],
-                "mark": "rule",
-                "encoding": {
-                  "x": {
-                    "aggregate": "mean",
-                    "field": labels.yLab.value,
-                    "type": "quantitative"
-                  },
-                  "color": {"value": "firebrick"},
-                  "size": {"value": 3}
-                }
-              }]
-            }
-          }
-#horizontal bar chart false - vertical
-        else
-          vlSpec = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "width": 500,
-            "height": 500,
-            "data": {"values": data},
-            "facet": {
-              "column": {
-                "field": labels.xLab.value,
-                "type": "ordinal",
-                "header": {
-                  "title": labels.xLab.value
-                }
-              }
-            },
-            "spec": {
-              "layer": [{
-                "selection": {
-                  "brush": {
-                    "type": "interval",
-                    "encodings": ["x"]
+                {
+                  "mark": "bar",
+                  "transform": [
+                    {"filter": {"field": labels.yLab.value, "gt": flags.threshold}},
+                    {"calculate": flags.threshold, "as": "baseline"}
+                  ],
+                  "encoding": {
+                    "x": {"field": labels.xLab.value, "type": "ordinal"},
+                    "y": {"field": "baseline", "type": "quantitative"},
+                    "y2": {"field": labels.yLab.value, "type": "quantitative"},
+                    "color": {"value": "#e45755"}
                   }
                 },
-                "mark": "bar",
-                "encoding": {
-                  "x": {
-                    "field": labels.zLab.value,
-                    "type": "nominal",
-                    "axis": {"title": ""}
-                  },
-                  "y": {
-                    "aggregate": "mean",
-                    "field": labels.yLab.value,
-                    "type": "quantitative",
-                    "axis": {"title": labels.yLab.value}
-                  },
-                  "color": {
-                    "field": labels.zLab.value,
-                    "type": "nominal",
-                    "legend": {
-                      "title": labels.zLab.value
+                {
+                  "transform": [{"filter": {"selection": "brush"}}],
+                  "layer": [{
+                    "mark": "rule",
+                    "encoding": {
+                      "y": {
+                        "aggregate": "mean",
+                        "field": labels.yLab.value,
+                        "type": "quantitative"
+                      },
+                      "color": {"value": "firebrick"},
+                      "size": {"value": 3}
                     }
-                    "scale": {"scheme": "category20b"}
-                  },
-                  "opacity": {
-                    "condition": {
-                      "selection": "brush", "value": 1
+                  }]
+                }
+              ]
+            },
+            {
+              "data": {"values": [{"ThresholdValue": flags.threshold, "Threshold": "hazardous"}]},
+              "layer": [
+                {
+                  "mark": "rule",
+                  "encoding": {"y": {"field": "ThresholdValue", "type": "quantitative"}}
+                },
+                {
+                  "mark": {"type": "text", "align": "right", "dx": -2, "dy": -4},
+                  "encoding": {
+                    "x": {"value": "width"},
+                    "y": {
+                      "field": "ThresholdValue",
+                      "type": "quantitative",
+                      "axis": {"title": labels.yLab.value}
                     },
-                    "value": 0.7
+                    "text": {"field": "Threshold", "type": "ordinal"}
                   }
                 }
-              }, {
-                "transform": [{
-                  "filter": {"selection": "brush"}
-                }],
-                "mark": "rule",
-                "encoding": {
-                  "y": {
-                    "aggregate": "mean",
-                    "field": labels.yLab.value,
-                    "type": "quantitative"
-                  },
-                  "color": {"value": "firebrick"},
-                  "size": {"value": 3}
-                }
-              }]
+              ]
             }
-          }
-# third variable false (no grouping/stacked)
+          ]
+        }
+    # horizontal
     else
-# horizontal bar chart
-      if flags.Horizontal
+      if flags.Stacked
         vlSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
           "width": 500,
           "height": 500,
           "data": {"values": data},
-          "layer": [{
-            "selection": {
-              "brush": {
-                "type": "interval",
-                "encodings": ["x"]
-              }
+          "mark": "bar",
+          "encoding": {
+            "x": {
+              "aggregate": "count",
+              "type": "quantitative"
             },
-            "mark": "bar",
-            "encoding": {
-              "y": {
-                "field": labels.xLab.value,
-                "type": "ordinal",
-                "axis": {"title": labels.xLab.value}
-              },
-              "x": {
-                "aggregate": "mean",
-                "field": labels.yLab.value,
-                "type": "quantitative",
-                "axis": {"title": labels.yLab.value}
-              },
-              "opacity": {
-                "condition": {
-                  "selection": "brush", "value": 1
-                },
-                "value": 0.7
-              }
+            "y": {
+              "field": labels.xLab.value,
+              "type": "ordinal",
+              "axis": {"title": labels.xLab.value}
             }
-          }, {
-            "transform": [{
-              "filter": {"selection": "brush"}
-            }],
-            "mark": "rule",
-            "encoding": {
-              "x": {
-                "aggregate": "mean",
-                "field": labels.yLab.value,
-                "type": "quantitative"
-              },
-              "color": {"value": "firebrick"},
-              "size": {"value": 3}
-            }
-          }]
+          }
         }
-# vertical bar chart
+      # not stacked
       else
         vlSpec = {
           "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-          "width": 500,
-          "height": 500,
-          "data": {"values": data},
-          "layer": [{
-            "selection": {
-              "brush": {
-                "type": "interval",
-                "encodings": ["x"]
-              }
-            },
-            "mark": "bar",
-            "encoding": {
-              "x": {
-                "field": labels.xLab.value,
-                "type": "ordinal",
-                "axis": {"title": labels.xLab.value}
-              },
-              "y": {
-                "aggregate": "mean",
-                "field": labels.yLab.value,
-                "type": "quantitative",
-                "axis": {"title": labels.yLab.value}
-              },
-              "opacity": {
-                "condition": {
-                  "selection": "brush", "value": 1
+          "layer": [
+            {
+              "data": {"values": data},
+              "layer": [
+                {
+                  "selection": {
+                    "brush": {
+                      "type": "interval",
+                      "encodings": ["y"]
+                    }
+                  },
+                  "mark": "bar",
+                  "encoding": {
+                    "x": {
+                      "field": labels.yLab.value,
+                      "type": "quantitative",
+                      "title": labels.yLab.value
+                    },
+                    "y": {
+                      "field": labels.xLab.value,
+                      "type": "ordinal",
+                      "title": labels.xLab.value
+                    }
+                  }
                 },
-                "value": 0.7
-              }
+                {
+                  "mark": "bar",
+                  "transform": [
+                    {"filter": {"field": labels.yLab.value, "gt": "1"}},
+                    {"calculate": "1", "as": "baseline"}
+                  ],
+                  "encoding": {
+                    "x": {"field": labels.yLab.value, "type": "quantitative"},
+                    "x2": {"field": "baseline", "type": "ordinal"},
+                    "y2": {"field": labels.xLab.value, "type": "ordinal"},
+                    "color": {"value": "#e45755"}
+                  }
+                },
+                {
+                  "transform": [{"filter": {"selection": "brush"}}],
+                  "layer": [
+                    {
+                      "mark": "rule",
+                      "encoding": {
+                        "x": {
+                          "aggregate": "mean",
+                          "field": labels.yLab.value,
+                          "type": "quantitative"
+                        },
+                        "color": {"value": "firebrick"},
+                        "size": {"value": 3}
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "data": {"values": [{"ThresholdValue": flags.threshold, "Threshold": "hazardous"}]},
+              "layer": [
+                {
+                  "mark": "rule",
+                  "encoding": {"x": {"field": "ThresholdValue", "type": "quantitative"}}
+                },
+                {
+                  "mark": {"type": "text", "dx": -2, "dy": -4},
+                  "encoding": {
+                    "x": {
+                      "field": "ThresholdValue",
+                      "type": "quantitative",
+                      "axis": {"title": labels.yLab.value}
+                    },
+                    "y": {"value": "height"},
+                    "text": {"field": "Threshold", "type": "ordinal"}
+                  }
+                }
+              ]
             }
-          }, {
-            "transform": [{
-              "filter": {"selection": "brush"}
-            }],
-            "mark": "rule",
-            "encoding": {
-              "y": {
-                "aggregate": "mean",
-                "field": labels.yLab.value,
-                "type": "quantitative"
-              },
-              "color": {"value": "firebrick"},
-              "size": {"value": 3}
-            }
-          }]
+          ]
         }
+
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
+      if flags.Stacked
+        vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
+        if flags.Normalized
+          if flags.Horizontal
+            vlSpec["encoding"]["x"]["stack"] = "normalize"
+          else
+            vlSpec["encoding"]["y"]["stack"] = "normalize"
+      else
+        vlSpec["layer"][0]["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
+
+
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
