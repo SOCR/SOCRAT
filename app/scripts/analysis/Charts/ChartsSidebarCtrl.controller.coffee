@@ -194,11 +194,12 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     if @selectedGraph.r
       @rCols = []
-      @rCols.push("None")
+      if @selectedGraph.name isnt 'Bullet Chart'
+        @rCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.r
         @rCols.push(col)
       # Initialize the z variable
-      @rCol = "None"
+      @rCol = @rCols[0]
     @originalRCols = @rCols
 
     @$timeout =>
