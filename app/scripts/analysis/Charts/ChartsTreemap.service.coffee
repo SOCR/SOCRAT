@@ -37,7 +37,6 @@ module.exports = class ChartsTreemap extends BaseService
       "height": 500,
       "padding": 2.5,
       "autosize": "none",
-
       "signals": [
         {
           "name": "layout", "value": "squarify",

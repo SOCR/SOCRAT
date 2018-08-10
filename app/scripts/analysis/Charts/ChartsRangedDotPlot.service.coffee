@@ -33,6 +33,11 @@ module.exports = class ChartsRangedDotPlot extends BaseService
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "data": {"values": data},
+      "selection": {
+        "grid": {
+          "type": "interval", "bind": "scales"
+        }
+      },
       "encoding": {
         "x": {
           "field": labels.xLab.value,
@@ -55,6 +60,11 @@ module.exports = class ChartsRangedDotPlot extends BaseService
       },
       "layer": [
         {
+          "selection": {
+            "grid": {
+              "type": "interval", "bind": "scales"
+            }
+          },
           "mark": "line",
           "encoding": {
             "detail": {
@@ -82,7 +92,7 @@ module.exports = class ChartsRangedDotPlot extends BaseService
       ]
     }
 
-    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}
+    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)

@@ -173,7 +173,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @yCols = []
       for col, idx in @cols when data.types[idx] in @selectedGraph.y
         @yCols.push(col)
-      @yCols.push("None")
+      if @selectedGraph.name is 'Scatter Plot'
+        @yCols.push("Count")
       # Initialize the y variable
       for yCol in @yCols
         if yCol isnt @xCol
@@ -183,21 +184,23 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     if @selectedGraph.z
       @zCols = []
-      @zCols.push("None")
+      if @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst'
+        @zCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.z
         # if the variable idx is not in forbiddenVarIdx, put col in zCols list
         if $.inArray(idx, forbiddenVarIdx) is -1
           @zCols.push(col)
       # Initialize the z variable
-      @zCol = "None"
+      @zCol = @zCols[0]
     @originalZCols = @zCols
 
     if @selectedGraph.r
       @rCols = []
-      if @selectedGraph.name isnt 'Bullet Chart'
+      if @selectedGraph.name isnt 'Bullet Chart' and @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst' and @selectedGraph.name isnt 'Trellis Chart'
         @rCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.r
-        @rCols.push(col)
+        if $.inArray(idx, forbiddenVarIdx) is -1
+          @rCols.push(col)
       # Initialize the z variable
       @rCol = @rCols[0]
     @originalRCols = @rCols

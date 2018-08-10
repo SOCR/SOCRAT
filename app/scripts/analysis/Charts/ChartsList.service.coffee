@@ -40,6 +40,7 @@ module.exports = class ChartsList extends BaseService
       message: "Choose an x variable and a y variable. If you'd like, also choose a z variable to denote color."
       xLabel: "X"
       yLabel: "Y"
+      zLabel: "Color"
     ,
       name: 'Histogram'
       value: 3
@@ -247,6 +248,30 @@ module.exports = class ChartsList extends BaseService
       xLabel: "X"
       yLabel: "Y"
       rLabel: "Row"
+    ,
+      name: 'Word Cloud'
+      value: 19
+      v: false
+      w: false
+      x: false
+      y: false
+      z: false
+      r: false
+      message: ""
+    ,
+      name: 'Sunburst'
+      value: 20
+      v: false
+      w: false
+      x: ['integer', 'number', 'string']
+      y: ['integer', 'number', 'string']
+      z: ['string']
+      r: ['string']
+      message: ""
+      xLabel: "Key"
+      yLabel: "Parent"
+      zLabel: "Name"
+      rLabel: "Size"
     ]
 
   getNested: () ->

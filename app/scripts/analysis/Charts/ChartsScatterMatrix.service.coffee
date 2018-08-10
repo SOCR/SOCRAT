@@ -67,17 +67,7 @@ module.exports = class ChartsScatterMatrix extends BaseService
         "selection": {
           "brush": {
             "type": "interval",
-            "resolve": "union",
-            "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel![event.shiftKey]"
-          },
-          "grid": {
-            "type": "interval",
-            "resolve": "global",
-            "bind": "scales",
-            "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel![!event.shiftKey]"
+            "encodings": ["x", "y"]
           }
         },
         "encoding": {
@@ -98,7 +88,7 @@ module.exports = class ChartsScatterMatrix extends BaseService
       }
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)

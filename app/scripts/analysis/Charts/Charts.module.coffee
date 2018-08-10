@@ -39,6 +39,8 @@ module.exports = charts = new Module
       'app_analysis_charts_divergingStackedBar': require 'scripts/analysis/Charts/ChartsDivergingStackedBar.service.coffee'
       'app_analysis_charts_rangedDotPlot': require 'scripts/analysis/Charts/ChartsRangedDotPlot.service.coffee'
       'app_analysis_charts_bulletChart': require 'scripts/analysis/Charts/ChartsBulletChart.service.coffee'
+      'app_analysis_charts_wordCloud': require 'scripts/analysis/Charts/ChartsWordCloud.service.coffee'
+      'app_analysis_charts_sunburst': require 'scripts/analysis/Charts/ChartsSunburst.service.coffee'
 
     controllers:
       'ChartsSidebarCtrl': require 'scripts/analysis/Charts/ChartsSidebarCtrl.controller.coffee'

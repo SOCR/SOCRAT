@@ -36,134 +36,29 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
       "width": 500,
       "height": 500,
       "data": {"values": data},
-      "transform": [
-        {
-          "aggregate": [
-            {
-              "op": "q1",
-              "field": labels.yLab.value,
-              "as": "lowerBox"
-            },
-            {
-              "op": "q3",
-              "field": labels.yLab.value,
-              "as": "upperBox"
-            },
-            {
-              "op": "median",
-              "field": labels.yLab.value,
-              "as": "midBox"
-            }
-          ],
-          "groupby": [ labels.xLab.value ]
-        },
-        {
-          "calculate": "datum.upperBox - datum.lowerBox",
-          "as": "IQR"
-        },
-        {
-          "calculate": "datum.lowerBox - datum.IQR * 1.5",
-          "as": "lowerWhisker"
-        },
-        {
-          "calculate": "datum.upperBox + datum.IQR * 1.5",
-          "as": "upperWhisker"
+      "selection": {
+        "brush": {
+          "type": "interval",
+          "encodings": ["x", "y"]
         }
-      ],
-      "layer": [
-        {
-          "mark": {
-            "type": "rule",
-            "style": "boxWhisker"
-          },
-          "encoding": {
-            "y": {
-              "field": "lowerWhisker",
-              "type": "quantitative",
-              "axis": {
-                "title": labels.yLab.value
-              }
-            },
-            "y2": {
-              "field": "lowerBox",
-              "type": "quantitative"
-            },
-            "x": {
-              "field": labels.xLab.value,
-              "type": "ordinal"
-            }
-          }
+      },
+      "mark": {
+        "type": "boxplot",
+        "extent": 1.5
+      },
+      "encoding": {
+        "x": {"field": labels.xLab.value,"type": "ordinal"},
+        "y": {
+          "field": labels.yLab.value,
+          "type": "quantitative",
+          "axis": {"title": labels.yLab.value}
         },
-        {
-          "mark": {
-            "type": "rule",
-            "style": "boxWhisker"
-          },
-          "encoding": {
-            "y": {
-              "field": "upperBox",
-              "type": "quantitative"
-            },
-            "y2": {
-              "field": "upperWhisker",
-              "type": "quantitative"
-            },
-            "x": {
-              "field": labels.xLab.value,
-              "type": "ordinal"
-            }
-          }
-        },
-        {
-          "mark": {
-            "type": "bar",
-            "style": "box"
-          },
-          "encoding": {
-            "y": {
-              "field": "lowerBox",
-              "type": "quantitative"
-            },
-            "y2": {
-              "field": "upperBox",
-              "type": "quantitative"
-            },
-            "x": {
-              "field": labels.xLab.value,
-              "type": "ordinal"
-            },
-            "size": {
-              "value": 5
-            }
-          }
-        },
-        {
-          "mark": {
-            "type": "tick",
-            "style": "boxMid"
-          },
-          "encoding": {
-            "y": {
-              "field": "midBox",
-              "type": "quantitative"
-            },
-            "x": {
-              "field": labels.xLab.value,
-              "type": "ordinal"
-            },
-            "color": {
-              "value": "white"
-            },
-            "size": {
-              "value": 5
-            }
-          }
-        }
-      ]
+        "size": {"value": 5}
+      }
     }
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)

@@ -66,24 +66,24 @@ module.exports = class ChartsBulletChart extends BaseService
     length_x = data[0]["ranges"].length
     length_y = data[0]["measures"].length
 
-    for index in [0...length_x] by 1
+    for index in [length_x-1...-1] by -1
       field = "ranges#{index}"
       for item in data
         item[field] = item["ranges"][index]
       mark = {
-        "mark": {"type": "bar", "color": "#ddd"},
+        "mark": {"type": "bar", "color": getRandomColor()},
         "encoding": {
           "x": {"field": field, "type": "quantitative", "title": null}
         }
       }
       vlSpec["spec"]["layer"].push(mark)
 
-    for index in [0...length_y] by 1
+    for index in [length_y-1...-1] by -1
       field = "measures#{index}"
       for item in data
         item[field] = item["measures"][index]
       mark = {
-        "mark": {"type": "bar", "color": "black"},
+        "mark": {"type": "bar", "color": getRandomColor(), "size": 10},
         "encoding": {
           "x": {"field": field, "type": "quantitative"}
         }
@@ -96,3 +96,12 @@ module.exports = class ChartsBulletChart extends BaseService
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
     )
+
+  getRandomColor = ->
+    letters = '0123456789ABCDEF'
+    color = '#'
+    i = 0
+    while i < 6
+      color += letters[Math.floor(Math.random() * 16)]
+      i++
+    color

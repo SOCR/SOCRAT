@@ -34,6 +34,13 @@ module.exports = class ChartsTrellisChart extends BaseService
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
       "data": {"values": data},
+      "selection": {
+        "brush": {
+          "type": "interval",
+          "bind": "scales",
+          "encodings": ["x", "y"]
+        }
+      },
       "mark": "point",
       "encoding": {
         "row": {
@@ -45,7 +52,7 @@ module.exports = class ChartsTrellisChart extends BaseService
           "scale": {"zero": false}
         },
         "y": {
-          "field": labels.yLab.value, "type": "ordinal",
+          "field": labels.yLab.value, "type": "quantitative",
           "sort": {"field": labels.xLab.value,"op": "median", "order": "descending"},
           "scale": {"rangeStep": 12}
         }
@@ -56,7 +63,7 @@ module.exports = class ChartsTrellisChart extends BaseService
       vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)

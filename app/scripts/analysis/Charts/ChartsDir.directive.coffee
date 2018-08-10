@@ -28,6 +28,8 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_divergingStackedBar'
           'app_analysis_charts_rangedDotPlot'
           'app_analysis_charts_bulletChart'
+          'app_analysis_charts_wordCloud'
+          'app_analysis_charts_sunburst'
 
 
   initialize: ->
@@ -54,6 +56,8 @@ module.exports = class ChartsDir extends BaseDirective
     @divergingStackedBar = @app_analysis_charts_divergingStackedBar
     @rangedDotPlot = @app_analysis_charts_rangedDotPlot
     @bulletChart = @app_analysis_charts_bulletChart
+    @wordCloud = @app_analysis_charts_wordCloud
+    @sunburst = @app_analysis_charts_sunburst
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -131,3 +135,7 @@ module.exports = class ChartsDir extends BaseDirective
               @rangedDotPlot.drawRangedDotPlot(data, labels, container)
             when 'Bullet Chart'
               @bulletChart.drawBulletChart(data, labels, container)
+            when 'Word Cloud'
+              @wordCloud.drawWordCloud(data, labels, container)
+            when 'Sunburst'
+              @sunburst.drawSunburst(data, labels, container)

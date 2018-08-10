@@ -26,6 +26,9 @@ module.exports = class ChartsBarChart extends BaseService
 
   drawBar: (data, labels, container, flags) ->
 
+    max = Math.max.apply Math, data.map((o) -> o[labels.yLab.value])
+    threshold = if flags.threshold then flags.threshold else max
+
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
@@ -54,11 +57,16 @@ module.exports = class ChartsBarChart extends BaseService
         "width": 500,
         "height": 500,
         "data": {"values": data},
+        "selection": {
+          "grid": {
+            "type": "interval", "bind": "scales"
+          }
+        },
         "mark": "bar",
         "encoding": {
           "#{x}": {
             "field": labels.xLab.value,
-            "type": "ordinal",
+            "type": "quantitative",
             "axis": {"title": labels.xLab.value}
           },
           "#{y}": {
@@ -98,8 +106,8 @@ module.exports = class ChartsBarChart extends BaseService
               {
                 "mark": "bar",
                 "transform": [
-                  {"filter": {"field": labels.yLab.value, "gt": flags.threshold}},
-                  {"calculate": flags.threshold, "as": "baseline"}
+                  {"filter": {"field": labels.yLab.value, "gt": "#{threshold}"}},
+                  {"calculate": "#{threshold}", "as": "baseline"}
                 ],
                 "encoding": {
                   "#{x}": {"field": labels.xLab.value, "type": "ordinal"},
@@ -137,7 +145,7 @@ module.exports = class ChartsBarChart extends BaseService
             ]
           },
           {
-            "data": {"values": [{"ThresholdValue": flags.threshold, "Threshold": "hazardous"}]},
+            "data": {"values": [{"ThresholdValue": "#{threshold}", "Threshold": "hazardous"}]},
             "layer": [
               {
                 "mark": "rule",
@@ -148,7 +156,7 @@ module.exports = class ChartsBarChart extends BaseService
               {
                 "mark": {"type": "text", "align": "left", "dx": 2, "dy": -4},
                 "encoding": {
-                  "#{x}": {"value": "0"},
+                  "#{x}": {"value": 0},
                   "#{y}": {
                     "field": "ThresholdValue",
                     "type": "quantitative",

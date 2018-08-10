@@ -36,7 +36,12 @@ module.exports = class ChartsBubbleChart extends BaseService
       "width": 500,
       "height": 500,
       "data": {"values": data},
-      "mark": "point",
+      "selection": {
+        "grid": {
+          "type": "interval", "bind": "scales"
+        }
+      },
+      "mark": "circle",
       "encoding": {
         "x": {
           "field": labels.xLab.value,
@@ -47,6 +52,10 @@ module.exports = class ChartsBubbleChart extends BaseService
           "field": labels.yLab.value,
           "type": "quantitative",
           "axis": {"title": labels.yLab.value}
+        },
+        "opacity": {
+          "aggregate": "count",
+          "type": "quantitative"
         }
       }
     }
@@ -59,7 +68,7 @@ module.exports = class ChartsBubbleChart extends BaseService
 
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)

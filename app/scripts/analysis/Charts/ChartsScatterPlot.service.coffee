@@ -50,28 +50,17 @@ module.exports = class ChartsScatterPlot extends BaseService
         "layer": [{
           "mark": "circle",
           "encoding": {
-            "x": {"field": labels.xLab.value,"type": "quantitative", "axis": {"title": labels.xLab.value}},
-            "y": {"field": labels.yLab.value,"type": "quantitative", "axis": {"title": labels.yLab.value}}
+            "x": {"field": labels.xLab.value,"type": "quantitative", "axis": {"title": labels.xLab.value}}
           }
         },
         {
           "transform": [
             {
               "aggregate": [
-                {"op": "mean", "field": labels.yLab.value, "as": "mean_y"},
-                {"op": "stdev", "field": labels.yLab.value, "as": "stdev_y"},
                 {"op": "mean", "field": labels.xLab.value, "as": "mean_x"},
                 {"op": "stdev", "field": labels.xLab.value, "as": "stdev_x"}
               ],
               "groupby": []
-            },
-            {
-              "calculate": "datum.mean_y-datum.stdev_y",
-              "as": "lower_y"
-            },
-            {
-              "calculate": "datum.mean_y+datum.stdev_y",
-              "as": "upper_y"
             },
             {
               "calculate": "datum.mean_x-datum.stdev_x",
@@ -90,21 +79,6 @@ module.exports = class ChartsScatterPlot extends BaseService
               }
             },
             {
-              "mark": "rule",
-              "encoding": {
-                "y": {"field": "mean_y", "type": "quantitative", "axis": null}
-              }
-            },
-            {
-              "selection": {"grid": {"type": "interval", "bind": "scales"}},
-              "mark": "rect",
-              "encoding": {
-                "y": {"field": "lower_y", "type": "quantitative", "axis": null},
-                "y2": {"field": "upper_y", "type": "quantitative"},
-                "opacity": {"value": 0.2}
-              }
-            },
-            {
               "selection": {"grid_x": {"type": "interval", "bind": "scales"}},
               "mark": "rect",
               "encoding": {
@@ -117,10 +91,36 @@ module.exports = class ChartsScatterPlot extends BaseService
         }]
       }
 
-      if flags.binned
-        vlSpec["layer"][0]["encoding"]["x"]["bin"] = {"maxbins": 10}
-        vlSpec["layer"][0]["encoding"]["y"]["bin"] = {"maxbins": 10}
-        vlSpec["layer"][0]["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
+      if labels.yLab.value is "Count"
+        vlSpec["layer"][0]["encoding"]["y"] = {"aggregate": "count", "field": labels.xLab.value,"type": "quantitative", "title": "Count"}
+      else
+        vlSpec["layer"][0]["encoding"]["y"] = {"field": labels.yLab.value,"type": "quantitative", "axis": {"title": labels.yLab.value}}
+        mean_y = {"op": "mean", "field": labels.yLab.value, "as": "mean_y"}
+        stdev_y = {"op": "stdev", "field": labels.yLab.value, "as": "stdev_y"}
+        vlSpec["layer"][1]["transform"][0]["aggregate"].push(mean_y, stdev_y)
+        lower_y = {"calculate": "datum.mean_y-datum.stdev_y", "as": "lower_y"}
+        upper_y = {"calculate": "datum.mean_y+datum.stdev_y", "as": "upper_y"}
+        vlSpec["layer"][1]["transform"].push(lower_y, upper_y)
+        rule_y = {
+          "mark": "rule",
+          "encoding": {
+            "y": {"field": "mean_y", "type": "quantitative", "axis": null}
+          }
+        }
+        rect_y = {
+          "selection": {"grid": {"type": "interval", "bind": "scales"}},
+          "mark": "rect",
+          "encoding": {
+            "y": {"field": "lower_y", "type": "quantitative", "axis": null},
+            "y2": {"field": "upper_y", "type": "quantitative"},
+            "opacity": {"value": 0.2}
+          }
+        }
+        vlSpec["layer"][1]["layer"].push(rule_y, rect_y)
+        if flags.binned
+          vlSpec["layer"][0]["encoding"]["x"]["bin"] = {"maxbins": 10}
+          vlSpec["layer"][0]["encoding"]["y"]["bin"] = {"maxbins": 10}
+          vlSpec["layer"][0]["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
 
       if labels["zLab"].value and labels["zLab"].value isnt "None"
         vlSpec["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
@@ -140,23 +140,24 @@ module.exports = class ChartsScatterPlot extends BaseService
         "encoding": {
           "x": {
             "field": labels.xLab.value, "type": "quantitative", "axis": {"title": labels.xLab.value}
-          },
-          "y": {
-            "field": labels.yLab.value, "type": "quantitative", "axis": {"title": labels.yLab.value}
           }
         }
       }
 
-      if flags.binned
-        vlSpec["encoding"]["x"]["bin"] = {"maxbins": 10}
-        vlSpec["encoding"]["y"]["bin"] = {"maxbins": 10}
-        vlSpec["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
+      if labels.yLab.value is "Count"
+        vlSpec["encoding"]["y"] = {"aggregate": "count", "field": labels.xLab.value,"type": "quantitative", "title": "Count"}
+      else
+        vlSpec["encoding"]["y"] = {"field": labels.yLab.value,"type": "quantitative", "axis": {"title": labels.yLab.value}}
+        if flags.binned
+          vlSpec["encoding"]["x"]["bin"] = {"maxbins": 10}
+          vlSpec["encoding"]["y"]["bin"] = {"maxbins": 10}
+          vlSpec["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
 
       if labels["zLab"].value and labels["zLab"].value isnt "None"
         vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
