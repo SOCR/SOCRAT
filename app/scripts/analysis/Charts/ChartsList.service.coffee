@@ -12,27 +12,38 @@ module.exports = class ChartsList extends BaseService
       value: 0
     ,
       name: 'Bar Graph'
-      value: 1
-      v: false
-      w: false
-      x: ['integer', 'number', 'string']
-      y: ['integer', 'number', 'string']
-      z: ['integer', 'string']
-      message: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
-      xLabel: "X"
-      yLabel: "Y"
-      zLabel: "Color"
+      config:
+        description: "Use option x to choose a numerical or categorical variable, or choose one categorical variable and one numerical variable."
+        value: 1
+        vars:
+          v: false
+          w: false
+          x: ['integer', 'number', 'string']
+          y: ['integer', 'number', 'string']
+          z: ['integer', 'string']
+          xLabel: "X"
+          yLabel: "Y"
+          zLabel: "Color"
+        ,
+        params:
+          horizontalChart: true
+          stackedChart: true
     ,
       name: 'Scatter Plot'
-      value: 2
-      v: false
-      w: false
-      x: ['integer', 'number']
-      y: ['integer', 'number']
-      z: ['string']
-      message: "Choose an x variable and a y variable. If you'd like, also choose a z variable to denote color."
-      xLabel: "X"
-      yLabel: "Y"
+      config:
+        description: "Choose an x variable and a y variable. If you'd like, also choose a z variable to denote color.",
+        value: 2,
+        vars:
+          v: false
+          w: false
+          x: ['integer', 'number']
+          y: ['integer', 'number']
+          z: ['string']
+          xLabel: "X"
+          yLabel: "Y"
+        ,
+        params:
+          showSTDEV: true
     ,
       name: 'Histogram'
       value: 3
@@ -134,6 +145,41 @@ module.exports = class ChartsList extends BaseService
       xLabel: "X (date)"
       yLabel: "Y"
       zLabel: "Key"
+    ,
+      name: 'Binned Heatmap'
+      config:
+        description: "Choose x, y, and z variables, along with max bin values."
+        value: 12
+        vars:
+          v: false
+          w: false
+          x: ['integer', 'number', 'string']
+          y: ['integer', 'number', 'string']
+          z: ['integer', 'string']
+          m: true
+          xbin: ['integer']
+          ybin: ['integer']
+          xLabel: "X"
+          yLabel: "Y"
+          zLabel: "Z"
+          xbinLabel: "X Bin"
+          ybinLabel: "Y Bin"
+        params:
+          xBin: true
+          yBin: true
+          marginalHist: true
+    ,
+      name: 'Strip Plot'
+      value: 13
+      v: false
+      w: false
+      x: ['integer', 'number']
+      y: ['integer', 'number']
+      z: false
+      message: "Choose x and y variables."
+      xLabel: "X"
+      yLabel: "Y"
+
     ]
 
   getNested: () ->

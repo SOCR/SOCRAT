@@ -1,6 +1,6 @@
 'use strict'
 
-BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
+BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'  
 
 module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
   @inject  'app_analysis_powerCalc_dataService',
