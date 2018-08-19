@@ -18,7 +18,7 @@ module.exports = class StatsAlgorithms extends BaseModuleDataService
 
   ############
 
-  getParamsByName: (algName) -> 
+  getParamsByName: (algName) ->
     (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()
 
   getChartData: (algName) ->
