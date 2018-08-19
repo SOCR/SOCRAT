@@ -257,7 +257,15 @@ module.exports = class ChartsList extends BaseService
       y: false
       z: false
       r: false
+      startAngle: ['integer', 'number']
+      endAngle: ['integer', 'number']
+      orientations: ['integer', 'number']
+      text: ['string']
       message: ""
+      startLabel: "Start Angle"
+      endLabel: "End Angle"
+      orientations: "Number of Orientations"
+      text: "Input String"
     ,
       name: 'Sunburst'
       value: 20

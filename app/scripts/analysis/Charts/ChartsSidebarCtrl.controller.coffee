@@ -40,6 +40,11 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         ScatterPlot:
           showSTDEV: false
           binned: false
+        WordCloud:
+          startAngle: 0
+          endAngle: 90
+          orientations: 1
+          text: "Input your text"
 
     # dataset-specific
     @dataFrame = null

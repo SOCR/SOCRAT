@@ -136,6 +136,6 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Bullet Chart'
               @bulletChart.drawBulletChart(data, labels, container)
             when 'Word Cloud'
-              @wordCloud.drawWordCloud(data, labels, container)
+              @wordCloud.drawWordCloud(data, labels, container, flags.WordCloud)
             when 'Sunburst'
               @sunburst.drawSunburst(data, labels, container)

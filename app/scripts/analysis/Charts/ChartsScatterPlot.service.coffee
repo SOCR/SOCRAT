@@ -108,7 +108,27 @@ module.exports = class ChartsScatterPlot extends BaseService
           }
         }
         rect_y = {
-          "selection": {"grid": {"type": "interval", "bind": "scales"}},
+          "selection": {
+            "brush": {
+              "type": "interval",
+              "encodings": ["x", "y"],
+              "on": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+              "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+              "zoom": "wheel!",
+              "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+              "resolve": "global"
+            },
+            "grid": {
+              "type": "interval",
+              "bind": "scales",
+              "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+              "encodings": ["x", "y"],
+              "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+              "zoom": "wheel!",
+              "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+              "resolve": "global"
+            }
+          },
           "mark": "rect",
           "encoding": {
             "y": {"field": "lower_y", "type": "quantitative", "axis": null},
@@ -132,8 +152,24 @@ module.exports = class ChartsScatterPlot extends BaseService
         "height": 500,
         "data": {"values": data},
         "selection": {
+          "brush": {
+            "type": "interval",
+            "encodings": ["x", "y"],
+            "on": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+            "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+            "zoom": "wheel!",
+            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+            "resolve": "global"
+          },
           "grid": {
-            "type": "interval", "bind": "scales"
+            "type": "interval",
+            "bind": "scales",
+            "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            "encodings": ["x", "y"],
+            "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            "zoom": "wheel!",
+            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+            "resolve": "global"
           }
         },
         "mark": "circle",

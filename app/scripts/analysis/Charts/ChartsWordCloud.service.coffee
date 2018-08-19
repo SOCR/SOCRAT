@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsLineChart extends BaseService
+module.exports = class ChartsWordCloud extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
@@ -24,10 +24,15 @@ module.exports = class ChartsLineChart extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawWordCloud: (data,labels,container) ->
+  drawWordCloud: (data,labels,container, flags) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
+
+    data = if flags.text then [flags.text] else data
+    startAngle = if flags.startAngle then flags.startAngle else 0
+    endAngle = if flags.endAngle then flags.endAngle else 90
+    orientations = if flags.orientations then flags.orientations else 1
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega/v4.json",
@@ -37,11 +42,7 @@ module.exports = class ChartsLineChart extends BaseService
       "data": [
         {
           "name": "table",
-          "values": [
-            "Declarative visualization grammars can accelerate development, facilitate retargeting across platforms, and allow language-level optimizations. However, existing declarative visualization languages are primarily concerned with visual encoding, and rely on imperative event handlers for interactive behaviors. In response, we introduce a model of declarative interaction design for data visualizations. Adopting methods from reactive programming, we model low-level events as composable data streams from which we form higher-level semantic signals. Signals feed predicates and scale inversions, which allow us to generalize interactive selections at the level of item geometry (pixels) into interactive queries over the data domain. Production rules then use these queries to manipulate the visualization’s appearance. To facilitate reuse and sharing, these constructs can be encapsulated as named interactors: standalone, purely declarative specifications of interaction techniques. We assess our model’s feasibility and expressivity by instantiating it with extensions to the Vega visualization grammar. Through a diverse range of examples, we demonstrate coverage over an established taxonomy of visualization interaction techniques.",
-            "We present Reactive Vega, a system architecture that provides the first robust and comprehensive treatment of declarative visual and interaction design for data visualization. Starting from a single declarative specification, Reactive Vega constructs a dataflow graph in which input data, scene graph elements, and interaction events are all treated as first-class streaming data sources. To support expressive interactive visualizations that may involve time-varying scalar, relational, or hierarchical data, Reactive Vega’s dataflow graph can dynamically re-write itself at runtime by extending or pruning branches in a data-driven fashion. We discuss both compile- and run-time optimizations applied within Reactive Vega, and share the results of benchmark studies that indicate superior interactive performance to both D3 and the original, non-reactive Vega system.",
-            "We present Vega-Lite, a high-level grammar that enables rapid specification of interactive data visualizations. Vega-Lite combines a traditional grammar of graphics, providing visual encoding rules and a composition algebra for layered and multi-view displays, with a novel grammar of interaction. Users specify interactive semantics by composing selections. In Vega-Lite, a selection is an abstraction that defines input event processing, points of interest, and a predicate function for inclusion testing. Selections parameterize visual encodings by serving as input data, defining scale extents, or by driving conditional logic. The Vega-Lite compiler automatically synthesizes requisite data flow and event handling logic, which users can override for further customization. In contrast to existing reactive specifications, Vega-Lite selections decompose an interaction design into concise, enumerable semantic units. We evaluate Vega-Lite through a range of examples, demonstrating succinct specification of both customized interaction methods and common techniques such as panning, zooming, and linked selection."
-          ],
+          "values": data,
           "transform": [
             {
               "type": "countpattern",
@@ -52,7 +53,7 @@ module.exports = class ChartsLineChart extends BaseService
             },
             {
               "type": "formula", "as": "angle",
-              "expr": "[-45, 0, 45][~~(random() * 3)]"
+              "expr": "['#{startAngle}', '#{endAngle}'][~~(random() * '#{orientations}')]"
             },
             {
               "type": "formula", "as": "weight",

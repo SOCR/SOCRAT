@@ -60,6 +60,30 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         type="text"
         ng-model="sidebar.flags.BarChart.threshold"
         )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.startAngle")
+        label(for = "text") {{sidebar.selectedGraph.text}} &nbsp;
+        input#text.form-control(
+        type="text"
+        ng-model="sidebar.flags.WordCloud.text"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.startAngle")
+        label(for = "startAngle") {{sidebar.selectedGraph.startLabel}} &nbsp;
+        input#startAngle.form-control(
+        type="text"
+        ng-model="sidebar.flags.WordCloud.startAngle"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.endAngle")
+        label(for = "endAngle") {{sidebar.selectedGraph.endLabel}} &nbsp;
+        input#endAngle.form-control(
+        type="text"
+        ng-model="sidebar.flags.WordCloud.endAngle"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.orientations")
+        label(for = "orientations") {{sidebar.selectedGraph.orientations}} &nbsp;
+        input#orientations.form-control(
+        type="text"
+        ng-model="sidebar.flags.WordCloud.orientations"
+        )
       div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph'")
         label
           span.glyphicon.glyphicon-question-sign(
@@ -150,14 +174,14 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         id="toggleMarginalHistogram"
         ng-model="sidebar.flags.BinnedHeatmap.marginalHistogram"
         )
-    div(ng-show="!sidebar.selectedGraph.x")
+    div(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
       select.form-control(
       multiple
       ng-model="sidebar.chosenCols"
       ng-options="col for col in sidebar.numericalCols"
       ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
       )
-    div.form-group(ng-show="!sidebar.selectedGraph.x")
+    div.form-group(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
       label Labels column &nbsp;
       //- show data header column names
       select.form-control(

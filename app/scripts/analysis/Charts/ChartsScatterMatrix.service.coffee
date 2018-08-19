@@ -67,7 +67,22 @@ module.exports = class ChartsScatterMatrix extends BaseService
         "selection": {
           "brush": {
             "type": "interval",
-            "encodings": ["x", "y"]
+            "encodings": ["x", "y"],
+            "on": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+            "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+            "zoom": "wheel!",
+            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+            "resolve": "global"
+          },
+          "grid": {
+            "type": "interval",
+            "bind": "scales",
+            "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            "encodings": ["x", "y"],
+            "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            "zoom": "wheel!",
+            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+            "resolve": "global"
           }
         },
         "encoding": {

@@ -29,6 +29,53 @@ module.exports = class ChartsBulletChart extends BaseService
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
+    # get 1000 different colors
+    colors = [
+      "#00ffff",
+      "#f0ffff",
+      "#f5f5dc",
+      "#000000",
+      "#0000ff",
+      "#a52a2a",
+      "#00ffff",
+      "#00008b",
+      "#008b8b",
+      "#a9a9a9",
+      "#006400",
+      "#bdb76b",
+      "#8b008b",
+      "#556b2f",
+      "#ff8c00",
+      "#9932cc",
+      "#8b0000",
+      "#e9967a",
+      "#9400d3",
+      "#ff00ff",
+      "#ffd700",
+      "#008000",
+      "#4b0082",
+      "#f0e68c",
+      "#add8e6",
+      "#e0ffff",
+      "#90ee90",
+      "#d3d3d3",
+      "#ffb6c1",
+      "#ffffe0",
+      "#00ff00",
+      "#ff00ff",
+      "#800000",
+      "#000080",
+      "#808000",
+      "#ffa500",
+      "#ffc0cb",
+      "#800080",
+      "#800080",
+      "#ff0000",
+      "#c0c0c0",
+      "#ffffff",
+      "#ffff00"
+    ]
+
     data = [
       {"title":"Revenue","subtitle":"US$, in thousands","ranges":[150,225,300],"measures":[220,270],"markers":[250]},
       {"title":"Profit","subtitle":"%","ranges":[20,25,30],"measures":[21,23],"markers":[26]},
@@ -66,12 +113,15 @@ module.exports = class ChartsBulletChart extends BaseService
     length_x = data[0]["ranges"].length
     length_y = data[0]["measures"].length
 
+    index_for_color = 0
+
     for index in [length_x-1...-1] by -1
       field = "ranges#{index}"
+      index_for_color++
       for item in data
         item[field] = item["ranges"][index]
       mark = {
-        "mark": {"type": "bar", "color": getRandomColor()},
+        "mark": {"type": "bar", "color": colors[index_for_color]},
         "encoding": {
           "x": {"field": field, "type": "quantitative", "title": null}
         }
@@ -80,10 +130,11 @@ module.exports = class ChartsBulletChart extends BaseService
 
     for index in [length_y-1...-1] by -1
       field = "measures#{index}"
+      index_for_color++
       for item in data
         item[field] = item["measures"][index]
       mark = {
-        "mark": {"type": "bar", "color": getRandomColor(), "size": 10},
+        "mark": {"type": "bar", "color": colors[index_for_color], "size": 10},
         "encoding": {
           "x": {"field": field, "type": "quantitative"}
         }
@@ -97,11 +148,4 @@ module.exports = class ChartsBulletChart extends BaseService
       @vt.vegaLite(result.view, vlSpec)
     )
 
-  getRandomColor = ->
-    letters = '0123456789ABCDEF'
-    color = '#'
-    i = 0
-    while i < 6
-      color += letters[Math.floor(Math.random() * 16)]
-      i++
-    color
+
