@@ -21,7 +21,10 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
           'app_analysis_charts_tukeyBoxPlot',
-          'app_analysis_charts_checkTime'
+          'app_analysis_charts_checkTime',
+          'app_analysis_charts_binnedHeatmap',
+          'app_analysis_charts_stripPlot'
+
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
@@ -39,8 +42,13 @@ module.exports = class ChartsDir extends BaseDirective
     @line = @app_analysis_charts_lineChart
     @bivariate = @app_analysis_charts_bivariateLineChart
     @normal = @app_analysis_charts_normalChart
-    @pie = @app_analysis_charts_pieChart
     @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
+    @binnedHeatmap = @app_analysis_charts_binnedHeatmap
+    @stripPlot = @app_analysis_charts_stripPlot
+    #@charts = [@areaTrellis, @bar, @bubble, @histogram, @pie, @scatterPlot, @stackBar, @time,
+      #@trellis, @streamGraph, @area, @treemap, @line, @bivariate, @normal, @tukeyBoxPlot, @binnedHeatmap, @stripPlot]
+    @charts = [@scatterPlot, @bar, @binnedHeatmap]
+
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -74,10 +82,12 @@ module.exports = class ChartsDir extends BaseDirective
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
 
-        if newChartData and newChartData.dataPoints
-          data = newChartData.dataPoints
-          labels = newChartData.labels
-          scheme = newChartData.graph
+        if newChartData and newChartData.chartParams
+          data = newChartData.chartParams.data
+          labels = newChartData.chartParams.labels
+          scheme = newChartData.chartParams.graph
+
+          res = (chart for chart in @charts when chart.getName() == scheme.name)
 
           container = d3.select(elem.find('div')[0])
           container.selectAll('*').remove()
@@ -110,37 +120,43 @@ module.exports = class ChartsDir extends BaseDirective
               yMax: if labels? and numerics.includes(labels.yLab.type) then d3.max(data, (d) -> parseFloat(d.y)) else null
               zMax: if labels? and numerics.includes(labels.zLab.type) then d3.max(data, (d) -> parseFloat(d.z)) else null
 
-            switch scheme.name
-              when 'Area Trellis Chart'
-                @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
-              when 'Bar Graph'
-                @bar.drawBar(width,height,data,_graph,labels,ranges)
-              when 'Bubble Chart'
-                @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
-              when 'Histogram'
-                @histogram.drawHist(_graph, data, container, labels, width, height, ranges)
-              when 'Tukey Box Plot (1.5 IQR)'
-                @tukeyBoxPlot.drawBoxPlot(_graph, data, container, labels, width, height, ranges)
-              when 'Ring Chart'
-                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-                @pie.drawPie(data,width,height,_graph,false)
-              when 'Scatter Plot'
-                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels)
-              when 'Stacked Bar Chart'
-                @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
-              when 'Stream Graph'
-                @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
-              when 'Area Chart'
-                @area.drawArea(height,width,_graph, data, labels)
-              when 'Treemap'
-                @treemap.drawTreemap(svg, width, height, container, data)
-              when 'Line Chart'
-                @line.lineChart(data,ranges,width,height,_graph, labels,container)
-              when 'Bivariate Area Chart'
-                # @time.checkTimeChoice(data)
-                @bivariate.bivariateChart(height,width,_graph, data, labels)
-              when 'Normal Distribution'
-                @normal.drawNormalCurve(data, width, height, _graph)
-              when 'Pie Chart'
-                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
-                @pie.drawPie(data,width,height,_graph,true)
+            res[0].draw(data, ranges, width, height, _graph, labels, container, svg, newChartData.chartParams.flags)
+
+#            switch scheme.name
+#              when 'Area Trellis Chart'
+#                @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
+#              when 'Binned Heatmap'
+#                @binnedHeatmap.drawHeatmap(data, ranges, width, height, _graph, labels, flags.BinnedHeatmap)
+#              when 'Bar Graph'
+#                @bar.drawBar(width,height,data,_graph,labels,ranges,flags.BarChart)
+#              when 'Bubble Chart'
+#                @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
+#              when 'Histogram'
+#                @histogram.drawHist(_graph, data, container, labels, width, height, ranges)
+#              when 'Tukey Box Plot (1.5 IQR)'
+#                @tukeyBoxPlot.drawBoxPlot(_graph, data, container, labels, width, height, ranges)
+#              when 'Ring Chart'
+#                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
+#                @pie.drawPie(data,width,height,_graph,false)
+#              when 'Scatter Plot'
+#                @scatterPlot.drawScatterPlot(data,ranges,width,height,_graph,container,labels, flags.ScatterPlot)
+#              when 'Stacked Bar Chart'
+#                @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
+#              when 'Stream Graph'
+#                @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
+#              when 'Strip Plot'
+#                @stripPlot.drawStripPlot(data,ranges,width,height,_graph,labels)
+#              when 'Area Chart'
+#                @area.drawArea(height,width,_graph, data, labels)
+#              when 'Treemap'
+#                @treemap.drawTreemap(svg, width, height, container, data)
+#              when 'Line Chart'
+#                @line.lineChart(data,ranges,width,height,_graph, labels,container)
+#              when 'Bivariate Area Chart'
+#                # @time.checkTimeChoice(data)
+#                @bivariate.bivariateChart(height,width,_graph, data, labels)
+#              when 'Normal Distribution'
+#                @normal.drawNormalCurve(data, width, height, _graph)
+#              when 'Pie Chart'
+#                _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
+#                @pie.drawPie(data,width,height,_graph,true)
