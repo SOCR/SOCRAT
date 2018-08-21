@@ -24,7 +24,11 @@ module.exports = class ChartsBarChart extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
+  getName: () ->
+    return 'Bar Graph'
+
   drawBar: (data, labels, container, flags) ->
+
     max = Math.max.apply Math, data.map((o) -> o[labels.yLab.value])
     threshold = if flags.threshold then flags.threshold else max
 
@@ -127,19 +131,19 @@ module.exports = class ChartsBarChart extends BaseService
                     }
                   }
                 },
-                {
-                  "mark": {"type": "text", "align": "left", "dx": 2, "dy": -4},
-                  "encoding": {
-                    "#{x}": {"value": 0},
-                    "#{y}": {
-                      "aggregate": "mean",
-                      "field": labels.yLab.value,
-                      "type": "quantitative"
-                    },
-                    "size": {"value": 15},
-                    "text": {"value": "mean", "type": "ordinal"}
-                  }
-                }]
+                  {
+                    "mark": {"type": "text", "align": "left", "dx": 2, "dy": -4},
+                    "encoding": {
+                      "#{x}": {"value": 0},
+                      "#{y}": {
+                        "aggregate": "mean",
+                        "field": labels.yLab.value,
+                        "type": "quantitative"
+                      },
+                      "size": {"value": 15},
+                      "text": {"value": "mean", "type": "ordinal"}
+                    }
+                  }]
               }
             ]
           },

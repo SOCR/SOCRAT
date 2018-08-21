@@ -25,6 +25,9 @@ module.exports = class ChartsScatterPlot extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
+  getName: () ->
+    return 'Scatter Plot'
+
   drawScatterPlot: (data, labels, container, flags) ->
 
     container.select("#slider").remove()
@@ -179,7 +182,6 @@ module.exports = class ChartsScatterPlot extends BaseService
           }
         }
       }
-
       if labels.yLab.value is "Count"
         vlSpec["encoding"]["y"] = {"aggregate": "count", "field": labels.xLab.value,"type": "quantitative", "title": "Count"}
       else

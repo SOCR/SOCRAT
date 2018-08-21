@@ -10,38 +10,39 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
   fieldset
     legend Variables
     div.form-inline
-      div.form-horizontal(ng-show="sidebar.selectedGraph.x")
-        label(for = "x") {{sidebar.selectedGraph.xLabel}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.x")
+        label(for = "x") {{sidebar.selectedGraph.config.vars.xLabel}} &nbsp;
         select#x.form-control(
           ng-change="sidebar.updateDataPoints()"
           ng-model="sidebar.xCol"
           ng-options="col for col in sidebar.xCols"
           ng-init="sidebar.xCol = sidebar.xCols[0]"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.y")
-        label(for = "y") {{sidebar.selectedGraph.yLabel}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.y")
+        label(for = "y") {{sidebar.selectedGraph.config.vars.yLabel}} &nbsp;
         select#y.form-control(
           ng-change="sidebar.updateDataPoints()"
           ng-model="sidebar.yCol"
           ng-options="col for col in sidebar.yCols"
           ng-init="sidebar.yCol = sidebar.yCols[0]"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.z")
-        label(for = "z") {{sidebar.selectedGraph.zLabel}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.z")
+        label(for = "z") {{sidebar.selectedGraph.config.vars.zLabel}} &nbsp;
         select#z.form-control(
           ng-change="sidebar.updateDataPoints()"
           ng-model="sidebar.zCol"
           ng-options="col for col in sidebar.zCols"
           ng-init="sidebar.zCol = sidebar.zCols[0]"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.r")
-        label(for = "r") {{sidebar.selectedGraph.rLabel}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.r")
+        label(for = "r") {{sidebar.selectedGraph.config.vars.rLabel}} &nbsp;
         select#r.form-control(
         ng-change="sidebar.updateDataPoints()"
         ng-model="sidebar.rCol"
         ng-options="col for col in sidebar.rCols"
         ng-init="sidebar.rCol = sidebar.rCols[0]"
         )
+<<<<<<< HEAD
       div.form-horizontal(ng-show="sidebar.selectedGraph.xbin")
         label(for = "xbin") {{sidebar.selectedGraph.xbinLabel}} &nbsp;
         input#xbin.form-control(
@@ -167,21 +168,56 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
           tooltip-placement="right"
           ) &nbsp;
           | Toggle Marginal Histograms &nbsp;
+=======
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.params.xBin != null")
+        label(for = "xbin") {{sidebar.selectedGraph.xbinLabel}} &nbsp;
+        input#xbin.form-control(
+        type="text"
+        ng-model="sidebar.chartParams.flags.xBin"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.params.yBin != null")
+        label(for = "ybin") {{sidebar.selectedGraph.ybinLabel}} &nbsp;
+        input#ybin.form-control(
+        type="text"
+        ng-model="sidebar.chartParams.flags.yBin"
+        )
+      // repeated switch for each parameter
+      div.form-horizontal.bootstrap-switch-square(ng-repeat="(param,val) in sidebar.selectedGraph.config.params track by $index"
+        ng-show="val != null")
+        label
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="toggle {{param}}"
+          tooltip-placement="right"
+          ) &nbsp;
+          | Toggle {{param}} &nbsp;
+>>>>>>> 95d6221ce872742d0a867ad90912d6b8a5a5c29d
         input(
         bs-switch
         type="checkbox"
         data-toggle="switch"
+<<<<<<< HEAD
         id="toggleMarginalHistogram"
         ng-model="sidebar.flags.BinnedHeatmap.marginalHistogram"
         )
     div(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
+=======
+        id= "{{param}}Switch"
+        ng-model="sidebar.chartParams.flags[param]"
+        )
+    div(ng-show="!sidebar.selectedGraph.config.vars.x")
+>>>>>>> 95d6221ce872742d0a867ad90912d6b8a5a5c29d
       select.form-control(
       multiple
       ng-model="sidebar.chosenCols"
       ng-options="col for col in sidebar.numericalCols"
       ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
       )
+<<<<<<< HEAD
     div.form-group(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
+=======
+    div.form-group(ng-show="!sidebar.selectedGraph.config.vars.x")
+>>>>>>> 95d6221ce872742d0a867ad90912d6b8a5a5c29d
       label Labels column &nbsp;
       //- show data header column names
       select.form-control(
@@ -191,3 +227,6 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
       ng-init="sidebar.labelCol = null"
       )
         option(value="") No labels
+
+
+

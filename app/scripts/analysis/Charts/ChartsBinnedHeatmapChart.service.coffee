@@ -10,8 +10,7 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
     'app_analysis_charts_sendData',
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
-    'app_analysis_charts_msgService',
-    'app_analysis_charts_scatterPlot'
+    'app_analysis_charts_msgService'
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
@@ -24,6 +23,9 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
 
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
+
+  getName: () ->
+    return 'Binned Heatmap'
 
   drawHeatmap: (data, labels, container, flags) ->
 

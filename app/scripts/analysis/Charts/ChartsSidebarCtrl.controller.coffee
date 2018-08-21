@@ -27,7 +27,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @maxColors = 10
 
     # chart-specific flags (update dictionary as more flags added)
-    @flags =
+    # general chart parameters
+
+    @chartParams =
+      @flags:
         BarChart:
           Horizontal: false
           Stacked: false
@@ -45,6 +48,12 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           endAngle: 90
           orientations: 1
           text: "Input your text"
+      data: null
+      labels: null
+      graph: null
+
+    @$scope.chartParams =
+      flags: {}
 
     # dataset-specific
     @dataFrame = null
@@ -93,8 +102,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @dataType = @DATA_TYPES.NESTED
             @header = {key: 0, value: "initiate"}
 
-
-    @$scope.$watch 'sidebar.flags'
+    @$scope.$watch 'sidebar.chartParams.flags'
     , =>
       @updateDataPoints()
     , true
@@ -124,27 +132,14 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     # This list will be excluded from zCols if zLabel is color
     forbiddenVarIdx = []
 
-    if @selectedGraph.hLabel is "Toggle horizontal"
-      # modes
-      $("#toggleHorizontalBarGraph").bootstrapSwitch()
+    for param in @selectedGraph.config.params
+      @chartParams.flags[param] = @selectedGraph.config.params[param]
 
-    if @selectedGraph.h
-      $("#toggleStackedBarGraph").bootstrapSwitch()
+    $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
-    if @selectedGraph.n
-      $('#toggleNormalizedStackedBarGraph').bootstrapSwitch()
-
-    if @selectedGraph.s
-      $("#toggleScatterStdev").bootstrapSwitch()
-
-    if @selectedGraph.b
-      $("#toggleScatterBinned").bootstrapSwitch()
-
-    if @selectedGraph.m
-      $("#toggleMarginalHistogram").bootstrapSwitch()
     # end if
 
-    if @selectedGraph.zLabel is "Color"
+    if @selectedGraph.config.vars.zLabel is "Color"
 
       VarForChecking = []
       # VarForChecking only includes the variable idx that has the same
@@ -163,8 +158,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       )
     # end if
 
-    if @selectedGraph.x
-      @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
+    if @selectedGraph.config.vars.x
+      @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
       @xCol = @xCols[0]
     # Scatter Plot Matrix
     else if @numericalCols.length > 1
@@ -174,9 +169,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     @originalXCols = @xCols
 
-    if @selectedGraph.y
+    if @selectedGraph.config.vars.y
       @yCols = []
-      for col, idx in @cols when data.types[idx] in @selectedGraph.y
+      for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.y
         @yCols.push(col)
       if @selectedGraph.name is 'Scatter Plot'
         @yCols.push("Count")
@@ -187,7 +182,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           break
     @originalYCols = @yCols
 
-    if @selectedGraph.z
+    if @selectedGraph.config.vars.z
       @zCols = []
       if @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst'
         @zCols.push("None")
@@ -199,7 +194,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @zCol = @zCols[0]
     @originalZCols = @zCols
 
-    if @selectedGraph.r
+    if @selectedGraph.config.vars.r
       @rCols = []
       if @selectedGraph.name isnt 'Bullet Chart' and @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst' and @selectedGraph.name isnt 'Trellis Chart'
         @rCols.push("None")
@@ -215,8 +210,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
   updateDataPoints: (data=@dataFrame) ->
 
-    [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
-    [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
+    if @selectedGraph.config.vars.x
+      [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
+      [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
+      data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
 
     transformed_data = []
     for row in data.data
@@ -268,9 +265,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     else data = null
 
+    @chartParams.data = data
+    @chartParams.labels = labels
+    @chartParams.graph = @selectedGraph
+
     @msgService.broadcast 'charts:updateGraph',
-      dataPoints: data
-      graph: @selectedGraph
-      labels: labels
-      chartFlags: @flags
+      chartParams: @chartParams
 

@@ -31,7 +31,6 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_wordCloud'
           'app_analysis_charts_sunburst'
 
-
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
     @bar = @app_analysis_charts_barChart
@@ -48,7 +47,6 @@ module.exports = class ChartsDir extends BaseDirective
     @line = @app_analysis_charts_lineChart
     @bivariate = @app_analysis_charts_bivariateLineChart
     @normal = @app_analysis_charts_normalChart
-    @pie = @app_analysis_charts_pieChart
     @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
     @binnedHeatmap = @app_analysis_charts_binnedHeatmap
     @stripPlot = @app_analysis_charts_stripPlot
@@ -58,6 +56,10 @@ module.exports = class ChartsDir extends BaseDirective
     @bulletChart = @app_analysis_charts_bulletChart
     @wordCloud = @app_analysis_charts_wordCloud
     @sunburst = @app_analysis_charts_sunburst
+    #@charts = [@areaTrellis, @bar, @bubble, @histogram, @pie, @scatterPlot, @stackBar, @time,
+      #@trellis, @streamGraph, @area, @treemap, @line, @bivariate, @normal, @tukeyBoxPlot, @binnedHeatmap, @stripPlot]
+    @charts = [@scatterPlot, @bar, @binnedHeatmap, @bubble, @histogram, @pie,
+      @normal, @tukeyBoxPlot, @stripPlot, @scatterMatrix, @rangedDotPlot, @wordCloud]
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -82,11 +84,11 @@ module.exports = class ChartsDir extends BaseDirective
             $(this).prepend(segment.repeat(amount - 2))
 
       scope.$watch 'mainArea.chartData', (newChartData) =>
-        if newChartData and newChartData.dataPoints
-          data = newChartData.dataPoints
-          labels = newChartData.labels
-          scheme = newChartData.graph
-          flags = newChartData.chartFlags
+          if newChartData and newChartData.chartParams
+            data = newChartData.chartParams.data
+            labels = newChartData.chartParams.labels
+            scheme = newChartData.chartParams.graph
+            flags = newChartData.chartParams.flags
 
           d3charts = d3.select(elem.find('div')[0]).node().parentNode
           container = d3.select(d3charts)
@@ -139,3 +141,4 @@ module.exports = class ChartsDir extends BaseDirective
               @wordCloud.drawWordCloud(data, labels, container, flags.WordCloud)
             when 'Sunburst'
               @sunburst.drawSunburst(data, labels, container)
+

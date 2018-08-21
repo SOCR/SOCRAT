@@ -49,3 +49,4 @@ module.exports = class ChartsStripPlot extends BaseService
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
     )
+
