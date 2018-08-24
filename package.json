@@ -52,7 +52,6 @@
     "typeahead.js": "git+https://github.com/twitter/typeahead.js.git",
     "vega": "^3.2.1",
     "vega-embed": "3.0.0-rc1",
-    "vega-lite": "^2.6.0",
     "vega-tooltip": "0.5.1"
   },
   "devDependencies": {
