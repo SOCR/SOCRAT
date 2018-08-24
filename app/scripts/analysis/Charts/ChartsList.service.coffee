@@ -9,7 +9,11 @@ module.exports = class ChartsList extends BaseService
   getFlat: () ->
     flat = [
       name: 'Scatter Plot Matrix'
-      value: 0
+      config:
+        description: ""
+        value: 0
+        vars:
+          placeholder: false
     ,
       name: 'Bar Graph'
       config:
@@ -24,16 +28,15 @@ module.exports = class ChartsList extends BaseService
           xLabel: "X"
           yLabel: "Y"
           zLabel: "Color"
-        ,
+          threshold: ['integer', 'number', 'string']
+          tLabel: "Threshold"
         params:
           horizontal: true
           stacked: true
           normalized: true
-          threshold: ['integer', 'number']
-          hLabel: "Toggle horizontal"
-          sLabel: "Toggle stacked"
-          nLabel: "Toggle normalized"
-          tLabel: "Threshold"
+#          hLabel: "Toggle horizontal"
+#          sLabel: "Toggle stacked"
+#          nLabel: "Toggle normalized"
     ,
       name: 'Scatter Plot'
       config:
@@ -48,12 +51,11 @@ module.exports = class ChartsList extends BaseService
           xLabel: "X"
           yLabel: "Y"
           zLabel: "Color"
-      ,
         params:
           binned: true
           showSTDEV: true
-          bLabel: "Toggle binned"
-          sLabel: "Show statistics"
+#          bLabel: "Toggle binned"
+#          sLabel: "Show statistics"
     ,
       name: 'Histogram'
       config:
@@ -67,7 +69,6 @@ module.exports = class ChartsList extends BaseService
           z: false
           xLabel: "X"
           yLabel: "Y"
-          zLabel: "Color"
     ,
       name: 'Tukey Box Plot (1.5 IQR)'
       config:
@@ -81,7 +82,6 @@ module.exports = class ChartsList extends BaseService
           z: false
           xLabel: "X"
           yLabel: "Y"
-          zLabel: "Color"
     ,
       name: 'Bubble Chart'
       config:
@@ -93,7 +93,7 @@ module.exports = class ChartsList extends BaseService
           x: ['integer', 'number']
           y: ['integer', 'number']
           z: ['integer', 'string']
-          r: ['integer', 'number']
+          r: ['integer', 'string']
           message: "Choose an x variable, a y variable and a radius variable."
           xLabel: "X"
           yLabel: "Y"
@@ -135,17 +135,15 @@ module.exports = class ChartsList extends BaseService
           y: ['integer', 'number', 'string']
           z: ['integer', 'string']
           m: true
-          xbin: ['integer']
-          ybin: ['integer']
           xLabel: "X"
           yLabel: "Y"
           zLabel: "Z"
-          xbinLabel: "X Bin"
-          ybinLabel: "Y Bin"
         params:
           xBin: true
           yBin: true
           marginalHist: true
+          xbinLabel: "X Bin"
+          ybinLabel: "Y Bin"
     ,
       name: 'Strip Plot'
       config:
@@ -186,15 +184,14 @@ module.exports = class ChartsList extends BaseService
           y: false
           z: false
           r: false
-        params:
           startAngle: ['integer', 'number']
           endAngle: ['integer', 'number']
           orientations: ['integer', 'number']
           text: ['string']
           startLabel: "Start Angle"
           endLabel: "End Angle"
-          orientations: "Number of Orientations"
-          text: "Input String"
+          orientationsLabel: "Number of Orientations"
+          textLabel: "Input String"
     ]
 
   getNested: () ->

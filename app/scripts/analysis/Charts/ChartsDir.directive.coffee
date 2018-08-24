@@ -90,6 +90,8 @@ module.exports = class ChartsDir extends BaseDirective
             scheme = newChartData.chartParams.graph
             flags = newChartData.chartParams.flags
 
+          console.log(flags)
+
           d3charts = d3.select(elem.find('div')[0]).node().parentNode
           container = d3.select(d3charts)
 
@@ -99,9 +101,9 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Area Trellis Chart'
               @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
             when 'Binned Heatmap'
-              @binnedHeatmap.drawHeatmap(data, labels, container, flags.BinnedHeatmap)
+              @binnedHeatmap.drawHeatmap(data, labels, container, flags)
             when 'Bar Graph'
-              @bar.drawBar(data, labels, container, flags.BarChart)
+              @bar.drawBar(data, labels, container, flags)
             when 'Bubble Chart'
               @bubble.drawBubble(data, labels, container)
             when 'Histogram'
@@ -109,7 +111,7 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Tukey Box Plot (1.5 IQR)'
               @tukeyBoxPlot.drawBoxPlot(data, labels, container)
             when 'Scatter Plot'
-              @scatterPlot.drawScatterPlot(data, labels, container, flags.ScatterPlot)
+              @scatterPlot.drawScatterPlot(data, labels, container, flags)
             when 'Stacked Bar Chart'
               @stackBar.stackedBar(data, labels, container)
             when 'Stream Graph'
@@ -138,7 +140,7 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Bullet Chart'
               @bulletChart.drawBulletChart(data, labels, container)
             when 'Word Cloud'
-              @wordCloud.drawWordCloud(data, labels, container, flags.WordCloud)
+              @wordCloud.drawWordCloud(data, labels, container, flags)
             when 'Sunburst'
               @sunburst.drawSunburst(data, labels, container)
 

@@ -42,141 +42,44 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-options="col for col in sidebar.rCols"
         ng-init="sidebar.rCol = sidebar.rCols[0]"
         )
-<<<<<<< HEAD
-      div.form-horizontal(ng-show="sidebar.selectedGraph.xbin")
-        label(for = "xbin") {{sidebar.selectedGraph.xbinLabel}} &nbsp;
-        input#xbin.form-control(
-        type="text"
-        ng-model="sidebar.flags.BinnedHeatmap.xBin"
-        )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.ybin")
-        label(for = "ybin") {{sidebar.selectedGraph.ybinLabel}} &nbsp;
-        input#ybin.form-control(
-        type="text"
-        ng-model="sidebar.flags.BinnedHeatmap.yBin"
-        )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.threshold")
-        label(for = "threshold") {{sidebar.selectedGraph.thresholdLabel}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.threshold")
+        label(for = "threshold") {{sidebar.selectedGraph.config.vars.tLabel}} &nbsp;
         input#threshold.form-control(
         type="text"
-        ng-model="sidebar.flags.BarChart.threshold"
+        ng-model="sidebar.chartParams.flags.threshold"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.startAngle")
-        label(for = "text") {{sidebar.selectedGraph.text}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.text != null")
+        label(for = "text") {{sidebar.selectedGraph.config.vars.textLabel}} &nbsp;
         input#text.form-control(
         type="text"
-        ng-model="sidebar.flags.WordCloud.text"
+        ng-model="sidebar.chartParams.flags.text"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.startAngle")
-        label(for = "startAngle") {{sidebar.selectedGraph.startLabel}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.startAngle != null")
+        label(for = "startAngle") {{sidebar.selectedGraph.config.vars.startLabel}} &nbsp;
         input#startAngle.form-control(
         type="text"
-        ng-model="sidebar.flags.WordCloud.startAngle"
+        ng-model="sidebar.chartParams.flags.startAngle"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.endAngle")
-        label(for = "endAngle") {{sidebar.selectedGraph.endLabel}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.endAngle != null")
+        label(for = "endAngle") {{sidebar.selectedGraph.config.vars.endLabel}} &nbsp;
         input#endAngle.form-control(
         type="text"
-        ng-model="sidebar.flags.WordCloud.endAngle"
+        ng-model="sidebar.chartParams.flags.endAngle"
         )
-      div.form-horizontal(ng-show="sidebar.selectedGraph.orientations")
-        label(for = "orientations") {{sidebar.selectedGraph.orientations}} &nbsp;
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.orientations != null")
+        label(for = "orientations") {{sidebar.selectedGraph.config.vars.orientationsLabel}} &nbsp;
         input#orientations.form-control(
         type="text"
-        ng-model="sidebar.flags.WordCloud.orientations"
+        ng-model="sidebar.chartParams.flags.orientations"
         )
-      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph'")
-        label
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="toggle horizontal chart"
-          tooltip-placement="right"
-          ) &nbsp;
-          | Toggle Horizontal Graph &nbsp;
-        input(
-        bs-switch
-        type="checkbox"
-        data-toggle="switch"
-        id="toggleHorizontalBarGraph"
-        ng-model="sidebar.flags.BarChart.Horizontal"
-        )
-      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph'")
-        label
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="toggle stacked chart"
-          tooltip-placement="right"
-          ) &nbsp;
-          | Toggle Stacked Bar Graph &nbsp;
-        input(
-        bs-switch
-        type="checkbox"
-        data-toggle="switch"
-        id="toggleStackedBarGraph"
-        ng-model="sidebar.flags.BarChart.Stacked"
-        )
-      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Bar Graph' && sidebar.flags.BarChart.Stacked == true && sidebar.zCol && sidebar.zCol != 'None'")
-        label
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="toggle stacked chart"
-          tooltip-placement="right"
-          ) &nbsp;
-          | Toggle Normalized Stacked Bar Graph &nbsp
-        input(
-        bs-switch
-        type="checkbox"
-        data-toggle="switch"
-        id="toggleNormalizedStackedBarGraph"
-        ng-model="sidebar.flags.BarChart.Normalized"
-        )
-      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Scatter Plot'")
-        label
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="Toggle standard deviation"
-          tooltip-placement="right"
-          ) &nbsp;
-          | Toggle Standard Deviation &nbsp;
-        input(
-        bs-switch
-        type="checkbox"
-        data-toggle="switch"
-        id="toggleScatterStdev"
-        ng-model="sidebar.flags.ScatterPlot.showSTDEV"
-        )
-      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Scatter Plot'")
-        label
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="Toggle standard deviation"
-          tooltip-placement="right"
-          ) &nbsp;
-          | Toggle Binned &nbsp;
-        input(
-        bs-switch
-        type="checkbox"
-        data-toggle="switch"
-        id="toggleScatterBinned"
-        ng-model="sidebar.flags.ScatterPlot.binned"
-        )
-      div.form-horizontal.bootstrap-switch-square(ng-show="sidebar.selectedGraph.name == 'Binned Heatmap'")
-        label
-          span.glyphicon.glyphicon-question-sign(
-          aria-hidden="true"
-          uib-tooltip="Toggle marginal histograms"
-          tooltip-placement="right"
-          ) &nbsp;
-          | Toggle Marginal Histograms &nbsp;
-=======
       div.form-horizontal(ng-show="sidebar.selectedGraph.config.params.xBin != null")
-        label(for = "xbin") {{sidebar.selectedGraph.xbinLabel}} &nbsp;
+        label(for = "xbin") {{sidebar.selectedGraph.config.params.xbinLabel}} &nbsp;
         input#xbin.form-control(
         type="text"
         ng-model="sidebar.chartParams.flags.xBin"
         )
       div.form-horizontal(ng-show="sidebar.selectedGraph.config.params.yBin != null")
-        label(for = "ybin") {{sidebar.selectedGraph.ybinLabel}} &nbsp;
+        label(for = "ybin") {{sidebar.selectedGraph.config.params.ybinLabel}} &nbsp;
         input#ybin.form-control(
         type="text"
         ng-model="sidebar.chartParams.flags.yBin"
@@ -191,33 +94,21 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
           tooltip-placement="right"
           ) &nbsp;
           | Toggle {{param}} &nbsp;
->>>>>>> 95d6221ce872742d0a867ad90912d6b8a5a5c29d
         input(
         bs-switch
         type="checkbox"
         data-toggle="switch"
-<<<<<<< HEAD
-        id="toggleMarginalHistogram"
-        ng-model="sidebar.flags.BinnedHeatmap.marginalHistogram"
-        )
-    div(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
-=======
         id= "{{param}}Switch"
         ng-model="sidebar.chartParams.flags[param]"
         )
-    div(ng-show="!sidebar.selectedGraph.config.vars.x")
->>>>>>> 95d6221ce872742d0a867ad90912d6b8a5a5c29d
+    div(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
       select.form-control(
       multiple
       ng-model="sidebar.chosenCols"
       ng-options="col for col in sidebar.numericalCols"
       ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
       )
-<<<<<<< HEAD
     div.form-group(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
-=======
-    div.form-group(ng-show="!sidebar.selectedGraph.config.vars.x")
->>>>>>> 95d6221ce872742d0a867ad90912d6b8a5a5c29d
       label Labels column &nbsp;
       //- show data header column names
       select.form-control(

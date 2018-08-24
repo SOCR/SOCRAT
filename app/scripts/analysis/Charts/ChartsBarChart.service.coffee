@@ -45,7 +45,7 @@ module.exports = class ChartsBarChart extends BaseService
       for item in data
         item["y_vals"] = item["y"]
 
-    if !flags.Horizontal
+    if !flags.horizontal
       y = "y"
       x = "x"
       y2 = "y2"
@@ -54,7 +54,7 @@ module.exports = class ChartsBarChart extends BaseService
       x = "y"
       y2 = "x2"
 
-    if flags.Stacked
+    if flags.stacked
       vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
         "width": 500,
@@ -175,9 +175,9 @@ module.exports = class ChartsBarChart extends BaseService
       }
 
     if labels["zLab"].value and labels["zLab"].value isnt "None"
-      if flags.Stacked
+      if flags.stacked
         vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
-        if flags.Normalized
+        if flags.normalized
           vlSpec["encoding"]["#{y}"]["stack"] = "normalize"
       else
         vlSpec["layer"][0]["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}

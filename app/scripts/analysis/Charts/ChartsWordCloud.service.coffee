@@ -29,7 +29,7 @@ module.exports = class ChartsWordCloud extends BaseService
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
-    data = if flags.text then [flags.text] else data
+    content = if flags.text then [flags.text] else data
     startAngle = if flags.startAngle then flags.startAngle else 0
     endAngle = if flags.endAngle then flags.endAngle else 90
     orientations = if flags.orientations then flags.orientations else 1
@@ -42,7 +42,7 @@ module.exports = class ChartsWordCloud extends BaseService
       "data": [
         {
           "name": "table",
-          "values": data,
+          "values": content,
           "transform": [
             {
               "type": "countpattern",
