@@ -33,11 +33,6 @@ module.exports = class ChartsHistogram extends BaseService
       "height": 500,
       "data": {"values": data},
       "layer": [{
-        "selection": {
-          "grid": {
-            "type": "interval", "bind": "scales"
-          }
-        },
         "mark": "bar",
         "encoding": {
           "x": {

@@ -93,6 +93,8 @@ module.exports = class ChartsDir extends BaseDirective
           d3charts = d3.select(elem.find('div')[0]).node().parentNode
           container = d3.select(d3charts)
 
+          console.log(flags)
+
           switch scheme.name
             when 'Trellis Chart'
               @trellis.drawTrellis(data, labels, container)

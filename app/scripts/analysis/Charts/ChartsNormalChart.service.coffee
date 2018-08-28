@@ -253,7 +253,7 @@ module.exports = class ChartsNormalChart extends BaseService
     }
 
     opt =
-      "actions": {export: true, source: false, editor: true}
+      "actions": {export: true, source: false, editor: false}
 
     @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
       # @vt.vega(result.view)

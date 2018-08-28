@@ -60,16 +60,11 @@ module.exports = class ChartsBarChart extends BaseService
         "width": 500,
         "height": 500,
         "data": {"values": data},
-        "selection": {
-          "grid": {
-            "type": "interval", "bind": "scales"
-          }
-        },
         "mark": "bar",
         "encoding": {
           "#{x}": {
             "field": labels.xLab.value,
-            "type": "quantitative",
+            "type": "ordinal",
             "axis": {"title": labels.xLab.value}
           },
           "#{y}": {
@@ -183,7 +178,7 @@ module.exports = class ChartsBarChart extends BaseService
         vlSpec["layer"][0]["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
 
     opt =
-      "actions": {export: true, source: false, editor: true}
+      "actions": {export: true, source: false, editor: false}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)

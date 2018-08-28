@@ -107,7 +107,7 @@ module.exports = class ChartsWordCloud extends BaseService
     }
 
     opt =
-      "actions": {export: true, source: false, editor: true}
+      "actions": {export: true, source: false, editor: false}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       return

@@ -92,8 +92,8 @@ module.exports = class ChartsList extends BaseService
           w: false
           x: ['integer', 'number']
           y: ['integer', 'number']
-          z: ['integer', 'string']
-          r: ['integer', 'string']
+          z: ['integer', 'string', 'number']
+          r: ['integer', 'string', 'number']
           message: "Choose an x variable, a y variable and a radius variable."
           xLabel: "X"
           yLabel: "Y"
