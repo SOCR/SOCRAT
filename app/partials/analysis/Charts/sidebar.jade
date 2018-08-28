@@ -50,8 +50,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         )
       div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.text != null")
         label(for = "text") {{sidebar.selectedGraph.config.vars.textLabel}} &nbsp;
-        input#text.form-control(
-        type="text"
+        textarea#text.form-control(
         ng-model="sidebar.chartParams.flags.text"
         )
       div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.startAngle != null")

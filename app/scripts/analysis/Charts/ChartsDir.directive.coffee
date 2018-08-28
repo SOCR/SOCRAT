@@ -90,8 +90,6 @@ module.exports = class ChartsDir extends BaseDirective
             scheme = newChartData.chartParams.graph
             flags = newChartData.chartParams.flags
 
-          console.log(flags)
-
           d3charts = d3.select(elem.find('div')[0]).node().parentNode
           container = d3.select(d3charts)
 

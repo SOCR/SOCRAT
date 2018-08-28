@@ -266,8 +266,6 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @chartParams.labels = labels
     @chartParams.graph = @selectedGraph
 
-    console.log(@chartParams)
-
     @msgService.broadcast 'charts:updateGraph',
       chartParams: @chartParams
 
