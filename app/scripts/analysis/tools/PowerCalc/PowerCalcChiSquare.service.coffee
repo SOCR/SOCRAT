@@ -32,7 +32,6 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @chiSquareAlpha=0.05
     @update()
 
-
   setAlpha: (alphaIn) ->
     @chiSquareAlpha = alphaIn
     @update()
@@ -66,7 +65,6 @@ module.exports = class PowerCalcTwoTGUI extends BaseService
     @chiSquareNMax = Math.max(@chiSquareNMax, @chiSquareN)
     @chiSquareDfMax = Math.max(@chiSquareDf, @chiSquareDfMax)
     return
-
 
   update: (tar)->
     # update parameters

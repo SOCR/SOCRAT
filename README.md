@@ -20,7 +20,7 @@ Clone the repository:
     $> git clone https://github.com/SOCR/SOCRAT.git
     $> cd SOCRAT
 
-Switch to the `dev` branch to see latest changes or to contribute to the project:
+[optional] To see latest changes or to contribute to the project you can switch to the `dev` branch:
 
     $> git checkout dev
     $> git pull
@@ -29,20 +29,24 @@ Now, install all the dependencies:
 
     $> npm install
 
-After that build the project and start the web-server:
+Some errors and warnings may appear during the installation – they can be ignored
+as long as the project compiles.
 
-    $> npm run build
-    $> node server.js
-
-Now you shoule be able to access SOCRAT at `localhost:3000`.
-
-Start the development server with:
+[optional] Start the development server with:
 
     $> npm run serve
 
 You will see the application running at `localhost:8080` and the page will live
 reload on saved changes in source code.
-Also see how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contrubition instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
+
+To build the project and start the web-server:
+
+    $> npm run build
+    $> node server.js
+
+Now you should be able to access SOCRAT at `localhost:3000`.
+
+Also see how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contribution instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
 
 Motivation
 --------------
@@ -59,6 +63,26 @@ Publications
 If you find our work useful, please cite our paper:
 
 Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017, 6 pages. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
+
+```
+@inproceedings{kalinin2017socrat,
+   author = {Kalinin, Alexandr A. and Palanimalai, Selvam and Dinov, Ivo D.},
+   title = {SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications},
+   booktitle = {Proceedings of the 2Nd Workshop on Human-In-the-Loop Data Analytics},
+   series = {HILDA'17},
+   year = {2017},
+   isbn = {978-1-4503-5029-7},
+   location = {Chicago, IL, USA},
+   pages = {1-6},
+   articleno = {8},
+   numpages = {6},
+   url = {http://doi.acm.org/10.1145/3077257.3077262},
+   doi = {10.1145/3077257.3077262},
+   publisher = {ACM},
+   address = {New York, NY, USA},
+   keywords = {System Design, Visual Analytics, Web Platform Architecture},
+}
+```
 
 Technologies/Packages
 ----------------
@@ -83,7 +107,7 @@ Copyright and License
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013-2017 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2018 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License

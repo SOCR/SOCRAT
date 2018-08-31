@@ -12,6 +12,8 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		# required basic modules
 		@d3 = require 'd3'
+		@ve = require 'vega-embed'
+		@vt = require 'vega-tooltip/build/vega-tooltip.js'
 		@distribution = require 'distributome'
 		@msgService = @app_analysis_stats_msgService
 		@algorithmService = @app_analysis_stats_algorithms
@@ -151,7 +153,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		return
 
-
 	# functions for CIOM only 
 	CIOPRetrieve:() ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
@@ -210,7 +211,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 				@$scope.$apply()
 		)
 
-
 		if @deployed is true
 			for sl in sliders
 				sl.slider("disable")
@@ -219,4 +219,4 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			for sl in sliders
 				sl.slider("enable")
 				sl.find('.ui-slider-handle').show()
-		return  
+		return

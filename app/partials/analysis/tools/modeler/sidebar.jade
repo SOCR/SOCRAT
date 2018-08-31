@@ -1,0 +1,18 @@
+div(ng-controller="modelerSidebarCtrl as sidebar")
+  legend Distribution
+    select#chooseDistribution.form-control(
+    value="Choose a Distribution"
+    ng-model="sidebar.selectedDistributions"
+    ng-options="g as g.name for g in sidebar.distributions"
+    ng-change="sidebar.updateSidebarControls()"
+    ng-init="sidebar.selectedDistributions = sidebar.distributions[0]"
+    )
+  legend Variables
+  div.form-inline(ng-show="sidebar.dataFrame && sidebar.xCol")
+    div.form-horizontal
+      label(for = "x") X &nbsp;
+      select#x.form-control(
+      ng-change="sidebar.updateDataPoints()"
+      ng-model="sidebar.xCol"
+      ng-options="col for col in sidebar.xCols"
+      )

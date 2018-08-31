@@ -896,7 +896,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@params.n = @chi2N
 		@params.df = @chi2Df
 		@params.power = @chi2Power
-		@syncData(@params) 
+		@syncData(@params)
 
 	#functions for SimplePoissonGUI only
 	SimplePoissonGUI_click: () ->
@@ -1176,4 +1176,3 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		chartData = @algorithmService.getChartData @selectedAlgorithm
 		@$timeout => @chartData = chartData,
 		5
-

@@ -77,7 +77,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 		$("#twoPropToggleThresh").on 'switchChange.bootstrapSwitch', () =>
 			@threshMode = !@threshMode
 
-
 		# initialize slider
 		@slider()
 
@@ -413,7 +412,6 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			size2: size2
 			target: @curTarget
 
-
 	findMinMax: (data, index1, index2, isTwo) ->
 		if @newTarget
 			@newTarget = false
@@ -553,14 +551,4 @@ module.exports = class PowerCalcSidebarCtrl extends BaseCtrl
 			if b[0] isnt item then return false
 			i+=1
 		return true
-
-
-
-
-
-
-
-
-
-
-
+  

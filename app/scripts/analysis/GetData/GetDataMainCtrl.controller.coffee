@@ -164,8 +164,10 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
       if file?
         # TODO: replace d3 with datalib
         dataResults = @d3.csv.parseRows file
-        data = @dataAdaptor.toDataFrame dataResults
-        @passReceivedData data
+        @dataAdaptor.toDataFrame dataResults
+        .then( (dataFrame)=>
+          @passReceivedData dataFrame
+        )
     )
 
   ## Other instance methods

@@ -25,10 +25,12 @@ module.exports = class ChartsLineChart extends BaseService
 
     @ve = require 'vega-embed'
 
-  lineChart: (data,ranges,width,height,_graph,labels,container) ->
+  lineChart: (data,ranges,width,height,_graph, labels,container) ->
 
-    console.log(data)
-    
+    for item in data
+      item["x_vals"] = item["x"]
+      item["y_vals"] = item["y"]
+
     if (data[0]["z"])
       vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -37,8 +39,17 @@ module.exports = class ChartsLineChart extends BaseService
         "data": {"values": data},
         "mark": "line",
         "encoding": {
-          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}},
+          "x": {
+            "field": "x_vals",
+            "type": "temporal",
+            "axis": {"title": labels.xLab.value}
+          },
+          "y": {
+            "aggregate": "sum",
+            "field": "y_vals",
+            "type": "quantitative",
+            "axis": {"title": labels.yLab.value}
+          },
           "color": {"field": "z", "type": "nominal"}
         }
       }
@@ -50,15 +61,23 @@ module.exports = class ChartsLineChart extends BaseService
         "data": {"values": data},
         "mark": "line",
         "encoding": {
-          "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
-          "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
+          "x": {
+            "field": "x_vals",
+            "type": "temporal",
+            "axis": {"title": labels.xLab.value}
+          },
+          "y": {
+            "aggregate": "sum",
+            "field": "y_vals",
+            "type": "quantitative",
+            "axis": {"title": labels.yLab.value}
+          }
         }
       }
 
-
     opt =
       "actions": {export: true, source: false, editor: false}
-    
+
     @ve '#vis', vlSpec, opt, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec
       # result.view is the View, which resides under the '#vis' element
