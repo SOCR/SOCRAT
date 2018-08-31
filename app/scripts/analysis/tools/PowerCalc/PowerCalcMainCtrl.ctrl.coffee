@@ -96,7 +96,15 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 			MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
 		#receive data
-		@$scope.$on 'powercalc:data', (event, data)=>
+		@$scope.$on 'powercalc:onetwoTestdata', (event, data)=>
+			@algorithmService.passDataByName(@selectedAlgorithm, data)
+			@loadData()
+
+		@$scope.$on 'powercalc:onePropdata', (event, data)=>
+			@algorithmService.passDataByName(@selectedAlgorithm, data)
+			@loadData()
+
+		@$scope.$on 'powercalc:twoPropdata', (event, data)=>
 			@algorithmService.passDataByName(@selectedAlgorithm, data)
 			@loadData()
 
@@ -802,6 +810,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 	chi2Retrieve: () ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
 		@chi2Power = parseFloat(@params.power.toPrecision(4))
+		console.log @chi2Power
 		@chi2chi2 = @params.chi2
 		@chi2chi2Max = @params.chi2Max
 		@chi2EffSize = @params.effSize
@@ -887,8 +896,7 @@ module.exports = class PowerCalcMainCtrl extends BaseCtrl
 		@params.n = @chi2N
 		@params.df = @chi2Df
 		@params.power = @chi2Power
-		@syncData(@params) 
-		return
+		@syncData(@params)
 
 	#functions for SimplePoissonGUI only
 	SimplePoissonGUI_click: () ->
