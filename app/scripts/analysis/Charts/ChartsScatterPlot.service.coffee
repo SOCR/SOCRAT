@@ -1,3 +1,4 @@
+
 'use strict'
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'

@@ -1,569 +1,581 @@
 div(ng-controller="powerCalcMainCtrl as mainArea")
 
-	div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
-		.row
-			.col-md-8
-				h6 Test of One Proportion &nbsp;
-					span.glyphicon.glyphicon-question-sign(
-					aria-hidden="true"
-					uib-tooltip="This power analysis is used to test whether a proportion, p, is equal to a reference value, p0"
-					tooltip-placement="bottom"
-					)
-				power-calc-viz
-				.form-inline
-					label Power: &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.onePropPower"
-						ng-click="mainArea.onePropCalcPower()" 
-						ng-keypress="mainArea.onePropPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="0.0001"
-						name='onePropPower'
-						)
-					#onePropPowerUI
-			.col-md-4
-					.form-inline
-						label Mode: &nbsp;
-						select.form-control(
-						ng-model="mainArea.onePropMode"
-						ng-change="mainArea.onePropSync()"
-						ng-options="mode for mode in mainArea.onePropModes"
-						)
-					.form-inline
-						label P&nbsp;
-							input.form-control.input-sm.flat(
-							ng-model="mainArea.onePropP"
-							ng-click="mainArea.onePropSync()"
-							ng-keypress="mainArea.onePropPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="0.001"
-							name='onePropP'
-							)
-						#onePropPUI
-					.form-inline
-						label P
-							sub 0
-							| &nbsp;
-							input.form-control.input-sm.flat(
-							ng-model="mainArea.onePropP0"
-							ng-click="mainArea.onePropSync()"
-							ng-keypress="mainArea.onePropPress($event)"
-							type="number"
-							step="0.001"
-							name='onePropP0'
-							)
-						#onePropP0UI
-					.form-inline
-						label N&nbsp;
-							input.form-control.input-sm.flat(
-							ng-model="mainArea.onePropN"
-							ng-click="mainArea.onePropSync()"
-							ng-keypress="mainArea.onePropPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="1"
-							name='onePropN'
-							)
-						#onePropNUI
-					.form-inline
-						label z: &nbsp;
-							b {{mainArea.onePropZ}}
-					.form-inline
-						label p-value: &nbsp;
-							b {{mainArea.onePropPvalue}}
+  div(ng-show='mainArea.selectedAlgorithm == "Test of One Proportion"')
+    .row
+      h6 Test of One Proportion &nbsp;
+        span.glyphicon.glyphicon-question-sign(
+        aria-hidden="true"
+        uib-tooltip="This power analysis is used to test whether a proportion, p, is equal to a reference value, p_0"
+        tooltip-placement="bottom"
+        )
+      .col-md-8
+        power-calc-viz
+        .form-inline
+          label Power: {{mainArea.onePropPower}}
+          #onePropPowerUI
+      .col-md-4
+          .form-inline
+            label Mode: &nbsp;
+            select.form-control(
+              ng-model="mainArea.onePropMode"
+              ng-change="mainArea.onePropSync()"
+              ng-options="mode for mode in mainArea.onePropModes"
+            )
+          .form-inline
+            label P&nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.onePropP"
+              ng-click="mainArea.onePropSync()"
+              ng-keypress="mainArea.onePropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='onePropP'
+              )
+            #onePropPUI
+          .form-inline
+            label P
+              sub 0
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.onePropP0"
+              ng-click="mainArea.onePropSync()"
+              ng-keypress="mainArea.onePropPress($event)"
+              type="number"
+              step="0.001"
+              name='onePropP0'
+              )
+            #onePropP0UI
+          .form-inline
+            label N&nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.onePropN"
+              ng-click="mainArea.onePropSync()"
+              ng-keypress="mainArea.onePropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='onePropN'
+              )
+            #onePropNUI
+          .form-inline
+            label z: &nbsp;
+              b {{mainArea.onePropZ}}
+          .form-inline
+            label p-value: &nbsp;
+              b {{mainArea.onePropPvalue}}
 
-	div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
-		.row
-			.col-md-8
-				h6 Test of Two Proportions &nbsp;
-					span.glyphicon.glyphicon-question-sign(
-					aria-hidden="true"
-					uib-tooltip="This calculator is useful for tests about whether the proportions for two samples are different."
-					tooltip-placement="bottom"
-					)
-				power-calc-viz
-				.form-inline
-					label Power: &nbsp
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.twoPropPower"
-						ng-click="mainArea.twoPropCalcPower()"
-						ng-keypress="mainArea.twoPropPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="0.0001"
-						name='twoPropPower'
-						)
-					#twoPropPowerUI
-			.col-md-4
-				.form-inline
-						label Mode: &nbsp;
-						select.form-control(
-						ng-model="mainArea.twoPropMode"
-						ng-change="mainArea.twoPropSync()"
-						ng-options="mode for mode in mainArea.twoPropModes"
-						)
-				.form-inline
-						label P&nbsp;
-							sub 1
-							input.form-control.input-sm.flat(
-							ng-model="mainArea.twoPropP1"
-							ng-click="mainArea.twoPropSync()"
-							ng-keypress="mainArea.twoPropPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="0.001"
-							name='twoPropP1'
-							)
-						#twoPropP1UI
-					.form-inline
-						label P
-							sub 2
-							input.form-control.input-sm.flat(
-							ng-model="mainArea.twoPropP2"
-							ng-click="mainArea.twoPropSync()"
-							ng-keypress="mainArea.twoPropPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="0.001"
-							name='twoPropP2'
-							)
-						#twoPropP2UI
-					.form-inline
-						label N
-							sub 1
-							| &nbsp;
-							input.form-control.input-sm.flat(
-							ng-model="mainArea.twoPropN1"
-							ng-click="mainArea.twoPropSync()"
-							ng-keypress="mainArea.twoPropPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="1"
-							name='twoPropN1'
-							)
-						#twoPropN1UI
-					.form-inline
-						label N
-							sub 2
-							input.form-control.input-sm.flat(
-							ng-model="mainArea.twoPropN2"
-							ng-click="mainArea.twoPropSync()"
-							ng-keypress="mainArea.twoPropPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="1"
-							name='twoPropN2'
-							)
-						#twoPropN2UI
-					.form-inline
-						label z-score: &nbsp;
-							b {{mainArea.twoPropZ}}
-					.form-inline
-						label p-value: &nbsp;
-							b {{mainArea.twoPropPValue}}
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
 
-	div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
-		.row
-			.col-md-8
-				h6 One-sample (or paired) t Test &nbsp;
-					span.glyphicon.glyphicon-question-sign(
-					aria-hidden="true"
-					uib-tooltip="This calculator tests whether a mean, μ, is equal to a reference value, μ0."
-					tooltip-placement="bottom"
-					)
-				power-calc-viz
-				.form-inline
-					label Power: &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.oneTestPower"
-						ng-click="mainArea.oneTestCalcPower()"
-						ng-keypress="mainArea.oneTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="0.001"
-						name='oneTestPower'
-						)
-					#oneTestPowerUI
-			.col-md-4
-				.form-inline
-					label Mode: &nbsp;
-					select.form-control(
-					ng-model="mainArea.oneTestMode"
-					ng-change="mainArea.oneTestSync()"
-					ng-options="mode for mode in mainArea.oneTestModes"
-					)
-				.form-inline
-					label N&nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.oneTestN"
-						ng-click="mainArea.oneTestSync()"
-						ng-keypress="mainArea.oneTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='oneTestN'
-						)
-					#oneTestNUI
-				.form-inline
-					label μ
-						sub 0
-						| &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.oneTestMean0"
-						ng-click="mainArea.oneTestSync()"
-						ng-keypress="mainArea.oneTestPress($event)"
-						type="number"
-						step="1"
-						name='oneTestMean0'
-						)
-					#oneTestMean0UI
-				.form-inline
-					label μ&nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.oneTestMean"
-						ng-click="mainArea.oneTestSync()"
-						ng-keypress="mainArea.oneTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='oneTestMean'
-						)
-					#oneTestMeanUI
-				.form-inline
-					label σ&nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.oneTestStDev"
-						ng-click="mainArea.oneTestSync()"
-						ng-keypress="mainArea.oneTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='oneTestStDev'
-						)
-					#oneTestStDevUI
-				.form-inline
-					label t-score: &nbsp;
-						b {{mainArea.oneTestT}}
-				.form-inline
-					label p-value: &nbsp;
-						b {{mainArea.oneTestPvalue}}
-
-	div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
-		h3 Pilot Study
-		p <i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study</i>
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Percent by which N is under-estimated: &nbsp
-				input#pctUnder(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('pctUnder',$event);")
-			div(style='display:inline')
-				#pctUnderui(uib-tooltip="Manipulate this bar to adjust Percentage" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Risk of exceeding this percentage: &nbsp
-				input#risk(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('risk',$event);")
-			div(style='display:inline')
-				#riskui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| d.f. for error in pilot studye: &nbsp
-				input#df(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('df',$event);")
-			div(style='display:inline')
-				#dfui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
-		div
-			input#Pilot_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.Pilot_show_help();')
-			div(ng-show='mainArea.Pilot_help == true;')
-				p the criterion employed in this dialog is the risk of underestimating N by a specified percentage 100*P.  This is approximately equal to the risk of underestimating sigma (pretty much regardless of what criterion -- power, CI width, etc. -- is used for sample-size determination). In a normal setting, this risk is a simple calculation on the chi-square distribution: risk = Pr{Q < (1-P)nu}, where Q is chi-square with nu d.f.
-				<br>
-				p The dialog has three sliders -- for 100P, for risk, and for nu.  If you vary P or nu, the risk is recomuted based on the above formula.  If you vary risk, nu is recomputed. (If the solve method fails, simply set the d.f. so the risk is in the ballpark, and try again
-
-	div(ng-show='mainArea.selectedAlgorithm == "R-square (multiple correlation)"')
-		h3 R-square (multiple correlation)
-		p <i>This dialog provides rudimentary power analysis for a test of a coefficient of multiple determination (R-square). The underlying model is that we have a sample of N IID multivariate random vectors of length p, and that the p^{th} variable is regressed on the first p-1 variables. $ R^2 = 1 - \frac{SS(error)}{SS(total)} $ is the coefficient of multiple determination.</i>
-		div
-			div#showN(style='margin-left=40%;display:inline')
-				| Alpha: &nbsp
-				input#alphaf(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='alpha', ng-mouseleave='mainArea.RsquareGUI_valiad($event);')
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| True $rho^2$ value: &nbsp
-				input#rho2f(name='rho2',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('rho2',$event);")
-			div(style='display:inline')
-				#rho2uif(uib-tooltip="Manipulate this bar to adjust $ rho^2 $ value" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Sample Size: &nbsp
-				input#nf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('n',$event);")
-			div(style='display:inline')
-				#nuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Number of Regressors: &nbsp
-				input#predsf(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('preds',$event);")
-			div(style='display:inline')
-				#predsuif(uib-tooltip="Manipulate this bar to adjust sample size" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| power: &nbsp
-				input#powerf(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.RsquareGUI_changeSlider('power',$event);")
-			div(style='display:inline')
-				#poweruif(disabled uib-tooltip="You cannot manipulate this bar" tooltip-placement="top")
-		div
-			input#RsuareGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.RsquareGUI_show_help();')
-			div(ng-show='mainArea.RsquareGUI_help == true;')
-				p The usual way to test a hypothesis about $ R^2 $ is to transform it to an F statistic:
-				<br>
-				p $$ F = \frac{(n-k-1)*R^2}{k*(1-R^2)} $$
-				<br>
-				p This is the usual ANOVA F.  The distinction that makes this dialog different from the one for regular ANOVA is  that the predictors are random.  The power computed here is unconditional, rather than conditional.
-				<br>
-				p The GUI components are as follows:
-				<br>
-				p Alpha: The desired significance level of the test
-				p True $ rho^2 $ value: The population value of R^2 at which we want to compute the power.
-				p Sample size: The number of N multivariate observations in the data set
-				p Number of regressors: The value of k = p - 1.
-				p Power (output only):  The power of the test.
-				<br>
-				p References:
-				p Gatsonis, C. and Sampson, A. (1989),  Multiple correlation: Exact power and sample size calculations. Psychological Bulletin, 106, 516--524.
-				p Benton, D. and Krishnamoorthy, K. (2003),  Computing discrete mixtures of continuous distributions..., Computational Statistics and Data Analysis, 43, 249--267
-
-	div(ng-show='mainArea.selectedAlgorithm == "Generic chi-square test"')
-		h3 Generic chi-square test
-		p <i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations</i>
-		.row
-			h5 Prototype Date:
-			.form-inline
-				label Chi2*: &nbsp;
-				input.form-control.input-sm.flat(
-					ng-model="mainArea.chi2chi2"
-					ng-change="mainArea.chi2Sync('chi2')"
-					type="number"
-					step="0.01"
-				)
-				#chi2chi2UI
-			.form-inline
-				label Effective Size: &nbsp;
-				input.form-control.input-sm.flat(
-					ng-model="mainArea.chi2EffSize"
-					ng-change="mainArea.chi2Sync('effSize')"
-					type="number"
-					step="0.01"
-				)
-				#chi2EffSizeUI
-			h5 Study Parameter
-			.form-inline
-				label Degree of Freedom: &nbsp;
-				input.form-control.input-sm.flat(
-					ng-model="mainArea.chi2Df"
-					ng-change="mainArea.chi2Sync('df')"
-					type="number"
-					step="1"
-				)
-				#chi2DfUI
-			.form-inline
-				label N: &nbsp;
-				input.form-control.input-sm.flat(
-					ng-model="mainArea.chi2N"
-					ng-change="mainArea.chi2Sync('n')"
-					type="number"
-					step="1"
-				)
-				#chi2NUI
-			.form-inline
-				label Power: &nbsp;
-				input.form-control.input-sm.flat(
-					ng-model="mainArea.chi2Power"
-					ng-change="mainArea.chi2Sync('power')"
-					type="number"
-					step="0.01"
-				)
-				#chi2PowerUI
+  div(ng-show='mainArea.selectedAlgorithm == "Test of Two Proportions"')
+    .row
+      h6 Test of Two Proportions &nbsp;
+      .col-md-8
+        span.glyphicon.glyphicon-question-sign(
+        aria-hidden="true"
+        uib-tooltip="This calculator is useful for tests about whether the proportions for two samples are different."
+        tooltip-placement="bottom"
+        )
+        power-calc-viz
+        .form-inline
+          label Power: &nbsp
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.twoPropPower"
+            ng-click="mainArea.twoPropCalcPower()"
+            ng-keypress="mainArea.twoPropPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="0.0001"
+            name='twoPropPower'
+            )
+          #twoPropPowerUI
+      .col-md-4
+        .form-inline
+            label Mode: &nbsp;
+            select.form-control(
+            ng-model="mainArea.twoPropMode"
+            ng-change="mainArea.twoPropSync()"
+            ng-options="mode for mode in mainArea.twoPropModes"
+            )
+        .form-inline
+            label P&nbsp;
+              sub 1
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropP1"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='twoPropP1'
+              )
+            #twoPropP1UI
+          .form-inline
+            label P
+              sub 2
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropP2"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.001"
+              name='twoPropP2'
+              )
+            #twoPropP2UI
+          .form-inline
+            label N
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropN1"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoPropN1'
+              )
+            #twoPropN1UI
+          .form-inline
+            label N
+              sub 2
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.twoPropN2"
+              ng-click="mainArea.twoPropSync()"
+              ng-keypress="mainArea.twoPropPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoPropN2'
+              )
+            #twoPropN2UI
+          .form-inline
+            label z-score: &nbsp;
+              b {{mainArea.twoPropZ}}
+          .form-inline
+            label p-value: &nbsp;
+              b {{mainArea.twoPropPValue}}
 
 
-	div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
-		h3 Power of a Simple Poisson Test
-		p <i>This dialog provides rudimentary power analysis for an exact test of a Poisson parameter.  Specifically, our data are assumed to be x_1, x_2, ..., x_n iid Poisson(lambda), so that x = sum{x_i} is Poisson with mean n*lambda serves as the test statistic.  The critical value(s) for x are obtained using quantiles of the null Poisson distribution so as to cut off tail(s) of probability less than or equal to alpha.  The power of the test is then the probability of the critical region, computed from a Poisson distribution with the specified value of lambda.</i>
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Lambda0: &nbsp
-				input#lambda0h(name='lambda0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('lambda0',$event);")
-			div(style='display:inline')
-				#lambda0uih(disabled uib-tooltip="Manipulate this bar to adjust lambda0" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			| Alternative: &nbsp
-			select#alth(name='alt' style='border:0; background-color:white; color:#f6931f' ng-model="mainArea.SimplePoissonGUI_alt" ng-change="mainArea.SimplePoissonGUI_opt_submit('1','alt');")
-				option(value='0') lambda < lambda0
-				option(value='1') lambda != lambda0
-				option(value='2') lambda > lambda0
-		div
-			div(style='margin-left=40%;display:inline')
-				| Alpha: &nbsp
-				input#alphah(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='alpha', ng-mouseleave='mainArea.SimplePoissonGUI_valiad($event);')
-		h5 Boundaries of Acceptance Region:
-		div
-			div(style='margin-left=40%;display:inline')
-				| Lower: &nbsp
-				p#lowerh(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='lower')
-		div(style='margin-top:20px;')
-			div(style='margin-left=40%;display:inline')
-				| Upper: &nbsp
-				p#upperh(type='text',style='border:0; background-color:#f5f5f5; color:black; font-weight:bold;' name='upper')
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Lambda: &nbsp
-				input#lambdah(name='lambda',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('lambda',$event);")
-			div(style='display:inline')
-				#lambdauih(disabled uib-tooltip="Manipulate this bar to adjust lambda" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| n: &nbsp
-				input#nh(name='n',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('n',$event);")
-			div(style='display:inline')
-				#nuih(disabled uib-tooltip="Manipulate this bar to adjust population" tooltip-placement="top")
-		div(style='margin-top:20px;')
-			div(style='display:inline')
-				| Power: &nbsp
-				input#powerh(disabled name='power',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.SimplePoissonGUI_changeSlider('power',$event);")
-			div(style='display:inline')
-				#poweruih(disabled uib-tooltip="You cannot manipulate this bar" tooltip-placement="top")
-		div
-			input#SimplePoissonGUI_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.SimplePoissonGUI_show_help();')
-			div(ng-show='mainArea.SimplePoissonGUI_help == true;')
-				p The GUI components are as follows:
-				<br>
-				p lambda0: The value of the Poisson parameter under the null hypothesis.
-				<br>
-				p alternative: Choose a two-tailed alternative (lambda != lambda0) or one of the one-tailed alternatives.
-				<br>
-				p Boundaries of acceptance region (output values):  These are the lower and/or upper values of x for which the null hypothesis would NOT be rejected.
-				<br>
-				p size (output value):  The actual probability of the critical region under the null hypothesis.
-				<br>
-				p lambda: The Poisson parameter at which the power is to be calculated.
-				<br>
-				p n: The sample size.
-				<br>
-				p power: The probability of the critical region, given lambda and n.</p>
-				
-	div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
-		.row
-			.col-md-8
-				h6 Two-sample t Test with power analysis &nbsp;
-					span.glyphicon.glyphicon-question-sign(
-					aria-hidden="true"
-					uib-tooltip="This power analysis is for tests concerning whether the means of two groups are different."
-					tooltip-placement="bottom"
-					)
-				power-calc-viz
-				.form-inline
-					label Power: &nbsp
-						input.form-control.input-sm.flat(
-							ng-model="mainArea.twoTestPower"
-							ng-click="mainArea.twoTestCalcPower()"
-							ng-keypress="mainArea.twoTestPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="0.0001"
-							name='twoTestPower'
-						)
-					#twoTestPowerUI
-			.col-md-4
-				.form-inline
-					label Mode: &nbsp;
-					select.form-control(
-						ng-model="mainArea.twoTestMode"
-						ng-change="mainArea.twoTestSync()"
-						ng-options="mode for mode in mainArea.twoTestModes"
-					)
-				.form-inline
-					label N
-						sub 1 &nbsp;
-						input.form-control.input-sm.flat(
-							ng-model="mainArea.twoTestN1"
-							ng-click="mainArea.twoTestSync()"
-							ng-keypress="mainArea.twoTestPress($event)"
-							ng-disabled="mainArea.deployed"
-							type="number"
-							step="1"
-							name='twoTestN1'
-						)
-					#twoTestN1UI
-				.form-inline
-					label N
-						sub 2
-						| &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.twoTestN2"
-						ng-click="mainArea.twoTestSync()"
-						ng-keypress="mainArea.twoTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='twoTestN2'
-						)
-					#twoTestN2UI
-				.form-inline
-					label μ
-						sub 1
-						| &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.twoTestMean1"
-						ng-click="mainArea.twoTestSync()"
-						ng-keypress="mainArea.twoTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='twoTestMean1'
-						)
-					#twoTestMean1UI
-				.form-inline
-					label μ
-						sub 2
-						| &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.twoTestMean2"
-						ng-click="mainArea.twoTestSync()"
-						ng-keypress="mainArea.twoTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='twoTestMean2'
-						)
-					#twoTestMean2UI
-				.form-inline
-					label σ
-						sub 1
-						| &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.twoTestStDev1"
-						ng-click="mainArea.twoTestSync()"
-						ng-keypress="mainArea.twoTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='twoTestStDev1'
-						)
-					#twoTestStDev1UI
-				.form-inline
-					label σ
-						sub 2
-						| &nbsp;
-						input.form-control.input-sm.flat(
-						ng-model="mainArea.twoTestStDev2"
-						ng-click="mainArea.twoTestSync()"
-						ng-keypress="mainArea.twoTestPress($event)"
-						ng-disabled="mainArea.deployed"
-						type="number"
-						step="1"
-						name='twoTestStDev2'
-						)
-					#twoTestStDev2UI
-				.form-inline
-					label t-score: &nbsp;
-						b {{mainArea.twoTestT}}
-				.form-inline
-					label p-value: &nbsp;
-						b {{mainArea.twoTestPvalue}}
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
+
+  div(ng-show='mainArea.selectedAlgorithm == "One-Sample (or Paired) t Test"')
+    .row
+      .col-md-8
+        h6 One-sample (or paired) t Test &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This calculator tests whether a mean, μ, is equal to a reference value, μ0."
+          tooltip-placement="bottom"
+          )
+        power-calc-viz
+        .form-inline
+          label Power: &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.oneTestPower"
+            ng-click="mainArea.oneTestCalcPower()"
+            ng-keypress="mainArea.oneTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="0.001"
+            name='oneTestPower'
+            )
+          #oneTestPowerUI
+      .col-md-4
+        .form-inline
+          label Mode: &nbsp;
+          select.form-control(
+          ng-model="mainArea.oneTestMode"
+          ng-change="mainArea.oneTestSync()"
+          ng-options="mode for mode in mainArea.oneTestModes"
+          )
+        .form-inline
+          label N&nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.oneTestN"
+            ng-click="mainArea.oneTestSync()"
+            ng-keypress="mainArea.oneTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='oneTestN'
+            )
+          #oneTestNUI
+        .form-inline
+          label μ
+            sub 0
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.oneTestMean0"
+            ng-click="mainArea.oneTestSync()"
+            ng-keypress="mainArea.oneTestPress($event)"
+            type="number"
+            step="1"
+            name='oneTestMean0'
+            )
+          #oneTestMean0UI
+        .form-inline
+          label μ&nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.oneTestMean"
+            ng-click="mainArea.oneTestSync()"
+            ng-keypress="mainArea.oneTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='oneTestMean'
+            )
+          #oneTestMeanUI
+        .form-inline
+          label σ&nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.oneTestStDev"
+            ng-click="mainArea.oneTestSync()"
+            ng-keypress="mainArea.oneTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='oneTestStDev'
+            )
+          #oneTestStDevUI
+        .form-inline
+          label t-score: &nbsp;
+            b {{mainArea.oneTestT}}
+        .form-inline
+          label p-value: &nbsp;
+            b {{mainArea.oneTestPvalue}}
+
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
+
+  div(ng-show='mainArea.selectedAlgorithm == "Pilot Study"')
+    h3 Pilot Study
+    p <i>This dialog provides rudimentary help for planning a pilot study for estimating an error SD (sigma).  If the pilot study is too small, the estimate could be way too small, causing us to seriously underestimate the required sample size (N) for the main study</i>
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Percent by which N is under-estimated: &nbsp
+        input#pctUnder(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('pctUnder',$event);")
+      div(style='display:inline')
+        #pctUnderui(uib-tooltip="Manipulate this bar to adjust Percentage" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | Risk of exceeding this percentage: &nbsp
+        input#risk(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('risk',$event);")
+      div(style='display:inline')
+        #riskui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
+    div(style='margin-top:20px;')
+      div(style='display:inline')
+        | d.f. for error in pilot studye: &nbsp
+        input#df(name='p0',style='border:0; background-color:#f5f5f5; color:#f6931f; font-weight:bold;' ng-mouseleave="mainArea.Pilot_changeSlider('df',$event);")
+      div(style='display:inline')
+        #dfui(uib-tooltip="Manipulate this bar to adjust Risk" tooltip-placement="top")
+    div
+      input#Pilot_H(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.Pilot_show_help();')
+      div(ng-show='mainArea.Pilot_help == true;')
+        p the criterion employed in this dialog is the risk of underestimating N by a specified percentage 100*P.  This is approximately equal to the risk of underestimating sigma (pretty much regardless of what criterion -- power, CI width, etc. -- is used for sample-size determination). In a normal setting, this risk is a simple calculation on the chi-square distribution: risk = Pr{Q < (1-P)nu}, where Q is chi-square with nu d.f.
+        <br>
+        p The dialog has three sliders -- for 100P, for risk, and for nu.  If you vary P or nu, the risk is recomuted based on the above formula.  If you vary risk, nu is recomputed. (If the solve method fails, simply set the d.f. so the risk is in the ballpark, and try again
+
+
+  div(ng-show='mainArea.selectedAlgorithm == "R-square (multiple correlation)"')
+    h3 R-square (multiple correlation)
+    p <i>This dialog provides rudimentary power analysis for a test of a coefficient of multiple determination (R-square). The underlying model is that we have a sample of N IID multivariate random vectors of length p, and that the p^{th} variable is regressed on the first p-1 variables. $ R^2 = 1 - \frac{SS(error)}{SS(total)} $ is the coefficient of multiple determination.</i>
+    .row
+      .form-inline
+        label True $rho^2$ value: &nbsp;
+        input.form-control.input-sm.flat(
+          ng-model="mainArea.rSquareRHO2"
+          ng-change="mainArea.rSquareSync('chi2')"
+          type="number"
+          step="0.01"
+        )
+        #rSquareRHO2UI
+      .form-inline
+        label Sample Size: &nbsp;
+        input.form-control.input-sm.flat(
+        ng-model="mainArea.rSquaren"
+        ng-change="mainArea.rSquareSync('n')"
+        type="number"
+        step="1"
+        )
+        #rSquarenUI
+      .form-inline
+        label Number of Regressions: &nbsp;
+        input.form-control.input-sm.flat(
+        ng-model="mainArea.rSquarePreds"
+        ng-change="mainArea.rSquareSync('preds')"
+        type="number"
+        step="1"
+        )
+        #rSquarePredsUI
+      .form-inline
+        label Power: &nbsp;
+        input.form-control.input-sm.flat(
+        disabled="True"
+        ng-model="mainArea.rSquarePower"
+        type="number"
+        step="0.01"
+        )
+        #rSquarePowerUI
+    div
+      input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+      div(ng-show='mainArea.showHelp == true;')
+        p The usual way to test a hypothesis about $ R^2 $ is to transform it to an F statistic:
+        <br>
+        p $$ F = \frac{(n-k-1)*R^2}{k*(1-R^2)} $$
+        <br>
+        p This is the usual ANOVA F.  The distinction that makes this dialog different from the one for regular ANOVA is  that the predictors are random.  The power computed here is unconditional, rather than conditional.
+        <br>
+        p The GUI components are as follows:
+        <br>
+        p Alpha: The desired significance level of the test
+        p True $ rho^2 $ value: The population value of R^2 at which we want to compute the power.
+        p Sample size: The number of N multivariate observations in the data set
+        p Number of regressors: The value of k = p - 1.
+        p Power (output only):  The power of the test.
+        <br>
+        p References:
+        p Gatsonis, C. and Sampson, A. (1989),  Multiple correlation: Exact power and sample size calculations. Psychological Bulletin, 106, 516--524.
+        p Benton, D. and Krishnamoorthy, K. (2003),  Computing discrete mixtures of continuous distributions..., Computational Statistics and Data Analysis, 43, 249--267
+
+
+  div(ng-show='mainArea.selectedAlgorithm == "Generic chi-square test"')
+    h3 Generic chi-square test
+    p <i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations</i>
+    .row
+      h5 Prototype Date:
+      .form-inline
+        label Chi2*: &nbsp;
+        input.form-control.input-sm.flat(
+          ng-model="mainArea.chi2chi2"
+          ng-change="mainArea.chi2Sync('chi2')"
+          type="number"
+          step="0.01"
+        )
+        #chi2chi2UI
+      .form-inline
+        label Effective Size: &nbsp;
+        input.form-control.input-sm.flat(
+          ng-model="mainArea.chi2EffSize"
+          ng-change="mainArea.chi2Sync('effSize')"
+          type="number"
+          step="0.01"
+        )
+        #chi2EffSizeUI
+      h5 Study Parameter
+      .form-inline
+        label Degree of Freedom: &nbsp;
+        input.form-control.input-sm.flat(
+          ng-model="mainArea.chi2Df"
+          ng-change="mainArea.chi2Sync('df')"
+          type="number"
+          step="1"
+        )
+        #chi2DfUI
+      .form-inline
+        label N: &nbsp;
+        input.form-control.input-sm.flat(
+          ng-model="mainArea.chi2N"
+          ng-change="mainArea.chi2Sync('n')"
+          type="number"
+          step="1"
+        )
+        #chi2NUI
+      .form-inline
+        label Power: &nbsp;
+        input.form-control.input-sm.flat(
+          ng-model="mainArea.chi2Power"
+          ng-change="mainArea.chi2Sync('power')"
+          type="number"
+          step="0.01"
+        )
+        #chi2PowerUI
+
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
+
+  div(ng-show='mainArea.selectedAlgorithm == "Power of a Simple Poisson Test"')
+    h3 Power of a Simple Poisson Test
+    p <i>This dialog provides rudimentary power analysis of a chi-square test.  Using prototype data of sample size n*, compute the chi-square statistic Chi2*.  Enter n* and Chi2* in the windows provided; these define the effect size to use in the power calculations</i>
+    .row
+      .form-inline
+        label Mode: &nbsp
+        select.form-control(
+          ng-model="mainArea.poissonMode"
+          ng-change="mainArea.poissonSync('alt')"
+          ng-options="mode for mode in mainArea.poissonModes"
+        )
+      .form-inline
+        label Lambda
+          sub 0 &nbsp;
+          input.form-control.input-sm.flat(
+            ng-model="mainArea.poissonLambda0"
+            ng-change="mainArea.poissonSync('lambda0')"
+            type="number"
+            step="0.01"
+          )
+        #poissonLambda0UI
+      .form-inline
+        label Lambda
+          input.form-control.input-sm.flat(
+            ng-model="mainArea.poissonLambda1"
+            ng-change="mainArea.poissonSync('lambda1')"
+            type="number"
+            step="0.01"
+          )
+        #poissonLambda1UI
+      .form-inline
+        label Size
+          input.form-control.input-sm.flat(
+          ng-model="mainArea.poissonSize"
+          ng-change="mainArea.poissonSync('n')"
+          type="number"
+          step="1"
+          )
+        #poissonSizeUI
+      p Upper: {{mainArea.poissonLowerBound}} Lower: {{mainArea.poissonUpperBound}}
+      .form-inline
+        label Power
+          input.form-control.input-sm.flat(
+          ng-model="mainArea.poissonPower"
+          ng-disabled="true"
+          type="number"
+          step="1"
+          )
+        #poissonPowerUI
+
+
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
+
+  div(ng-show='mainArea.selectedAlgorithm == "Two-sample t test (general case)"')
+    .row
+      .col-md-8
+        h6 Two-sample t Test with power analysis &nbsp;
+          span.glyphicon.glyphicon-question-sign(
+          aria-hidden="true"
+          uib-tooltip="This power analysis is for tests concerning whether the means of two groups are different."
+          tooltip-placement="bottom"
+          )
+        power-calc-viz
+        .form-inline
+          label Power: &nbsp
+            input.form-control.input-sm.flat(
+              ng-model="mainArea.twoTestPower"
+              ng-click="mainArea.twoTestCalcPower()"
+              ng-keypress="mainArea.twoTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="0.0001"
+              name='twoTestPower'
+            )
+          #twoTestPowerUI
+      .col-md-4
+        .form-inline
+          label Mode: &nbsp;
+          select.form-control(
+            ng-model="mainArea.twoTestMode"
+            ng-change="mainArea.twoTestSync()"
+            ng-options="mode for mode in mainArea.twoTestModes"
+          )
+        .form-inline
+          label N
+            sub 1 &nbsp;
+            input.form-control.input-sm.flat(
+              ng-model="mainArea.twoTestN1"
+              ng-click="mainArea.twoTestSync()"
+              ng-keypress="mainArea.twoTestPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='twoTestN1'
+            )
+          #twoTestN1UI
+        .form-inline
+          label N
+            sub 2
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.twoTestN2"
+            ng-click="mainArea.twoTestSync()"
+            ng-keypress="mainArea.twoTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='twoTestN2'
+            )
+          #twoTestN2UI
+        .form-inline
+          label μ
+            sub 1
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.twoTestMean1"
+            ng-click="mainArea.twoTestSync()"
+            ng-keypress="mainArea.twoTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='twoTestMean1'
+            )
+          #twoTestMean1UI
+        .form-inline
+          label μ
+            sub 2
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.twoTestMean2"
+            ng-click="mainArea.twoTestSync()"
+            ng-keypress="mainArea.twoTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='twoTestMean2'
+            )
+          #twoTestMean2UI
+        .form-inline
+          label σ
+            sub 1
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.twoTestStDev1"
+            ng-click="mainArea.twoTestSync()"
+            ng-keypress="mainArea.twoTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='twoTestStDev1'
+            )
+          #twoTestStDev1UI
+        .form-inline
+          label σ
+            sub 2
+            | &nbsp;
+            input.form-control.input-sm.flat(
+            ng-model="mainArea.twoTestStDev2"
+            ng-click="mainArea.twoTestSync()"
+            ng-keypress="mainArea.twoTestPress($event)"
+            ng-disabled="mainArea.deployed"
+            type="number"
+            step="1"
+            name='twoTestStDev2'
+            )
+          #twoTestStDev2UI
+        .form-inline
+          label t-score: &nbsp;
+            b {{mainArea.twoTestT}}
+        .form-inline
+          label p-value: &nbsp;
+            b {{mainArea.twoTestPvalue}}
+    input(style='margin-bottom:10px;' type='button' value='Show Help' ng-click='mainArea.showHelpToggle();')
+    div(ng-show='mainArea.showHelp == true;')
+      p TODO
+
