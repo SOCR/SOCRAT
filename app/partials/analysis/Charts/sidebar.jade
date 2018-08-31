@@ -42,14 +42,43 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         ng-options="col for col in sidebar.rCols"
         ng-init="sidebar.rCol = sidebar.rCols[0]"
         )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.threshold")
+        label(for = "threshold") {{sidebar.selectedGraph.config.vars.tLabel}} &nbsp;
+        input#threshold.form-control(
+        type="text"
+        ng-model="sidebar.chartParams.flags.threshold"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.text != null")
+        label(for = "text") {{sidebar.selectedGraph.config.vars.textLabel}} &nbsp;
+        textarea#text.form-control(
+        ng-model="sidebar.chartParams.flags.text"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.startAngle != null")
+        label(for = "startAngle") {{sidebar.selectedGraph.config.vars.startLabel}} &nbsp;
+        input#startAngle.form-control(
+        type="text"
+        ng-model="sidebar.chartParams.flags.startAngle"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.endAngle != null")
+        label(for = "endAngle") {{sidebar.selectedGraph.config.vars.endLabel}} &nbsp;
+        input#endAngle.form-control(
+        type="text"
+        ng-model="sidebar.chartParams.flags.endAngle"
+        )
+      div.form-horizontal(ng-show="sidebar.selectedGraph.config.vars.orientations != null")
+        label(for = "orientations") {{sidebar.selectedGraph.config.vars.orientationsLabel}} &nbsp;
+        input#orientations.form-control(
+        type="text"
+        ng-model="sidebar.chartParams.flags.orientations"
+        )
       div.form-horizontal(ng-show="sidebar.selectedGraph.config.params.xBin != null")
-        label(for = "xbin") {{sidebar.selectedGraph.xbinLabel}} &nbsp;
+        label(for = "xbin") {{sidebar.selectedGraph.config.params.xbinLabel}} &nbsp;
         input#xbin.form-control(
         type="text"
         ng-model="sidebar.chartParams.flags.xBin"
         )
       div.form-horizontal(ng-show="sidebar.selectedGraph.config.params.yBin != null")
-        label(for = "ybin") {{sidebar.selectedGraph.ybinLabel}} &nbsp;
+        label(for = "ybin") {{sidebar.selectedGraph.config.params.ybinLabel}} &nbsp;
         input#ybin.form-control(
         type="text"
         ng-model="sidebar.chartParams.flags.yBin"
@@ -71,14 +100,14 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
         id= "{{param}}Switch"
         ng-model="sidebar.chartParams.flags[param]"
         )
-    div(ng-show="!sidebar.selectedGraph.config.vars.x")
+    div(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
       select.form-control(
       multiple
       ng-model="sidebar.chosenCols"
       ng-options="col for col in sidebar.numericalCols"
       ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
       )
-    div.form-group(ng-show="!sidebar.selectedGraph.config.vars.x")
+    div.form-group(ng-show="sidebar.selectedGraph.name == 'Scatter Plot Matrix'")
       label Labels column &nbsp;
       //- show data header column names
       select.form-control(

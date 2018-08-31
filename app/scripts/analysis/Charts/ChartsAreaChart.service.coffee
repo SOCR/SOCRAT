@@ -24,12 +24,12 @@ module.exports = class ChartsAreaChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawArea: (height,width,_graph, data, labels) ->
+  drawArea: (data, labels, container) ->
 
-    for item in data
-      item["x_vals"] = item["x"]
-      item["y_vals"] = item["y"]
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -39,23 +39,17 @@ module.exports = class ChartsAreaChart extends BaseService
       "mark": "area",
       "encoding": {
         "x": {
-          "field": "x_vals",
-          "type": "temporal",
-          "axis": {"title": labels.xLab.value},
+          "field": labels.xLab.value, "type": "temporal", "axis": {"title": labels.xLab.value}
         },
         "y": {
-          "aggregate": "sum",
-          "field": "y_vals",
-          "type": "quantitative",
-          "axis": {"title": labels.yLab.value},
+          "field": labels.yLab.value, "type": "quantitative", "axis": {"title": labels.yLab.value}
         }
       }
     }
 
     opt =
       "actions": {export: true, source: false, editor: false}
-    
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )

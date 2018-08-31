@@ -24,61 +24,36 @@ module.exports = class ChartsLineChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  lineChart: (data,ranges,width,height,_graph, labels,container) ->
+  lineChart: (data,labels,container) ->
 
-    for item in data
-      item["x_vals"] = item["x"]
-      item["y_vals"] = item["y"]
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
-    if (data[0]["z"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "line",
-        "encoding": {
-          "x": {
-            "field": "x_vals",
-            "type": "temporal",
-            "axis": {"title": labels.xLab.value}
-          },
-          "y": {
-            "aggregate": "sum",
-            "field": "y_vals",
-            "type": "quantitative",
-            "axis": {"title": labels.yLab.value}
-          },
-          "color": {"field": "z", "type": "nominal"}
+    vlSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "width": 500,
+      "height": 500,
+      "data": {"values": data},
+      "mark": "line",
+      "encoding": {
+        "x": {
+          "field": labels.xLab.value, "type": "temporal", "axis": {"title": labels.xLab.value}
+        },
+        "y": {
+          "aggregate": "sum", "field": labels.yLab.value, "type": "quantitative", "axis": {"title": labels.yLab.value}
         }
       }
-    else
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "mark": "line",
-        "encoding": {
-          "x": {
-            "field": "x_vals",
-            "type": "temporal",
-            "axis": {"title": labels.xLab.value}
-          },
-          "y": {
-            "aggregate": "sum",
-            "field": "y_vals",
-            "type": "quantitative",
-            "axis": {"title": labels.yLab.value}
-          }
-        }
-      }
+    }
+
+    if labels["zLab"].value and labels["zLab"].value is not "None"
+      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal"}
 
     opt =
       "actions": {export: true, source: false, editor: false}
 
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )
+

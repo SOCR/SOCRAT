@@ -3,161 +3,117 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsPieChart extends BaseService
+  @inject '$q',
+    '$stateParams',
+    'app_analysis_charts_dataTransform',
+    'app_analysis_charts_list',
+    'app_analysis_charts_sendData',
+    'app_analysis_charts_checkTime',
+    'app_analysis_charts_dataService',
+    'app_analysis_charts_msgService',
+    'app_analysis_charts_scatterPlot'
 
   initialize: ->
-    @valueSum = 0
+    @msgService = @app_analysis_charts_msgService
+    @dataService = @app_analysis_charts_dataService
+    @dataTransform = @app_analysis_charts_dataTransform
+    @list = @app_analysis_charts_list
+    @sendData = @app_analysis_charts_sendData
+    @checkTime = @app_analysis_charts_checkTime
+    @DATA_TYPES = @dataService.getDataTypes()
+    @scatterPlot = @app_analysis_charts_scatterPlot
 
-  makePieData: (data) ->
-    @valueSum = 0
-    counts = {}
-    if(!isNaN(data[0].x)) # data is number
-      pieMax = d3.max(data, (d)-> parseFloat d.x)
-      pieMin = d3.min(data, (d)-> parseFloat d.x)
-      maxPiePieces = 7  # set magic constant to variable
-      rangeInt = Math.ceil((pieMax - pieMin) / maxPiePieces)
-      counts = {}
-      for val in data
-        index = Math.floor((val.x - pieMin) / rangeInt)
-        groupName = index + "-" + (index + rangeInt)
-        #console.log groupName
-        counts[groupName] = counts[groupName] || 0
-        counts[groupName]++
-        @valueSum++
-    else # data is string
-      for i in [0..data.length-1] by 1
-        currentVar = data[i].x
-        counts[currentVar] = counts[currentVar] || 0
-        counts[currentVar]++
-        @valueSum++
-    obj = d3.entries counts
-    return obj
+    @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawPie: (data,width,height,_graph, pie) -> # "pie" is a boolean
-      radius = Math.min(width, height) / 2
-      outerRadius = radius
-      arc = d3.svg.arc()
-      .outerRadius(outerRadius)
-      .innerRadius(0)
+  drawPie: (data, labels, container) ->
 
-      if not pie # ring chart
-        arc.innerRadius(radius-60)
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
-      color = d3.scale.category20c()
+    vSpec = {
+      "$schema": "https://vega.github.io/schema/vega/v4.json",
+      "width": 300,
+      "height": 300,
+      "autosize": "none",
 
-      arcOver = d3.svg.arc()
-      .outerRadius(radius + 10)
+      "signals": [
+        {
+          "name": "startAngle", "value": 0,
+          "bind": {"input": "range", "min": 0, "max": 6.29, "step": 0.01}
+        },
+        {
+          "name": "endAngle", "value": 6.29,
+          "bind": {"input": "range", "min": 0, "max": 6.29, "step": 0.01}
+        },
+        {
+          "name": "padAngle", "value": 0,
+          "bind": {"input": "range", "min": 0, "max": 0.1}
+        },
+        {
+          "name": "innerRadius", "value": 0,
+          "bind": {"input": "range", "min": 0, "max": 150, "step": 10}
+        },
+        {
+          "name": "cornerRadius", "value": 0,
+          "bind": {"input": "range", "min": 0, "max": 10, "step": 0.5}
+        },
+        {
+          "name": "sort", "value": true,
+          "bind": {"input": "checkbox"}
+        }
+      ],
 
-      if not pie # ring chart
-        arcOver.innerRadius(radius-50)
+      "data": [
+        {
+          "name": "table",
+          "values": data,
+          "transform": [
+            {
+              "type": "pie",
+              "field": labels.xLab.value,
+              "startAngle": {"signal": "startAngle"},
+              "endAngle": {"signal": "endAngle"},
+              "sort": {"signal": "sort"}
+            }
+          ]
+        }
+      ],
 
-      pie = d3.layout.pie()
-      .value((d)-> d.value)
-      .sort(null)
+      "scales": [
+        {
+          "name": "color",
+          "type": "ordinal",
+          "range": {"scheme": "category20"}
+        }
+      ],
 
-      formatted_data = @makePieData data
-      sum = @valueSum
-      clickOn = (false for [0..formatted_data.length-1])
+      "marks": [
+        {
+          "type": "arc",
+          "from": {"data": "table"},
+          "encode": {
+            "enter": {
+              "fill": {"scale": "color", "field": labels.xLab.value},
+              "x": {"signal": "width / 2"},
+              "y": {"signal": "height / 2"}
+            },
+            "update": {
+              "startAngle": {"field": "startAngle"},
+              "endAngle": {"field": "endAngle"},
+              "padAngle": {"signal": "padAngle"},
+              "innerRadius": {"signal": "innerRadius"},
+              "outerRadius": {"signal": "width / 2"},
+              "cornerRadius": {"signal": "cornerRadius"}
+            }
+          }
+        }
+      ]
+    }
 
-      # PIE ARCS / SLICES
+    opt =
+      "actions": {export: true, source: false, editor: false}
 
-      arcs = _graph.selectAll(".arc")
-      .data(pie(formatted_data))
-      .enter()
-      .append('g')
-      .attr("class", "arc")
-
-      paths = arcs.append('path')
-      .attr('d', arc)
-      .attr('fill', (d) -> color(d.data.value))
-      .on('mouseover', handleMouseOver)
-      .on('mouseout', handleMouseOut)
-      .on('click', handleClick)
-
-      # Create Event Handlers for mouse
-      handleMouseOver = (d, i) ->
-       if clickOn[i] is false
-        # Use d3 to select element
-        d3.select(this)
-        .attr("stroke","white")
-        .transition()
-        .attr("d", arcOver)
-        .attr("stroke-width",3)
-
-        # bold the label
-        d3.select(this.parentNode)
-        .select('text')
-        .attr('font-weight', 'bold')
-
-      handleMouseOut= (d, i) ->
-        if clickOn[i] is false
-          d3.select(this)
-          .transition()
-          .attr('d', arc)
-          .attr("stroke", "none")
-
-          # unbold the label
-          d3.select(this.parentNode)
-          .select('text')
-          .attr('font-weight', 'normal')
-
-
-      handleClick= (d,i) ->
-        if clickOn[i] is true
-          clickOn[i] = false
-          d3.select(this)
-          .transition()
-          .attr('d', arc)
-          .attr("stroke", 'none')
-
-          # unbold the label
-          d3.select(this.parentNode)
-          .select('text')
-          .attr('font-weight', 'normal')
-
-        else
-          clickOn[i] = true
-          d3.select(this)
-          .attr('stroke', 'white')
-          .transition()
-          .attr('d', arcOver)
-          .attr('stroke', 3)
-
-
-      arcs.append('path')
-      .attr('d', arc)
-      .attr('fill', (d) -> color(d.data.value))
-      .on('mouseover', handleMouseOver)
-      .on('mouseout', handleMouseOut)
-      .on('click', handleClick)
-
-
-      # Specify where to put text label
-      arcs.append('text')
-      .attr('class', 'text')
-      .attr('transform', (d) ->
-        c = arc.centroid(d)
-        x = c[0]
-        y = c[1]
-        h = Math.sqrt(x*x + y*y)
-        desiredLabelRad = 240
-        left = false
-        if x < 0
-          desiredLabelRad += -.42*x
-          left = true
-        'translate(' + (x/h * desiredLabelRad) + ',' + (y/h * desiredLabelRad - .42*x*left) + ')'
-      ).transition()
-      .text (d) =>
-        d.data.key + ' (' + parseFloat(100 * d.data.value / sum).toFixed(1) + '%)'
-      .style('font-size', '16px')
-
-
-
-
-
-
-
-
-
-
-
-
+    @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vega(result.view)
+    )

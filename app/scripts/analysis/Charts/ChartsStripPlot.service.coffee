@@ -23,8 +23,12 @@ module.exports = class ChartsStripPlot extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawStripPlot: (data,ranges,width,height,_graph,labels) ->
+  drawStripPlot: (data, labels, container) ->
+
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -34,15 +38,15 @@ module.exports = class ChartsStripPlot extends BaseService
       "data": {"values" : data},
       "mark": "tick",
       "encoding": {
-        "x": {"field" : "x", "axis": {"title" : labels.xLab.value} , "type": "quantitative"},
-        "y": {"field" : "y", "axis" : {"title": labels.yLab.value}, "type": "ordinal"}
+        "x": {"field" : labels.xLab.value, "axis": {"title" : labels.xLab.value} , "type": "quantitative"},
+        "y": {"field" : labels.yLab.value, "axis" : {"title": labels.yLab.value}, "type": "ordinal"}
       }
     }
 
     opt =
       "actions": {export: true, source: false, editor: false}
 
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )
+

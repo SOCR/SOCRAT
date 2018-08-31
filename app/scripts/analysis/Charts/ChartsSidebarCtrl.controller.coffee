@@ -28,16 +28,27 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     # chart-specific flags (update dictionary as more flags added)
     # general chart parameters
+
     @chartParams =
       flags:
-        horizontalChart: false
-        stackedChart: false
-        xBin: false
-        yBin: false
-        marginalHist: false
+        # BarChart:
+        horizontal: false
+        stacked: false
+        normalized: false
+        threshold: 0
+        # BinnedHeatmap:
+        yBin: null
+        xBin: null
+        marginalHistogram: false
+        # ScatterPlot:
         showSTDEV: false
+        binned: false
+        # WordCloud:
+        startAngle: 0
+        endAngle: 90
+        orientations: 1
+        text: "Input your text"
       data: null
-      ranges: null
       labels: null
       graph: null
 
@@ -91,7 +102,6 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @dataType = @DATA_TYPES.NESTED
             @header = {key: 0, value: "initiate"}
 
-
     @$scope.$watch 'sidebar.chartParams.flags'
     , =>
       @updateDataPoints()
@@ -122,13 +132,6 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     # This list will be excluded from zCols if zLabel is color
     forbiddenVarIdx = []
 
-    for param in @selectedGraph.config.params
-      @chartParams.flags[param] = @selectedGraph.config.params[param]
-
-    $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
-
-    # end if
-
     if @selectedGraph.config.vars.zLabel is "Color"
 
       VarForChecking = []
@@ -147,11 +150,16 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           forbiddenVarIdx.push(idx)
       )
     # end if
+    chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap']
+    if @selectedGraph.name in chartsWithParams
+      for param in @selectedGraph.config.params
+        @chartParams.flags[param] = @selectedGraph.config.params[param]
+      $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
     if @selectedGraph.config.vars.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
       @xCol = @xCols[0]
-    # trellis chart
+    # Scatter Plot Matrix
     else if @numericalCols.length > 1
       @chosenCols = @numericalCols.slice(0, 2)
       if @categoricalCols.length > 0
@@ -163,7 +171,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @yCols = []
       for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.y
         @yCols.push(col)
-      @yCols.push("None")
+      if @selectedGraph.name is 'Scatter Plot'
+        @yCols.push("Count")
       # Initialize the y variable
       for yCol in @yCols
         if yCol isnt @xCol
@@ -173,33 +182,44 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     if @selectedGraph.config.vars.z
       @zCols = []
-      @zCols.push("None")
+      if @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst'
+        @zCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.z
         # if the variable idx is not in forbiddenVarIdx, put col in zCols list
         if $.inArray(idx, forbiddenVarIdx) is -1
           @zCols.push(col)
       # Initialize the z variable
-      @zCol = "None"
+      @zCol = @zCols[0]
     @originalZCols = @zCols
 
     if @selectedGraph.config.vars.r
       @rCols = []
-      @rCols.push("None")
+      if @selectedGraph.name isnt 'Bullet Chart' and @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst' and @selectedGraph.name isnt 'Trellis Chart'
+        @rCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.r
-        @rCols.push(col)
+        if $.inArray(idx, forbiddenVarIdx) is -1
+          @rCols.push(col)
       # Initialize the z variable
-      @rCol = "None"
+      @rCol = @rCols[0]
     @originalRCols = @rCols
 
     @$timeout =>
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    if @selectedGraph.config.vars.x
+
+    if @selectedGraph.config.vars
       [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
       [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
-      data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
 
+    transformed_data = []
+    for row in data.data
+      obj = {}
+      for h, index in data.header
+        obj[h] = row[index]
+      transformed_data.push obj
+
+    if @selectedGraph.config.vars.x
       # Remove the variables that are already chosen for one field
       # isX is a boolean. This is used to determine if to include 'None' or not
       removeFromList = (variables, list) ->
@@ -227,7 +247,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             value: @rCol
             type: rType
 
-    # if trellis plot
+      data = transformed_data
+
+    # if scatter plot matrix
     else if @chosenCols.length > 1
       if @labelCol
         labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
@@ -247,22 +269,3 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @msgService.broadcast 'charts:updateGraph',
       chartParams: @chartParams
 
-#  changeGraph: () ->
-#    if @graphSelect.name is "Stream Graph"
-#      @stream = true
-#    else
-#      @stream = false
-
-#    if @dataType is "NESTED"
-#      @graphInfo.x = "initiate"
-#      @sendData.createGraph @data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme
-#    else
-#      @sendData.createGraph @chartData, @graphInfo, @headers, @dataType, @selector4.scheme
-
-#  changeVar: (selector, headers, ind) ->
-#    console.log @selector4.scheme
-    #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
-    #only allow numerical ones for ind = y or z
-#    for h in headers
-#      if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
-#    @sendData.createGraph(@chartData, @graphInfo, @headers, @dataType, @selector4.scheme)

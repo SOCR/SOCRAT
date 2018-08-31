@@ -24,12 +24,16 @@ module.exports = class ChartsStreamChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  streamGraph: (data,ranges,width,height,_graph,scheme,labels) ->
+  streamGraph: (data, labels, container) ->
+
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "width": 500, 
+      "width": 500,
       "height": 500,
       "data": {"values": data},
       "mark": "area",
@@ -50,8 +54,7 @@ module.exports = class ChartsStreamChart extends BaseService
 
     opt =
       "actions": {export: true, source: false, editor: false}
-    
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )
