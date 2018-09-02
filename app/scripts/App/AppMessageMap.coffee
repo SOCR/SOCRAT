@@ -4,6 +4,20 @@ module.exports = class AppMessageMap
   constructor: () ->
     @_msgMap = [
 
+        msgFrom: 'count_distinct_values'
+        scopeFrom: [
+          'my_module'
+        ]
+        msgTo: 'count.distinct'
+        scopeTo: ['app_analysis_datalib']
+      ,
+        msgFrom: 'count.distinct_res'
+        scopeFrom: ['app_analysis_datalib']
+        msgTo: 'distinct_values_counted'
+        scopeTo: [
+          'my_module'
+        ]
+      ,
       msgFrom: 'saveData'
       scopeFrom: ['app_analysis_getData', 'app_analysis_dataWrangler']
       msgTo: 'save table'

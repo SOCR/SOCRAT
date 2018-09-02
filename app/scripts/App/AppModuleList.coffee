@@ -30,9 +30,10 @@ module.exports = class AppModuleList
   # named lists are included as drop-downs into main menu
   analysis: [
     require 'MyModule/MyModule.coffee'
+  ,
   #   require 'scripts/Database/Database.module.coffee'
   # ,
-  #   require 'scripts/analysis/Datalib/Datalib.module.coffee'
+    require 'scripts/analysis/Datalib/Datalib.module.coffee'
   # ,
   #   require 'scripts/analysis/GetData/GetData.module.coffee'
   # ,
@@ -40,7 +41,9 @@ module.exports = class AppModuleList
   # ,
   #   require 'scripts/analysis/Charts/Charts.module.coffee'
   # ,
-  #   Tools: [
+    # Tools: [
+    #   require 'MyModule2/MyModule.coffee'
+    # ]
   #     require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
   #   ,
   #     require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'

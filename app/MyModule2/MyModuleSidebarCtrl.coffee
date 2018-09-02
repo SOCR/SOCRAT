@@ -6,4 +6,4 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
   @inject 'myModuleMyService'
 
   initialize: ->
-    @message = @myModuleMyService.getData()
+    @message = @myModuleMyService.getSidebarMessage()

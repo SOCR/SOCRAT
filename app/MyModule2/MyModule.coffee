@@ -5,14 +5,13 @@ Module = require 'scripts/BaseClasses/BaseModule.coffee'
 module.exports = charts = new Module
 
 # module id for registration
-  id: 'my_module'
+  id: 'my_module2'
 
 # module components
   components:
     services:
       'myModule_initService': require 'MyModule/MyModuleInit.coffee'
       'myModule_msgService': require 'MyModule/MyModuleMsgService.coffee'
-      'myModule_dataService': require 'MyModule/MyModuleDataService.coffee'
       'myModuleMyService': require 'MyModule/MyService.coffee'
 
     controllers:
@@ -25,7 +24,7 @@ module.exports = charts = new Module
 # module state config
   state:
 # module name to show in UI
-    name: 'My Module'
-    url: '/mymodule'
+    name: 'My Module2'
+    url: '/mymodule2'
     mainTemplate: require 'MyModule/main.jade'
     sidebarTemplate: require 'MyModule/sidebar.jade'

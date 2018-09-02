@@ -52,7 +52,7 @@ div(ng-controller='ChartsSidebarCtrl as sidebar')
     div.form-group(ng-show="!sidebar.selectedGraph.x")
       label Labels column &nbsp;
       //- show data header column names
-      select.form-control(
+      select.form-contrlol(
       ng-model="sidebar.labelCol"
       ng-options="col for col in sidebar.categoricalCols"
       ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
