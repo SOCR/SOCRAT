@@ -62,6 +62,18 @@ module.exports = class ChartsTrellisChart extends BaseService
     if labels["zLab"].value and labels["zLab"].value isnt "None"
       vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
 
+    vlSpec["config"] =
+      "axis":
+        "titleFontSize": 16
+        "labelFontSize": 16
+      "title":
+        "titleFontSize": 16
+      "legend":
+          "labelFontSize": 16
+          "titleFontSize": 16
+      "point":
+        "size": 80
+
     opt =
       "actions": {export: true, source: false, editor: true}
 

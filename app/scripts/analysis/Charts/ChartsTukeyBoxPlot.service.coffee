@@ -57,6 +57,18 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
       }
     }
 
+    vlSpec["config"] =
+      "axis":
+        "titleFontSize": 24
+        "labelFontSize": 24
+      "title":
+        "titleFontSize": 24
+      "legend":
+          "labelFontSize": 24
+          "titleFontSize": 24
+      "mark":
+        "strokeWidth": 3
+
     opt =
       "actions": {export: true, source: false, editor: false}
 
