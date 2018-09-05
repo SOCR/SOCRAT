@@ -1,8 +1,9 @@
 'use strict'
 
+require 'vega-tooltip/build/vega-tooltip.css'
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsBubbleChart extends BaseService
+module.exports = class ChartsRangedDotPlot extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
@@ -10,8 +11,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     'app_analysis_charts_sendData',
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
-    'app_analysis_charts_msgService',
-    'app_analysis_charts_scatterPlot'
+    'app_analysis_charts_msgService'
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
@@ -21,55 +21,74 @@ module.exports = class ChartsBubbleChart extends BaseService
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
-    @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawBubble: (data,labels,container) ->
+  drawRangedDotPlot: (data, labels, container) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "width": 500,
-      "height": 500,
       "data": {"values": data},
-      "selection": {
-        "grid": {
-          "type": "interval", "bind": "scales"
-        }
-      },
-      "mark": "circle",
       "encoding": {
         "x": {
           "field": labels.xLab.value,
           "type": "quantitative",
-          "axis": {"title": labels.xLab.value}
+          "axis": {
+            "title": labels.xLab.value
+          }
         },
         "y": {
           "field": labels.yLab.value,
-          "type": "quantitative",
-          "axis": {"title": labels.yLab.value}
-        },
-        "opacity": {
-          "aggregate": "count",
-          "type": "quantitative"
+          "type": "nominal",
+          "axis": {
+            "title": labels.yLab.value,
+            "offset": 5,
+            "ticks": false,
+            "minExtent": 70,
+            "domain": false
+          }
         }
-      }
+      },
+      "layer": [
+        {
+          "selection": {
+            "grid": {
+              "type": "interval", "bind": "scales"
+            }
+          },
+          "mark": "line",
+          "encoding": {
+            "detail": {
+              "field": labels.yLab.value,
+              "type": "nominal"
+            },
+            "color": {"value": "#db646f"}
+          }
+        },
+        {
+          "mark": {
+            "type": "point",
+            "filled": true
+          },
+          "encoding": {
+            "size": {"value": 100},
+            "opacity": {"value": 1}
+          }
+        }
+      ]
     }
 
     if labels["zLab"].value and labels["zLab"].value isnt "None"
-      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
-
-    if labels["rLab"].value and labels["rLab"].value isnt "None"
-      vlSpec["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
+      vlSpec["layer"][1]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
 
 
-    opt =
-      "actions": {export: true, source: false, editor: false}
+    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
     )
+
