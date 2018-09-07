@@ -26,11 +26,17 @@ module.exports = class ChartsPieChart extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawPie: (data, labels, container) ->
+  drawPie: (data, labels, container, flags) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
+    sort = true
+    field = labels.xLab.value
+    if flags.categorical
+      sort = false
+      field = flags.col
+    console.log(sort)
     vSpec = {
       "$schema": "https://vega.github.io/schema/vega/v4.json",
       "width": 300,
@@ -59,7 +65,7 @@ module.exports = class ChartsPieChart extends BaseService
           "bind": {"input": "range", "min": 0, "max": 10, "step": 0.5}
         },
         {
-          "name": "sort", "value": true,
+          "name": "sort", "value": sort,
           "bind": {"input": "checkbox"}
         }
       ],
@@ -71,7 +77,7 @@ module.exports = class ChartsPieChart extends BaseService
           "transform": [
             {
               "type": "pie",
-              "field": labels.xLab.value,
+              "field": field,
               "startAngle": {"signal": "startAngle"},
               "endAngle": {"signal": "endAngle"},
               "sort": {"signal": "sort"}
@@ -112,7 +118,7 @@ module.exports = class ChartsPieChart extends BaseService
     }
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
       @vt.vega(result.view)

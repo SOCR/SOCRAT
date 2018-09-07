@@ -51,7 +51,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         text: "Input your text"
         # pie chart
         categorical: false
-        cols: []
+        col: null
       data: null
       labels: null
       graph: null
@@ -161,9 +161,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
     if @selectedGraph.config.vars.x
-      console.log("types", data.types, "x", @selectedGraph.config.vars.x)
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
       @xCol = @xCols[0]
+
     # Scatter Plot Matrix
     else if @numericalCols.length > 1
       @chosenCols = @numericalCols.slice(0, 2)
@@ -237,6 +237,15 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
       @xCols = removeFromList([@yCol], @originalXCols)
       @yCols = removeFromList([@xCol], @originalYCols)
+
+      if xType is 'string'
+        @chartParams.flags.categorical = true
+        for col, idx in @cols
+          if @chartParams.flags.col is null and data.types[idx] in ['number', 'integer']
+            @chartParams.flags.col = col
+            break
+      else
+        @chartParams.flags.categorical = false
 
       labels =
           xLab:

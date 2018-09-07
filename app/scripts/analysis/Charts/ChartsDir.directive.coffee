@@ -128,7 +128,7 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Normal Distribution'
               @normal.drawNormalCurve(data, labels, container)
             when 'Pie Chart'
-              @pie.drawPie(data, labels, container)
+              @pie.drawPie(data, labels, container, flags)
             when 'Scatter Plot Matrix'
               @scatterMatrix.drawScatterMatrix(data, labels, container)
             when 'Diverging Stacked Bar Chart'
