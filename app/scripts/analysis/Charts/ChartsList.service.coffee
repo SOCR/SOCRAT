@@ -48,12 +48,15 @@ module.exports = class ChartsList extends BaseService
           x: ['integer', 'number']
           y: ['integer', 'number']
           z: ['string']
+          r: ['integer', 'string', 'number']
           xLabel: "X"
           yLabel: "Y"
           zLabel: "Color"
+          rLabel: "Radius"
         params:
           binned: true
           showSTDEV: true
+          opacity: true
 #          bLabel: "Toggle binned"
 #          sLabel: "Show statistics"
     ,
@@ -82,23 +85,6 @@ module.exports = class ChartsList extends BaseService
           z: false
           xLabel: "X"
           yLabel: "Y"
-    ,
-      name: 'Bubble Chart'
-      config:
-        description: "Choose an x variable, a y variable and a radius variable."
-        value: 5
-        vars:
-          v: false
-          w: false
-          x: ['integer', 'number']
-          y: ['integer', 'number']
-          z: ['integer', 'string', 'number']
-          r: ['integer', 'string', 'number']
-          message: "Choose an x variable, a y variable and a radius variable."
-          xLabel: "X"
-          yLabel: "Y"
-          zLabel: "Color"
-          rLabel: "Radius"
     ,
       name: 'Pie Chart'
       config:

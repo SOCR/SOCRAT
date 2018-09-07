@@ -40,11 +40,6 @@ module.exports = class ChartsHistogram extends BaseService
             "field": labels.xLab.value,
             "type": "quantitative",
             "axis": {"title": labels.xLab.value}
-          },
-          "y": {
-            "field": labels.yLab.value,
-            "type": "quantitative",
-            "axis": {"title": labels.yLab.value}
           }
         }
       }, {
@@ -60,6 +55,12 @@ module.exports = class ChartsHistogram extends BaseService
         }
       }]
     }
+
+    if labels.yLab.value is "Count"
+      vlSpec["layer"][0]["encoding"]["y"] = {"aggregate": "count", "field": labels.xLab.value,"type": "quantitative", "title": "Count"}
+    else
+      vlSpec["layer"][0]["encoding"]["y"] = {"field": labels.yLab.value,"type": "quantitative", "axis": {"title": labels.yLab.value}}
+
 
     opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}
 

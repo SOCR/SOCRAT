@@ -143,7 +143,7 @@ module.exports = class ChartsBarChart extends BaseService
             ]
           },
           {
-            "data": {"values": [{"ThresholdValue": "#{threshold}", "Threshold": "hazardous"}]},
+            "data": {"values": [{"ThresholdValue": "#{threshold}", "Threshold": "threshold"}]},
             "layer": [
               {
                 "mark": "rule",

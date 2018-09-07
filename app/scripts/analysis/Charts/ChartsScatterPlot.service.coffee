@@ -94,6 +94,17 @@ module.exports = class ChartsScatterPlot extends BaseService
         }]
       }
 
+      if flags.opacity
+        vlSpec["layer"][0]["encoding"]["opacity"] = {
+          "aggregate": "count",
+          "type": "quantitative"
+        }
+      if labels["zLab"].value and labels["zLab"].value isnt "None"
+        vlSpec["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
+      if labels["rLab"].value and labels["rLab"].value isnt "None"
+        vlSpec["layer"][0]["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
+
+
       if labels.yLab.value is "Count"
         vlSpec["layer"][0]["encoding"]["y"] = {"aggregate": "count", "field": labels.xLab.value,"type": "quantitative", "title": "Count"}
       else
@@ -144,10 +155,6 @@ module.exports = class ChartsScatterPlot extends BaseService
           vlSpec["layer"][0]["encoding"]["x"]["bin"] = {"maxbins": 10}
           vlSpec["layer"][0]["encoding"]["y"]["bin"] = {"maxbins": 10}
           vlSpec["layer"][0]["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
-
-      if labels["zLab"].value and labels["zLab"].value isnt "None"
-        vlSpec["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
-
     else
       vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -182,6 +189,16 @@ module.exports = class ChartsScatterPlot extends BaseService
           }
         }
       }
+      if flags.opacity
+        vlSpec["encoding"]["opacity"] = {
+          "aggregate": "count",
+          "type": "quantitative"
+        }
+      if labels["zLab"].value and labels["zLab"].value isnt "None"
+        vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
+      if labels["rLab"].value and labels["rLab"].value isnt "None"
+        vlSpec["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
+
       if labels.yLab.value is "Count"
         vlSpec["encoding"]["y"] = {"aggregate": "count", "field": labels.xLab.value,"type": "quantitative", "title": "Count"}
       else
@@ -190,10 +207,6 @@ module.exports = class ChartsScatterPlot extends BaseService
           vlSpec["encoding"]["x"]["bin"] = {"maxbins": 10}
           vlSpec["encoding"]["y"]["bin"] = {"maxbins": 10}
           vlSpec["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
-
-      if labels["zLab"].value and labels["zLab"].value isnt "None"
-        vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
-
     opt =
       "actions": {export: true, source: false, editor: false}
 
