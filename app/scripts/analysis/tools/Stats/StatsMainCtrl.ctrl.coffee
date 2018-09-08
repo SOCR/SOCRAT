@@ -76,51 +76,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 		@CIOMMode = @params.mode
 		@CIOMModes = ["Two Tailed", "One Tailed"]
 		@CIOMClick()
-		@CIOMDraw()
 		return
-
-
-	CIOMDraw: () ->
-
-		confidenceInterval = [{"lowerBound":@CIOMLowerBound}, {"mean":@CIOMMean}, {"upperBound":@CIOMUpperBound}]
-		title = "LowerBound: ".concat (@CIOMLowerBound).toString()
-		title = title.concat " Mean: "
-		title = title.concat (@CIOMMean).toString()
-		title = title.concat " UpperBound: "
-		title = title.concat (@CIOMUpperBound).toString()
-
-		vlSpec =
-			{
-				"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-				"width": 550,
-				"height": 200,
-				"data": {"values": confidenceInterval},
-				"layer": [{
-					"mark": {"type": "point", "filled": true},
-					"encoding": {
-						"x": {
-							"field": "mean", "type": "quantitative",
-							"axis": {"title": title}
-						},
-						"color": {"value": "black"},
-					}
-				}, 
-				{
-					"mark": "rule",
-					"encoding": {
-						"x": {
-							"aggregate": "ci0", "field": "lowerBound", "type": "quantitative"
-						},
-						"x2": {
-							"aggregate": "ci1", "field": "upperBound", "type": "quantitative"
-						}
-					}
-				}]
-			}
-		opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
-		@ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) => 
-			@vt.vegaLite(result.view, vlSpec)
-		)
 
 	# call syncData
 	CIOMSync: () ->
@@ -197,22 +153,20 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
 		return
 
-  # functions for CIOP only 
+	# functions for CIOM only 
 	CIOPRetrieve:() ->
 		@params = @algorithmService.getParamsByName(@selectedAlgorithm)
-		@CIOPP = @params.p #central point
-		@CIOPN = @params.n #sample size
-		@CIOPT = @params.t #t-score
+		@CIOPP = @params.p
+		@CIOPN = @params.n
+		@CIOPT = @params.t
 		@CIOPTMax = @params.tMax
 		@zscore = @params.z
-		@upbound = @params.u #from confinterval
+		@upbound = @params.u
 		@lowbound = @params.l
-		@confinterval = @params.ci
-		@ciAlpha = @params.a #significance level
+		@confinterval =@params.ci
+		@ciAlpha =  @params.a
 		@standarddev = @params.sd
-		@cilevel = 1.0 - @ciAlpha #confidence level
-		#show chart
-		@Chart()
+		@cilevel = 1.0 - @ciAlpha
 		@CIOPClick()
 
 	CIOPSync: () ->
@@ -265,40 +219,4 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 			for sl in sliders
 				sl.slider("enable")
 				sl.find('.ui-slider-handle').show()
-		return  
-
-	#Chart Visualization
-	Chart:() ->
-		@ve = require 'vega-embed'
-		nums = [{"lower" : @lowbound}, {"upper" : @upbound}, {"center" : @CIOPP}]
-		vlSpec = {
-			"width": 550,
-			"height": 200,
-			"$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-			"data": {"values": nums},
-			"layer": [{
-		    "mark": {"type": "point", "filled": true},
-		    "encoding": {
-		      "x": {
-		        "aggregate": "mean", "field": "center", "type": "quantitative",
-		        "scale": {"zero": false},
-		        "axis": {"title": "Interval"}
-		      }
-		      "color": {"value": "black"}
-		    }
-		  }, {
-		    "mark": "rule",
-		    "encoding": {
-		      "x": {
-		        "aggregate": "ci0", "field": "lower", "type": "quantitative",
-		        "scale": {"zero": false},
-		      },
-		      "x2": {
-		        "aggregate": "ci1", "field": "upper", "type": "quantitative"
-		      }
-		    }
-		  }]
-		}
-		opt = "actions": {export: true, source: false, editor: false}
-		#Embed the visualization in the container with id `vis`
-		@ve '#visCIOP', vlSpec, opt, (error, result) ->;
+		return
