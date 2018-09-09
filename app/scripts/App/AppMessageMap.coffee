@@ -126,6 +126,16 @@ module.exports = class AppMessageMap
         'app_analysis_stats',
         'app_analysis_modeler'
       ]
+    ,
+      msgFrom: 'mymodule:getData'
+      scopeFrom: ['socrat_analysis_mymodule']
+      msgTo: 'database:getData'
+      scopeTo: ['socrat_analysis_database']
+    ,
+      msgFrom: 'database:receiveData'
+      scopeFrom: ['socrat_analysis_database']
+      msgTo: 'mymodule:receiveData'
+      scopeTo: ['socrat_analysis_mymodule']
     ]
 
   getMap: ->
