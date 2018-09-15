@@ -16,7 +16,9 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc'
+        'app_analysis_powercalc',
+        'app_analysis_stats',
+        'app_analysis_modeler'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -30,7 +32,9 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc'
+        'app_analysis_powercalc',
+        'app_analysis_stats',
+        'app_analysis_modeler'
       ]
     ,
       msgFrom: 'data summary'
@@ -39,7 +43,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc',
+        'app_analysis_stats'
       ]
       msgTo: 'summary'
       scopeTo: ['app_analysis_datalib']
@@ -52,7 +58,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_powercalc',
+        'app_analysis_stats'
       ]
     ,
       msgFrom: 'data histogram'
@@ -99,7 +107,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc'
+        'app_analysis_powercalc',
+        'app_analysis_stats',
+        'app_analysis_modeler'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -112,7 +122,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_charts',
         'app_analysis_reliability',
-        'app_analysis_powercalc'
+        'app_analysis_powercalc',
+        'app_analysis_stats',
+        'app_analysis_modeler'
       ]
     ]
 

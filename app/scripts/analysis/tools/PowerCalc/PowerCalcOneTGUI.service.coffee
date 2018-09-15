@@ -58,12 +58,8 @@ module.exports = class PowerCalcOneTGUI extends BaseService
     @oneTestUpdate()
 
   saveData: (data) ->
-    @populations = data.populations
-    lab = data.chosenlab
-    if (lab is "none") or (lab is null)
-      @compAgents = data.chosenCol
-    else
-      @compAgents = data.chosenVar
+    @populations = data.popl
+    @compAgents = data.target
     @oneTestReceiveData()
 
   setAlpha: (alphaIn) ->
@@ -155,12 +151,14 @@ module.exports = class PowerCalcOneTGUI extends BaseService
 
   oneTestPowerTon: () ->
     # calculate n1 or n2 from power based on different mdoes
+    if @oneTestMean is @oneTestMean0
+      console.log "Sample mean same, cannot update size"
+      return
     if @oneTestMode is "Two Tailed"
       @oneTestN = Math.round(Math.pow(@oneTestStDev * (@distribution.qnorm(1-@oneTestAlpha / 2) + @distribution.qnorm(@oneTestPower))/(@oneTestMean-@oneTestMean0),2))
     else
       @oneTestN = Math.round(Math.pow(@oneTestStDev * (@distribution.qnorm(1-@oneTestAlpha) + @distribution.qnorm(@oneTestAlpha))/(@oneTestMean-@oneTestMean0), 2))
     @oneTestTTest()
-    @oneTestCheckRange()
     return
 
   oneTestTTest: () ->

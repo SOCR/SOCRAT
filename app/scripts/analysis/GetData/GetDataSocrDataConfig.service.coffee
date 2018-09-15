@@ -50,6 +50,54 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
       name: 'Countries Rankings'
       url: 'datasets/Countries_Rankings.csv'
       description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_2008_World_CountriesRankings'
+    ,
+      name: 'US Consumer Price Index (1981-2006)'
+      url: 'datasets/consumer_price_index.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Dinov_021808_ConsumerPriceIndex'
+    ,
+      name: 'US Federal Budget, Income, Expenditures and Deficit Data (1849-2016)'
+      url: 'datasets/budget_deficits.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_US_BudgetsDeficits_1849_2016'
+    ,
+      name: 'Google Web-Search Trends and Stock Market Data (2005-2011)'
+      url: 'datasets/google_trends.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_GoogleTrends_2005_2011'
+    ,
+      name: 'Wealth of Nations Data (1800-2009)'
+      url: 'datasets/wealth_of_nations.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_WealthOfNations_1800_2009'
+    ,
+      name: 'Standard & Poor\'s Stock Exchange'
+      url: 'datasets/standards_poor_500.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Dinov_070108_SP500_0608'
+    ,
+      name: 'US Economy by Sector (2002)'
+      url: 'datasets/economy2002.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Dinov_101709_USEconomy'
+    ,
+      name: 'Alzheimer Disease (AD) Case Study Data'
+      url: 'datasets/AlzheimerNeuroimagingData.csv'
+      description: 'http://www.stat.ucla.edu/~dinov/courses_students.dir/04/Spring/Stat233.dir/HWs.dir/AD_NeuroPsychImagingData1.html'
+    ,
+      name: 'SOCR Heart Attack Data'
+      url: 'datasets/HeartAttacks.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_AMI_NY_1993_HeartAttacks'
+    ,
+      name: 'Ranking, Revenues and Profits of the Top Fortune500 Companies (1955-2008)'
+      url: 'datasets/Fortune500.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Fortune500_1955_2008'
+    ,
+      name: 'Neuroimaging Study of Super-resolution Image Enhancing'
+      url: 'datasets/NeuroimagingStudyofSuperResolutionImageEnhancing.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_June2008_ID_NI'
+    ,
+      name: 'Normal and Schizophrenia Neuroimaging Study of Children'
+      url: 'datasets/SchizophreniaNeuroimaging.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_Oct2009_ID_NI'
+    ,
+      name: 'Predictive Big Data Analytics, Modeling, Analysis and Visualization of Clinical, Genetic and Imaging Data for Parkinson’s Disease'
+      url: 'datasets/BiomedBigMetadata.csv'
+      description: 'http://wiki.socr.umich.edu/index.php/SOCR_Data_PD_BiomedBigMetadata'
     ]
 
   getNames: -> @socrDatasets.map (dataset) ->
@@ -58,4 +106,4 @@ module.exports = class GetDataSocrDataConfig extends BaseModuleDataService
     desc: dataset.description
 
   getUrlByName: (datasetId) ->
-      (dataset.url for dataset in @socrDatasets when datasetId is dataset.name.toLowerCase()).shift()
+    (dataset.url for dataset in @socrDatasets when datasetId is dataset.name.toLowerCase()).shift()

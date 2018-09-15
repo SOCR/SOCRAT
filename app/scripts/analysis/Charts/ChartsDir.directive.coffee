@@ -6,6 +6,7 @@ BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
 module.exports = class ChartsDir extends BaseDirective
   @inject 'app_analysis_charts_areaChart',
+          'app_analysis_charts_areaTrellisChart'
           'app_analysis_charts_barChart',
           'app_analysis_charts_bivariateLineChart',
           'app_analysis_charts_bubbleChart',
@@ -19,9 +20,11 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_tilfordTree',
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
+          'app_analysis_charts_tukeyBoxPlot',
           'app_analysis_charts_checkTime'
 
   initialize: ->
+    @areaTrellis = @app_analysis_charts_areaTrellisChart
     @bar = @app_analysis_charts_barChart
     @bubble = @app_analysis_charts_bubbleChart
     @histogram = @app_analysis_charts_histogram
@@ -37,6 +40,7 @@ module.exports = class ChartsDir extends BaseDirective
     @bivariate = @app_analysis_charts_bivariateLineChart
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
+    @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -87,7 +91,7 @@ module.exports = class ChartsDir extends BaseDirective
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
           # trellis chart is called differently
-          if scheme.name is 'Trellis Chart' and newChartData.labels
+          if scheme.name is 'Trellis Chart'
             @trellis.drawTrellis(width, height, data, _graph, labels, container)
           # standard charts
           else
@@ -107,12 +111,16 @@ module.exports = class ChartsDir extends BaseDirective
               zMax: if labels? and numerics.includes(labels.zLab.type) then d3.max(data, (d) -> parseFloat(d.z)) else null
 
             switch scheme.name
+              when 'Area Trellis Chart'
+                @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
               when 'Bar Graph'
                 @bar.drawBar(width,height,data,_graph,labels,ranges)
               when 'Bubble Chart'
                 @bubble.drawBubble(width,height,_graph,data,labels,container,ranges)
               when 'Histogram'
-                @histogram.drawHist(_graph,data,container,labels,width,height,ranges)
+                @histogram.drawHist(_graph, data, container, labels, width, height, ranges)
+              when 'Tukey Box Plot (1.5 IQR)'
+                @tukeyBoxPlot.drawBoxPlot(_graph, data, container, labels, width, height, ranges)
               when 'Ring Chart'
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,false)
@@ -121,18 +129,15 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Stacked Bar Chart'
                 @stackBar.stackedBar(data,ranges,width,height,_graph, labels,container)
               when 'Stream Graph'
-                @time.checkTimeChoice(data)
-                @streamGraph.streamGraph(data,ranges,width,height,_graph, scheme)
+                @streamGraph.streamGraph(data,ranges,width,height,_graph,scheme,labels)
               when 'Area Chart'
-                @time.checkTimeChoice(data)
                 @area.drawArea(height,width,_graph, data, labels)
               when 'Treemap'
                 @treemap.drawTreemap(svg, width, height, container, data)
               when 'Line Chart'
-                @time.checkTimeChoice(data)
                 @line.lineChart(data,ranges,width,height,_graph, labels,container)
               when 'Bivariate Area Chart'
-                @time.checkTimeChoice(data)
+                # @time.checkTimeChoice(data)
                 @bivariate.bivariateChart(height,width,_graph, data, labels)
               when 'Normal Distribution'
                 @normal.drawNormalCurve(data, width, height, _graph)

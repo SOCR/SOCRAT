@@ -117,6 +117,12 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
       @xCol = @xCols[0]
+    # trellis chart
+    else if @numericalCols.length > 1
+      @chosenCols = @numericalCols.slice(0, 2)
+      if @categoricalCols.length > 0
+        @labelCol = @categoricalCols[0]
+
     @originalXCols = @xCols
 
     if @selectedGraph.y
@@ -169,11 +175,6 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             if e == 'None' or $.inArray(e, variables) is -1 # e is not in the chosen variables
               newList.push(e)
         return newList
-
-      #@xCols = removeFromList([@yCol, @zCol, @rCol], @originalXCols)
-      #@yCols = removeFromList([@xCol, @zCol, @rCol], @originalYCols)
-      #@zCols = removeFromList([@xCol, @yCol, @rCol], @originalZCols)
-      #@rCols = removeFromList([@xCol, @yCol, @zCol], @originalRCols)
 
       @xCols = removeFromList([@yCol], @originalXCols)
       @yCols = removeFromList([@xCol], @originalYCols)
@@ -229,5 +230,3 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 #    for h in headers
 #      if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
 #    @sendData.createGraph(@chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
-
-
