@@ -73,7 +73,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     if @algParams.c
       [minC, ..., maxC] = @algParams.c
     # Will probably make a longer if for each type of hyperparameter
-
+    
     @$timeout =>
       #@updateDataPoints data
 
@@ -85,11 +85,50 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       xCol = data.header.indexOf @xCol unless !@xCol?
       yCol = data.header.indexOf @yCol unless !@yCol?
       sendData = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
-      labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+      legendDict = {}
+      labelDict = {}
+      if @labelCol
+        # HAVE SOMEONE REVISE THIS
+        labelIndex = data.header.indexOf @labelCol
+        @uniqueLabels = @uniqueVals (row[labelIndex] for row in data.data)
 
+        console.log(@labelCol)
+        console.log(row[labelIndex] for row in data.data)
+        console.log("unique labels:")
+        console.log(@uniqueLabels)
+
+        if @uniqueLabels.length != 2
+          labelDict[label] = i for label, i in @uniqueLabels 
+
+        else
+          labelDict[@uniqueLabels[0]] = 1
+          labelDict[@uniqueLabels[1]] = -1
+
+
+        # Make map from categorical label to numeric labels
+
+        console.log("label dict:")
+        console.log(labelDict)
+
+        # Use map to create numeric labels
+        mappedLabels = (labelDict[row[data.header.indexOf(@labelCol)]] for row in data.data)
+
+        console.log("mapped labels")
+        console.log(mappedLabels)
+
+        # Reverse dict for the legend
+        legendDict[value] = key for key, value of labelDict
+
+        console.log("legend dict")
+        console.log(legendDict)
+      
+      else
+        mappedLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+    
       @msgService.broadcast 'svm:updateDataPoints',
         dataPoints: sendData
-        labels = labels
+        labels: mappedLabels
+        legend: legendDict
 
   updateChosenCols: () ->
     axis = [@xCol, @yCol]
@@ -119,14 +158,10 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       # if usage of labels is on
 
       labelColIdx = data.header.indexOf @labelCol
-      labels = (parseInt row[labelColIdx] for row in data.data)
+      labels = (row[labelColIdx] for row in data.data)
 
-      data = ( row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
-      for value, index in data
-        for d_val, d_index in value
-          data[index][d_index] = parseFloat d_val
+      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
 
-      console.log data
       obj =
         features: data
         labels: labels
@@ -153,7 +188,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       hyperPar =
         kernel: @selectedKernel
         c: @c
-
+    
     # Set data to model
     @algorithmsService.passDataByName(@selectedAlgorithm, algData)
 
@@ -166,5 +201,14 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
 
 
   reset: ->
+    
+    # Resetting stuff in algorithms
     @algorithmsService.reset @selectedAlgorithm
     #@updateDataPoints(@dataFrame, null, null)
+
+    # Resetting main
+    # Gotta send resetting signal to main
+    @msgService.broadcast 'svm:resetGrid',
+      message: "reset grid"
+
+
