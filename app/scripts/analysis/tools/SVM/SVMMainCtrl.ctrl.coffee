@@ -28,13 +28,13 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       features: null
       labels: null
 
-    @newdata = 
+    @newdata =
       state: null
       mesh_grid_points: null
       mesh_grid_labels: null
       coords: null
       labels: null
-      
+
 
     @$scope.$on 'svm:updateDataPoints', (event, data) =>
       #console.log("GOT SIGNAL TO UPDATE DATA")
@@ -44,7 +44,7 @@ module.exports = class SVMMainCtrl extends BaseCtrl
         @newdata.coords = data.dataPoints
         @svm.drawSVM(@newdata)
         #console.log("graphingData updated")
-        #@graphingData = @newdata 
+        #@graphingData = @newdata
       #@sendGraphingData(data)
 
     @$scope.$on 'svm:startAlgorithm', (event, data) =>
@@ -62,3 +62,7 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       @newdata.labels = @graphingData.labels
       @svm.drawSVM(@newdata)
 
+  sendReset: () ->
+    console.log("reset button reaches MainCtrl")
+    @newdata.state = "scatter"
+    @svm.drawSVM(@newdata)
