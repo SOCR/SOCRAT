@@ -17,7 +17,7 @@ module.exports = class SVMGraph extends BaseService
     @ve = require 'vega-embed'
     @svm = require 'ml-svm'
 
-  mesh_grid_point: (coordinates, classes, type) ->
+  mesh_grid_point: (coordinates, classes, type,legend) ->
     # append the mesh_grid point into the vega-lite graph
     if type == "mesh"
         value = []
@@ -27,9 +27,9 @@ module.exports = class SVMGraph extends BaseService
           new_dict["cx-c"] = single[0]
           new_dict["cy-c"] = single[1]
           if classes[count] == 1
-            new_dict["class"] = "class_one"
+            new_dict["class"] = legend[1]
           else if classes[count] == -1
-            new_dict["class"] = "class_two"
+            new_dict["class"] = legend[-1]
           value.push new_dict
           count += 1
         return value
@@ -87,9 +87,9 @@ module.exports = class SVMGraph extends BaseService
 
 
       type = "train"
-      train_values = @mesh_grid_point(data.coords, data.labels,type)
+      train_values = @mesh_grid_point(data.coords, data.labels,type,data.legend)
       type = "mesh"
-      mesh_grid_values = @mesh_grid_point(data.mesh_grid_points, data.mesh_grid_labels,type)
+      mesh_grid_values = @mesh_grid_point(data.mesh_grid_points, data.mesh_grid_labels,type,data.legend)
       console.log train_values
       values = train_values
       values = values.concat mesh_grid_values

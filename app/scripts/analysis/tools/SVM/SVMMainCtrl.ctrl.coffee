@@ -42,6 +42,9 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       if data.dataPoints != undefined
         @newdata.state = "scatter"
         @newdata.coords = data.dataPoints
+        @newdata.legend = data.legend
+        @newdata.labels = data.labels
+
         @svm.drawSVM(@newdata)
         #console.log("graphingData updated")
         #@graphingData = @newdata
