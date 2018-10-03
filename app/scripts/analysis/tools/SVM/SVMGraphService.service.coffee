@@ -41,19 +41,26 @@ module.exports = class SVMGraph extends BaseService
           new_dict["x-c"] = single[0]
           new_dict["y-c"] = single[1]
           if classes[count] == 1
-            new_dict["class"] = "one"
+            new_dict["class"] = "1"
           else if classes[count] == -1
-            new_dict["class"] = "two"
+            new_dict["class"] = "-1"
           value.push new_dict
           count += 1
         return value
 
-  scatter_point: (coordinates) ->
+  scatter_point: (coordinates,classes) ->
     value = []
+    count = 0
     for single in coordinates
       new_dict = {}
       new_dict["x-c"] = single[0]
       new_dict["y-c"] = single[1]
+      if classes.length != 0
+      	if classes[count] == 1
+      		new_dict["class"] = "1"
+      	else if classes[count] == -1
+      		new_dict["class"] = "-1"
+      count += 1
       value.push new_dict
     return value
 
@@ -65,7 +72,7 @@ module.exports = class SVMGraph extends BaseService
 
     if data.state is "scatter"
  
-      values = @scatter_point(data.coords)
+      values = @scatter_point(data.coords,data.labels)
       vSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
         "width": 400,
@@ -78,7 +85,9 @@ module.exports = class SVMGraph extends BaseService
             "mark": {"type": "point", "filled": true},
             "encoding": {
             "x": {"field": "x-c","type": "quantitative"},
-            "y": {"field": "y-c","type": "quantitative"}
+            "y": {"field": "y-c","type": "quantitative"},
+            "color": {"field": "class", "type": "nominal"}
+            "tooltip": {"field": "class", "type": "ordinal"}
             }
             }
         ] 
