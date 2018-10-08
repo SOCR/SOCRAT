@@ -44,6 +44,8 @@ module.exports = class SVMCSVC extends BaseService
     @labels = data.labels
 
   train: (data) ->
+    console.log("in train")
+    console.log(@labels)
     @svmModel.train(@features, @labels);
     return @updateGraphData()
 
@@ -53,7 +55,7 @@ module.exports = class SVMCSVC extends BaseService
       C: newParams.c
       tol: 10e-4
       maxPasses: 10
-      maxIterations: 10000
+      maxIterations: 1000000
       kernel: newParams.kernel
       kernelOptions: sigma: 0.5
     @svmModel = new @svm options

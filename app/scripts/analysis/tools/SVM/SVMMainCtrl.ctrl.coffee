@@ -54,6 +54,13 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       @selectedAlgorithm = data.model
       @$timeout => @sendAlgorithmData(data)
 
+
+    @$scope.$on 'svm:resetGrid', (event, data) =>
+      console.log("reset button reaches MainCtrl")
+      @newdata.state = "scatter"
+      @svm.drawSVM(@newdata)
+
+
   sendAlgorithmData: (data) ->
     if data?
       console.log("starting algorithm step")
@@ -62,7 +69,7 @@ module.exports = class SVMMainCtrl extends BaseCtrl
       @newdata.mesh_grid_points = @graphingData.mesh_grid_points
       @newdata.mesh_grid_labels = @graphingData.mesh_grid_labels
       @newdata.state = 'svm'
-      @newdata.labels = @graphingData.labels
+      # @newdata.labels = @graphingData.labels
       @svm.drawSVM(@newdata)
 
   sendReset: () ->

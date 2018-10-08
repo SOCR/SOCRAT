@@ -111,10 +111,10 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
         console.log(labelDict)
 
         # Use map to create numeric labels
-        mappedLabels = (labelDict[row[data.header.indexOf(@labelCol)]] for row in data.data)
+        @mappedLabels = (labelDict[row[data.header.indexOf(@labelCol)]] for row in data.data)
 
         console.log("mapped labels")
-        console.log(mappedLabels)
+        console.log(@mappedLabels)
 
         # Reverse dict for the legend
         legendDict[value] = key for key, value of labelDict
@@ -123,11 +123,11 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
         console.log(legendDict)
       
       else
-        mappedLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+        @mappedLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
     
       @msgService.broadcast 'svm:updateDataPoints',
         dataPoints: sendData
-        labels: mappedLabels
+        labels: @mappedLabels
         legend: legendDict
 
   updateChosenCols: () ->
@@ -158,13 +158,13 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       # if usage of labels is on
 
       labelColIdx = data.header.indexOf @labelCol
-      labels = (row[labelColIdx] for row in data.data)
+      # labels = (row[labelColIdx] for row in data.data)
 
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
 
       obj =
         features: data
-        labels: labels
+        labels: @mappedLabels
 
     else false
 
@@ -207,8 +207,11 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     #@updateDataPoints(@dataFrame, null, null)
 
     # Resetting main
+    console.log("it is going into reset function in sidebar")
     # Gotta send resetting signal to main
     @msgService.broadcast 'svm:resetGrid',
       message: "reset grid"
+
+    @running = off
 
 
