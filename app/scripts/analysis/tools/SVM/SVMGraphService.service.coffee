@@ -26,10 +26,13 @@ module.exports = class SVMGraph extends BaseService
           new_dict = {}
           new_dict["cx-c"] = single[0]
           new_dict["cy-c"] = single[1]
-          if classes[count] == 1
-            new_dict["class"] = legend[1]
-          else if classes[count] == -1
-            new_dict["class"] = legend[-1]
+
+          new_dict["class"] = legend[classes[[count]]]
+
+          # if classes[count] == 1
+          #   new_dict["class"] = legend[1]
+          # else if classes[count] == -1
+          #   new_dict["class"] = legend[-1]
           value.push new_dict
           count += 1
         return value
@@ -40,15 +43,18 @@ module.exports = class SVMGraph extends BaseService
           new_dict = {}
           new_dict["x-c"] = single[0]
           new_dict["y-c"] = single[1]
-          if classes[count] == 1
-            new_dict["class"] = "1"
-          else if classes[count] == -1
-            new_dict["class"] = "-1"
+
+          new_dict["class"] = legend[classes[[count]]]
+
+          # if classes[count] == 1
+          #   new_dict["class"] = legend[1]
+          # else if classes[count] == -1
+          #   new_dict["class"] = legend[-1]
           value.push new_dict
           count += 1
         return value
 
-  scatter_point: (coordinates,classes) ->
+  scatter_point: (coordinates,classes, legend) ->
     value = []
     count = 0
     for single in coordinates
@@ -56,10 +62,11 @@ module.exports = class SVMGraph extends BaseService
       new_dict["x-c"] = single[0]
       new_dict["y-c"] = single[1]
       if classes.length != 0
-      	if classes[count] == 1
-      		new_dict["class"] = "1"
-      	else if classes[count] == -1
-      		new_dict["class"] = "-1"
+        new_dict["class"] = legend[classes[[count]]]
+      	# if classes[count] == 1
+      	# 	new_dict["class"] = legend[1]
+      	# else if classes[count] == -1
+      	# 	new_dict["class"] = legend[-1]
       count += 1
       value.push new_dict
     return value
@@ -72,7 +79,7 @@ module.exports = class SVMGraph extends BaseService
 
     if data.state is "scatter"
  
-      values = @scatter_point(data.coords,data.labels)
+      values = @scatter_point(data.coords,data.labels, data.legend)
       vSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
         "width": 400,
