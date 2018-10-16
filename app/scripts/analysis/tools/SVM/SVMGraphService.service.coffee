@@ -81,6 +81,7 @@ module.exports = class SVMGraph extends BaseService
  
       values = @scatter_point(data.coords,data.labels, data.legend)
       vSpec = {
+      	
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
         "width": 400,
         "height": 400, 
@@ -89,7 +90,7 @@ module.exports = class SVMGraph extends BaseService
         },
         "layer":[
             {
-            "mark": {"type": "point", "filled": true},
+            "mark": {"type": "point", "filled": true, "size": 75},
             "encoding": {
             "x": {"field": "x-c","type": "quantitative"},
             "y": {"field": "y-c","type": "quantitative"},
@@ -112,6 +113,7 @@ module.exports = class SVMGraph extends BaseService
       #use predication mesh_grid to show the decision boundary
       
       vSpec = {
+      	
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
         "width": 400,
         "height": 400, 
@@ -120,7 +122,7 @@ module.exports = class SVMGraph extends BaseService
         },
         "layer":[
             {
-            "mark": {"type": "point", "filled": true, "opacity": 0.5, "fillOpacity": 0.5},
+            "mark": {"type": "point", "filled": true, "opacity": 0.02, "fillOpacity": 0.02},
             "encoding": {
             "x": {"field": "cx-c","type": "quantitative"},
             "y": {"field": "cy-c","type": "quantitative"},
@@ -129,7 +131,7 @@ module.exports = class SVMGraph extends BaseService
             }
             },
             {
-            "mark": {"type": "point", "filled": true, "opacity": 1, "size": 60},
+            "mark": {"type": "point", "filled": true, "opacity": 1, "size": 75},
             "encoding": {
             "x": {"field": "x-c","type": "quantitative"},
             "y": {"field": "y-c","type": "quantitative"},
