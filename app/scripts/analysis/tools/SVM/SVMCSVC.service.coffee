@@ -18,6 +18,7 @@ module.exports = class SVMCSVC extends BaseService
     @name = 'C-SVC'
     exponents = [-4..5]
     @cs = (Math.pow 10,num for num in exponents)
+    @options = null
     @lables = null
 
     #runtime variables
@@ -25,9 +26,15 @@ module.exports = class SVMCSVC extends BaseService
     @features = null
     @labels = null
 
+
+    # One vs. All , Multi Class / Label
+    @svmModelArray = []
+    @svmMarginPrediciton = []
+    @uniqueLabelArray = []
+
     # Variables for Graphing Service
     @mesh_grid_points = null
-    @mesh_grid_label = null
+    @mesh_grid_label = []
     # features / labels
 
 
@@ -44,10 +51,60 @@ module.exports = class SVMCSVC extends BaseService
     @labels = data.labels
 
   train: (data) ->
-    console.log("in train")
-    console.log(@labels)
-    @svmModel.train(@features, @labels);
-    return @updateGraphData()
+    for x in @labels
+      if @uniqueLabelArray.includes(x) == false
+        @uniqueLabelArray.push(x)
+    if @uniqueLabelArray.length > 2
+      return @trainMultiClass()
+    else
+      @svmModel.train(@features, @labels);
+      return @updateGraphData()
+
+  trainMultiClass: () ->
+    uniqueLabelArray = @uniqueLabelArray
+
+    min_max = @get_boundary_from_feature()
+    console.log min_max
+    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], 0.1)
+
+    for label in uniqueLabelArray
+      newLabels = []
+      for oldLabel in @labels
+        if oldLabel != label
+          newLabels.push(-1)
+        else
+          newLabels.push(1)
+      svmModel = new @svm @options
+      console.log @features
+      console.log newLabels
+      svmModel.train(@features, newLabels)
+      @svmModelArray.push(svmModel)
+      console.log @svmModelArray
+
+    for point in @mesh_grid_points
+      Margins = []
+      for svmModel in @svmModelArray
+        Margins.push(svmModel.margin([point])[0])
+      MarginIndex = 0
+      maxMarginIndex = 0
+      maxMargin = Margins[0]
+      while MarginIndex <= Margins.length
+        if Margins[MarginIndex] > maxMargin
+          maxMargin = Margins[MarginIndex]
+          maxMarginIndex = MarginIndex
+        MarginIndex += 1
+      @mesh_grid_label.push(uniqueLabelArray[maxMarginIndex])
+
+    result =
+      mesh_grid_points: @mesh_grid_points
+      mesh_grid_labels: @mesh_grid_label
+      features: @features
+      labels: @labels
+    return result
+
+
+
+
 
   setParams: (newParams) ->
     @params = newParams
@@ -58,6 +115,7 @@ module.exports = class SVMCSVC extends BaseService
       maxIterations: 1000000
       kernel: newParams.kernel
       kernelOptions: sigma: 0.5
+    @options = options
     @svmModel = new @svm options
     return
 
