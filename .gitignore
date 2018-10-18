@@ -4,9 +4,12 @@
 /.idea
 /test/test-results.xml
 *.log
+package-lock.json
+*.vscode*
 
 # Public files (generated)#
 ===============
+_build/
 /dist
 /.tmp
 /_build/*.js
@@ -25,5 +28,5 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-
+.swp
 

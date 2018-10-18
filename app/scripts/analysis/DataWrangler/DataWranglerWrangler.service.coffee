@@ -29,6 +29,12 @@ module.exports = class DataWranglerWrangler extends BaseService
     @dv = require 'datavore'
     @dw = require 'data-wrangler'
 
+    # workaround to make jquery-ui-layout work with jquery 3.0
+    (($) ->
+      $.fn.selector =
+        split: -> return ""
+    )(jQuery)
+
   init: ->
     data = @dataService.getData().then (data) =>
       if data.dataFrame.dataType is @DATA_TYPES.FLAT
@@ -77,6 +83,8 @@ module.exports = class DataWranglerWrangler extends BaseService
       -> console.log 'wrangled data saved to db',
       data,
       deferred
+      console.log 'bludglasd here be more data'
+      console.log data
 
   saveData: ->
 

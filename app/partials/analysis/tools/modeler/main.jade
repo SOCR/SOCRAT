@@ -1,0 +1,412 @@
+div(ng-controller="modelerMainCtrl as mainArea")
+  div.lead.bg-danger(ng-hide="mainArea.dataType == mainArea.DATA_TYPES.FLAT")
+    | Modeler only supports tabular data
+  div(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT")
+  
+    div(ng-show='mainArea.distribution == "Normal"')
+
+      .row
+        .col-md-8
+          h6 Normal Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a normal distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Mean of the dataset"
+                tooltip-placement="left"
+                ) &nbsp;
+                | μ
+                sub 1
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.NormalMean"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.001"
+                name='NormalMean'
+                )
+              #NormalMean
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Variance of the sample"
+                tooltip-placement="left"
+                ) &nbsp;
+                | variance
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.NormalVariance"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.01"
+                name='NormalVariance'
+                )
+              #NormalVariance
+    
+    div(ng-show='mainArea.distribution == "LogNormal"')
+
+      .row
+        .col-md-8
+          h6 LogNormal Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a LogNormal distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="LogMean of the dataset"
+              tooltip-placement="left"
+              ) &nbsp;
+              | μ
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              string-to-number
+              ng-model="mainArea.LogNormalMean"
+              ng-click="mainArea.LogNormalSync()"
+              ng-keypress ="mainArea.LogNormalPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='LogNormalMean'
+              )
+            #LogNormalMean
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="LogStandard Deviation of the sample"
+              tooltip-placement="left"
+              ) &nbsp;
+              | σ
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              ng-model="mainArea.LogNormalStDev"
+              ng-click="mainArea.LogNormalSync()"
+              ng-keypress ="mainArea.LogNormalPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='LogNormalStDev'
+              )
+            #LogNormalStDev
+
+    div(ng-show='mainArea.distribution == "Cauchy"')
+      .row
+        .col-md-8
+          h6 Cauchy Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a Cauchy distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Location parameter"
+                tooltip-placement="left"
+                ) &nbsp;
+                | a
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.CauchyLocation"
+                ng-click="mainArea.CauchySync()"
+                ng-keypress ="mainArea.CauchyPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='CLocation'
+                )
+              #CLocation
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Scale parameter"
+                tooltip-placement="left"
+                ) &nbsp;
+                | b
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.CauchyGamma"
+                ng-click="mainArea.CauchySync()"
+                ng-keypress ="mainArea.CauchyPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='CGamma'
+                )
+              #CGamma
+
+    div(ng-show='mainArea.distribution == "Binomial"')
+      .row
+        .col-md-8
+          h6 Binomial Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a Binomial distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="N Parameter"
+                tooltip-placement="left"
+                ) &nbsp;
+                | N
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.params.stats.n"
+                ng-click="mainArea.updateModelData()"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='BinomialN'
+                )
+              #BinomialN
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="P"
+                tooltip-placement="left"
+                ) &nbsp;
+                | b
+                sub 1
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.params.stats.p"
+                ng-click="mainArea.updateModelData()"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='BinomialP'
+                )
+              #BinomialP
+
+    div(ng-show='mainArea.distribution == "Exponential"')
+      .row
+        .col-md-8
+          h6 Exponential Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a Exponential distribution."
+            tooltip-placement="bottom"
+            )
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Gamma Parameter"
+                tooltip-placement="left"
+                ) &nbsp;
+                | b
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.gamma"
+                ng-click="mainArea.ExponentialSync()"
+                ng-keypress ="mainArea.ExponentialPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='ExponentialGamma'
+                )
+              #ExponentialGamma
+
+    div(ng-show='mainArea.distribution == "ChiSquared"')
+      .row
+        .col-md-8
+          h6 ChiSquared Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a ChiSquared distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+          .row.form-inline
+            label
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="K Parameter"
+              tooltip-placement="left"
+              ) &nbsp;
+              | k
+              sub 1
+              | &nbsp;
+              input.form-control.input-sm.flat(
+              string-to-number
+              ng-model="mainArea.k"
+              ng-click="mainArea.ChiSquaredSync()"
+              ng-keypress ="mainArea.ChiSquaredPress($event)"
+              ng-disabled="mainArea.deployed"
+              type="number"
+              step="1"
+              name='ChiSquared'
+              )
+            #ChiSquared
+
+    div(ng-show='mainArea.distribution == "Laplace"')
+      .row
+        .col-md-8
+          h6 Laplace Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a Laplce distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Location parameter"
+                tooltip-placement="left"
+                ) &nbsp;
+                | a
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.LaplaceMean"
+                ng-click="mainArea.LaplaceSync()"
+                ng-keypress ="mainArea.LaplacePress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='LaplaceMean'
+                )
+              #LaplaceMean
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Scale parameter"
+                tooltip-placement="left"
+                ) &nbsp;
+                | b
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.LaplaceScale"
+                ng-click="mainArea.LaplaceSync()"
+                ng-keypress ="mainArea.LaplacePress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='LaplaceScale'
+                )
+              #LaplaceScale
+
+    div(ng-show='mainArea.distribution == "Maxwell-Boltzman"')
+
+        .row
+          .col-md-8
+            h6 Maxwell-Boltzman Distribution Modeler &nbsp;
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="This modeler plots a Maxwell-Boltzman distribution."
+              tooltip-placement="bottom"
+              )
+            //modelerdir
+          .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="A of the dataset"
+                tooltip-placement="left"
+                ) &nbsp;
+                | A
+                sub 1
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.MaxBoltA"
+                ng-click="mainArea.MaxBoltSync()"
+                ng-keypress ="mainArea.MaxBoltPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='MaxBolt'
+                )
+              #MaxBolt
+    
+    div(ng-show='mainArea.distribution == "Kernel"')
+        .row
+          .col-md-8
+            h6 Kernel Density Distribution &nbsp;
+              span.glyphicon.glyphicon-question-sign(
+              aria-hidden="true"
+              uib-tooltip="This modeler plots a Kernel Density distribution."
+              tooltip-placement="bottom"
+              )
+            //modelerdir
+          .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="A of the dataset"
+                tooltip-placement="left"
+                ) &nbsp;
+                | Bandwith
+                sub 1
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.kernelBandwidth"
+                ng-click="mainArea.KernelSync()"
+                ng-keypress ="mainArea.KernelPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="1"
+                name='kernelBandwidth'
+                )
+              #kernelBandwidth
+    
+    div.form-group
+      .row.col-md-2.col-md-offset-10.form-inline
+        button.btn.btn-info(
+                  type="submit"
+                  aria-label="Reset"
+                  ng-click="mainArea.resetGetParams()"
+                  uib-tooltip = "Reset the distribution models to the extracted parameters"
+                  tooltip-placement="left"
+                )
+                  | Reset
+    
+    div(ng-show ="mainArea.distrbution != ' ' ")
+      modeler-viz-dir
+
+      p Descriptive statistics:
+      ul
+        li Mean: {{mainArea.stats.mean}}
+        li Median: {{mainArea.stats.median}}
+        li Variance: {{mainArea.stats.variance}}

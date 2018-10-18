@@ -37,12 +37,18 @@ module.exports = class AppModuleList
   ,
     require 'scripts/analysis/DataWrangler/DataWrangler.module.coffee'
   ,
-    require 'scripts/analysis/charts/Charts.module.coffee'
+    require 'scripts/analysis/Charts/Charts.module.coffee'
   ,
     Tools: [
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
+    ,
+      require 'scripts/analysis/tools/Modeler/Modeler.module.coffee'
+    ,
+      require 'scripts/analysis/tools/PowerCalc/PowerCalc.module.coffee'
+    ,
+      require 'scripts/analysis/tools/Stats/Stats.module.coffee'
     ]
   ]
 

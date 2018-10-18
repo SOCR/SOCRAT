@@ -1,7 +1,8 @@
 webpack = require 'webpack'
+path = require 'path'
 production = process.env.NODE_ENV is 'production'
 
-appRoot = "#{__dirname}/app"
+appRoot = path.resolve "#{__dirname}", "app"
 
 module.exports =
   cache: true
@@ -10,17 +11,15 @@ module.exports =
 
   # The entry point
   entry: [
-    "#{appRoot}/app.coffee"
+    path.resolve "#{appRoot}", "app.coffee"
   ]
 
+  devtool: 'inline-source-map'
+
   output:
-    path: './_build'
+    path: path.resolve ".", "_build"
     filename: 'socrat.js'
     chunkFilename: "[id].socrat.js"
-
-  devServer: {
-    hot: true,
-  }
 
   module:
     loaders: [
@@ -59,24 +58,30 @@ module.exports =
       test: /\.jpe?g$|\.gif$|\.png$/i
       loader: "url"
     ,
-      test: /[\/]datavore-d0\.1\.js$/
+      test: /[\/\\]datavore-d0\.1\.js$/
       loader: 'exports?dv'
     ,
-      test: /[\/]highlight\.js$/
+      test: /[\/\\]highlight\.js$/
       loader: 'exports?Highlight'
     ,
-      test: /[\/]dw\.js$/
+      test: /[\/\\]dw\.js$/
       loader: 'imports?dv=datavore!imports?Highlight=highlight!exports?dw'
     ,
-      test: /[\/]flat-ui\.js$/
+      test: /[\/\\]flat-ui\.js$/
       loader: 'imports?this=>window'
+    # ,
+    #   test: require.resolve('vega'),
+    #   loaders: [
+    #     'transform?vega/scripts/strip-schema.js',
+    #     'transform?browserify-versionify'
+    #   ]
     ,
-      test: require.resolve('vega'),
-      loaders: [
-        'transform?vega/scripts/strip-schema.js',
-        'transform?browserify-versionify'
-      ]
-  ]
+      test: /[\/\\]vega-lite\.js$/
+      loader: 'imports?vg=vega'
+    ,
+      test: /[\/\\]vega-embed\.js$/
+      loader: 'imports?vg=vega!imports?vl=vega-lite'
+   ]
 
   resolve:
 
@@ -94,7 +99,8 @@ module.exports =
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
       highlight: 'data-wrangler/lib/Highlight/highlight.js'
       'jquery-ui': 'jquery-ui/ui/widgets'
-      'vega-lite': 'vega-lite/vega-lite.js'
+      'vega-lite': 'vega-lite/build/vega-lite.js'
+      'vega-embed': 'vega-embed/build/vega-embed.js'
 
   plugins: [
 

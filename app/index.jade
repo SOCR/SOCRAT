@@ -1,34 +1,25 @@
 .container-fluid.wrap
-  nav.navbar.navbar-static-top.navbar-inverse.socrat-navbar-menu
-    .container-fluid
+  // tooblar navigation for statistical analysis
+  nav.navbar.navbar-inverse.navbar-static-top.socrat-navbar-menu
+    .container
       .navbar-header
-        button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+        button.navbar-toggle(
+          type='button'
+          data-toggle='collapse'
+          data-target='.analysis-toolbar'
+        )
           span.icon-bar
           span.icon-bar
           span.icon-bar
         a(href='/').navbar-brand SOCRAT
-      .navbar-collapse
-        div!= require('partials/nav.jade')()
-        p.navbar-text.pull-right Logged in as&nbsp;
-          a(href='#').navbar-link.
-            {{app.username}}
-
-  // tooblar navigation for statistical analysis
-  nav.navbar.navbar-default.navbar-static-top.socrat-navbar-menu
-    .container
-      .navbar-header
-        button.navbar-toggle(type='button', data-toggle='collapse', data-target='.analysis-toolbar')
-          span.icon-bar
-          span.icon-bar
-          span.icon-bar
-        a(href='/').navbar-brand Analysis
+          span(style="font-size:14px") v{{app.version}}
       .navbar-collapse.analysis-toolbar
         menubar
         notification
 
   // main content section
   .main-content.container-fluid.socrat-content-wrap
-    .row
+    .row.container-fluid
       div(ng-controller="AppSidebarCtrl as sidebar")
         div(ng-class="sidebar.getClass()").sub-menu.well
           span(ng-click="sidebar.toggle()", ng-class="sidebar.arrowDirection")
