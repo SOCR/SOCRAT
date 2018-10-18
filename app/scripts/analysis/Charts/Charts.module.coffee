@@ -41,6 +41,8 @@ module.exports = charts = new Module
       'app_analysis_charts_bulletChart': require 'scripts/analysis/Charts/ChartsBulletChart.service.coffee'
       'app_analysis_charts_wordCloud': require 'scripts/analysis/Charts/ChartsWordCloud.service.coffee'
       'app_analysis_charts_sunburst': require 'scripts/analysis/Charts/ChartsSunburst.service.coffee'
+      'app_analysis_charts_cumulative': require 'scripts/analysis/Charts/ChartsCumulativeFrequency.service.coffee'
+      'app_analysis_charts_residual': require 'scripts/analysis/Charts/ChartsResidual.service.coffee'
 
     controllers:
       'ChartsSidebarCtrl': require 'scripts/analysis/Charts/ChartsSidebarCtrl.controller.coffee'

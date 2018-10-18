@@ -25,7 +25,29 @@ module.exports = class ChartsHistogram extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  plotHist: (bins, data, labels) ->
+  plotHist: (bins, data, labels, flags) ->
+
+    x_ = labels.xLab.value
+    y_ = labels.yLab.value
+
+    sumx = 0
+    sumy = 0
+    for dic in data
+      sumx += parseFloat(dic[x_])
+      sumy += parseFloat(dic[y_])
+
+    mean_x = sumx/data.length
+    mean_y = sumy/data.length
+
+    for dic in data
+      dic["residual_x"] = dic[x_] - mean_x
+      dic["residual_y"] = dic[y_] - mean_y
+
+    if (flags.x_residual)
+      labels.xLab.value = "residual_x"
+
+    if (flags.y_residual)
+      labels.yLab.value = "residual_y"
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
@@ -68,7 +90,7 @@ module.exports = class ChartsHistogram extends BaseService
       @vt.vegaLite(result.view, vlSpec)
     )
 
-  drawHist: (data, labels, container) ->
+  drawHist: (data, labels, container, flags) ->
 #    to find the min and max of a certain key in a list of objects
 #    [
 #      {x: 1, y: 4},
@@ -80,7 +102,7 @@ module.exports = class ChartsHistogram extends BaseService
 #    max = Math.max.apply Math, data.map((o) -> o[labels.xLab.value])
 
     bins = 5
-    @plotHist(bins, data,labels)
+    @plotHist(bins, data,labels, flags)
 
     container.select("#slider").remove()
     container.append('div').attr('id', 'slider')

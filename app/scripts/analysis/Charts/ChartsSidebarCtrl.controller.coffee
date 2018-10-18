@@ -44,6 +44,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         showSTDEV: false
         binned: false
         opacity: false
+        x_residual: false
+        y_residual: false
         # WordCloud:
         startAngle: 0
         endAngle: 90
@@ -154,7 +156,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           forbiddenVarIdx.push(idx)
       )
     # end if
-    chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap']
+    chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap', 'Histogram', 'Tukey Box Plot (1.5 IQR)', 'Normal Distribution', 'Ranged Dot Plot', 'Cumulative Frequency']
     if @selectedGraph.name in chartsWithParams
       for param in @selectedGraph.config.params
         @chartParams.flags[param] = @selectedGraph.config.params[param]
@@ -197,9 +199,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @zCol = @zCols[0]
     @originalZCols = @zCols
 
+    chartsWithR = ['Bullet Chart', 'Treemap', 'Sunburst', 'Trellis Chart']
     if @selectedGraph.config.vars.r
       @rCols = []
-      if @selectedGraph.name isnt 'Bullet Chart' and @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst' and @selectedGraph.name isnt 'Trellis Chart'
+      if @selectedGraph.name not in chartsWithR
         @rCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.r
         if $.inArray(idx, forbiddenVarIdx) is -1

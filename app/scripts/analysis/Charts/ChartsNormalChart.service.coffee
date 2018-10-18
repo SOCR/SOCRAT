@@ -26,10 +26,25 @@ module.exports = class ChartsNormalChart extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawNormalCurve: (data, labels, container) ->
+  drawNormalCurve: (data, labels, container, flags) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
+
+    x_ = labels.xLab.value
+
+    sumx = 0
+    sumy = 0
+    for dic in data
+      sumx += parseFloat(dic[x_])
+
+    mean_x = sumx/data.length
+
+    for dic in data
+      dic["residual_x"] = dic[x_] - mean_x
+
+    if (flags.x_residual)
+      labels.xLab.value = "residual_x"
 
     vSpec = {
       "$schema": "https://vega.github.io/schema/vega/v3.json",

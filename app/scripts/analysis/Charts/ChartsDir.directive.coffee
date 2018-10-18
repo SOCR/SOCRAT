@@ -30,6 +30,8 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_bulletChart'
           'app_analysis_charts_wordCloud'
           'app_analysis_charts_sunburst'
+          'app_analysis_charts_cumulative'
+          'app_analysis_charts_residual'
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
@@ -56,6 +58,8 @@ module.exports = class ChartsDir extends BaseDirective
     @bulletChart = @app_analysis_charts_bulletChart
     @wordCloud = @app_analysis_charts_wordCloud
     @sunburst = @app_analysis_charts_sunburst
+    @cumulativeFrequency = @app_analysis_charts_cumulative
+    @residual = @app_analysis_charts_residual
     #@charts = [@areaTrellis, @bar, @bubble, @histogram, @pie, @scatterPlot, @stackBar, @time,
       #@trellis, @streamGraph, @area, @treemap, @line, @bivariate, @normal, @tukeyBoxPlot, @binnedHeatmap, @stripPlot]
     @charts = [@scatterPlot, @bar, @binnedHeatmap, @bubble, @histogram, @pie,
@@ -105,9 +109,9 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Bubble Chart'
               @bubble.drawBubble(data, labels, container)
             when 'Histogram'
-              @histogram.drawHist(data, labels, container)
+              @histogram.drawHist(data, labels, container, flags)
             when 'Tukey Box Plot (1.5 IQR)'
-              @tukeyBoxPlot.drawBoxPlot(data, labels, container)
+              @tukeyBoxPlot.drawBoxPlot(data, labels, container, flags)
             when 'Scatter Plot'
               @scatterPlot.drawScatterPlot(data, labels, container, flags)
             when 'Stacked Bar Chart'
@@ -126,7 +130,7 @@ module.exports = class ChartsDir extends BaseDirective
               # @time.checkTimeChoice(data)
               @bivariate.bivariateChart(height,width,_graph, data, labels)
             when 'Normal Distribution'
-              @normal.drawNormalCurve(data, labels, container)
+              @normal.drawNormalCurve(data, labels, container, flags)
             when 'Pie Chart'
               @pie.drawPie(data, labels, container, flags)
             when 'Scatter Plot Matrix'
@@ -134,11 +138,15 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Diverging Stacked Bar Chart'
               @divergingStackedBar.drawDivergingStackedBar(data, labels, container)
             when 'Ranged Dot Plot'
-              @rangedDotPlot.drawRangedDotPlot(data, labels, container)
+              @rangedDotPlot.drawRangedDotPlot(data, labels, container, flags)
             when 'Bullet Chart'
               @bulletChart.drawBulletChart(data, labels, container)
             when 'Word Cloud'
               @wordCloud.drawWordCloud(data, labels, container, flags)
             when 'Sunburst'
               @sunburst.drawSunburst(data, labels, container)
+            when 'Cumulative Frequency'
+              @cumulativeFrequency.drawCumulativeFrequency(data, labels, container, flags)
+            when 'Residuals'
+              @residual.drawResidual(data, labels, container)
 
