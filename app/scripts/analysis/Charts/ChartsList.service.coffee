@@ -134,6 +134,9 @@ module.exports = class ChartsList extends BaseService
       xLabel: "X (date)"
       yLabel: "Y"
       zLabel: "Key"
+    ,
+      name: 'Parallel Coordinates Chart'
+      value: 12
     ]
 
   getNested: () ->

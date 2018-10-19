@@ -21,7 +21,8 @@ module.exports = class ChartsDir extends BaseDirective
           'app_analysis_charts_trellisChart',
           'app_analysis_charts_treemap',
           'app_analysis_charts_tukeyBoxPlot',
-          'app_analysis_charts_checkTime'
+          'app_analysis_charts_checkTime',
+          'app_analysis_charts_parallelCoordinates'
 
   initialize: ->
     @areaTrellis = @app_analysis_charts_areaTrellisChart
@@ -41,6 +42,7 @@ module.exports = class ChartsDir extends BaseDirective
     @normal = @app_analysis_charts_normalChart
     @pie = @app_analysis_charts_pieChart
     @tukeyBoxPlot = @app_analysis_charts_tukeyBoxPlot
+    @parallelCoordinates = @app_analysis_charts_parallelCoordinates
 
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
@@ -93,6 +95,8 @@ module.exports = class ChartsDir extends BaseDirective
           # trellis chart is called differently
           if scheme.name is 'Trellis Chart'
             @trellis.drawTrellis(width, height, data, _graph, labels, container)
+          else if scheme.name is 'Parallel Coordinates Chart'
+            @parallelCoordinates.drawParallel(data, width, height, _graph, labels)
           # standard charts
           else
             data = data.map (row) ->
@@ -144,3 +148,4 @@ module.exports = class ChartsDir extends BaseDirective
               when 'Pie Chart'
                 _graph = svg.append('g').attr("transform", "translate(300,250)").attr("id", "remove")
                 @pie.drawPie(data,width,height,_graph,true)
+                

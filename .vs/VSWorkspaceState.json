@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app\\partials",
+    "\\app\\partials\\analysis",
+    "\\app\\scripts",
+    "\\app\\scripts\\analysis",
+    "\\app\\scripts\\analysis\\Charts"
+  ],
+  "SelectedNode": "\\app\\scripts\\analysis\\Charts\\ChartsDataService.service.coffee",
+  "PreviewInSolutionExplorer": false
+}
