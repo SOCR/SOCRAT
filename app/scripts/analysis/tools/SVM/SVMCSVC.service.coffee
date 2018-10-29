@@ -51,6 +51,8 @@ module.exports = class SVMCSVC extends BaseService
     @labels = data.labels
 
   train: (data) ->
+    console.log "features"
+    console.log @features
     for x in @labels
       if @uniqueLabelArray.includes(x) == false
         @uniqueLabelArray.push(x)
@@ -61,11 +63,20 @@ module.exports = class SVMCSVC extends BaseService
       return @updateGraphData()
 
   trainMultiClass: () ->
+    console.log "features MultiClass"
+    console.log @features
     uniqueLabelArray = @uniqueLabelArray
 
     min_max = @get_boundary_from_feature()
     console.log min_max
     @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], 0.1)
+
+    # append feature projection points to mesh_grid_points
+    for grid in @mesh_grid_points
+      featureIndex = 2
+      while featureIndex < @feature[0].length
+        grid.push(@get_feature_projection_average(featureIndex))
+        featureIndex += 1
 
     for label in uniqueLabelArray
       newLabels = []
@@ -182,3 +193,13 @@ module.exports = class SVMCSVC extends BaseService
     final.push(Math.max.apply(null, result))
     return final
 
+  get_feature_projection_average: (featureIndex) ->
+    result = 0
+    count = 0
+    for feature in @features
+      result += feature[featureIndex]
+      count += 1
+    if count == 0  # avoid division by 0 error
+      return 0
+    else
+      return result / count
