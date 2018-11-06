@@ -78,13 +78,13 @@ module.exports = class SVMGraph extends BaseService
     vSpec = {}
 
     if data.state is "scatter"
- 
+
       values = @scatter_point(data.coords,data.labels, data.legend)
       vSpec = {
-      	
+
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
         "width": 400,
-        "height": 400, 
+        "height": 400,
         "data": {
           "values": values
         },
@@ -98,7 +98,7 @@ module.exports = class SVMGraph extends BaseService
             "tooltip": {"field": "class", "type": "ordinal"}
             }
             }
-        ] 
+        ]
       }
     else if data.state is "svm"
 
@@ -110,13 +110,15 @@ module.exports = class SVMGraph extends BaseService
       console.log train_values
       values = train_values
       values = values.concat mesh_grid_values
+      console.log 'mesh-grid values'
+      console.log mesh_grid_values
       #use predication mesh_grid to show the decision boundary
-      
+
       vSpec = {
-      	
+
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
         "width": 400,
-        "height": 400, 
+        "height": 400,
         "data": {
           "values": values
         },
@@ -139,7 +141,7 @@ module.exports = class SVMGraph extends BaseService
             "tooltip": {"field": "class", "type": "ordinal"}
             }
             }
-          ] 
+          ]
       }
 
     opt =

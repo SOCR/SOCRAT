@@ -73,7 +73,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     if @algParams.c
       [minC, ..., maxC] = @algParams.c
     # Will probably make a longer if for each type of hyperparameter
-    
+
     @$timeout =>
       #@updateDataPoints data
 
@@ -98,7 +98,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
         console.log(@uniqueLabels)
 
         if @uniqueLabels.length != 2
-          labelDict[label] = i for label, i in @uniqueLabels 
+          labelDict[label] = i for label, i in @uniqueLabels
 
         else
           labelDict[@uniqueLabels[0]] = 1
@@ -121,10 +121,10 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
 
         console.log("legend dict")
         console.log(legendDict)
-      
+
       else
         @mappedLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
-    
+
       @msgService.broadcast 'svm:updateDataPoints',
         dataPoints: sendData
         labels: @mappedLabels
@@ -188,7 +188,7 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       hyperPar =
         kernel: @selectedKernel
         c: @c
-    
+
     # Set data to model
     @algorithmsService.passDataByName(@selectedAlgorithm, algData)
 
@@ -201,7 +201,10 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
 
 
   reset: ->
-    
+    @chosenCols = []
+    @xCol = null
+    @yCol = null
+    @labelCol = null
     # Resetting stuff in algorithms
     @algorithmsService.reset @selectedAlgorithm
     #@updateDataPoints(@dataFrame, null, null)

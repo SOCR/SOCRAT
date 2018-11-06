@@ -70,13 +70,15 @@ module.exports = class SVMCSVC extends BaseService
     min_max = @get_boundary_from_feature()
     console.log min_max
     @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], 0.1)
-
+    console.log @mesh_grid_points
     # append feature projection points to mesh_grid_points
     for grid in @mesh_grid_points
       featureIndex = 2
-      while featureIndex < @feature[0].length
+      while featureIndex < @features[0].length
         grid.push(@get_feature_projection_average(featureIndex))
         featureIndex += 1
+
+    console.log @mesh_grid_points
 
     for label in uniqueLabelArray
       newLabels = []
@@ -111,6 +113,7 @@ module.exports = class SVMCSVC extends BaseService
       mesh_grid_labels: @mesh_grid_label
       features: @features
       labels: @labels
+    console.log('finished training')
     return result
 
 
@@ -197,7 +200,7 @@ module.exports = class SVMCSVC extends BaseService
     result = 0
     count = 0
     for feature in @features
-      result += feature[featureIndex]
+      result += parseFloat(feature[featureIndex])
       count += 1
     if count == 0  # avoid division by 0 error
       return 0
