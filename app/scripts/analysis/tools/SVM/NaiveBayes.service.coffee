@@ -13,40 +13,26 @@ module.exports = class NaiveBayes extends BaseService
   initialize: () ->
     @metrics = @app_analysis_svm_metrics
     @jsfeat = require 'jsfeat'
-    @svm = require 'ml-svm'
 
-    #@cart = require 'ml-cart'
     @bayes = require 'ml-naivebayes'
-    #@rf = require 'ml-random-forest'
-
 
     @name = 'NaiveBayes'
-    exponents = [-4..5]
-    @cs = (Math.pow 10,num for num in exponents)
+
     @options = null
     @lables = null
 
     #runtime variables
-    @svmModel = null
+    @model = null
     @features = null
     @labels = null
-
-
-    # One vs. All , Multi Class / Label
-    @svmModelArray = []
-    @svmMarginPrediciton = []
-    @uniqueLabelArray = []
 
     # Variables for Graphing Service
     @mesh_grid_points = null
     @mesh_grid_label = []
     # features / labels
 
-
     # module hyperparameters
-    @params =
-      c: @cs
-      kernel: @metrics.getKernelNames()
+    @params = null
 
   getName: -> @name
   getParams: -> @params
@@ -59,85 +45,13 @@ module.exports = class NaiveBayes extends BaseService
     console.log "features"
     console.log @features
 
-    model = new @bayes.GaussianNB()
-
-
-    for x in @labels
-      if @uniqueLabelArray.includes(x) == false
-        @uniqueLabelArray.push(x)
-    if @uniqueLabelArray.length > 2
-      return @trainMultiClass()
-    else
-      @svmModel.train(@features, @labels);
-      return @updateGraphData()
-
-  trainMultiClass: () ->
-
-    uniqueLabelArray = @uniqueLabelArray
-
-    min_max = @get_boundary_from_feature()
-    console.log min_max
-    step_size = (min_max[1] - min_max[0]) / 50
-    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], step_size)
-    console.log @mesh_grid_points
-    # append feature projection points to mesh_grid_points
-    for grid in @mesh_grid_points
-      featureIndex = 2
-      while featureIndex < @features[0].length
-        grid.push(@get_feature_projection_average(featureIndex))
-        featureIndex += 1
-
-
-    for label in uniqueLabelArray
-      newLabels = []
-      for oldLabel in @labels
-        if oldLabel != label
-          newLabels.push(-1)
-        else
-          newLabels.push(1)
-      svmModel = new @svm @options
-
-      svmModel.train(@features, newLabels)
-      @svmModelArray.push(svmModel)
-
-
-    for point in @mesh_grid_points
-      Margins = []
-      for svmModel in @svmModelArray
-        Margins.push(svmModel.margin([point])[0])
-      MarginIndex = 0
-      maxMarginIndex = 0
-      maxMargin = Margins[0]
-      while MarginIndex <= Margins.length
-        if Margins[MarginIndex] > maxMargin
-          maxMargin = Margins[MarginIndex]
-          maxMarginIndex = MarginIndex
-        MarginIndex += 1
-      @mesh_grid_label.push(uniqueLabelArray[maxMarginIndex])
-
-    result =
-      mesh_grid_points: @mesh_grid_points
-      mesh_grid_labels: @mesh_grid_label
-      features: @features
-      labels: @labels
-    console.log('finished training')
-    return result
-
-
-
+    @model = new @bayes.GaussianNB()
+    @model.train(@features, @labels);
+    return @updateGraphData()
 
 
   setParams: (newParams) ->
-    @params = newParams
-    options =
-      C: newParams.c
-      tol: 10e-4
-      maxPasses: 10
-      maxIterations: 1000000
-      kernel: newParams.kernel
-      kernelOptions: sigma: 0.5
-    @options = options
-    @svmModel = new @svm options
+    @model = new @bayes.GaussianNB
     return
 
   updateGraphData: ->
