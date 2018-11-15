@@ -124,7 +124,7 @@ module.exports = class SVMGraph extends BaseService
         },
         "layer":[
             {
-            "mark": {"type": "point", "filled": true, "opacity": 0.02, "fillOpacity": 0.02},
+            "mark": {"type": "point", "filled": true, "opacity": 0.5, "fillOpacity": 0.5},
             "encoding": {
             "x": {"field": "cx-c","type": "quantitative"},
             "y": {"field": "cy-c","type": "quantitative"},
