@@ -3,8 +3,8 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
-  @name: app_analysis_svm_csvc
-  @desc: Performs SVM classification (C formulation)
+  @name: app_analysis_svm_naivebayes
+  @desc: Performs NaiveBayes classification
 ###
 
 module.exports = class NaiveBayes extends BaseService
@@ -12,7 +12,6 @@ module.exports = class NaiveBayes extends BaseService
 
   initialize: () ->
     @metrics = @app_analysis_svm_metrics
-    @jsfeat = require 'jsfeat'
 
     @bayes = require 'ml-naivebayes'
 
@@ -44,8 +43,7 @@ module.exports = class NaiveBayes extends BaseService
   train: (data) ->
     console.log "features"
     console.log @features
-
-    @model = new @bayes.GaussianNB()
+    @model = new @bayes.GaussianNB
     @model.train(@features, @labels);
     return @updateGraphData()
 
@@ -61,7 +59,7 @@ module.exports = class NaiveBayes extends BaseService
     step_size = (min_max[1] - min_max[0]) / 50
     @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], step_size)
     console.log @mesh_grid_points
-    @mesh_grid_label = @mesh_grid_predict_label(@svmModel, @mesh_grid_points)
+    @mesh_grid_label = @mesh_grid_predict_label(@model, @mesh_grid_points)
     result =
       mesh_grid_points: @mesh_grid_points
       mesh_grid_labels: @mesh_grid_label
@@ -96,9 +94,9 @@ module.exports = class NaiveBayes extends BaseService
       i += step_size
     return grid_array
 
-  mesh_grid_predict_label: (svmModel, mesh_grid) ->
+  mesh_grid_predict_label: (model, mesh_grid) ->
 # return the mesh_grid with the prediction label
-    pred = svmModel.predict(mesh_grid)
+    pred = model.predict(mesh_grid)
     return pred
 
   get_boundary_from_feature: () ->
