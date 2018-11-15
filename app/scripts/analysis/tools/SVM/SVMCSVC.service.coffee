@@ -63,13 +63,13 @@ module.exports = class SVMCSVC extends BaseService
       return @updateGraphData()
 
   trainMultiClass: () ->
-    console.log "features MultiClass"
-    console.log @features
+
     uniqueLabelArray = @uniqueLabelArray
 
     min_max = @get_boundary_from_feature()
     console.log min_max
-    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], 0.1)
+    step_size = (min_max[1] - min_max[0]) / 400
+    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], step_size)
     console.log @mesh_grid_points
     # append feature projection points to mesh_grid_points
     for grid in @mesh_grid_points
@@ -78,7 +78,6 @@ module.exports = class SVMCSVC extends BaseService
         grid.push(@get_feature_projection_average(featureIndex))
         featureIndex += 1
 
-    console.log @mesh_grid_points
 
     for label in uniqueLabelArray
       newLabels = []
@@ -88,11 +87,10 @@ module.exports = class SVMCSVC extends BaseService
         else
           newLabels.push(1)
       svmModel = new @svm @options
-      console.log @features
-      console.log newLabels
+
       svmModel.train(@features, newLabels)
       @svmModelArray.push(svmModel)
-      console.log @svmModelArray
+
 
     for point in @mesh_grid_points
       Margins = []
@@ -137,7 +135,9 @@ module.exports = class SVMCSVC extends BaseService
     #return the mesh_grid and training data for graphing service
     min_max = @get_boundary_from_feature()
     console.log min_max
-    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], 0.1)
+    step_size = (min_max[1] - min_max[0]) / 400
+    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], step_size)
+    console.log @mesh_grid_points
     @mesh_grid_label = @mesh_grid_predict_label(@svmModel, @mesh_grid_points)
     result =
       mesh_grid_points: @mesh_grid_points
