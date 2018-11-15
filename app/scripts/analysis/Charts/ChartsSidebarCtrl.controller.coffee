@@ -11,7 +11,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
     'app_analysis_charts_msgService',
-    '$timeout'
+    '$timeout',
+    '$scope'
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
@@ -24,6 +25,39 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @graphs = []
     @selectedGraph = null
     @maxColors = 10
+
+    # chart-specific flags (update dictionary as more flags added)
+    # general chart parameters
+
+    @chartParams =
+      flags:
+        # BarChart:
+        horizontal: false
+        stacked: false
+        normalized: false
+        threshold: 0
+        # BinnedHeatmap:
+        yBin: null
+        xBin: null
+        marginalHistogram: false
+        # ScatterPlot:
+        showSTDEV: false
+        binned: false
+        opacity: false
+        # WordCloud:
+        startAngle: 0
+        endAngle: 90
+        orientations: 1
+        text: "Input your text"
+        # pie chart
+        categorical: false
+        col: null
+      data: null
+      labels: null
+      graph: null
+
+    @$scope.chartParams =
+      flags: {}
 
     # dataset-specific
     @dataFrame = null
@@ -54,25 +88,43 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       scheme: ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"]
     ]
 
+
     @dataService.getData().then (obj) =>
+      console.log("dataService.getData")
+      console.log(obj)
       if obj.dataFrame and obj.dataFrame.dataType?
         dataFrame = obj.dataFrame
         switch dataFrame.dataType
           when @DATA_TYPES.FLAT
             @graphs = @list.getFlat()
             @selectedGraph = @graphs[0]
+            console.log("SelectedGraph")
+            console.log(@selectedGraph)
             @dataType = @DATA_TYPES.FLAT
             @parseData dataFrame
             if @checkTime.checkForTime dataFrame.data
               @graphs = @list.getTime()
           when @DATA_TYPES.NESTED
+            console.log("In dataService.getData when nested")
+            console.log(dataFrame)
             @graphs = @list.getNested()
+            @selectedGraph = @graphs[0]
+            console.log("SelectedGraph")
+            console.log(@selectedGraph)
+            @chartParams.data = dataFrame.data
             @data = dataFrame.data
             @dataType = @DATA_TYPES.NESTED
             @header = {key: 0, value: "initiate"}
 
+
+    @$scope.$watch 'sidebar.chartParams.flags'
+    , =>
+      @updateDataPoints()
+    , true
+
   parseData: (data) ->
     df = data
+    console.log("In parseData")
     @dataService.inferDataTypes data, (resp) =>
       if resp? and resp.dataFrame? and resp.dataFrame.data?
         # update data types with inferred
@@ -85,148 +137,175 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
   updateSidebarControls: (data=@dataFrame) ->
-    @cols = data.header
-    @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
-    @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
-    colData = d3.transpose(data.data)
-    @categoricalCols = @categoricalCols.filter (x, i) =>
-      @uniqueVals(colData[@cols.indexOf(x)]).length < @maxColors
+    console.log("undateSidebarControls in sidebarCtrl")
+    console.log(data)
 
-    # Determine a list of variables that has more than 20 unique values
-    # This list will be excluded from zCols if zLabel is color
-    forbiddenVarIdx = []
-    if @selectedGraph.zLabel is "Color"
+    if @selectedGraph.name is "Map Chart"
+      data = @chartParams.data
 
-      VarForChecking = []
-      # VarForChecking only includes the variable idx that has the same
-      # data type as Color variable, which defined in ChartsList.service.coffee
+    else
+      @cols = data.header
+      @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
+      @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
+      colData = d3.transpose(data.data)
+      @categoricalCols = @categoricalCols.filter (x, i) =>
+        @uniqueVals(colData[@cols.indexOf(x)]).length < @maxColors
 
-      for typeIdx in [0..data.types.length-1] by 1
-        if data.types[typeIdx] == 'string' or data.types[typeIdx] == 'integer'
-          VarForChecking.push(typeIdx)
+      # Determine a list of variables that has more than 20 unique values
+      # This list will be excluded from zCols if zLabel is color
+      forbiddenVarIdx = []
 
-      VarForChecking.map((idx) ->
-        colorValueSet = new Set()
-        for i in [0..data.data.length-1] by 1
-          colorValueSet.add(data.data[i][idx])
-        if colorValueSet.size > 20
-          forbiddenVarIdx.push(idx)
-      )
-    # end if
+      if @selectedGraph.config.vars.zLabel is "Color"
 
-    if @selectedGraph.x
-      @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
-      @xCol = @xCols[0]
-    # trellis chart
-    else if @numericalCols.length > 1
-      @chosenCols = @numericalCols.slice(0, 2)
-      if @categoricalCols.length > 0
-        @labelCol = @categoricalCols[0]
+        VarForChecking = []
+        # VarForChecking only includes the variable idx that has the same
+        # data type as Color variable, which defined in ChartsList.service.coffee
 
-    @originalXCols = @xCols
+        for typeIdx in [0..data.types.length-1] by 1
+          if data.types[typeIdx] == 'string' or data.types[typeIdx] == 'integer'
+            VarForChecking.push(typeIdx)
 
-    if @selectedGraph.y
-      @yCols = []
-      for col, idx in @cols when data.types[idx] in @selectedGraph.y
-        @yCols.push(col)
-      @yCols.push("None")
-      # Initialize the y variable
-      for yCol in @yCols
-        if yCol isnt @xCol
-          @yCol = yCol
-          break
-    @originalYCols = @yCols
+        VarForChecking.map((idx) ->
+          colorValueSet = new Set()
+          for i in [0..data.data.length-1] by 1
+            colorValueSet.add(data.data[i][idx])
+          if colorValueSet.size > 20
+            forbiddenVarIdx.push(idx)
+        )
+      # end if
+      chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap']
+      if @selectedGraph.name in chartsWithParams
+        for param in @selectedGraph.config.params
+          @chartParams.flags[param] = @selectedGraph.config.params[param]
+        $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
-    if @selectedGraph.z
-      @zCols = []
-      @zCols.push("None")
-      for col, idx in @cols when data.types[idx] in @selectedGraph.z
-        # if the variable idx is not in forbiddenVarIdx, put col in zCols list
-        if $.inArray(idx, forbiddenVarIdx) is -1
-          @zCols.push(col)
-      # Initialize the z variable
-      @zCol = "None"
-    @originalZCols = @zCols
+      if @selectedGraph.config.vars.x
+        @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
+        @xCol = @xCols[0]
 
-    if @selectedGraph.r
-      @rCols = []
-      @rCols.push("None")
-      for col, idx in @cols when data.types[idx] in @selectedGraph.r
-        @rCols.push(col)
-      # Initialize the z variable
-      @rCol = "None"
-    @originalRCols = @rCols
+      # Scatter Plot Matrix
+      else if @numericalCols.length > 1
+        @chosenCols = @numericalCols.slice(0, 2)
+        if @categoricalCols.length > 0
+          @labelCol = @categoricalCols[0]
+
+      @originalXCols = @xCols
+
+      if @selectedGraph.config.vars.y
+        @yCols = []
+        for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.y
+          @yCols.push(col)
+        if @selectedGraph.name in ['Scatter Plot', 'Histogram']
+          @yCols.push("Count")
+        # Initialize the y variable
+        for yCol in @yCols
+          if yCol isnt @xCol
+            @yCol = yCol
+            break
+      @originalYCols = @yCols
+
+      if @selectedGraph.config.vars.z
+        @zCols = []
+        if @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst'
+          @zCols.push("None")
+        for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.z
+          # if the variable idx is not in forbiddenVarIdx, put col in zCols list
+          if $.inArray(idx, forbiddenVarIdx) is -1
+            @zCols.push(col)
+        # Initialize the z variable
+        @zCol = @zCols[0]
+      @originalZCols = @zCols
+
+      if @selectedGraph.config.vars.r
+        @rCols = []
+        if @selectedGraph.name isnt 'Bullet Chart' and @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst' and @selectedGraph.name isnt 'Trellis Chart'
+          @rCols.push("None")
+        for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.r
+          if $.inArray(idx, forbiddenVarIdx) is -1
+            @rCols.push(col)
+        # Initialize the z variable
+        @rCol = @rCols[0]
+      @originalRCols = @rCols
 
     @$timeout =>
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    if @selectedGraph.x
-      [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
-      [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
-      data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
+    console.log("In updatePoints")
+    console.log(data)
+    if @selectedGraph.name is "Map Chart"
+      data = @chartParams.data
+      @chartParams.data = data
+      @chartParams.graph = @selectedGraph
 
-      # Remove the variables that are already chosen for one field
-      # isX is a boolean. This is used to determine if to include 'None' or not
-      removeFromList = (variables, list) ->
-        newList = []
-        if list
-          for e in list
-            if e == 'None' or $.inArray(e, variables) is -1 # e is not in the chosen variables
-              newList.push(e)
-        return newList
+    else
+      if @selectedGraph.config.vars
+        [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
+        [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
 
-      @xCols = removeFromList([@yCol], @originalXCols)
-      @yCols = removeFromList([@xCol], @originalYCols)
+      transformed_data = []
+      for row in data.data
+        obj = {}
+        for h, index in data.header
+          obj[h] = row[index]
+        transformed_data.push obj
 
-      labels =
-          xLab:
-            value: @xCol
-            type: xType
-          yLab:
-            value: @yCol
-            type: yType
-          zLab:
-            value: @zCol
-            type: zType
-          rLab:
-            value: @rCol
-            type: rType
+      if @selectedGraph.config.vars.x
+        # Remove the variables that are already chosen for one field
+        # isX is a boolean. This is used to determine if to include 'None' or not
+        removeFromList = (variables, list) ->
+          newList = []
+          if list
+            for e in list
+              if e == 'None' or $.inArray(e, variables) is -1 # e is not in the chosen variables
+                newList.push(e)
+          return newList
 
-    # if trellis plot
-    else if @chosenCols.length > 1
-      if @labelCol
-        labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
-        labels.splice 0, 0, @labelCol
-      else labels = null
+        @xCols = removeFromList([@yCol], @originalXCols)
+        @yCols = removeFromList([@xCol], @originalYCols)
 
-      chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
-      data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
-      data.splice 0, 0, @chosenCols
+        if xType is 'string'
+          @chartParams.flags.categorical = true
+          for col, idx in @cols
+            if @chartParams.flags.col is null and data.types[idx] in ['number', 'integer']
+              @chartParams.flags.col = col
+              break
+        else
+          @chartParams.flags.categorical = false
 
-    else data = null
+        labels =
+            xLab:
+              value: @xCol
+              type: xType
+            yLab:
+              value: @yCol
+              type: yType
+            zLab:
+              value: @zCol
+              type: zType
+            rLab:
+              value: @rCol
+              type: rType
+
+        data = transformed_data
+
+      # if scatter plot matrix
+      else if @chosenCols.length > 1
+        if @labelCol
+          labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
+          labels.splice 0, 0, @labelCol
+        else labels = null
+
+        chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
+        data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
+        data.splice 0, 0, @chosenCols
+
+      else data = null
+
+      @chartParams.data = data
+      @chartParams.labels = labels
+      @chartParams.graph = @selectedGraph
 
     @msgService.broadcast 'charts:updateGraph',
-      dataPoints: data
-      graph: @selectedGraph
-      labels: labels
+      chartParams: @chartParams
 
-#  changeGraph: () ->
-#    if @graphSelect.name is "Stream Graph"
-#      @stream = true
-#    else
-#      @stream = false
-
-#    if @dataType is "NESTED"
-#      @graphInfo.x = "initiate"
-#      @sendData.createGraph @data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme
-#    else
-#      @sendData.createGraph @chartData, @graphInfo, @headers, @dataType, @selector4.scheme
-
-#  changeVar: (selector, headers, ind) ->
-#    console.log @selector4.scheme
-    #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
-    #only allow numerical ones for ind = y or z
-#    for h in headers
-#      if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
-#    @sendData.createGraph(@chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
