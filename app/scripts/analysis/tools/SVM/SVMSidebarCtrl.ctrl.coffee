@@ -41,16 +41,10 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     # dataset-specific
     @dataFrame = null
 
-    @kernels = @app_analysis_svm_metrics.getKernelNames()
-
     # choose first algorithm as default one
     if @algorithms.length > 0
       @selectedAlgorithm = @algorithms[0]
       @updateAlgControls()
-
-    # choose first kernel as default one
-    if @kernels.length > 0
-      @selectedKernel = @kernels[0]
 
     # ASK BRADY
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
@@ -102,7 +96,9 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
 
         else
           labelDict[@uniqueLabels[0]] = 1
-          labelDict[@uniqueLabels[1]] = -1
+          # labelDict[@uniqueLabels[1]] = -1
+          labelDict[@uniqueLabels[1]] = 0
+
 
 
         # Make map from categorical label to numeric labels
@@ -207,6 +203,12 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     @labelCol = null
     # Resetting stuff in algorithms
     @algorithmsService.reset @selectedAlgorithm
+    @updateAlgControls()
+
+    # if @algParams.c
+    #   @c = @algParams.c[0]
+    #   @selectedKernel = @algParams.kernel[0]
+
     #@updateDataPoints(@dataFrame, null, null)
 
     # Resetting main

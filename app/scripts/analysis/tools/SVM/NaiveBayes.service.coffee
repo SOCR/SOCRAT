@@ -31,7 +31,8 @@ module.exports = class NaiveBayes extends BaseService
     # features / labels
 
     # module hyperparameters
-    @params = null
+    @params = 
+      placeholder: null
 
   getName: -> @name
   getParams: -> @params
@@ -53,13 +54,15 @@ module.exports = class NaiveBayes extends BaseService
     return
 
   updateGraphData: ->
-#return the mesh_grid and training data for graphing service
+    #return the mesh_grid and training data for graphing service
     min_max = @get_boundary_from_feature()
     console.log min_max
-    step_size = (min_max[1] - min_max[0]) / 50
-    @mesh_grid_points = @mesh_grid_2d_init(min_max[0], min_max[1], step_size)
+    step_size_x = (min_max[1] - min_max[0]) / 100
+    step_size_y = (min_max[3] - min_max[2]) / 100
+    @mesh_grid_points = @mesh_grid_2d_init(min_max, step_size_x, step_size_y)
     console.log @mesh_grid_points
     @mesh_grid_label = @mesh_grid_predict_label(@model, @mesh_grid_points)
+    console.log @mesh_grid_label
     result =
       mesh_grid_points: @mesh_grid_points
       mesh_grid_labels: @mesh_grid_label
@@ -78,29 +81,43 @@ module.exports = class NaiveBayes extends BaseService
     @done = off
     @iter = 0
 
-# Mesh_grid related functions
-  mesh_grid_2d_init: (low_bound, high_bound, step_size) ->
-# Initialize the mesh_grid points
+  # Mesh_grid related functions
+  mesh_grid_2d_init: (min_max, step_x, step_y) ->
+    # Initialize the mesh_grid points
+    x_low = min_max[0]
+    x_high = min_max[1]
+    y_low = min_max[2]
+    y_high = min_max[3]
     grid_array = []
-    if low_bound >= high_bound
+    if x_low >= x_high or y_low >= y_high
       return []
-    i = low_bound
-    while i < high_bound
-      j = low_bound
-      while j < high_bound
+
+    for i in [x_low..x_high] by step_x
+
+      for j in [y_low..y_high] by step_y
         grid_element = [i, j]
         grid_array.push grid_element
-        j += step_size
-      i += step_size
+
+    # if low_bound >= high_bound
+    #   return []
+    # i = low_bound
+    # while i < high_bound
+    #   j = low_bound
+    #   while j < high_bound
+    #     grid_element = [i, j]
+    #     grid_array.push grid_element
+    #     j += step_size
+    #   i += step_size
+
     return grid_array
 
-  mesh_grid_predict_label: (model, mesh_grid) ->
-# return the mesh_grid with the prediction label
-    pred = model.predict(mesh_grid)
+  mesh_grid_predict_label: (svmModel, mesh_grid) ->
+    # return the mesh_grid with the prediction label
+    pred = svmModel.predict(mesh_grid)
     return pred
 
   get_boundary_from_feature: () ->
-# get minimum of x
+    # get minimum of x
     x_column = []
     y_column = []
     result = []
@@ -109,13 +126,14 @@ module.exports = class NaiveBayes extends BaseService
       y_column.push(parseFloat x[1])
 
     result.push(Math.min.apply(null, x_column))
-    result.push(Math.min.apply(null, y_column))
     result.push(Math.max.apply(null, x_column))
+    result.push(Math.min.apply(null, y_column))
     result.push(Math.max.apply(null, y_column))
-    final = []
-    final.push(Math.min.apply(null, result))
-    final.push(Math.max.apply(null, result))
-    return final
+    # final = []
+    # final.push(Math.min.apply(null, result))
+    # final.push(Math.max.apply(null, result))
+    return result
+    # return final
 
   get_feature_projection_average: (featureIndex) ->
     result = 0

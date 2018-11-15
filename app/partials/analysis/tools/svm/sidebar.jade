@@ -20,12 +20,12 @@ div(ng-controller="svmSidebarCtrl as sidebar")
               ng-options="c for c in sidebar.algParams.c"
               ng-init="sidebar.c = sidebar.algParams.c[0]"
               )
-          div.form-group(ng-show="sidebar.kernels")
+          div.form-group(ng-show="sidebar.algParams.kernel")
             label Kernel &nbsp;
             select.form-control(
               ng-model="sidebar.selectedKernel"
-              ng-options="kern for kern in sidebar.kernels"
-              ng-init="sidebar.kernel = sidebar.kernels[0]"
+              ng-options="kern for kern in sidebar.algParams.kernel"
+              ng-init="sidebar.kernel = sidebar.algParams.kernel[0]"
             )
           hr
         fieldset(ng-show="sidebar.dataFrame")
