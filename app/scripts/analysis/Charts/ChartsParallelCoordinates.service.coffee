@@ -26,7 +26,6 @@ module.exports = class ChartsParallel extends BaseService
     @ve = require 'vega-embed'
 
   drawParallel: (data, width, height, _graph, labels, container) ->
-
     fields = data.splice(0, 1)[0]
     if labels
       ordinal = labels.splice(0, 1)[0]
@@ -38,103 +37,64 @@ module.exports = class ChartsParallel extends BaseService
         row_obj[label] = row[lbl_idx]
       if labels
         row_obj[ordinal] = labels[row_ind]
-      d.push row_obj
-
-    dataobj = []
-    vals = {}
-    vals["name"] = "cars"
-    vals["values"] = d
-    dataobj.push vals
-    vals = {}
-    vals["name"] = "fields"
-    vals["values"] = fields
-    dataobj.push vals
-
-    console.log(dataobj)
-
-    axesobj = []
-    for row, row_ind in fields
-      inner = {}
-      inner["orient"] = "left"
-      inner["zindex"] = 1
-      inner["scale"] = row
-      inner["title"] = row
-      offsetval = {}
-      offsetval["scale"] = "ord"
-      offsetval["value"] = row
-      offsetval["mult"] = -1
-      inner["offset"] = offsetval
-      axesobj.push inner
-
-    scalesobj = []
-    inner = {}
-    inner["name"] = "ord"
-    inner["type"] = "point"
-    inner["range"] = "width"
-    inner["round"] = true
-    domainval = {}
-    domainval["data"] = "fields"
-    domainval["field"] = "data"
-    inner["domain"] = domainval
-    scalesobj.push inner
-    for row, row_ind in fields
-      inner = {}
-      inner["name"] = row
-      inner["type"] = "linear"
-      inner["range"] = "height"
-      inner["zero"] = false
-      inner["nice"] = true
-      domainval = {}
-      domainval["data"] = "cars"
-      domainval["field"] = row
-      inner["domain"] = domainval
-      scalesobj.push inner
-
+      d.push row_obj 
+    datavals = {}
+    datavals["values"] = []
+    count = 1
+    group = 1
+    for row, row_ind in d
+      for field, field_ind in fields
+        inner = {}
+        inner["morphology"] = d[row_ind][field]
+        inner["groups"] = group
+        inner["vars"] = field
+        inner["species"] = d[row_ind][ordinal]
+        datavals["values"].push inner
+        count = count + 1
+        if d.length + fields.length > (150 * 4)
+          if count > parseInt((d.length + fields.length)/150, 10)
+            group = group + 1
+            count = 1
+        else
+          if count == 4
+            group = group + 1
+            count = 1
+    console.log(datavals)
     v1Spec = {
-      "$schema": "https://vega.github.io/schema/vega/v4.json",
-      "width": 700,
-      "height": 400,
-      "padding": 5,
-
-      "config": {
-        "axisY": {
-          "titleX": -2,
-          "titleY": 410,
-          "titleAngle": 0,
-          "titleAlign": "right",
-          "titleBaseline": "top"
-        }
-      },
-      "data": dataobj
-      "scales": scalesobj
-      "axes": axesobj
-
-      "marks": [
-        {
-          "type": "group",
-          "from": {"data": "cars"},
-          "marks": [
-            {
-              "type": "line",
-              "from": {"data": "fields"},
-              "encode": {
-                "enter": {
-                  "x": {"scale": "ord", "field": "data"},
-                  "y": {
-                    "scale": {"datum": "data"},
-                    "field": {"parent": {"datum": "data"}}
-                  },
-                  "stroke": {"value": "steelblue"},
-                  "strokeWidth": {"value": 1.01},
-                  "strokeOpacity": {"value": 0.3}
-                }
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "config": {"view": {"stroke": ""}},
+      "data": datavals
+      "layer": [{
+        "width": 600,
+        "height": 300,
+        "mark": {"type": "line", "strokeWidth": 0.3},
+        "encoding": {
+          "x": {
+            "field": "vars",
+            "type": "ordinal",
+            "axis": {"domain": false, "grid": false}
+          },
+          "y": {"field": "morphology", "type": "quantitative"},
+          "detail": {"field": "groups", "type": "nominal"}, 
+          "color": {
+            "field": "species",
+            "type": "nominal",
+            "scale": {
+              "domain": labels
               }
             }
-          ]
+          }
+        },
+        {
+          "width": 600, 
+          "mark": "rule",
+          "encoding": {
+            "x": {"field": "vars", "type": "ordinal", "axis": {"title": ""}}
+          }
         }
       ]
     }
-
+    
     opt =
       "actions": {export: true, source: false, editor: false}
 
