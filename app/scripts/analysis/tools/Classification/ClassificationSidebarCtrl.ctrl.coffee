@@ -78,8 +78,8 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
     if data
       xCol = data.header.indexOf @xCol unless !@xCol?
       yCol = data.header.indexOf @yCol unless !@yCol?
-      sendData = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
-      legendDict = {}
+      @sendData = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
+      @legendDict = {}
       labelDict = {}
       if @labelCol
         # HAVE SOMEONE REVISE THIS
@@ -113,10 +113,10 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
         console.log(@mappedLabels)
 
         # Reverse dict for the legend
-        legendDict[value] = key for key, value of labelDict
+        @legendDict[value] = key for key, value of labelDict
 
         console.log("legend dict")
-        console.log(legendDict)
+        console.log(@legendDict)
 
       else
         @mappedLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
@@ -126,9 +126,9 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
       console.log @yCol
 
       @msgService.broadcast 'classification:updateDataPoints',
-        dataPoints: sendData
+        dataPoints: @sendData
         labels: @mappedLabels
-        legend: legendDict
+        legend: @legendDict
         xCol: @xCol
         yCol: @yCol
 
@@ -159,17 +159,12 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
       yCol = @chosenCols.indexOf @yCol
       chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
 
-
       # if usage of labels is on
 
       labelColIdx = data.header.indexOf @labelCol
       # labels = (row[labelColIdx] for row in data.data)
 
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
-
-
-
-
 
       obj =
         features: data
@@ -194,8 +189,6 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
     algData = @prepareData()
     @running = on
     # Send selectedAlgorithm and hyperparameters
-
-
 
     if @algParams.c
       hyperPar =
@@ -222,28 +215,22 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
 
 
   reset: ->
-    @labelCol = null
     # Resetting stuff in algorithms
     @algorithmsService.reset @selectedAlgorithm
-
-    @algParams = null
-    if @algorithms.length > 0
-      @selectedAlgorithm = @algorithms[0]
-      @updateAlgControls()
-    # if @algParams.c
-    #   @c = @algParams.c[0]
-    #   @selectedKernel = @algParams.kernel[0]
-
-    #@updateDataPoints(@dataFrame, null, null)
 
     # Resetting main
     console.log("it is going into reset function in sidebar")
     # Gotta send resetting signal to main
     @msgService.broadcast 'classification:resetGrid',
       message: "reset grid"
-      xCol = @xCol
-      yCol = @yCol
-
+      xCol : @xCol
+      yCol : @yCol
+      labels: @mappedLabels
+      dataPoints: @sendData
+      legend: @legendDict
+      
     @running = off
+
+    @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
 

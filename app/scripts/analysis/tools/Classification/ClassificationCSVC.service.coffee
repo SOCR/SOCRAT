@@ -57,6 +57,8 @@ module.exports = class ClassificationCSVC extends BaseService
     console.log @features
     console.log "options"
     console.log @options
+
+    @svmModel = new @svm @options
     for x in @labels
       if @uniqueLabelArray.includes(x) == false
         @uniqueLabelArray.push(x)
@@ -128,7 +130,6 @@ module.exports = class ClassificationCSVC extends BaseService
       kernel: newParams.kernel
       kernelOptions: sigma: 0.5
     @options = options
-    @svmModel = new @svm options
     return
 
   updateGraphData: ->
@@ -139,14 +140,19 @@ module.exports = class ClassificationCSVC extends BaseService
     step_size_y = (min_max[3] - min_max[2]) / 100
     @mesh_grid_points = @mesh_grid_2d_init(min_max, step_size_x, step_size_y)
     console.log @mesh_grid_points
-    @mesh_grid_label = @mesh_grid_predict_label(@svmModel, @mesh_grid_points)
+    @mesh_grid_label = @mesh_grid_predict_label(@model, @mesh_grid_points)
+    console.log @mesh_grid_label
+
+    # @features = (row.filter((el, idx) -> idx in [@xIdx, @yIdx]) for row in @features)
+    features = []
+    for row in @features
+      features.push [row[@xIdx], row[@yIdx]]
+
     result =
       mesh_grid_points: @mesh_grid_points
       mesh_grid_labels: @mesh_grid_label
-      features: @features
+      features: features
       labels: @labels
-      minX: min_max[0]
-      minY: min_max[2]
     return result
 
   getUniqueLabels: (labels) -> labels.filter (x, i, a) -> i is a.indexOf x

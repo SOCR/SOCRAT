@@ -61,9 +61,17 @@ module.exports = class ClassificationMainCtrl extends BaseCtrl
 
 
     @$scope.$on 'classification:resetGrid', (event, data) =>
-      console.log("reset button reaches MainCtrl")
-      @newdata.state = "scatter"
-      @graph.drawSVM(@newdata)
+      console.log "here in main control"
+      console.log data
+      if data.dataPoints != undefined
+        @newdata.state = "scatter"
+        @newdata.coords = data.dataPoints
+        @newdata.legend = data.legend
+        @newdata.labels = data.labels
+        @newdata.xCol = data.xCol
+        @newdata.yCol = data.yCol
+        console.log "reset button reaches MainCtrl"
+        @graph.drawSVM(@newdata)
 
 
   sendAlgorithmData: (data) ->
