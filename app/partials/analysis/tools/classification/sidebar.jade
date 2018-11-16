@@ -1,4 +1,4 @@
-div(ng-controller="svmSidebarCtrl as sidebar")
+div(ng-controller="classificationSidebarCtrl as sidebar")
   form
     legend Parameters &nbsp;
       div.form-group
@@ -16,17 +16,25 @@ div(ng-controller="svmSidebarCtrl as sidebar")
             fieldset.form-inline
               label Value of C &nbsp;
               select.form-control(
-              ng-model="sidebar.c"
-              ng-options="c for c in sidebar.algParams.c"
-              ng-init="sidebar.c = sidebar.algParams.c[0]"
+              ng-model="sidebar.selectedC"
+              ng-options="val for val in sidebar.algParams.c"
+              ng-init="sidebar.selectedC = sidebar.algParams.c[0]"
               )
           div.form-group(ng-show="sidebar.algParams.kernel")
             label Kernel &nbsp;
             select.form-control(
               ng-model="sidebar.selectedKernel"
               ng-options="kern for kern in sidebar.algParams.kernel"
-              ng-init="sidebar.kernel = sidebar.algParams.kernel[0]"
+              ng-init="sidebar.selectedKernel = sidebar.algParams.kernel[0]"
             )
+          div.form-group(ng-show="sidebar.algParams.k")
+            fieldset.form-inline
+              label Value of K &nbsp;
+              select.form-control(
+              ng-model="sidebar.selectedK"
+              ng-options="c for c in sidebar.algParams.k"
+              ng-init="sidebar.selectedK = sidebar.algParams.k[0]"
+              )
           hr
         fieldset(ng-show="sidebar.dataFrame")
           legend Dataset

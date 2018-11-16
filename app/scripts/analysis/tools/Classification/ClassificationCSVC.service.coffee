@@ -3,15 +3,15 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
-  @name: app_analysis_svm_csvc
+  @name: app_analysis_classification_csvc
   @desc: Performs SVM classification (C formulation)
 ###
 
-module.exports = class SVMCSVC extends BaseService
-  @inject '$timeout', 'app_analysis_svm_metrics'
+module.exports = class ClassificationCSVC extends BaseService
+  @inject '$timeout', 'app_analysis_classification_metrics'
 
   initialize: () ->
-    @metrics = @app_analysis_svm_metrics
+    @metrics = @app_analysis_classification_metrics
     @jsfeat = require 'jsfeat'
     @svm = require 'ml-svm'
 
@@ -53,6 +53,8 @@ module.exports = class SVMCSVC extends BaseService
   train: (data) ->
     console.log "features"
     console.log @features
+    console.log "options"
+    console.log @options
     for x in @labels
       if @uniqueLabelArray.includes(x) == false
         @uniqueLabelArray.push(x)
@@ -115,12 +117,7 @@ module.exports = class SVMCSVC extends BaseService
     console.log('finished training')
     return result
 
-
-
-
-
   setParams: (newParams) ->
-    @params = newParams
     options =
       C: newParams.c
       tol: 10e-4

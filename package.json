@@ -44,6 +44,7 @@
     "jstransform": "~11.0.2",
     "mathjax": "^2.7.1",
     "ml-cart": "^1.0.8",
+    "ml-knn": "^2.1.3",
     "ml-naivebayes": "^3.0.0",
     "ml-random-forest": "^1.0.3",
     "ml-svm": "^2.1.2",

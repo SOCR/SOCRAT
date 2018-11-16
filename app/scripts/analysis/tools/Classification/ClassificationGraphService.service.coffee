@@ -2,30 +2,30 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class SVMGraph extends BaseService
+module.exports = class ClassificationGraph extends BaseService
   @inject '$q',
     '$stateParams',
-    'app_analysis_svm_dataService',
-    'app_analysis_svm_msgService'
+    'app_analysis_classification_dataService',
+    'app_analysis_classification_msgService'
 
 
   initialize: ->
 
-    @msgService = @app_analysis_svm_msgService
-    @dataService = @app_analysis_svm_dataService
+    @msgService = @app_analysis_classification_msgService
+    @dataService = @app_analysis_classification_dataService
     @DATA_TYPES = @dataService.getDataTypes()
     @ve = require 'vega-embed'
     @svm = require 'ml-svm'
 
-  mesh_grid_point: (coordinates, classes, type,legend) ->
+  mesh_grid_point: (coordinates, classes, type,legend, xCol, yCol) ->
     # append the mesh_grid point into the vega-lite graph
     if type == "mesh"
         value = []
         count = 0
         for single in coordinates
           new_dict = {}
-          new_dict["cx-c"] = single[0]
-          new_dict["cy-c"] = single[1]
+          new_dict['' + xCol.toString() + "_"] = single[0]
+          new_dict['' +yCol.toString() + "_"] = single[1]
 
           new_dict["class"] = legend[classes[[count]]]
 
@@ -41,9 +41,8 @@ module.exports = class SVMGraph extends BaseService
         count = 0
         for single in coordinates
           new_dict = {}
-          new_dict["x-c"] = single[0]
-          new_dict["y-c"] = single[1]
-
+          new_dict['' +xCol.toString()] = single[0]
+          new_dict['' +yCol.toString()] = single[1]
           new_dict["class"] = legend[classes[[count]]]
 
           # if classes[count] == 1
@@ -54,13 +53,15 @@ module.exports = class SVMGraph extends BaseService
           count += 1
         return value
 
-  scatter_point: (coordinates,classes, legend) ->
+  scatter_point: (coordinates,classes, legend, xCol, yCol) ->
     value = []
     count = 0
     for single in coordinates
       new_dict = {}
-      new_dict["x-c"] = single[0]
-      new_dict["y-c"] = single[1]
+      new_dict[xCol] = single[0]
+      new_dict[yCol] = single[1]
+      # new_dict["x-col"] = single[0]
+      # new_dict["y-col"] = single[1]
       if classes.length != 0
         new_dict["class"] = legend[classes[[count]]]
       	# if classes[count] == 1
@@ -77,9 +78,11 @@ module.exports = class SVMGraph extends BaseService
 
     vSpec = {}
 
+
+
     if data.state is "scatter"
 
-      values = @scatter_point(data.coords,data.labels, data.legend)
+      values = @scatter_point(data.coords,data.labels, data.legend, data.xCol, data.yCol)
       vSpec = {
 
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
@@ -92,21 +95,22 @@ module.exports = class SVMGraph extends BaseService
             {
             "mark": {"type": "point", "filled": true, "size": 75},
             "encoding": {
-            "x": {"field": "x-c","type": "quantitative"},
-            "y": {"field": "y-c","type": "quantitative"},
+            "x": {"field": data.xCol.toString(),"type": "quantitative"},
+            "y": {"field": data.yCol.toString(),"type": "quantitative"},
             "color": {"field": "class", "type": "nominal"}
             "tooltip": {"field": "class", "type": "ordinal"}
             }
             }
         ]
       }
+      console.log vSpec
     else if data.state is "svm"
 
 
       type = "train"
-      train_values = @mesh_grid_point(data.coords, data.labels,type,data.legend)
+      train_values = @mesh_grid_point(data.coords, data.labels,type,data.legend, data.xCol, data.yCol)
       type = "mesh"
-      mesh_grid_values = @mesh_grid_point(data.mesh_grid_points, data.mesh_grid_labels,type,data.legend)
+      mesh_grid_values = @mesh_grid_point(data.mesh_grid_points, data.mesh_grid_labels,type,data.legend, data.xCol, data.yCol)
       console.log train_values
       values = train_values
       values = values.concat mesh_grid_values
@@ -126,8 +130,8 @@ module.exports = class SVMGraph extends BaseService
             {
             "mark": {"type": "point", "filled": true, "opacity": 0.5, "fillOpacity": 0.5},
             "encoding": {
-            "x": {"field": "cx-c","type": "quantitative"},
-            "y": {"field": "cy-c","type": "quantitative"},
+            "x": {"field": '' +data.xCol.toString() + "_" ,"type": "quantitative"},
+            "y": {"field": '' +data.yCol.toString() + "_","type": "quantitative"},
             "color": {"field": "class", "type": "nominal"}
             "tooltip": {"field": "class", "type": "ordinal"}
             }
@@ -135,8 +139,8 @@ module.exports = class SVMGraph extends BaseService
             {
             "mark": {"type": "point", "filled": true, "opacity": 1, "size": 75},
             "encoding": {
-            "x": {"field": "x-c","type": "quantitative"},
-            "y": {"field": "y-c","type": "quantitative"},
+            "x": {"field": '' +data.xCol.toString(),"type": "quantitative"},
+            "y": {"field": '' +data.yCol.toString(),"type": "quantitative"},
             "color": {"field": "class", "type": "nominal"}
             "tooltip": {"field": "class", "type": "ordinal"}
             }
@@ -146,6 +150,7 @@ module.exports = class SVMGraph extends BaseService
 
     opt =
       "actions": {export: true, source: false, editor: false}
+
 
     @ve '#vis', vSpec, opt, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec

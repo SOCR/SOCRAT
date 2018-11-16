@@ -2,21 +2,21 @@
 
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class SVMAlgorithms extends BaseModuleDataService
-  @inject 'app_analysis_svm_msgService',
-    'app_analysis_svm_csvc',
-    'app_analysis_svm_naivebayes'
+module.exports = class ClassificationAlgorithms extends BaseModuleDataService
+  @inject 'app_analysis_classification_msgService',
+    'app_analysis_classification_csvc',
+    'app_analysis_classification_knn'
     '$interval'
     # Will have to update; instead of spectral/kmeans, will do all
     # options that are offered by svm npm
 
   initialize: ->
-    @dataService = @app_analysis_svm_dataService
-    @msgManager = @app_analysis_svm_msgService
-    @csvc = @app_analysis_svm_csvc
-    @naive = @app_analysis_svm_naivebayes
+    @dataService = @app_analysis_classification_dataService
+    @msgManager = @app_analysis_classification_msgService
+    @csvc = @app_analysis_classification_csvc
+    @knn = @app_analysis_classification_knn
 
-    @algorithms = [@csvc, @naive]
+    @algorithms = [@csvc, @knn]
 
     # load ml-svm module
     @svmModel = require 'ml-svm'

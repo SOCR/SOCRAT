@@ -4,18 +4,18 @@ BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 # MISSING: SENDING HYPERPARAMETERS TO ALGORITHMS
 
-module.exports = class SVMSidebarCtrl extends BaseCtrl
-  @inject 'app_analysis_svm_dataService',
-    'app_analysis_svm_msgService'
-    'app_analysis_svm_algorithms'
-    'app_analysis_svm_metrics'
+module.exports = class ClassificationSidebarCtrl extends BaseCtrl
+  @inject 'app_analysis_classification_dataService',
+    'app_analysis_classification_msgService'
+    'app_analysis_classification_algorithms'
+    'app_analysis_classification_metrics'
     '$scope'
     '$timeout'
 
   initialize: ->
-    @dataService = @app_analysis_svm_dataService
-    @msgService = @app_analysis_svm_msgService
-    @algorithmsService = @app_analysis_svm_algorithms
+    @dataService = @app_analysis_classification_dataService
+    @msgService = @app_analysis_classification_msgService
+    @algorithmsService = @app_analysis_classification_algorithms
     @algorithms = @algorithmsService.getNames()
 
     @DATA_TYPES = @dataService.getDataTypes()
@@ -64,8 +64,8 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
     @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
     # make sure number of unique labels is less than maximum number of classes for visualization
-    if @algParams.c
-      [minC, ..., maxC] = @algParams.c
+    # if @algParams.c
+    #   [minC, ..., maxC] = @algParams.c
     # Will probably make a longer if for each type of hyperparameter
 
     @$timeout =>
@@ -121,10 +121,17 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
       else
         @mappedLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
 
-      @msgService.broadcast 'svm:updateDataPoints',
+
+      console.log @xCol
+      console.log @yCol
+
+      @msgService.broadcast 'classification:updateDataPoints',
         dataPoints: sendData
         labels: @mappedLabels
         legend: legendDict
+        xCol: @xCol
+        yCol: @yCol
+
 
   updateChosenCols: () ->
     axis = [@xCol, @yCol]
@@ -138,7 +145,8 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
         upd = if @chosenCols.length > 1 then @chosenCols.find (e, i) -> i isnt presentCols[0][1] else null
         [@xCol, @yCol] = axis.map (c) -> if c isnt presentCols[0][0] then upd else c
 
-    @updateDataPoints @dataFrame
+    if @chosenCols.length > 1
+      @updateDataPoints @dataFrame
 
   # get requested columns from data
   prepareData: () ->
@@ -180,31 +188,41 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     @running = on
     # Send selectedAlgorithm and hyperparameters
 
+
+
     if @algParams.c
       hyperPar =
         kernel: @selectedKernel
-        c: @c
+        c: @selectedC
+      console.log "selected C"
+      console.log @selectedC
+
+    if @algParams.k
+      hyperPar =
+        k: @selectedK
 
     # Set data to model
     @algorithmsService.passDataByName(@selectedAlgorithm, algData)
 
     @algorithmsService.setParamsByName(@selectedAlgorithm, hyperPar)
 
-    @msgService.broadcast 'svm:startAlgorithm',
+    @msgService.broadcast 'classification:startAlgorithm',
       dataPoints: algData.data
       labels: algData.labels
       model: @selectedAlgorithm
+      xCol: @xCol
+      yCol: @yCol
 
 
   reset: ->
-    @chosenCols = []
-    @xCol = null
-    @yCol = null
     @labelCol = null
     # Resetting stuff in algorithms
     @algorithmsService.reset @selectedAlgorithm
-    @updateAlgControls()
 
+    @algParams = null
+    if @algorithms.length > 0
+      @selectedAlgorithm = @algorithms[0]
+      @updateAlgControls()
     # if @algParams.c
     #   @c = @algParams.c[0]
     #   @selectedKernel = @algParams.kernel[0]
@@ -214,8 +232,10 @@ module.exports = class SVMSidebarCtrl extends BaseCtrl
     # Resetting main
     console.log("it is going into reset function in sidebar")
     # Gotta send resetting signal to main
-    @msgService.broadcast 'svm:resetGrid',
+    @msgService.broadcast 'classification:resetGrid',
       message: "reset grid"
+      xCol = @xCol
+      yCol = @yCol
 
     @running = off
 

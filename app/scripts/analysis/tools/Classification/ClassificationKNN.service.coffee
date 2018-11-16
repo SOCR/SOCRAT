@@ -3,19 +3,19 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
-  @name: app_analysis_svm_naivebayes
-  @desc: Performs NaiveBayes classification
+  @name: app_analysis_classification_knn
+  @desc: Performs k Nearest Neighbor classification
 ###
 
 module.exports = class NaiveBayes extends BaseService
-  @inject '$timeout', 'app_analysis_svm_metrics'
+  @inject '$timeout', 'app_analysis_classification_metrics'
 
   initialize: () ->
-    @metrics = @app_analysis_svm_metrics
+    @metrics = @app_analysis_classification_metrics
 
-    @bayes = require 'ml-naivebayes'
+    @bayes = require 'ml-knn'
 
-    @name = 'NaiveBayes'
+    @name = 'kNN'
 
     @options = null
     @lables = null
@@ -30,9 +30,11 @@ module.exports = class NaiveBayes extends BaseService
     @mesh_grid_label = []
     # features / labels
 
+    @ks = [1..10]
+
     # module hyperparameters
     @params = 
-      placeholder: null
+      k: @ks
 
   getName: -> @name
   getParams: -> @params
@@ -44,13 +46,17 @@ module.exports = class NaiveBayes extends BaseService
   train: (data) ->
     console.log "features"
     console.log @features
-    @model = new @bayes.GaussianNB
-    @model.train(@features, @labels);
+    options =
+      k: @k
+    @model = new @bayes(@features, @labels, options)
+    # @model.train(@features, @labels)
     return @updateGraphData()
 
 
   setParams: (newParams) ->
-    @model = new @bayes.GaussianNB
+    # @model = new @bayes.GaussianNB
+    @k = newParams.k
+
     return
 
   updateGraphData: ->
@@ -111,9 +117,9 @@ module.exports = class NaiveBayes extends BaseService
 
     return grid_array
 
-  mesh_grid_predict_label: (svmModel, mesh_grid) ->
+  mesh_grid_predict_label: (model, mesh_grid) ->
     # return the mesh_grid with the prediction label
-    pred = svmModel.predict(mesh_grid)
+    pred = model.predict(mesh_grid)
     return pred
 
   get_boundary_from_feature: () ->

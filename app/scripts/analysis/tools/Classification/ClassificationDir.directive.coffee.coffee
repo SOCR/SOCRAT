@@ -4,10 +4,10 @@ require 'jquery-ui/ui/widgets/slider'
 
 BaseDirective = require 'scripts/BaseClasses/BaseDirective'
 
-module.exports = class SVMDir extends BaseDirective
-  @inject 'app_analysis_svm_svmgraph'
+module.exports = class ClassificationDir extends BaseDirective
+  @inject 'app_analysis_classification_classificationgraph'
   initialize: ->
-    @svm = @app_analysis_svm_svmgraph
+    @classification = @app_analysis_classification_classificationgraph
     @restrict = 'E'
     @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
 

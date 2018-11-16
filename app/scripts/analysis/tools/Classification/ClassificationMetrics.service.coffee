@@ -2,7 +2,7 @@
 
 BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffee'
 
-module.exports = class SVMMetrics extends BaseModuleDataService
+module.exports = class ClasssificationMetrics extends BaseModuleDataService
 
   initialize: ->
 
