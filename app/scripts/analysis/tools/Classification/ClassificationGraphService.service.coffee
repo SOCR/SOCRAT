@@ -78,7 +78,19 @@ module.exports = class ClassificationGraph extends BaseService
 
     vSpec = {}
 
-
+    minX = Infinity
+    minY = Infinity
+    maxX = -Infinity
+    maxY = -Infinity
+    for datapoint in data.coords
+      if datapoint[0] < minX
+        minX = datapoint[0]
+      if datapoint[1] < minY
+        minY = datapoint[1]
+      if datapoint[0] > maxX
+        maxX = datapoint[0]
+      if datapoint[1] > maxY
+        maxY = datapoint[1]
 
     if data.state is "scatter"
 
@@ -90,13 +102,14 @@ module.exports = class ClassificationGraph extends BaseService
         "height": 400,
         "data": {
           "values": values
+
         },
         "layer":[
             {
             "mark": {"type": "point", "filled": true, "size": 75},
             "encoding": {
-            "x": {"field": data.xCol.toString(),"type": "quantitative"},
-            "y": {"field": data.yCol.toString(),"type": "quantitative"},
+            "x": {"field": data.xCol.toString(),"type": "quantitative","scale":{"domain": [minX, maxX], "type":"linear"} },
+            "y": {"field": data.yCol.toString(),"type": "quantitative","scale":{"domain": [minY, maxY], "type":"linear"} },
             "color": {"field": "class", "type": "nominal"}
             "tooltip": {"field": "class", "type": "ordinal"}
             }
@@ -124,14 +137,15 @@ module.exports = class ClassificationGraph extends BaseService
         "width": 400,
         "height": 400,
         "data": {
-          "values": values
+          "values": values,
+
         },
         "layer":[
             {
             "mark": {"type": "point", "filled": true, "opacity": 0.5, "fillOpacity": 0.5},
             "encoding": {
-            "x": {"field": '' +data.xCol.toString() + "_" ,"type": "quantitative"},
-            "y": {"field": '' +data.yCol.toString() + "_","type": "quantitative"},
+            "x": {"field": '' +data.xCol.toString() + "_" ,"type": "quantitative", "scale":{"domain": [minX, maxX], "type":"linear"} },
+            "y": {"field": '' +data.yCol.toString() + "_","type": "quantitative", "scale":{"domain": [minY, maxY], "type":"linear"} },
             "color": {"field": "class", "type": "nominal"}
             "tooltip": {"field": "class", "type": "ordinal"}
             }
@@ -139,18 +153,20 @@ module.exports = class ClassificationGraph extends BaseService
             {
             "mark": {"type": "point", "filled": true, "opacity": 1, "size": 75},
             "encoding": {
-            "x": {"field": '' +data.xCol.toString(),"type": "quantitative"},
-            "y": {"field": '' +data.yCol.toString(),"type": "quantitative"},
+            "x": {"field": '' +data.xCol.toString(),"type": "quantitative", "scale":{"domain": [minX, maxX], "type":"linear" } },
+            "y": {"field": '' +data.yCol.toString(),"type": "quantitative", "scale":{"domain": [minY, maxY], "type":"linear" } },
             "color": {"field": "class", "type": "nominal"}
             "tooltip": {"field": "class", "type": "ordinal"}
             }
             }
-          ]
+          ],
+
       }
 
     opt =
       "actions": {export: true, source: false, editor: false}
 
+    console.log vSpec
 
     @ve '#vis', vSpec, opt, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec

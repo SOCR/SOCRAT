@@ -42,6 +42,8 @@ module.exports = class NaiveBayes extends BaseService
   saveData: (data) ->
     @features = data.features
     @labels = data.labels
+    @xIdx = data.xIdx
+    @yIdx = data.yIdx
 
   train: (data) ->
     console.log "features"
@@ -69,10 +71,16 @@ module.exports = class NaiveBayes extends BaseService
     console.log @mesh_grid_points
     @mesh_grid_label = @mesh_grid_predict_label(@model, @mesh_grid_points)
     console.log @mesh_grid_label
+
+    # @features = (row.filter((el, idx) -> idx in [@xIdx, @yIdx]) for row in @features)
+    features = []
+    for row in @features
+      features.push [row[@xIdx], row[@yIdx]]
+
     result =
       mesh_grid_points: @mesh_grid_points
       mesh_grid_labels: @mesh_grid_label
-      features: @features
+      features: features
       labels: @labels
     return result
 
@@ -128,8 +136,8 @@ module.exports = class NaiveBayes extends BaseService
     y_column = []
     result = []
     for x in @features
-      x_column.push(parseFloat x[0])
-      y_column.push(parseFloat x[1])
+      x_column.push(parseFloat x[@xIdx])
+      y_column.push(parseFloat x[@yIdx])
 
     result.push(Math.min.apply(null, x_column))
     result.push(Math.max.apply(null, x_column))

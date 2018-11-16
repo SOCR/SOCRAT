@@ -159,6 +159,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
       yCol = @chosenCols.indexOf @yCol
       chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
 
+
       # if usage of labels is on
 
       labelColIdx = data.header.indexOf @labelCol
@@ -166,9 +167,15 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
 
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
 
+
+
+
+
       obj =
         features: data
         labels: @mappedLabels
+        xIdx: xCol
+        yIdx: yCol
 
     else false
 

@@ -49,6 +49,8 @@ module.exports = class ClassificationCSVC extends BaseService
   saveData: (data) ->
     @features = data.features
     @labels = data.labels
+    @xIdx = data.xIdx
+    @yIdx = data.yIdx
 
   train: (data) ->
     console.log "features"
@@ -70,8 +72,8 @@ module.exports = class ClassificationCSVC extends BaseService
 
     min_max = @get_boundary_from_feature()
     console.log min_max
-    step_size_x = (min_max[1] - min_max[0]) / 400
-    step_size_y = (min_max[3] - min_max[2]) / 400
+    step_size_x = (min_max[1] - min_max[0]) / 100
+    step_size_y = (min_max[3] - min_max[2]) / 100
     @mesh_grid_points = @mesh_grid_2d_init(min_max, step_size_x, step_size_y)
     console.log @mesh_grid_points
     # append feature projection points to mesh_grid_points
@@ -143,6 +145,8 @@ module.exports = class ClassificationCSVC extends BaseService
       mesh_grid_labels: @mesh_grid_label
       features: @features
       labels: @labels
+      minX: min_max[0]
+      minY: min_max[2]
     return result
 
   getUniqueLabels: (labels) -> labels.filter (x, i, a) -> i is a.indexOf x
@@ -197,8 +201,8 @@ module.exports = class ClassificationCSVC extends BaseService
     y_column = []
     result = []
     for x in @features
-      x_column.push(parseFloat x[0])
-      y_column.push(parseFloat x[1])
+      x_column.push(parseFloat x[@xIdx])
+      y_column.push(parseFloat x[@yIdx])
 
     result.push(Math.min.apply(null, x_column))
     result.push(Math.max.apply(null, x_column))
