@@ -221,6 +221,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
     # Resetting main
     console.log("it is going into reset function in sidebar")
     # Gotta send resetting signal to main
+
     @msgService.broadcast 'classification:resetGrid',
       message: "reset grid"
       xCol : @xCol
@@ -228,7 +229,8 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
       labels: @mappedLabels
       dataPoints: @sendData
       legend: @legendDict
-      
+
+    @initialize()
     @running = off
 
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()

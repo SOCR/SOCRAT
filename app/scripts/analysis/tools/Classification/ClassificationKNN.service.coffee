@@ -77,7 +77,7 @@ module.exports = class NaiveBayes extends BaseService
     for row in @features
       features.push [row[@xIdx], row[@yIdx]]
 
-    # Feature Projection 
+    # Feature Projection
     for grid in @mesh_grid_points
       featureIndex = 0
       while featureIndex < @features[0].length
@@ -102,6 +102,7 @@ module.exports = class NaiveBayes extends BaseService
   reset: ()->
     @done = off
     @iter = 0
+    @initialize()
 
   # Mesh_grid related functions
   mesh_grid_2d_init: (min_max, step_x, step_y) ->

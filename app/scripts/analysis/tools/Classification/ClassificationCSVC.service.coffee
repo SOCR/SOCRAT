@@ -78,12 +78,16 @@ module.exports = class ClassificationCSVC extends BaseService
     step_size_y = (min_max[3] - min_max[2]) / 100
     @mesh_grid_points = @mesh_grid_2d_init(min_max, step_size_x, step_size_y)
     console.log @mesh_grid_points
+
     # append feature projection points to mesh_grid_points
     for grid in @mesh_grid_points
-      featureIndex = 2
+      featureIndex = 0
       while featureIndex < @features[0].length
-        grid.push(@get_feature_projection_average(featureIndex))
+        if featureIndex != @xIdx and featureIndex != @yIdx
+          grid.push(@get_feature_projection_average(featureIndex))
         featureIndex += 1
+
+    console.log @mesh_grid_points
 
 
     for label in uniqueLabelArray
@@ -165,6 +169,8 @@ module.exports = class ClassificationCSVC extends BaseService
   reset: ()->
     @done = off
     @iter = 0
+    @initialize()
+    console.log 'service reset'
 
   # Mesh_grid related functions
   mesh_grid_2d_init: (min_max, step_x, step_y) ->
