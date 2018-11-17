@@ -230,7 +230,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
       dataPoints: @sendData
       legend: @legendDict
 
-    @initialize()
+    #@initialize()
     @running = off
 
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
