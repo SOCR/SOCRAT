@@ -33,7 +33,7 @@ module.exports = class NaiveBayes extends BaseService
     @ks = [1..10]
 
     # module hyperparameters
-    @params = 
+    @params =
       k: @ks
 
   getName: -> @name
@@ -76,6 +76,14 @@ module.exports = class NaiveBayes extends BaseService
     features = []
     for row in @features
       features.push [row[@xIdx], row[@yIdx]]
+
+    # Feature Projection 
+    for grid in @mesh_grid_points
+      featureIndex = 0
+      while featureIndex < @features[0].length
+        if featureIndex != @xIdx and featureIndex != @yIdx
+          grid.push(@get_feature_projection_average(featureIndex))
+        featureIndex += 1
 
     result =
       mesh_grid_points: @mesh_grid_points
