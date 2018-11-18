@@ -37,7 +37,6 @@ module.exports = class ClassificationCSVC extends BaseService
     @mesh_grid_label = []
     # features / labels
 
-
     # module hyperparameters
     @params =
       c: @cs
@@ -53,10 +52,23 @@ module.exports = class ClassificationCSVC extends BaseService
     @yIdx = data.yIdx
 
   train: (data) ->
-    console.log "features"
-    console.log @features
-    console.log "options"
-    console.log @options
+
+    if @xIdx != 0
+      for point in @features
+        temp = point[0]
+        point[0] = point[@xIdx]
+        point[@xIdx] = temp
+      @xIdx = 0
+      if @yIdx == 0
+        @yIdx = 1
+
+    if @yIdx != 1
+      for point in @features
+        temp = point[1]
+        point[1] = point[@yIdx]
+        point[@yIdx] = temp
+      @yIdx = 1
+
 
     @svmModel = new @svm @options
     for x in @labels
@@ -65,7 +77,6 @@ module.exports = class ClassificationCSVC extends BaseService
     if @uniqueLabelArray.length > 2
       return @trainMultiClass()
     else
-      @svmModel.train(@features, @labels);
       return @updateGraphData()
 
   trainMultiClass: () ->
@@ -73,11 +84,9 @@ module.exports = class ClassificationCSVC extends BaseService
     uniqueLabelArray = @uniqueLabelArray
 
     min_max = @get_boundary_from_feature()
-    console.log min_max
     step_size_x = (min_max[1] - min_max[0]) / 100
     step_size_y = (min_max[3] - min_max[2]) / 100
     @mesh_grid_points = @mesh_grid_2d_init(min_max, step_size_x, step_size_y)
-    console.log @mesh_grid_points
 
     # append feature projection points to mesh_grid_points
     for grid in @mesh_grid_points
@@ -100,6 +109,7 @@ module.exports = class ClassificationCSVC extends BaseService
       svmModel = new @svm @options
 
       svmModel.train(@features, newLabels)
+
       @svmModelArray.push(svmModel)
 
 
@@ -137,26 +147,36 @@ module.exports = class ClassificationCSVC extends BaseService
     return
 
   updateGraphData: ->
-    #return the mesh_grid and training data for graphing service
+
     min_max = @get_boundary_from_feature()
-    console.log min_max
     step_size_x = (min_max[1] - min_max[0]) / 100
     step_size_y = (min_max[3] - min_max[2]) / 100
     @mesh_grid_points = @mesh_grid_2d_init(min_max, step_size_x, step_size_y)
-    console.log @mesh_grid_points
-    @mesh_grid_label = @mesh_grid_predict_label(@model, @mesh_grid_points)
-    console.log @mesh_grid_label
 
-    # @features = (row.filter((el, idx) -> idx in [@xIdx, @yIdx]) for row in @features)
-    features = []
-    for row in @features
-      features.push [row[@xIdx], row[@yIdx]]
+    # append feature projection points to mesh_grid_points
+    for grid in @mesh_grid_points
+      featureIndex = 0
+      while featureIndex < @features[0].length
+        if featureIndex != @xIdx and featureIndex != @yIdx
+          grid.push(@get_feature_projection_average(featureIndex))
+        featureIndex += 1
+
+
+    console.log @labels
+    console.log @features
+    @svmModel.train(@features, @labels)
+    @mesh_grid_label = @mesh_grid_predict_label(@svmModel, @mesh_grid_points)
+
+    console.log @svmModel
+
+    console.log @mesh_grid_label
 
     result =
       mesh_grid_points: @mesh_grid_points
       mesh_grid_labels: @mesh_grid_label
-      features: features
+      features: @features
       labels: @labels
+    console.log('finished training')
     return result
 
   getUniqueLabels: (labels) -> labels.filter (x, i, a) -> i is a.indexOf x
@@ -189,16 +209,6 @@ module.exports = class ClassificationCSVC extends BaseService
         grid_element = [i, j]
         grid_array.push grid_element
 
-    # if low_bound >= high_bound
-    #   return []
-    # i = low_bound
-    # while i < high_bound
-    #   j = low_bound
-    #   while j < high_bound
-    #     grid_element = [i, j]
-    #     grid_array.push grid_element
-    #     j += step_size
-    #   i += step_size
 
     return grid_array
 

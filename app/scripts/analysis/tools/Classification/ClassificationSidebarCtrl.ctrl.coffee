@@ -2,8 +2,6 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-# MISSING: SENDING HYPERPARAMETERS TO ALGORITHMS
-
 module.exports = class ClassificationSidebarCtrl extends BaseCtrl
   @inject 'app_analysis_classification_dataService',
     'app_analysis_classification_msgService'
@@ -19,12 +17,11 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
     @algorithms = @algorithmsService.getNames()
 
     @DATA_TYPES = @dataService.getDataTypes()
-    # set up data and algorithm-agnostic controls
 
+    # Algorithm parameters
     @algParams = null
-    @labelCol = null
 
-    # dataset-specific
+    # Data related columns
     @dataFrame = null
     @dataType = null
     @cols = []
@@ -33,20 +30,17 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
     @categoricalCols = []
     @xCol = null
     @yCol = null
+    @labelCol = null
 
-    # set up data controls
+    # Variables for control
     @ready = off
     @running = off
-
-    # dataset-specific
-    @dataFrame = null
 
     # choose first algorithm as default one
     if @algorithms.length > 0
       @selectedAlgorithm = @algorithms[0]
       @updateAlgControls()
 
-    # ASK BRADY
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
     @dataService.getData().then (obj) =>
@@ -56,75 +50,47 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
         @parseData obj.dataFrame
 
   updateAlgControls: () ->
+    # Get parameters of algorithm after choosing algorithm
     @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
   # update data-driven sidebar controls
   updateSidebarControls: (data) ->
+    # Get columns and types of columns
     @cols = data.header
     @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
     @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
-    # make sure number of unique labels is less than maximum number of classes for visualization
-    # if @algParams.c
-    #   [minC, ..., maxC] = @algParams.c
-    # Will probably make a longer if for each type of hyperparameter
-
-    @$timeout =>
-      #@updateDataPoints data
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
   ## Data preparation methods
   updateDataPoints: (data=null) ->
+    # Update visualization of datapoints
     if data
       xCol = data.header.indexOf @xCol unless !@xCol?
       yCol = data.header.indexOf @yCol unless !@yCol?
       @sendData = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
       @legendDict = {}
       labelDict = {}
+      # Make mapping to handle all kinds of labels
       if @labelCol
-        # HAVE SOMEONE REVISE THIS
         labelIndex = data.header.indexOf @labelCol
         @uniqueLabels = @uniqueVals (row[labelIndex] for row in data.data)
-
-        console.log(@labelCol)
-        console.log(row[labelIndex] for row in data.data)
-        console.log("unique labels:")
-        console.log(@uniqueLabels)
 
         if @uniqueLabels.length != 2
           labelDict[label] = i for label, i in @uniqueLabels
 
         else
           labelDict[@uniqueLabels[0]] = 1
-          # labelDict[@uniqueLabels[1]] = -1
-          labelDict[@uniqueLabels[1]] = 0
-
-
-
-        # Make map from categorical label to numeric labels
-
-        console.log("label dict:")
-        console.log(labelDict)
+          labelDict[@uniqueLabels[1]] = -1
 
         # Use map to create numeric labels
         @mappedLabels = (labelDict[row[data.header.indexOf(@labelCol)]] for row in data.data)
-
-        console.log("mapped labels")
-        console.log(@mappedLabels)
-
         # Reverse dict for the legend
         @legendDict[value] = key for key, value of labelDict
-
-        console.log("legend dict")
-        console.log(@legendDict)
-
       else
         @mappedLabels = (row[data.header.indexOf(@labelCol)] for row in data.data)
 
-
-      console.log @xCol
-      console.log @yCol
-
+      # Broadcast data to main controller
       @msgService.broadcast 'classification:updateDataPoints',
         dataPoints: @sendData
         labels: @mappedLabels
@@ -134,6 +100,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
 
 
   updateChosenCols: () ->
+    # Update chosen columns
     axis = [@xCol, @yCol]
     presentCols = ([name, idx] for name, idx in @chosenCols when name in axis)
     # if current X and Y are not among selected anymore
@@ -150,6 +117,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
 
   # get requested columns from data
   prepareData: () ->
+    # Prepare data for training
     data = @dataFrame
 
     if @chosenCols.length > 1
@@ -159,10 +127,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
       yCol = @chosenCols.indexOf @yCol
       chosenIdxs = @chosenCols.map (x) -> data.header.indexOf x
 
-      # if usage of labels is on
-
       labelColIdx = data.header.indexOf @labelCol
-      # labels = (row[labelColIdx] for row in data.data)
 
       data = (row.filter((el, idx) -> idx in chosenIdxs) for row in data.data)
 
@@ -175,6 +140,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
     else false
 
   parseData: (data) ->
+    # Parsing data when reading in dataframe
     @dataService.inferDataTypes data, (resp) =>
       if resp? and resp.dataFrame? and resp.dataFrame.data?
         df = @dataFrame
@@ -186,16 +152,16 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
         @ready = on
 
   startAlgorithm: ->
+    # Tells main controller to start training
+
     algData = @prepareData()
     @running = on
-    # Send selectedAlgorithm and hyperparameters
 
+    # Sets hyperparameters
     if @algParams.c
       hyperPar =
         kernel: @selectedKernel
         c: @selectedC
-      console.log "selected C"
-      console.log @selectedC
 
     if @algParams.k
       hyperPar =
@@ -203,7 +169,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
 
     # Set data to model
     @algorithmsService.passDataByName(@selectedAlgorithm, algData)
-
+    # Send selectedAlgorithm and hyperparameters
     @algorithmsService.setParamsByName(@selectedAlgorithm, hyperPar)
 
     @msgService.broadcast 'classification:startAlgorithm',
@@ -219,9 +185,6 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
     @algorithmsService.reset @selectedAlgorithm
 
     # Resetting main
-    console.log("it is going into reset function in sidebar")
-    # Gotta send resetting signal to main
-
     @msgService.broadcast 'classification:resetGrid',
       message: "reset grid"
       xCol : @xCol
@@ -230,9 +193,7 @@ module.exports = class ClassificationSidebarCtrl extends BaseCtrl
       dataPoints: @sendData
       legend: @legendDict
 
-    #@initialize()
     @running = off
-
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
 

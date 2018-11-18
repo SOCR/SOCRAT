@@ -48,6 +48,27 @@ module.exports = class NaiveBayes extends BaseService
   train: (data) ->
     console.log "features"
     console.log @features
+
+    console.log @xIdx
+    console.log @yIdx
+
+
+    if @xIdx != 0
+      for point in @features
+        temp = point[0]
+        point[0] = point[@xIdx]
+        point[@xIdx] = temp
+      @xIdx = 0
+      if @yIdx == 0
+        @yIdx = 1
+
+    if @yIdx != 1
+      for point in @features
+        temp = point[1]
+        point[1] = point[@yIdx]
+        point[@yIdx] = temp
+      @yIdx = 1
+
     options =
       k: @k
     @model = new @bayes(@features, @labels, options)
@@ -58,7 +79,6 @@ module.exports = class NaiveBayes extends BaseService
   setParams: (newParams) ->
     # @model = new @bayes.GaussianNB
     @k = newParams.k
-
     return
 
   updateGraphData: ->
@@ -116,21 +136,9 @@ module.exports = class NaiveBayes extends BaseService
       return []
 
     for i in [x_low..x_high] by step_x
-
       for j in [y_low..y_high] by step_y
         grid_element = [i, j]
         grid_array.push grid_element
-
-    # if low_bound >= high_bound
-    #   return []
-    # i = low_bound
-    # while i < high_bound
-    #   j = low_bound
-    #   while j < high_bound
-    #     grid_element = [i, j]
-    #     grid_array.push grid_element
-    #     j += step_size
-    #   i += step_size
 
     return grid_array
 
@@ -152,11 +160,7 @@ module.exports = class NaiveBayes extends BaseService
     result.push(Math.max.apply(null, x_column))
     result.push(Math.min.apply(null, y_column))
     result.push(Math.max.apply(null, y_column))
-    # final = []
-    # final.push(Math.min.apply(null, result))
-    # final.push(Math.max.apply(null, result))
     return result
-    # return final
 
   get_feature_projection_average: (featureIndex) ->
     result = 0

@@ -24,8 +24,8 @@ module.exports = class ClassificationGraph extends BaseService
         count = 0
         for single in coordinates
           new_dict = {}
-          new_dict['' + xCol.toString() + "_"] = single[0]
-          new_dict['' +yCol.toString() + "_"] = single[1]
+          new_dict[" "] = single[0]
+          new_dict["  "] = single[1]
 
           new_dict["class"] = legend[classes[[count]]]
 
@@ -83,13 +83,14 @@ module.exports = class ClassificationGraph extends BaseService
     maxX = -Infinity
     maxY = -Infinity
     for datapoint in data.coords
-      if datapoint[0] < minX
+      if parseFloat(datapoint[0]) < minX
         minX = datapoint[0]
-      if datapoint[1] < minY
-        minY = datapoint[1]
-      if datapoint[0] > maxX
+      if parseFloat(datapoint[0]) > maxX
         maxX = datapoint[0]
-      if datapoint[1] > maxY
+
+      if parseFloat(datapoint[1]) < minY
+        minY = datapoint[1]
+      if parseFloat(datapoint[1]) > maxY
         maxY = datapoint[1]
 
     if data.state is "scatter"
@@ -116,7 +117,6 @@ module.exports = class ClassificationGraph extends BaseService
             }
         ]
       }
-      console.log vSpec
     else if data.state is "svm"
 
 
@@ -124,11 +124,8 @@ module.exports = class ClassificationGraph extends BaseService
       train_values = @mesh_grid_point(data.coords, data.labels,type,data.legend, data.xCol, data.yCol)
       type = "mesh"
       mesh_grid_values = @mesh_grid_point(data.mesh_grid_points, data.mesh_grid_labels,type,data.legend, data.xCol, data.yCol)
-      console.log train_values
       values = train_values
       values = values.concat mesh_grid_values
-      console.log 'mesh-grid values'
-      console.log mesh_grid_values
       #use predication mesh_grid to show the decision boundary
 
       vSpec = {
@@ -144,8 +141,8 @@ module.exports = class ClassificationGraph extends BaseService
             {
             "mark": {"type": "point", "filled": true, "opacity": 0.5, "fillOpacity": 0.5},
             "encoding": {
-            "x": {"field": '' +data.xCol.toString() + "_" ,"type": "quantitative", "scale":{"domain": [minX, maxX], "type":"linear"} },
-            "y": {"field": '' +data.yCol.toString() + "_","type": "quantitative", "scale":{"domain": [minY, maxY], "type":"linear"} },
+            "x": {"field": " " ,"type": "quantitative", "scale":{"domain": [minX, maxX], "type":"linear"} },
+            "y": {"field": "  ","type": "quantitative", "scale":{"domain": [minY, maxY], "type":"linear"} },
             "color": {"field": "class", "type": "nominal"}
             "tooltip": {"field": "class", "type": "ordinal"}
             }
@@ -165,8 +162,6 @@ module.exports = class ClassificationGraph extends BaseService
 
     opt =
       "actions": {export: true, source: false, editor: false}
-
-    console.log vSpec
 
     @ve '#vis', vSpec, opt, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec
