@@ -1,5 +1,122 @@
+style(type="text/css").
+  .section {
+    overflow: hidden;
+    background-color: #f1f1f1;
+  }
+  .section button {
+    float: left;
+    cursor: pointer;
+  }
+  .section button.active {
+    background-color: #ccc;
+    border: none;
+  }
+  .sectioncontent {
+    display: none;
+    padding: 12px 12px;
+    border: none;
+  }
+
+  }
+  .tab {
+    overflow: hidden;
+    background-color: #f1f1f1;
+  }
+  .tab button {
+    float: left;
+    cursor: pointer;
+  }
+  .tab button.active {
+    background-color: #ccc;
+    border: none;
+  }
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: none;
+    padding: 80px;
+  }
+
+script.
+  document.getElementById("graphButton").click();
+
+  function openTab(event, tabId) {
+    var i, tabcontent, tabButtons;
+    tabcontent = document.getElementsByClassName("tabcontent");
+
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+
+    tabButtons = document.getElementsByClassName("tabButtons");
+    for (i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+    }
+
+    document.getElementById("tab" + tabId).style.display = "block";
+    event.currentTarget.className += " active";
+  }
+
+  function openSection(event, sectionId){
+    var i, sectioncontent, sectionButtons;
+    sectioncontent = document.getElementsByClassName("sectioncontent");
+
+    for (i = 0; i < sectioncontent.length; i++) {
+      sectioncontent[i].style.display = "none";
+    }
+
+    sectionButtons = document.getElementsByClassName("sectionButtons");
+    for (i = 0; i < sectionButtons.length; i++) {
+      sectionButtons[i].className = sectionButtons[i].className.replace(" active", "");
+  }
+
+  document.getElementById("section" + sectionId).style.display = "block";
+  event.currentTarget.className += " active";
+  }
+
+
 div.container-fluid(ng-controller="classificationMainCtrl as mainArea")
   h4 {{mainArea.title}}
-  #vis
-  div.row-fluid
+  .section
+    button(id="graphButton" class="sectionButtons" onclick="openSection(event, 0)") Graph
+    button(class="sectionButtons" onclick="openSection(event, 1)") Information and Help
+
+  .sectioncontent(id="section0", display="block")
+    #vis
+    div.row-fluid
     svmgraph
+
+  .sectioncontent(id="section1")
+    .tab
+      button(class="tabButtons" onclick="openTab(event, 1)") SVM
+      button(class="tabButtons" onclick="openTab(event, 2)") Algorithms
+      button(class="tabButtons" onclick="openTab(event, 3)") Values
+      button(class="tabButtons" onclick="openTab(event, 4)") Kernel
+      button(class="tabButtons" onclick="openTab(event, 5)") Data
+      button(class="tabButtons" onclick="openTab(event, 6)") Label
+
+
+    .tabcontent(id="tab1")
+      h4 Support Vector Machine Overview
+      p A Support Vector Machine is a machine learning tool that is used to create a decision boundary, or a mathematical division that separates data into sets that lie on one side or the other of a the division. The boundary is then used to predict if new data points are in one set or the other, effectively deciding which class it is most likely to be in.
+
+
+    .tabcontent(id="tab2")
+      h4 Algorithms
+      p A discussion of the available algorithms. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    .tabcontent(id="tab3")
+      h4 Custom Values (C and K)
+      p A discussion of the different values and what changing them does for results. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    .tabcontent(id="tab4")
+      h4 Kernel
+      p Detailing the kernel, its meaning, and its impact on the algorithm. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    .tabcontent(id="tab5")
+      h4 Selecting Data
+      p Walking user through the selection of specific datasets within the full set and the outcomes. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    .tabcontent(id="tab6")
+      h4 Selecting Labels
+      p A discussion of choosing a label for the algorithm and the results. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
