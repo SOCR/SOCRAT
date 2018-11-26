@@ -91,8 +91,8 @@ div.container-fluid(ng-controller="classificationMainCtrl as mainArea")
       button(class="tabButtons" onclick="openTab(event, 0)") Classification
       button(class="tabButtons" onclick="openTab(event, 1)") SVM
       button(class="tabButtons" onclick="openTab(event, 2)") KNN
-      button(class="tabButtons" onclick="openTab(event, 3)") Values
-      button(class="tabButtons" onclick="openTab(event, 4)") Kernel
+      button(class="tabButtons" onclick="openTab(event, 3)") SVM Params
+      button(class="tabButtons" onclick="openTab(event, 4)") KNN Params
       button(class="tabButtons" onclick="openTab(event, 5)") Data
       button(class="tabButtons" onclick="openTab(event, 6)") Label
 
@@ -114,16 +114,17 @@ div.container-fluid(ng-controller="classificationMainCtrl as mainArea")
       p In the Dogs and Guinea Pigs example, instead of using a mathematical height vs weight boundary to predict the species of a data point, simply figure out whether more of the K closest data points are classified as a dog or as a guinea pig, and assign the class of the more frequent neighbor to the data point.
 
     .tabcontent(id="tab3")
-      h4 Custom Values (C and K)
+      h4 SVM Parameters
       h5 Value C
       p The value of C is a regularization parameter of the SVM method that allows the user to customize how accurate the algorithm is in creating a decision boundary versus how simplified and generalizable the boundary is. A larger C value will prioritize the accuracy of its predictions, regardless of how complex its boundary equation is. For example, the largest C value might be trained in such a way on the data that it perfectly divides the points into their correct class (this is called having zero testing error). However the equation for the boundary would be so complicated and specific mathematically that it would be hard to use to classify future data (imagine an s-shaped and squigly line that perfectly weaved through the data points so that all instances of one class lay on one side of the line and all instances of the other class on the other).
       p A low value of C however would prioritize mathematical simplicity and generalizability at the expense of a few of the wrong class on either side of the line (this is called having some testing error). This does not necessarily mean it will predict future data any less accurately. Because it is a more simple boundary, it might capture a larger sample size better if the classes were heavily related to the characteristics, as the distribution averaged itself out the boundary would have better success predicting the classifications.
-      h5 Value K
-      p The value of K is the parameter of the K Nearest Neighbors (KNN) algorithm that determines how many neighboring data points are to be used in predicting the new point's class.
+      h5 Kernel Type
+      p The Kernel parameter describes the type of boundaraies that the SVM will be able to learn. For example, a "linear" kernel would only be able to learn linear boundaries. The most complex type of kernel is the Radial-Basis Function kernel (RBF), which should be able to perfectly learn any classification with a large enough C value.
 
     .tabcontent(id="tab4")
-      h4 Kernel
-      p Detailing the kernel, its meaning, and its impact on the algorithm. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      h4 kNN Parameters
+      h5 Value K
+      p The value of K is the parameter of the K Nearest Neighbors (KNN) algorithm that determines how many neighboring data points are to be used in predicting the new point's class.
 
     .tabcontent(id="tab5")
       h4 Selecting Data
