@@ -88,26 +88,38 @@ div.container-fluid(ng-controller="classificationMainCtrl as mainArea")
 
   .sectioncontent(id="section1")
     .tab
+      button(class="tabButtons" onclick="openTab(event, 0)") Classification
       button(class="tabButtons" onclick="openTab(event, 1)") SVM
-      button(class="tabButtons" onclick="openTab(event, 2)") Algorithms
+      button(class="tabButtons" onclick="openTab(event, 2)") KNN
       button(class="tabButtons" onclick="openTab(event, 3)") Values
       button(class="tabButtons" onclick="openTab(event, 4)") Kernel
       button(class="tabButtons" onclick="openTab(event, 5)") Data
       button(class="tabButtons" onclick="openTab(event, 6)") Label
 
+    .tabcontent(id="tab0")
+      h4 Classification Overview
+      p Classification is a machine learning and statistical analysis method of using previous data (training data) to make predictions on new data (testing data). New elements of data are assigned to whichever "class" they are most similar to based on the values that make up that data element. For example, using the amount of times an email contains the phrase "Bank Account" to predict whether that email was spam, based on past spam vs non-spam emails' frequency of the same phrase.
 
     .tabcontent(id="tab1")
-      h4 Support Vector Machine Overview
-      p A Support Vector Machine is a machine learning tool that is used to create a decision boundary, or a mathematical division that separates data into sets that lie on one side or the other of a the division. The boundary is then used to predict if new data points are in one set or the other, effectively deciding which class it is most likely to be in.
+      h4 Support Vector Machine
+      p A Support Vector Machine is a machine learning tool that is used to create a decision boundary, or a mathematical division that separates data into sets that lie on one side or the other of the division. The boundary is then used on new data to predict if data points should be classified as in one set or the other, effectively deciding which class it is most likely to be in.
+      h6 Example:
+      p Imagine a data set of the heights and weights of some animals, and these animals are either dogs or guinea pigs. A simple SVM would take this data and use the heights and weights to create a decision boundary (formulaic and graphical relationship between height and weight), classifying the data points on one side of the boundary as dogs (most likely larger weights and heights), or guinea pigs (smaller weights and heights). While in rare cases, there may be actual huge guinea pigs with heights and weights that put them in the dog class, and tiny dogs with heights and weights that put them in the guinea pig class, the algorithm outputs the best predicting boundary based on maximizing the amount of correct guesses. The boundary can then be used on new data where the species is unknown to predict with a very high probability which class (species) a datapoint (height, weight) belongs in.
 
 
     .tabcontent(id="tab2")
-      h4 Algorithms
-      p A discussion of the available algorithms. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      h4 K Nearest Neighbors
+      p The K Nearest Neighbors algorithm is similar to SVM, but instead of building a mathematical boundary equation and assigning classes to data points based on which side they lie on, it assigns classes based on the class of the data points that are near it. With a selected value of K, the algorithm finds for each new data point the class of the K data points that are "closest" to it (smallest difference between all the values of their characteristics). If the points were plotted, it would be the K nearest points by distance. To predict a new data point's class, find the majority class of the K points closest to it.
+      h6 Example:
+      p In the Dogs and Guinea Pigs example, instead of using a mathematical height vs weight boundary to predict the species of a data point, simply figure out whether more of the K closest data points are classified as a dog or as a guinea pig, and assign the class of the more frequent neighbor to the data point.
 
     .tabcontent(id="tab3")
       h4 Custom Values (C and K)
-      p A discussion of the different values and what changing them does for results. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      h5 Value C
+      p The value of C is a regularization parameter of the SVM method that allows the user to customize how accurate the algorithm is in creating a decision boundary versus how simplified and generalizable the boundary is. A larger C value will prioritize the accuracy of its predictions, regardless of how complex its boundary equation is. For example, the largest C value might be trained in such a way on the data that it perfectly divides the points into their correct class (this is called having zero testing error). However the equation for the boundary would be so complicated and specific mathematically that it would be hard to use to classify future data (imagine an s-shaped and squigly line that perfectly weaved through the data points so that all instances of one class lay on one side of the line and all instances of the other class on the other).
+      p A low value of C however would prioritize mathematical simplicity and generalizability at the expense of a few of the wrong class on either side of the line (this is called having some testing error). This does not necessarily mean it will predict future data any less accurately. Because it is a more simple boundary, it might capture a larger sample size better if the classes were heavily related to the characteristics, as the distribution averaged itself out the boundary would have better success predicting the classifications.
+      h5 Value K
+      p The value of K is the parameter of the K Nearest Neighbors (KNN) algorithm that determines how many neighboring data points are to be used in predicting the new point's class.
 
     .tabcontent(id="tab4")
       h4 Kernel
@@ -115,8 +127,8 @@ div.container-fluid(ng-controller="classificationMainCtrl as mainArea")
 
     .tabcontent(id="tab5")
       h4 Selecting Data
-      p Walking user through the selection of specific datasets within the full set and the outcomes. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      p It is important to specify which characteristics of the data points you want to use to "train" your data and create either your decision boundary (SVM) or your mathematical "distances" (KNN). In choosing specific data points in the sidebar, you are deciding which columns to use in the calculations to classify the data. For example, in classifying dogs and guinea pigs, the categories could be height, weight, and number of legs. In selecting characteristics to predict whether an animal was a dog or a guinea pig, choosing to include "number of legs" in the algorithm would be useless and yield no extra advantage, as both dogs and guinea pigs have 4 legs normally, and deviate from that at an equal rate. Height and weight should be chosen however, as these are very distinctive traits between dogs and guinea pigs. In addition, for sets of characteristics that are less obvious, it is useful to do multiple rounds of the algorithm using different combinations of datasets. This can expose different characteristics as better predictors for certain classes.
 
     .tabcontent(id="tab6")
       h4 Selecting Labels
-      p A discussion of choosing a label for the algorithm and the results. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      p Choosing the label is determining which part of the training data is to be used as the class. It is usually fairly obvious if there is a column in the data that is more qualitatively descriptive, then the rest of the more numerically-based characteristics (for example species name versus height or weight).
