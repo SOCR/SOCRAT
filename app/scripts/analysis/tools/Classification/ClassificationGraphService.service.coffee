@@ -17,67 +17,56 @@ module.exports = class ClassificationGraph extends BaseService
     @ve = require 'vega-embed'
     @svm = require 'ml-svm'
 
+  # Function creates a mesh grid for the background and data points
   mesh_grid_point: (coordinates, classes, type,legend, xCol, yCol) ->
     # append the mesh_grid point into the vega-lite graph
     if type == "mesh"
         value = []
         count = 0
+        #iterate over the coordinates and add them to the dictionary accordingly
         for single in coordinates
           new_dict = {}
           new_dict[" "] = single[0]
           new_dict["  "] = single[1]
-
           new_dict["class"] = legend[classes[[count]]]
-
-          # if classes[count] == 1
-          #   new_dict["class"] = legend[1]
-          # else if classes[count] == -1
-          #   new_dict["class"] = legend[-1]
           value.push new_dict
           count += 1
         return value
     else if type == "train"
         value = []
         count = 0
+        #iterate over the coordinates and add them to the dictionary accordingly
         for single in coordinates
           new_dict = {}
           new_dict['' +xCol.toString()] = single[0]
           new_dict['' +yCol.toString()] = single[1]
           new_dict["class"] = legend[classes[[count]]]
-
-          # if classes[count] == 1
-          #   new_dict["class"] = legend[1]
-          # else if classes[count] == -1
-          #   new_dict["class"] = legend[-1]
           value.push new_dict
           count += 1
         return value
 
+  #responsible for creating the scatter_plot when 2 variables are chosen in side bar
   scatter_point: (coordinates,classes, legend, xCol, yCol) ->
     value = []
     count = 0
+    #iterate over the coordinates and add them to the dictionary accordingly
     for single in coordinates
       new_dict = {}
       new_dict[xCol] = single[0]
       new_dict[yCol] = single[1]
-      # new_dict["x-col"] = single[0]
-      # new_dict["y-col"] = single[1]
+      #set the class for each data point using the legends 
       if classes.length != 0
         new_dict["class"] = legend[classes[[count]]]
-      	# if classes[count] == 1
-      	# 	new_dict["class"] = legend[1]
-      	# else if classes[count] == -1
-      	# 	new_dict["class"] = legend[-1]
       count += 1
       value.push new_dict
     return value
 
 
-
+  #draws the actual graph using functions above and Vegalite
   drawSVM: (data) ->
 
     vSpec = {}
-
+    #finding the min and max to set the range of the two axis
     minX = Infinity
     minY = Infinity
     maxX = -Infinity
@@ -94,8 +83,9 @@ module.exports = class ClassificationGraph extends BaseService
         maxY = datapoint[1]
 
     if data.state is "scatter"
-
+      #getting the values data set using scatter point function
       values = @scatter_point(data.coords,data.labels, data.legend, data.xCol, data.yCol)
+      #vegalite format to create a graph
       vSpec = {
 
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
@@ -119,15 +109,16 @@ module.exports = class ClassificationGraph extends BaseService
       }
     else if data.state is "svm"
 
-
+      #train using the data points and create a mesh grid
       type = "train"
       train_values = @mesh_grid_point(data.coords, data.labels,type,data.legend, data.xCol, data.yCol)
       type = "mesh"
       mesh_grid_values = @mesh_grid_point(data.mesh_grid_points, data.mesh_grid_labels,type,data.legend, data.xCol, data.yCol)
       values = train_values
+      #concat the two data points set
       values = values.concat mesh_grid_values
-      #use predication mesh_grid to show the decision boundary
-
+      
+      #vegalite format to create a graph
       vSpec = {
 
         "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
