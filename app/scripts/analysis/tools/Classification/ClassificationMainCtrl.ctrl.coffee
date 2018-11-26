@@ -37,8 +37,7 @@ module.exports = class ClassificationMainCtrl extends BaseCtrl
 
 
     @$scope.$on 'classification:updateDataPoints', (event, data) =>
-      #console.log("GOT SIGNAL TO UPDATE DATA")
-
+      # Sends data to the graphing service
       if data.dataPoints != undefined
         @newdata.state = "scatter"
         @newdata.coords = data.dataPoints
@@ -46,23 +45,16 @@ module.exports = class ClassificationMainCtrl extends BaseCtrl
         @newdata.labels = data.labels
         @newdata.xCol = data.xCol
         @newdata.yCol = data.yCol
-
-
-        console.log @newdata
-
         @graph.drawSVM(@newdata)
-        #console.log("graphingData updated")
-        #@graphingData = @newdata
-      #@sendGraphingData(data)
 
     @$scope.$on 'classification:startAlgorithm', (event, data) =>
+      # Sends data to algorithm
       @selectedAlgorithm = data.model
       @$timeout => @sendAlgorithmData(data)
 
 
     @$scope.$on 'classification:resetGrid', (event, data) =>
-      console.log "here in main control"
-      console.log data
+      # Resets graph
       if data.dataPoints != undefined
         @newdata.state = "scatter"
         @newdata.coords = data.dataPoints
@@ -75,8 +67,8 @@ module.exports = class ClassificationMainCtrl extends BaseCtrl
 
 
   sendAlgorithmData: (data) ->
+    # Sends data to algorithm (called after receiving broadcast from sidebar)
     if data?
-      console.log("starting algorithm step")
       @graphingData = @algorithmsService.trainingByName(@selectedAlgorithm, data)
       @newdata.coords = @graphingData.features
       @newdata.mesh_grid_points = @graphingData.mesh_grid_points
@@ -88,6 +80,5 @@ module.exports = class ClassificationMainCtrl extends BaseCtrl
       @graph.drawSVM(@newdata)
 
   sendReset: () ->
-    console.log("reset button reaches MainCtrl")
     @newdata.state = "scatter"
     @graph.drawSVM(@newdata)
