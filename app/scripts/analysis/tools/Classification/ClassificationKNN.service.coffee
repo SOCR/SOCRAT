@@ -46,13 +46,6 @@ module.exports = class NaiveBayes extends BaseService
     @yIdx = data.yIdx
 
   train: (data) ->
-    console.log "features"
-    console.log @features
-
-    console.log @xIdx
-    console.log @yIdx
-
-
     if @xIdx != 0
       for point in @features
         temp = point[0]
@@ -84,15 +77,10 @@ module.exports = class NaiveBayes extends BaseService
   updateGraphData: ->
     #return the mesh_grid and training data for graphing service
     min_max = @get_boundary_from_feature()
-    console.log min_max
     step_size_x = (min_max[1] - min_max[0]) / 100
     step_size_y = (min_max[3] - min_max[2]) / 100
     @mesh_grid_points = @mesh_grid_2d_init(min_max, step_size_x, step_size_y)
-    console.log @mesh_grid_points
     @mesh_grid_label = @mesh_grid_predict_label(@model, @mesh_grid_points)
-    console.log @mesh_grid_label
-
-    # @features = (row.filter((el, idx) -> idx in [@xIdx, @yIdx]) for row in @features)
     features = []
     for row in @features
       features.push [row[@xIdx], row[@yIdx]]

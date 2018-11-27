@@ -96,7 +96,6 @@ module.exports = class ClassificationCSVC extends BaseService
           grid.push(@get_feature_projection_average(featureIndex))
         featureIndex += 1
 
-    console.log @mesh_grid_points
 
 
     for label in uniqueLabelArray
@@ -132,7 +131,6 @@ module.exports = class ClassificationCSVC extends BaseService
       mesh_grid_labels: @mesh_grid_label
       features: @features
       labels: @labels
-    console.log('finished training')
     return result
 
   setParams: (newParams) ->
@@ -161,22 +159,15 @@ module.exports = class ClassificationCSVC extends BaseService
           grid.push(@get_feature_projection_average(featureIndex))
         featureIndex += 1
 
-
-    console.log @labels
-    console.log @features
     @svmModel.train(@features, @labels)
     @mesh_grid_label = @mesh_grid_predict_label(@svmModel, @mesh_grid_points)
-
-    console.log @svmModel
-
-    console.log @mesh_grid_label
 
     result =
       mesh_grid_points: @mesh_grid_points
       mesh_grid_labels: @mesh_grid_label
       features: @features
       labels: @labels
-    console.log('finished training')
+
     return result
 
   getUniqueLabels: (labels) -> labels.filter (x, i, a) -> i is a.indexOf x
@@ -190,7 +181,6 @@ module.exports = class ClassificationCSVC extends BaseService
     @done = off
     @iter = 0
     @initialize()
-    console.log 'service reset'
 
   # Mesh_grid related functions
   mesh_grid_2d_init: (min_max, step_x, step_y) ->
