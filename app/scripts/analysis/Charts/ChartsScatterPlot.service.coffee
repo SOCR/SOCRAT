@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsScatterPlot extends BaseService
+module.exports = class ChartsAreaChart extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
@@ -10,7 +10,7 @@ module.exports = class ChartsScatterPlot extends BaseService
     'app_analysis_charts_sendData',
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
-    'app_analysis_charts_msgService'
+    'app_analysis_charts_msgService',
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
@@ -25,53 +25,30 @@ module.exports = class ChartsScatterPlot extends BaseService
 
   drawScatterPlot: (data,ranges,width,height,_graph,container,labels) ->
 
-    if (data[0]["z"])
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "selection": {
-          "grid": {
-            "type": "interval", "bind": "scales"
-          }
+    vlSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "width": 500,
+      "height": 500,
+      "data": {"values": data},
+      "selection": {
+        "grid": {
+          "type": "interval", "bind": "scales"
+        }
+      },
+      "mark": "circle",
+      "encoding": {
+        "x": {
+          "field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}
         },
-        "mark": "circle",
-        "encoding": {
-          "x": {
-            "field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}
-          },
-          "y": {
-            "field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}
-          },
-          "color": {"field": "z", "type": "nominal"}
+        "y": {
+          "field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}
         }
       }
-    else
-      vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "width": 500,
-        "height": 500,
-        "data": {"values": data},
-        "selection": {
-          "grid": {
-            "type": "interval", "bind": "scales"
-          }
-        },
-        "mark": "circle",
-        "encoding": {
-          "x": {
-            "field": "x", "type": "quantitative", "axis": {"title": labels.xLab.value}
-          },
-          "y": {
-            "field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}
-          }
-        }
-      }
+    }
 
     opt =
       "actions": {export: true, source: false, editor: false}
-
+    
     @ve '#vis', vlSpec, opt, (error, result) ->
       # Callback receiving the View instance and parsed Vega spec
       # result.view is the View, which resides under the '#vis' element

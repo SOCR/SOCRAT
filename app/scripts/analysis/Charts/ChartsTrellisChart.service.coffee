@@ -38,8 +38,7 @@ module.exports = class ChartsTrellisChart extends BaseService
       row_obj = {}
       for label, lbl_idx in fields
         row_obj[label] = row[lbl_idx]
-      if labels
-        row_obj[ordinal] = labels[row_ind]
+      row_obj[ordinal] = labels[row_ind]
       d.push row_obj
 
     vlSpec = {
@@ -71,22 +70,17 @@ module.exports = class ChartsTrellisChart extends BaseService
         "encoding": {
           "x": {"field": {"repeat": "column"},"type": "quantitative"},
           "y": {"field": {"repeat": "row"},"type": "quantitative"},
-          "color": null
+          "color": {
+            "condition": {
+              "selection": "brush",
+              "field": ordinal,
+              "type": "nominal"
+            },
+            "value": "grey"
+          }
         }
       }
     }
-
-    if labels
-      vlSpec['spec']['encoding']['color'] = {
-        "condition": {
-          "selection": "brush",
-          "field": ordinal,
-          "type": "nominal"
-        },
-        "value": "grey"
-      }
-    else
-      vlSpec['spec']['encoding']['color'] = null
 
     opt =
       "actions": {export: true, source: false, editor: false}
