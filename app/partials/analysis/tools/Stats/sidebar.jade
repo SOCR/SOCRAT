@@ -1,0 +1,83 @@
+div(ng-controller="statsSidebarCtrl as sidebar")
+	legend Statistical Analysis &nbsp;
+	
+	
+	.form-group
+		label(
+			style=''
+		) Calculator &nbsp;
+		select.form-control(
+			ng-model="sidebar.selectedAlgorithm"
+			ng-options="method for method in sidebar.algorithms"
+			ng-change="sidebar.updateAlgControls()"
+		)
+
+	.form-group(
+		ng-show= "sidebar.selectedAlgorithm == 'CI for One Mean' ||" + 
+		"sidebar.selectedAlgorithm == 'CI for One Proportion'"
+		ng-disabled="sidebar.deployed"
+	)
+		.row.form-inline.bootstrap-switch-square
+			label
+				span.glyphicon.glyphicon-question-sign(
+				aria-hidden="true"
+				uib-tooltip="load data from db"
+				tooltip-placement="right"
+				) &nbsp;
+				| Use data&nbsp;
+			input(
+				type="checkbox"
+				data-toggle="switch"
+				id="toggleDataDriven"
+				ng-model="sidebar.deployed"
+			)
+		.row.form-inline
+			label
+				span.glyphicon.glyphicon-question-sign(
+				aria-hidden="true"
+				uib-tooltip="confidence level"
+				tooltip-placement="right"
+				) &nbsp;
+				| α:&nbsp;&nbsp; {{sidebar.alpha}}
+			#alphaUI
+
+	fieldset(ng-show="sidebar.selectedAlgorithm == 'CI for One Mean' && sidebar.deployed")
+		legend Data
+		.form-group
+			label Numerical Columns
+			select.form-control(
+			ng-model="sidebar.chosenColsOne"
+			ng-options="col for col in sidebar.numericalCols"
+			ng-change="sidebar.run()"
+			)
+		.form-group
+			label Categorical Columns &nbsp;
+			select.form-control(
+			ng-model="sidebar.chosenCats"
+			ng-init="sidebar.chosenCats = sidebar.categoricalCols[0]"
+			ng-options="col for col in sidebar.categoricalCols"
+			ng-change="sidebar.update()"
+			)
+		.form-group
+			label Subcategory
+			select.form-control(
+			ng-model="sidebar.chosenSubCatsOne"
+			ng-options="col for col in sidebar.subCategoricalCols"
+			ng-change="sidebar.run()"
+			)
+	fieldset(ng-show="sidebar.selectedAlgorithm == 'CI for One Proportion' && sidebar.deployed")
+		legend Data
+		.form-group
+			label Categorical Columns &nbsp;
+			select.form-control(
+			ng-model="sidebar.chosenCats"
+			ng-options="col for col in sidebar.categoricalCols"
+			ng-change="sidebar.update()"
+			)
+		.form-group
+			label SubCategories
+			select.form-control(
+			ng-model="sidebar.chosenSubCatsOne"
+			ng-options="col for col in sidebar.subCategoricalCols"
+			ng-change="sidebar.run()"
+			)

@@ -16,6 +16,11 @@ module.exports = powerCalc = new Module
       'app_analysis_powerCalc_dataService': require 'scripts/analysis/tools/PowerCalc/PowerCalcDataService.service.coffee'
       'app_analysis_powerCalc_twoTest': require 'scripts/analysis/tools/PowerCalc/PowerCalcTwoTGUI.service.coffee'
       'app_analysis_powerCalc_oneTest': require 'scripts/analysis/tools/PowerCalc/PowerCalcOneTGUI.service.coffee'
+      'app_analysis_powerCalc_oneProp': require 'scripts/analysis/tools/PowerCalc/PowerCalcOneProp.service.coffee'
+      'app_analysis_powerCalc_twoProp': require 'scripts/analysis/tools/PowerCalc/PowerCalcTwoProp.service.coffee'
+      'app_analysis_powerCalc_chi2': require 'scripts/analysis/tools/PowerCalc/PowerCalcChiSquare.service.coffee'
+      'app_analysis_powerCalc_poisson': require 'scripts/analysis/tools/PowerCalc/PowerCalcPoisson.service.coffee'
+      'app_analysis_powerCalc_rsquare': require 'scripts/analysis/tools/PowerCalc/PowerCalcRsquare.service.coffee'
 
     controllers:
       'powerCalcMainCtrl': require 'scripts/analysis/tools/PowerCalc/PowerCalcMainCtrl.ctrl.coffee'
@@ -28,6 +33,6 @@ module.exports = powerCalc = new Module
   state:
     # module name to show in UI
     name: 'Power Analysis'
-    url: '/tools/powercalc'
+    url: '/tools/PowerCalc'
     mainTemplate: require 'partials/analysis/tools/PowerCalc/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/PowerCalc/sidebar.jade'
