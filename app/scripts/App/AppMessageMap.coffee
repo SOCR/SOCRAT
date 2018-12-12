@@ -18,6 +18,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
       ]
       msgTo: 'type.inferAll'
@@ -34,6 +35,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
       ]
     ,
@@ -45,6 +47,7 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability',
         'app_analysis_powercalc',
+        'app_analysis_classification',
         'app_analysis_stats'
       ]
       msgTo: 'summary'
@@ -60,6 +63,7 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability',
         'app_analysis_powercalc',
+        'app_analysis_classification',
         'app_analysis_stats'
       ]
     ,
@@ -69,6 +73,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
+        'app_analysis_classification',
         'app_analysis_reliability'
       ]
       msgTo: 'histogram'
@@ -82,6 +87,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
+        'app_analysis_classification',
         'app_analysis_reliability'
       ]
     #    ,
@@ -109,6 +115,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
       ]
       msgTo: 'get table'
@@ -124,6 +131,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
       ]
     ]
