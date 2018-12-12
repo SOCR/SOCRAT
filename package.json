@@ -49,6 +49,7 @@
     "serve-static": "~1.11.1",
     "through": "~2.3.8",
     "transform-loader": "~0.2.3",
+    "tsne-js": "^1.0.3",
     "typeahead.js": "git+https://github.com/twitter/typeahead.js.git",
     "vega": "^3.2.1",
     "vega-lite": "^3.0.0-rc4",
