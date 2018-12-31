@@ -152,10 +152,86 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
       @ExponentialRetrieve()
     else if (@distribution is "Kernel")
       @KernelRetrieve()
+    else if (@distribution is "Geometric")
+      @GeomRetrieve()
+    else if (@distribution is "Bernoulli")
+      @BernoulliRetrieve()
+    else if (@distribution is "ContinuousUniform")
+      @ContinuousUniformRetrieve()
+    else if (@distribution is "DiscreteUniform")
+      @DiscreteUniformRetrieve()
+    else if (@distribution is "Poisson")
+      @PoissonRetrieve()
+    else if (@distribution is "Weibull")
+      @WeibullRetrieve()
     else
       return
 
+  WeibullRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @gamma = @currParams.gamma
+    #@geomK = @currParams.geomK
 
+    @NormalMean = @gamma
+    #@NormalVariance = @geomK
+
+    @NormalSliders()
+    @updateModelData()
+
+  PoissonRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @geomLambda = @currParams.lambda
+    #@geomK = @currParams.geomK
+
+    @NormalMean = @geomLambda
+    #@NormalVariance = @geomK
+
+    @NormalSliders()
+    @updateModelData()
+
+  DiscreteUniformRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @geomP = @currParams.geomP
+    #@geomK = @currParams.geomK
+
+    @NormalMean = @geomP
+    #@NormalVariance = @geomK
+
+    @NormalSliders()
+    @updateModelData()
+
+  ContinuousUniformRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @geomB = @currParams.geomB
+    @geomA = @currParams.geomA
+
+    @NormalMean = @geomB
+    @NormalVariance = @geomA
+
+    @NormalSliders()
+    @updateModelData()
+
+  BernoulliRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @geomP = @currParams.geomP
+    @geomN = @currParams.geomN
+
+    @NormalMean = @geomP
+    @NormalVariance = @geomN
+
+    @NormalSliders()
+    @updateModelData()
+
+  GeomRetrieve: ()->
+    @currParams = @router.getParamsByName(@distribution)
+    @geomP = @currParams.geomP
+    @geomK = @currParams.geomK
+
+    @NormalMean = @geomP
+    @NormalVariance = @geomK
+
+    @NormalSliders()
+    @updateModelData()
 
 
   #gets the current values of the distribution parameters
@@ -203,16 +279,16 @@ module.exports = class ModelerMainCtrl extends BaseCtrl
         @NormalSync()
     )
 
-    nStDev.slider(
-      value: @NormalStDev,
-      min: 0.01,
-      max: 10,
-      range: "min",
-      step: .2,
-      slide: (event, ui) =>
-        @NormalStDev = ui.value
-        @NormalSync()
-    )
+    # nStDev.slider(
+    #   value: @NormalStDev,
+    #   min: 0.01,
+    #   max: 10,
+    #   range: "min",
+    #   step: .2,
+    #   slide: (event, ui) =>
+    #     @NormalStDev = ui.value
+    #     @NormalSync()
+    # )
 
     nVariance.slider(
       value: @NormalVariance,

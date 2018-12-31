@@ -15,10 +15,13 @@ module.exports = modeler = new Module
       'socrat_modeler_distribution_laplace': require 'scripts/analysis/tools/Modeler/ModelerDistributionLaplace.service.coffee'
       'socrat_modeler_distribution_cauchy': require 'scripts/analysis/tools/Modeler/ModelerDistributionCauchy.service.coffee'
       'socrat_modeler_distribution_maxwell_boltzman': require 'scripts/analysis/tools/Modeler/ModelerDistributionMaxwellBoltzman.service.coffee'
-      'socrat_modeler_distribution_binomial': require 'scripts/analysis/tools/Modeler/ModelerDistributionBinomial.service.coffee'
       'socrat_modeler_distribution_ChiSquared': require 'scripts/analysis/tools/Modeler/ModelerDistributionChiSquared.service.coffee'
       'socrat_modeler_distribution_LogNormal': require 'scripts/analysis/tools/Modeler/ModelerDistributionLogNormal.service.coffee'
-
+      'socrat_modeler_distribution_Geometric': require 'scripts/analysis/tools/Modeler/ModelerDistributionGeometric.service.coffee'
+      'socrat_modeler_distribution_Bernoulli': require 'scripts/analysis/tools/Modeler/ModelerDistributionBernoulli.service.coffee'
+      'socrat_modeler_distribution_ContinuousUniform': require 'scripts/analysis/tools/Modeler/ModelerDistributionContinuousUniform.service.coffee'
+      'socrat_modeler_distribution_DiscreteUniform': require 'scripts/analysis/tools/Modeler/ModelerDistributionDiscreteUniform.service.coffee'
+      'socrat_modeler_distribution_Poisson': require 'scripts/analysis/tools/Modeler/ModelerDistributionPoisson.service.coffee'
       'socrat_modeler_distribution_exponential': require 'scripts/analysis/tools/Modeler/ModelerDistributionExponential.service.coffee'
       'socrat_modeler_distribution_Weibull': require 'scripts/analysis/tools/Modeler/ModelerDistributionWeibull.service.coffee'
 
@@ -29,9 +32,6 @@ module.exports = modeler = new Module
 
       'app_analysis_modeler_getParams': require 'scripts/analysis/tools/Modeler/ModelerGetParams.service.coffee'
       'app_analysis_modeler_kernel_density_plotter': require 'scripts/analysis/tools/Modeler/ModelerKernelDensityPlot.service.coffee'
-
-
-
 
 
     controllers:
