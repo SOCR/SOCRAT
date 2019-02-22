@@ -31,6 +31,8 @@ module.exports = class AppModuleList
   analysis: [
     require 'scripts/Database/Database.module.coffee'
   ,
+    require 'scripts/analysis/MyModule/MyModule.module.coffee'
+  ,
     require 'scripts/analysis/Datalib/Datalib.module.coffee'
   ,
     require 'scripts/analysis/GetData/GetData.module.coffee'
