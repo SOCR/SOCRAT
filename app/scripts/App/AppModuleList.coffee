@@ -48,6 +48,8 @@ module.exports = class AppModuleList
     ,
       require 'scripts/analysis/tools/PowerCalc/PowerCalc.module.coffee'
     ,
+      require 'scripts/analysis/tools/Classification/Classification.module.coffee'
+    ,
       require 'scripts/analysis/tools/Stats/Stats.module.coffee'
     ]
   ]
