@@ -174,7 +174,6 @@ module.exports = class ChartsList extends BaseService
         params:
           x_residual: true
     ,
-<<<<<<< HEAD
       name: 'Word Cloud'
       config:
         description: ""
@@ -208,7 +207,7 @@ module.exports = class ChartsList extends BaseService
           r: false
         params:
           x_residual: true
-=======
+    ,
       name: 'Area Trellis Chart'
       value: 11
       v: false
@@ -223,7 +222,6 @@ module.exports = class ChartsList extends BaseService
     ,
       name: 'Parallel Coordinates Chart'
       value: 12
->>>>>>> 855ec727268ceb15b1101fc091df509a095a4b9c
     ]
 
   getNested: () ->
