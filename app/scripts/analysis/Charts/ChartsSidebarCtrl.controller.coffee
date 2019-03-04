@@ -25,6 +25,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @graphs = []
     @selectedGraph = null
     @maxColors = 10
+    @dl = require 'datalib'
 
     # chart-specific flags (update dictionary as more flags added)
     # general chart parameters
@@ -90,6 +91,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       scheme: ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"]
     ]
 
+    # constants
+    @yearLowerBound = 1900
+    @yearUpperBound = new Date().getFullYear()
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType?
@@ -127,6 +131,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
   updateSidebarControls: (data=@dataFrame) ->
+
     @cols = data.header
     @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
     @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
@@ -163,10 +168,31 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
     if @selectedGraph.config.vars.x
-      @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
+      if @selectedGraph.x.includes("date")
+        @xCols = []
+        colNameCounts = data.header.length
+        for nameIndex in [0..colNameCounts - 1]
+
+          randomeTestIndex1 = Math.floor(Math.random() * data.data.length)
+          dataValue1 = data.data[randomeTestIndex1][nameIndex]
+
+          randomeTestIndex2 = Math.floor(Math.random() * data.data.length)
+          dataValue2 = data.data[randomeTestIndex2][nameIndex]
+
+          randomeTestIndex3 = Math.floor(Math.random() * data.data.length)
+          dataValue3 = data.data[randomeTestIndex3][nameIndex]
+
+          checkCount = 0
+          for dataValue in [dataValue1, dataValue2, dataValue3]
+            if (parseInt(dataValue) or dataValue == 0) and @yearLowerBound < dataValue < @yearUpperBound
+              checkCount++
+          if checkCount == 3
+            @xCols.push data.header[nameIndex]
+        else
+          @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
       @xCol = @xCols[0]
 
-    # Scatter Plot Matrix
+    # trellis chart
     else if @numericalCols.length > 1
       @chosenCols = @numericalCols.slice(0, 2)
       if @categoricalCols.length > 0
