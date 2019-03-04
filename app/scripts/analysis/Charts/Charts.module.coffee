@@ -35,6 +35,7 @@ module.exports = charts = new Module
       'app_analysis_charts_checkTime': require 'scripts/analysis/Charts/ChartsCheckTime.service.coffee'
       'app_analysis_charts_areaTrellisChart': require 'scripts/analysis/Charts/ChartsAreaTrellisChart.service.coffee'
       'app_analysis_charts_tukeyBoxPlot': require 'scripts/analysis/Charts/ChartsTukeyBoxPlot.service.coffee'
+<<<<<<< HEAD
       'app_analysis_charts_scatterMatrix': require 'scripts/analysis/Charts/ChartsScatterMatrix.service.coffee'
       'app_analysis_charts_divergingStackedBar': require 'scripts/analysis/Charts/ChartsDivergingStackedBar.service.coffee'
       'app_analysis_charts_rangedDotPlot': require 'scripts/analysis/Charts/ChartsRangedDotPlot.service.coffee'
@@ -44,6 +45,9 @@ module.exports = charts = new Module
       'app_analysis_charts_cumulative': require 'scripts/analysis/Charts/ChartsCumulativeFrequency.service.coffee'
       'app_analysis_charts_residual': require 'scripts/analysis/Charts/ChartsResidual.service.coffee'
       'app_analysis_charts_mapChart': require 'scripts/analysis/Charts/ChartsMapChart.service.coffee'
+=======
+      'app_analysis_charts_parallelCoordinates': require 'scripts/analysis/Charts/ChartsParallelCoordinates.service.coffee'
+>>>>>>> 855ec727268ceb15b1101fc091df509a095a4b9c
 
     controllers:
       'ChartsSidebarCtrl': require 'scripts/analysis/Charts/ChartsSidebarCtrl.controller.coffee'
