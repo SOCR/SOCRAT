@@ -24,74 +24,47 @@ module.exports = class ChartsTrellisChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawTrellis: (width, height, data, _graph, labels, container) ->
+  drawTrellis: (data, labels, container) ->
 
-    mark = "point"
-
-    fields = data.splice(0, 1)[0]
-    if labels
-      ordinal = labels.splice(0, 1)[0]
-
-    d = []
-    for row, row_ind in data
-      row_obj = {}
-      for label, lbl_idx in fields
-        row_obj[label] = row[lbl_idx]
-      if labels
-        row_obj[ordinal] = labels[row_ind]
-      d.push row_obj
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "repeat": {
-        "row": fields,
-        "column": fields
+      "data": {"values": data},
+      "selection": {
+        "brush": {
+          "type": "interval",
+          "bind": "scales",
+          "encodings": ["x", "y"]
+        }
       },
-      "spec": {
-        "data":
-          "values": d,
-        "mark": "point",
-        "selection": {
-          "brush": {
-            "type": "interval",
-            "resolve": "union",
-            "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel![event.shiftKey]"
-          },
-          "grid": {
-            "type": "interval",
-            "resolve": "global",
-            "bind": "scales",
-            "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel![!event.shiftKey]"
-          }
+      "mark": "point",
+      "encoding": {
+        "row": {
+          "field": labels.rLab.value, "type": "ordinal",
+          "sort": {"op": "median", "field": labels.xLab.value}
         },
-        "encoding": {
-          "x": {"field": {"repeat": "column"},"type": "quantitative"},
-          "y": {"field": {"repeat": "row"},"type": "quantitative"},
-          "color": null
+        "x": {
+          "aggregate": "median", "field": labels.xLab.value, "type": "quantitative",
+          "scale": {"zero": false}
+        },
+        "y": {
+          "field": labels.yLab.value, "type": "quantitative",
+          "sort": {"field": labels.xLab.value,"op": "median", "order": "descending"},
+          "scale": {"rangeStep": 12}
         }
       }
     }
 
-    if labels
-      vlSpec['spec']['encoding']['color'] = {
-        "condition": {
-          "selection": "brush",
-          "field": ordinal,
-          "type": "nominal"
-        },
-        "value": "grey"
-      }
-    else
-      vlSpec['spec']['encoding']['color'] = null
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
+      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
 
     opt =
-      "actions": {export: true, source: false, editor: false}
+      "actions": {export: true, source: false, editor: true}
 
-    @ve '#vis', vlSpec, opt, (error, result) ->
-      # Callback receiving the View instance and parsed Vega spec
-      # result.view is the View, which resides under the '#vis' element
-      return
+    @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vegaLite(result.view, vlSpec)
+    )

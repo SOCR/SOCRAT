@@ -102,17 +102,17 @@ module.exports = class ChartsScatterMatrix extends BaseService
         "value": "grey"
       }
 
-    vlSpec["config"] =
-      "axis":
-        "titleFontSize": 16
-        "labelFontSize": 16
-      "title":
-        "titleFontSize": 16
-      "legend":
-          "labelFontSize": 16
-          "titleFontSize": 16
-      "point":
-        "size": 80
+#    vlSpec["config"] =
+#      "axis":
+#        "titleFontSize": 16
+#        "labelFontSize": 16
+#      "title":
+#        "titleFontSize": 16
+#      "legend":
+#          "labelFontSize": 16
+#          "titleFontSize": 16
+#      "point":
+#        "size": 80
 
     opt =
       "actions": {export: true, source: false, editor: false}

@@ -2,7 +2,7 @@
 
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
-module.exports = class ChartsAreaChart extends BaseService
+module.exports = class ChartsStripPlot extends BaseService
   @inject '$q',
     '$stateParams',
     'app_analysis_charts_dataTransform',
@@ -21,29 +21,25 @@ module.exports = class ChartsAreaChart extends BaseService
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
-    @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawArea: (data, labels, container) ->
+  drawStripPlot: (data, labels, container) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "width": 500,
-      "height": 500,
-      "data": {"values": data},
-      "mark": "area",
+      "description": "Shows the relationship between X and Y using tick marks.",
+      "width" : 500,
+      "height" : 500,
+      "data": {"values" : data},
+      "mark": "tick",
       "encoding": {
-        "x": {
-          "field": labels.xLab.value, "type": "temporal", "axis": {"title": labels.xLab.value}
-        },
-        "y": {
-          "field": labels.yLab.value, "type": "quantitative", "axis": {"title": labels.yLab.value}
-        }
+        "x": {"field" : labels.xLab.value, "axis": {"title" : labels.xLab.value} , "type": "quantitative"},
+        "y": {"field" : labels.yLab.value, "axis" : {"title": labels.yLab.value}, "type": "ordinal"}
       }
     }
 
@@ -53,3 +49,4 @@ module.exports = class ChartsAreaChart extends BaseService
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
       @vt.vegaLite(result.view, vlSpec)
     )
+
