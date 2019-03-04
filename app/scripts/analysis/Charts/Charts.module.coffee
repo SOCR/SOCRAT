@@ -43,6 +43,7 @@ module.exports = charts = new Module
       'app_analysis_charts_sunburst': require 'scripts/analysis/Charts/ChartsSunburst.service.coffee'
       'app_analysis_charts_cumulative': require 'scripts/analysis/Charts/ChartsCumulativeFrequency.service.coffee'
       'app_analysis_charts_residual': require 'scripts/analysis/Charts/ChartsResidual.service.coffee'
+      'app_analysis_charts_mapChart': require 'scripts/analysis/Charts/ChartsMapChart.service.coffee'
 
     controllers:
       'ChartsSidebarCtrl': require 'scripts/analysis/Charts/ChartsSidebarCtrl.controller.coffee'
