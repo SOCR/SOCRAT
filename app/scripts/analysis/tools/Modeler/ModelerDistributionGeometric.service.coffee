@@ -9,15 +9,16 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
 
-module.exports = class NormalDist extends BaseService
+module.exports = class normalDist extends BaseService
   @inject 'app_analysis_modeler_getParams'
   initialize: () ->
     @calc = @app_analysis_modeler_getParams
     @NormalMean = 5
     @NormalStandardDev = 1
     @NormalVariance = 1
-    @name = 'Normal'
-
+    @name = 'Geometric'
+    @p = .5
+    @k = .5
 
   getName: () ->
     return @name
@@ -26,7 +27,7 @@ module.exports = class NormalDist extends BaseService
     for i in [leftBound...rightBound] by .1
       data.push
         x: i
-        y: @PDF(i)
+        y: @PDF(i, @p)
     #console.log(data)
     data
 
@@ -40,19 +41,17 @@ module.exports = class NormalDist extends BaseService
     return 0.5 * 0.5 * @calc.erf( x/ Math.sqrt(2))
   
 
-  PDF: (x) ->
-    return (1 / (@NormalStandardDev * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(x - @NormalMean, 2) / (2 * @NormalVariance)))
+  PDF: (k, p) ->
+    return Math.pow(1-p, k-1) * p
 
-  CDF: (x)->
-    return @stdNormalCDF((x-@NormalMean)/ @NormalStandardDev)
+  CDF: (p, k)->
+    return (1 - Math.pow(1-p, k))
 
   getParams: () ->
     params =
-      mean: @NormalMean
-      standardDev: @NormalStandardDev
-      variance: @NormalVariance
+      geomP: @p
+      geomK: @k
 
   setParams: (newParams) ->
-    @NormalMean = parseFloat(newParams.stats.mean.toPrecision(4))
-    @NormalStandardDev =parseFloat(newParams.stats.standardDev.toPrecision(4))
-    @NormalVariance = parseFloat(newParams.stats.variance.toPrecision(4))
+    @p = parseFloat(1.0 / newParams.stats.mean.toPrecision(4))
+    @k = parseFloat(newParams.stats.variance.toPrecision(4))

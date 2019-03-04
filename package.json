@@ -48,6 +48,7 @@
     "ml-naivebayes": "^3.0.0",
     "ml-random-forest": "^1.0.3",
     "ml-svm": "^2.1.2",
+    "mathjs": "^5.4.0",
     "ng-handsontable": "git+https://github.com/handsontable/ngHandsontable.git",
     "powercalc": "^4.1.0",
     "select2": "~4.0.3",

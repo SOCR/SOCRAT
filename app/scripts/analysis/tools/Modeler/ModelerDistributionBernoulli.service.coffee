@@ -9,15 +9,16 @@ BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 ###
 
-module.exports = class NormalDist extends BaseService
+module.exports = class normalDist extends BaseService
   @inject 'app_analysis_modeler_getParams'
   initialize: () ->
     @calc = @app_analysis_modeler_getParams
     @NormalMean = 5
     @NormalStandardDev = 1
     @NormalVariance = 1
-    @name = 'Normal'
-
+    @name = 'Bernoulli'
+    @p = .5
+    @n = .5
 
   getName: () ->
     return @name
@@ -26,7 +27,7 @@ module.exports = class NormalDist extends BaseService
     for i in [leftBound...rightBound] by .1
       data.push
         x: i
-        y: @PDF(i)
+        y: @PDF(@p, i);
     #console.log(data)
     data
 
@@ -35,24 +36,20 @@ module.exports = class NormalDist extends BaseService
     curveData = @getGaussianFunctionPoints( params.xMin , params.xMax)
     return curveData
 
-
   stdNormalCDF: (x) ->
     return 0.5 * 0.5 * @calc.erf( x/ Math.sqrt(2))
   
+  PDF: (p, n) ->
+    return Math.exp(p, n) * Math.exp(1-p, 1-n)
 
-  PDF: (x) ->
-    return (1 / (@NormalStandardDev * Math.sqrt(Math.PI * 2))) * Math.exp(-(Math.pow(x - @NormalMean, 2) / (2 * @NormalVariance)))
-
-  CDF: (x)->
-    return @stdNormalCDF((x-@NormalMean)/ @NormalStandardDev)
+  CDF: (p, n)->
+    return (1 - Math.pow(1-p, n))
 
   getParams: () ->
     params =
-      mean: @NormalMean
-      standardDev: @NormalStandardDev
-      variance: @NormalVariance
+      geomP: @p
+      geomN: @n
 
   setParams: (newParams) ->
-    @NormalMean = parseFloat(newParams.stats.mean.toPrecision(4))
-    @NormalStandardDev =parseFloat(newParams.stats.standardDev.toPrecision(4))
-    @NormalVariance = parseFloat(newParams.stats.variance.toPrecision(4))
+    @p = parseFloat(1.0 / newParams.stats.mean.toPrecision(4))
+    @n = parseFloat(newParams.stats.variance.toPrecision(4))
