@@ -34,6 +34,8 @@ module.exports = class ChartsList extends BaseService
           horizontal: true
           stacked: true
           normalized: true
+          x_residual: true
+          y_residual: true
 #          hLabel: "Toggle horizontal"
 #          sLabel: "Toggle stacked"
 #          nLabel: "Toggle normalized"
@@ -48,12 +50,17 @@ module.exports = class ChartsList extends BaseService
           x: ['integer', 'number']
           y: ['integer', 'number']
           z: ['string']
+          r: ['integer', 'string', 'number']
           xLabel: "X"
           yLabel: "Y"
           zLabel: "Color"
+          rLabel: "Radius"
         params:
           binned: true
           showSTDEV: true
+          opacity: true
+          x_residual: true
+          y_residual: true
 #          bLabel: "Toggle binned"
 #          sLabel: "Show statistics"
     ,
@@ -69,6 +76,9 @@ module.exports = class ChartsList extends BaseService
           z: false
           xLabel: "X"
           yLabel: "Y"
+        params:
+          x_residual: true
+          y_residual: true
     ,
       name: 'Tukey Box Plot (1.5 IQR)'
       config:
@@ -82,23 +92,8 @@ module.exports = class ChartsList extends BaseService
           z: false
           xLabel: "X"
           yLabel: "Y"
-    ,
-      name: 'Bubble Chart'
-      config:
-        description: "Choose an x variable, a y variable and a radius variable."
-        value: 5
-        vars:
-          v: false
-          w: false
-          x: ['integer', 'number']
-          y: ['integer', 'number']
-          z: ['integer', 'string', 'number']
-          r: ['integer', 'string', 'number']
-          message: "Choose an x variable, a y variable and a radius variable."
-          xLabel: "X"
-          yLabel: "Y"
-          zLabel: "Color"
-          rLabel: "Radius"
+        params:
+          y_residual: true
     ,
       name: 'Pie Chart'
       config:
@@ -123,6 +118,8 @@ module.exports = class ChartsList extends BaseService
           y: false
           z: false
           xLabel: "Category"
+        params:
+          x_residual: true
     ,
       name: 'Binned Heatmap'
       config:
@@ -144,6 +141,8 @@ module.exports = class ChartsList extends BaseService
           marginalHist: true
           xbinLabel: "X Bin"
           ybinLabel: "Y Bin"
+          x_residual: true
+          y_residual: true
     ,
       name: 'Strip Plot'
       config:
@@ -172,6 +171,8 @@ module.exports = class ChartsList extends BaseService
           xLabel: "X"
           yLabel: "Y"
           zLabel: "Color"
+        params:
+          x_residual: true
     ,
       name: 'Word Cloud'
       config:
@@ -192,6 +193,20 @@ module.exports = class ChartsList extends BaseService
           endLabel: "End Angle"
           orientationsLabel: "Number of Orientations"
           textLabel: "Input String"
+    ,
+      name: 'Cumulative Frequency'
+      config:
+        description: ""
+        value: 12
+        vars:
+          v: false
+          w: false
+          x: ['integer', 'number', 'string']
+          y: false
+          z: false
+          r: false
+        params:
+          x_residual: true
     ]
 
   getNested: () ->

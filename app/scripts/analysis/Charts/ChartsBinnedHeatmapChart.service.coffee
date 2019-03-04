@@ -32,6 +32,28 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
     container.select("#slider").remove()
     container.select("#maxbins").remove()
 
+    x_ = labels.xLab.value
+    y_ = labels.yLab.value
+
+    sumx = 0
+    sumy = 0
+    for dic in data
+      sumx += parseFloat(dic[x_])
+      sumy += parseFloat(dic[y_])
+
+    mean_x = sumx/data.length
+    mean_y = sumy/data.length
+
+    for dic in data
+      dic["residual_x"] = dic[x_] - mean_x
+      dic["residual_y"] = dic[y_] - mean_y
+
+    if (flags.x_residual)
+      x_ = "residual_x"
+
+    if (flags.y_residual)
+      y_ = "residual_y"
+
     if flags.marginalHistogram
       vlSpec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v2.json",

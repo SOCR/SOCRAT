@@ -43,11 +43,17 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
         # ScatterPlot:
         showSTDEV: false
         binned: false
+        opacity: false
+        x_residual: false
+        y_residual: false
         # WordCloud:
         startAngle: 0
         endAngle: 90
         orientations: 1
         text: "Input your text"
+        # pie chart
+        categorical: false
+        col: null
       data: null
       labels: null
       graph: null
@@ -150,7 +156,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           forbiddenVarIdx.push(idx)
       )
     # end if
-    chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap']
+    chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap', 'Histogram', 'Tukey Box Plot (1.5 IQR)', 'Normal Distribution', 'Ranged Dot Plot', 'Cumulative Frequency']
     if @selectedGraph.name in chartsWithParams
       for param in @selectedGraph.config.params
         @chartParams.flags[param] = @selectedGraph.config.params[param]
@@ -159,6 +165,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     if @selectedGraph.config.vars.x
       @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
       @xCol = @xCols[0]
+
     # Scatter Plot Matrix
     else if @numericalCols.length > 1
       @chosenCols = @numericalCols.slice(0, 2)
@@ -171,7 +178,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @yCols = []
       for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.y
         @yCols.push(col)
-      if @selectedGraph.name is 'Scatter Plot'
+
+      if @selectedGraph.name in ['Scatter Plot', 'Histogram']
         @yCols.push("Count")
       # Initialize the y variable
       for yCol in @yCols
@@ -192,9 +200,11 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @zCol = @zCols[0]
     @originalZCols = @zCols
 
+    chartsWithR = ['Bullet Chart', 'Treemap', 'Sunburst', 'Trellis Chart']
     if @selectedGraph.config.vars.r
       @rCols = []
-      if @selectedGraph.name isnt 'Bullet Chart' and @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst' and @selectedGraph.name isnt 'Trellis Chart'
+
+      if @selectedGraph.name not in chartsWithR
         @rCols.push("None")
       for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.r
         if $.inArray(idx, forbiddenVarIdx) is -1
@@ -233,6 +243,15 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       @xCols = removeFromList([@yCol], @originalXCols)
       @yCols = removeFromList([@xCol], @originalYCols)
 
+      if xType is 'string'
+        @chartParams.flags.categorical = true
+        for col, idx in @cols
+          if @chartParams.flags.col is null and data.types[idx] in ['number', 'integer']
+            @chartParams.flags.col = col
+            break
+      else
+        @chartParams.flags.categorical = false
+
       labels =
           xLab:
             value: @xCol
@@ -268,4 +287,3 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     @msgService.broadcast 'charts:updateGraph',
       chartParams: @chartParams
-

@@ -45,6 +45,28 @@ module.exports = class ChartsBarChart extends BaseService
       for item in data
         item["y_vals"] = item["y"]
 
+    x_ = labels.xLab.value
+    y_ = labels.yLab.value
+
+    sumx = 0
+    sumy = 0
+    for dic in data
+      sumx += parseFloat(dic[x_])
+      sumy += parseFloat(dic[y_])
+
+    mean_x = sumx/data.length
+    mean_y = sumy/data.length
+
+    for dic in data
+      dic["residual_x"] = dic[x_] - mean_x
+      dic["residual_y"] = dic[y_] - mean_y
+
+    if (flags.x_residual)
+      labels.xLab.value = "residual_x"
+
+    if (flags.y_residual)
+      labels.yLab.value = "residual_y"
+
     if !flags.horizontal
       y = "y"
       x = "x"
@@ -143,7 +165,7 @@ module.exports = class ChartsBarChart extends BaseService
             ]
           },
           {
-            "data": {"values": [{"ThresholdValue": "#{threshold}", "Threshold": "hazardous"}]},
+            "data": {"values": [{"ThresholdValue": "#{threshold}", "Threshold": "threshold"}]},
             "layer": [
               {
                 "mark": "rule",

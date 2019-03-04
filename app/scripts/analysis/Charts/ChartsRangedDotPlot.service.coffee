@@ -25,10 +25,24 @@ module.exports = class ChartsRangedDotPlot extends BaseService
     @ve = require 'vega-embed'
     @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-  drawRangedDotPlot: (data, labels, container) ->
+  drawRangedDotPlot: (data, labels, container, flags) ->
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
+
+    x_ = labels.xLab.value
+
+    sumx = 0
+    for dic in data
+      sumx += parseFloat(dic[x_])
+
+    mean_x = sumx/data.length
+
+    for dic in data
+      dic["residual_x"] = dic[x_] - mean_x
+
+    if (flags.x_residual)
+      labels.xLab.value = "residual_x"
 
     vlSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
