@@ -3,91 +3,179 @@
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsTreemap extends BaseService
-  
+  @inject '$q',
+    '$stateParams',
+    'app_analysis_charts_dataTransform',
+    'app_analysis_charts_list',
+    'app_analysis_charts_sendData',
+    'app_analysis_charts_checkTime',
+    'app_analysis_charts_dataService',
+    'app_analysis_charts_msgService',
+    'app_analysis_charts_scatterPlot'
+
   initialize: ->
+    @msgService = @app_analysis_charts_msgService
+    @dataService = @app_analysis_charts_dataService
+    @dataTransform = @app_analysis_charts_dataTransform
+    @list = @app_analysis_charts_list
+    @sendData = @app_analysis_charts_sendData
+    @checkTime = @app_analysis_charts_checkTime
+    @DATA_TYPES = @dataService.getDataTypes()
+    @scatterPlot = @app_analysis_charts_scatterPlot
 
-  drawTreemap: (svg, width, height, container, data) ->
-      maxDepth = 5
-      sliderValue = 3
+    @ve = require 'vega-embed'
+    @vt = require 'vega-tooltip/build/vega-tooltip.js'
 
-      sliderBar = container.append('input')
-      .attr('id', 'slider')
-      .attr('type', 'range')
-      .attr('min', '1')
-      .attr('max', maxDepth)
-      .attr('step', '1')
-      .attr('value', '3')
+  drawTreemap: (data, labels, container) ->
 
-      plotTreemap = (sliderValue, maxDepth) ->
-        color = d3.scale.category10()
-        depthRestriction = sliderValue
-        treemap = d3.layout.treemap()
-        .size([width, height])
-        .padding(4)
-        .sticky(true)
-        .value((d) ->d.size)
+    container.select("#slider").remove()
+    container.select("#maxbins").remove()
 
-        filteredData = treemap.nodes(data).filter((d) -> d.depth < depthRestriction)
-        leafNodes = treemap.nodes(data).filter((d) -> !d.children) # get all the leaf children
-        findMaxDepth = (d) ->
-          tmpMaxDepth = 0
-          for i in [0..d.length-1] by 1
-            if d[i].depth > tmpMaxDepth then tmpMaxDepth = d[i].depth
-          return tmpMaxDepth
-        maxDepth = findMaxDepth(leafNodes) + 1
+    vSpec = {
+      "$schema": "https://vega.github.io/schema/vega/v4.json",
+      "width": 960,
+      "height": 500,
+      "padding": 2.5,
+      "autosize": "none",
+      "signals": [
+        {
+          "name": "layout", "value": "squarify",
+          "bind": {
+            "input": "select",
+            "options": [
+              "squarify",
+              "binary",
+              "slicedice"
+            ]
+          }
+        },
+        {
+          "name": "aspectRatio", "value": 1.6,
+          "bind": {"input": "range", "min": 0.2, "max": 5, "step": 0.1}
+        }
+      ],
 
-        sliderBar.attr('max', maxDepth)
+      "data": [
+        {
+          "name": "tree",
+          "values": data,
+          "transform": [
+            {
+              "type": "stratify",
+              "key": labels.xLab.value,
+              "parentKey": labels.yLab.value
+            },
+            {
+              "type": "treemap",
+              "field": labels.rLab.value,
+              "sort": {"field": "value"},
+              "round": true,
+              "method": {"signal": "layout"},
+              "ratio": {"signal": "aspectRatio"},
+              "size": [{"signal": "width"}, {"signal": "height"}]
+            }
+          ]
+        },
+        {
+          "name": "nodes",
+          "source": "tree",
+          "transform": [{ "type": "filter", "expr": "datum.children" }]
+        },
+        {
+          "name": "leaves",
+          "source": "tree",
+          "transform": [{ "type": "filter", "expr": "!datum.children" }]
+        }
+      ],
 
-        node = svg.append('g')
-        .selectAll('g.node')
-        .data(filteredData)
-        .enter().append('g')
-        .attr('class', 'node')
-        .attr('transform', (d) -> 'translate(' + d.x + ',' + d.y + ')')
-        .append('svg')
-        .attr('class', 'inner-node')
-        .attr('width', (d) -> Math.max(0.01, d.dx - 1))
-        .attr('height', (d) -> Math.max(0.01, d.dy - 1))
-        .on('click', (d) -> if d.url then window.open(d.url))
+      "scales": [
+        {
+          "name": "color",
+          "type": "ordinal",
+          "range": [
+            "#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d",
+            "#fd8d3c", "#fdae6b", "#fdd0a2", "#31a354", "#74c476",
+            "#a1d99b", "#c7e9c0", "#756bb1", "#9e9ac8", "#bcbddc",
+            "#dadaeb", "#636363", "#969696", "#bdbdbd", "#d9d9d9"
+          ]
+        },
+        {
+          "name": "size",
+          "type": "ordinal",
+          "domain": [0, 1, 2, 3],
+          "range": [256, 28, 20, 14]
+        },
+        {
+          "name": "opacity",
+          "type": "ordinal",
+          "domain": [0, 1, 2, 3],
+          "range": [0.15, 0.5, 0.8, 1.0]
+        }
+      ],
+
+      "marks": [
+        {
+          "type": "rect",
+          "from": {"data": "nodes"},
+          "interactive": false,
+          "encode": {
+            "enter": {
+              "fill": {"scale": "color", "field": labels.zLab.value}
+            },
+            "update": {
+              "x": {"field": "x0"},
+              "y": {"field": "y0"},
+              "x2": {"field": "x1"},
+              "y2": {"field": "y1"}
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "from": {"data": "leaves"},
+          "encode": {
+            "enter": {
+              "stroke": {"value": "#fff"}
+            },
+            "update": {
+              "x": {"field": "x0"},
+              "y": {"field": "y0"},
+              "x2": {"field": "x1"},
+              "y2": {"field": "y1"},
+              "fill": {"value": "transparent"}
+            },
+            "hover": {
+              "fill": {"value": "red"}
+            }
+          }
+        },
+        {
+          "type": "text",
+          "from": {"data": "nodes"},
+          "interactive": false,
+          "encode": {
+            "enter": {
+              "font": {"value": "Helvetica Neue, Arial"},
+              "align": {"value": "center"},
+              "baseline": {"value": "middle"},
+              "fill": {"value": "#000"},
+              "text": {"field": "name"},
+              "fontSize": {"scale": "size", "field": "depth"},
+              "fillOpacity": {"scale": "opacity", "field": "depth"}
+            },
+            "update": {
+              "x": {"signal": "0.5 * (datum.x0 + datum.x1)"},
+              "y": {"signal": "0.5 * (datum.y0 + datum.y1)"}
+            }
+          }
+        }
+      ]
+    }
 
 
-        node.append('rect')
-        .attr('width', (d) -> Math.max(0.01, d.dx - 1))
-        .attr('height', (d) -> Math.max(0.01, d.dy - 1))
-        .style('fill', (d) -> if d.children then color(d.name) else color(d.parent.name))
-        .style('stroke', 'white')
-        .style('stroke-width', '1px')
-        .on('mouseover', () ->
-          d3.select(@).append('title')
-          .text((d) ->
-            'Parent: ' + d.parent.name + '\n' +
-              'Name: ' + d.name + '\n' +
-              'Depth: ' + d.depth
-          )
-          d3.select(@)
-          .style('stroke', 'black')
-          .style('stroke-width', '3px')
-        )
-        .on('mouseout', () ->
-          d3.select(@)
-          .style('stroke', 'white')
-          .style('stroke-width', '1px')
-          d3.select(@).select('title').remove()
-        )
+    opt =
+      "actions": {export: true, source: false, editor: false}
 
-        # update slider value
-        $('#sliderText').remove()
-
-        container.append('text')
-        .attr('id', 'sliderText')
-        .text('Treemap depth: ' + sliderValue)
-        .attr('position', 'relative')
-        .attr('left', '50px')
-
-      plotTreemap(sliderValue, maxDepth) # default value of treemap depth
-
-      d3.select('#slider')
-      .on('change', () ->
-        sliderValue = parseInt this.value
-        plotTreemap(sliderValue, maxDepth)
-      )
+    @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
+      @vt.vega(result.view)
+    )

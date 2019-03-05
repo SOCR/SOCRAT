@@ -14,12 +14,17 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     'socrat_modeler_distribution_laplace',
     'socrat_modeler_distribution_cauchy',
     'socrat_modeler_distribution_maxwell_boltzman',
-    'socrat_modeler_distribution_binomial',
     'app_analysis_modeler_kernel_density_plotter',
     'socrat_modeler_distribution_ChiSquared',
     'socrat_modeler_distribution_LogNormal',
     'socrat_modeler_distribution_exponential',
-   
+    'socrat_modeler_distribution_Geometric',
+    'socrat_modeler_distribution_Bernoulli',
+    'socrat_modeler_distribution_ContinuousUniform',
+    'socrat_modeler_distribution_DiscreteUniform',
+    'socrat_modeler_distribution_Poisson',
+    'socrat_modeler_distribution_Weibull',
+
     '$interval'
 
   initialize: ->
@@ -30,14 +35,19 @@ module.exports = class ModelerRouter extends BaseModuleDataService
     @Laplace = @socrat_modeler_distribution_laplace
     @Cauchy = @socrat_modeler_distribution_cauchy
     @MaxwellBoltzman = @socrat_modeler_distribution_maxwell_boltzman
-    @Binomial = @socrat_modeler_distribution_binomial
     @ChiSquared = @socrat_modeler_distribution_ChiSquared
     @LogNormal= @socrat_modeler_distribution_LogNormal
     @Exponential =@socrat_modeler_distribution_exponential
+    @Geometric = @socrat_modeler_distribution_Geometric
+    @Bernoulli = @socrat_modeler_distribution_Bernoulli
+    @ContinuousUniform = @socrat_modeler_distribution_ContinuousUniform
+    @DiscreteUniform = @socrat_modeler_distribution_DiscreteUniform
+    @Poisson = @socrat_modeler_distribution_Poisson
+    @Weibull = @socrat_modeler_distribution_Weibull
 
     #@models = [@Normal, @Kernel, @Laplace, @Cauchy, @MaxwellBoltzman, @Binomial, @Exponential ]
     #add distribution to the available models list
-    @models = [@Normal, @Laplace, @ChiSquared, @MaxwellBoltzman, @LogNormal, @Cauchy, @Exponential, @Kernel]
+    @models = [@Normal, @Laplace, @ChiSquared, @MaxwellBoltzman, @LogNormal, @Cauchy, @Exponential, @Kernel, @Geometric, @Bernoulli, @ContinuousUniform, @DiscreteUniform, @Poisson, @Weibull]
 
   getNames: -> @models.map (model) -> model.getName()
 

@@ -42,14 +42,7 @@ module.exports = class DistList extends BaseService
       message: "This class Designs a simple Laplace model fitting curve"
       xLabel: ""
     ,
-    #   name: 'Binomial'
-    #   value: 2
-    #   x: ['integer', 'number']
-    #   y: false
-    #   z: false
-    #   message: "This class Designs a simple Binomail model fitting curve"
-    #   xLabel: ""
-    # ,
+
       name: 'Exponential'
       value: 2
       x: ['integer', 'number']
@@ -63,7 +56,7 @@ module.exports = class DistList extends BaseService
       x: ['integer', 'number']
       y: false
       z: false
-      message: "This class Designs a simple Exponential model fitting curve"
+      message: "This class Designs a simple LogNormal model fitting curve"
       xLabel: ""
     ,
       name: 'ChiSquared'
@@ -71,8 +64,63 @@ module.exports = class DistList extends BaseService
       x: ['integer', 'number']
       y: false
       z: false
-      message: "This class Designs a simple Exponential model fitting curve"
+      message: "This class Designs a simple ChiSquared model fitting curve"
       xLabel: ""
+    ,
+
+      name: 'Geometric'
+      value: 0
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class models a Geometric distribution fitting curve to the dataset"
+      xLabel: "Add x"
+    ,
+
+      name: 'Bernoulli'
+      value: 0
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class models a Bernoulli distribution fitting curve to the dataset"
+      xLabel: "Add x"
+    ,
+
+      name: 'ContinuousUniform'
+      value: 0
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class models a Continuous Uniform distribution fitting curve to the dataset"
+      xLabel: "Add x"
+    ,
+
+      name: 'DiscreteUniform'
+      value: 0
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class models a Discrete Uniform distribution fitting curve to the dataset"
+      xLabel: "Add x"
+    ,
+
+      name: 'Poisson'
+      value: 0
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class models a Poisson distribution fitting curve to the dataset"
+      xLabel: "Add x"
+    ,
+
+      name: 'Weibull'
+      value: 0
+      x: ['integer', 'number']
+      y: false
+      z: false
+      message: "This class models a Weibull distribution fitting curve to the dataset"
+      xLabel: "Add x"
+
     # ,
     #   name: 'Weibull'
     #   value: 2
