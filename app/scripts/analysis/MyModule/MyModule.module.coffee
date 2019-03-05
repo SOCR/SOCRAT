@@ -6,6 +6,7 @@ module.exports = myModule = new Module
   # module id for registration
   id: 'socrat_analysis_mymodule'
   # module components
+  # 
   components:
     services:
       'socrat_analysis_mymodule_initService': require 'scripts/analysis/MyModule/MyModuleInit.service.coffee'
