@@ -22,7 +22,7 @@ module.exports = class ChartsBulletChart extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   drawBulletChart: (data, labels, container) ->
 
@@ -141,11 +141,10 @@ module.exports = class ChartsBulletChart extends BaseService
       }
       vlSpec["spec"]["layer"].push(mark)
 
+    handler = new @vt.Handler()
     opt =
-      "actions": {export: true, source: false, editor: true}
+      "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )
-
-

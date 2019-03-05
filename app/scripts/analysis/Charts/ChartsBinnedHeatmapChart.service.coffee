@@ -22,7 +22,7 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   getName: () ->
     return 'Binned Heatmap'
@@ -167,9 +167,10 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
         }
       }
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

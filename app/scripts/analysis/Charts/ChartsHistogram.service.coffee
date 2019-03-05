@@ -1,6 +1,6 @@
 'use strict'
 
-require 'vega-tooltip/build/vega-tooltip.css'
+require 'vega-tooltip'
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsHistogram extends BaseService
@@ -23,7 +23,7 @@ module.exports = class ChartsHistogram extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   plotHist: (bins, data, labels, flags) ->
 
@@ -83,10 +83,12 @@ module.exports = class ChartsHistogram extends BaseService
     else
       vlSpec["layer"][0]["encoding"]["y"] = {"field": labels.yLab.value,"type": "quantitative", "axis": {"title": labels.yLab.value}}
 
-    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: false}}
+    handler = new @vt.Handler()
+    opt =
+      "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )
 
   drawHist: (data, labels, container, flags) ->
@@ -124,4 +126,3 @@ module.exports = class ChartsHistogram extends BaseService
       bins = parseInt ui.value
       d3.select('div#maxbins').text('Max bins: ' + bins)
       @plotHist(bins, data,labels)
-

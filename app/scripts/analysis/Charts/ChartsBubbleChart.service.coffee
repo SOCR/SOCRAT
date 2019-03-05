@@ -24,7 +24,7 @@ module.exports = class ChartsBubbleChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   drawBubble: (data,labels,container) ->
 
@@ -89,9 +89,10 @@ module.exports = class ChartsBubbleChart extends BaseService
       vlSpec["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
 
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

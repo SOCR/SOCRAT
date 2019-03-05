@@ -22,7 +22,7 @@ module.exports = class ChartsDivergingStackedBar extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   drawDivergingStackedBar: (data, labels, container) ->
 
@@ -435,9 +435,10 @@ module.exports = class ChartsDivergingStackedBar extends BaseService
       }
     }
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

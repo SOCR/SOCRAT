@@ -24,7 +24,7 @@ module.exports = class ChartsLineChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   lineChart: (data,labels,container) ->
 
@@ -50,10 +50,10 @@ module.exports = class ChartsLineChart extends BaseService
     if labels["zLab"].value and labels["zLab"].value is not "None"
       vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal"}
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )
-

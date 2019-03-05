@@ -199,9 +199,10 @@ module.exports = class ChartsBarChart extends BaseService
       else
         vlSpec["layer"][0]["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

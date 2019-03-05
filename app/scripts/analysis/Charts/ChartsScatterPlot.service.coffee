@@ -22,7 +22,7 @@ module.exports = class ChartsScatterPlot extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   getName: () ->
     return 'Scatter Plot'
@@ -216,9 +216,10 @@ module.exports = class ChartsScatterPlot extends BaseService
           vlSpec["encoding"]["y"]["bin"] = {"maxbins": 10}
           vlSpec["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

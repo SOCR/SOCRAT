@@ -24,7 +24,7 @@ module.exports = class ChartsTrellisChart extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   drawTrellis: (data, labels, container) ->
 
@@ -62,9 +62,10 @@ module.exports = class ChartsTrellisChart extends BaseService
     if labels["zLab"].value and labels["zLab"].value isnt "None"
       vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
 
+    handler = new @vt.Handler()
     opt =
-      "actions": {export: true, source: false, editor: true}
+      "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

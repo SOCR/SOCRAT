@@ -22,7 +22,7 @@ module.exports = class ChartsScatterMatrix extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   drawScatterMatrix: (data, labels, container) ->
 
@@ -114,9 +114,10 @@ module.exports = class ChartsScatterMatrix extends BaseService
 #      "point":
 #        "size": 80
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

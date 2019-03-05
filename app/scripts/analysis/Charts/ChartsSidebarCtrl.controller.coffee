@@ -168,7 +168,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
     if @selectedGraph.config.vars.x
-      if @selectedGraph.x.includes("date")
+      if @selectedGraph.config.vars.x.includes("date")
         @xCols = []
         colNameCounts = data.header.length
         for nameIndex in [0..colNameCounts - 1]
@@ -188,7 +188,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
               checkCount++
           if checkCount == 3
             @xCols.push data.header[nameIndex]
-        else
+      else
           @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
       @xCol = @xCols[0]
 

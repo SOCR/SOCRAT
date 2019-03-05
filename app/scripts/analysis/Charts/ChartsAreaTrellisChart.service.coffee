@@ -47,9 +47,10 @@ module.exports = class ChartsAreaTrellisChart extends BaseService
       vlSpec["encoding"]["row"] = {"field": "labels.zLab.value", "type": "nominal", "header": {"title": "labels.zLab.value"}
       }
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )

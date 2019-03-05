@@ -20,7 +20,7 @@
     "angular-touch": "~1.5.0",
     "angular-ui-bootstrap": "~2.5.0",
     "angular-ui-router": "~0.2.18",
-    "bootstrap": "~3.3.6",
+    "bootstrap": "~>=3.4.1",
     "bootstrap-switch": "~3.0.2",
     "bootstrap-tagsinput": "~0.7.1",
     "browserify-versionify": "~1.0.6",
@@ -59,8 +59,8 @@
     "typeahead.js": "git+https://github.com/twitter/typeahead.js.git",
     "vega": "3.3.1",
     "vega-embed": "^3.19.2",
-    "vega-lite": "^3.0.0-r4",
-    "vega-tooltip": "0.5.1"
+    "vega-lite": "3.0.0-rc13",
+    "vega-tooltip": "0.16.0"
   },
   "devDependencies": {
     "angular-mocks": "^1.5.0",

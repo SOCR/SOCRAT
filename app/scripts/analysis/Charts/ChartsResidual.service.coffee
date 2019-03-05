@@ -1,6 +1,6 @@
 'use strict'
 
-require 'vega-tooltip/build/vega-tooltip.css'
+require 'vega-tooltip'
 BaseService = require 'scripts/BaseClasses/BaseService.coffee'
 
 module.exports = class ChartsResidual extends BaseService
@@ -23,7 +23,7 @@ module.exports = class ChartsResidual extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   drawResidual: (data, labels, container) ->
 
@@ -64,9 +64,10 @@ module.exports = class ChartsResidual extends BaseService
       }
     }
 
-    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
+    handler = new @vt.Handler()
+    opt =
+      "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )
-

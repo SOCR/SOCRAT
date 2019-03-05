@@ -24,7 +24,7 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
     @scatterPlot = @app_analysis_charts_scatterPlot
 
     @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @vt = require 'vega-tooltip'
 
   drawBoxPlot: (data, labels, container, flags) ->
 
@@ -71,9 +71,10 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
       }
     }
 
+    handler = new @vt.Handler()
     opt =
       "actions": {export: true, source: false, editor: false}
+      "tooltip": handler.call
 
     @ve('#vis', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )
