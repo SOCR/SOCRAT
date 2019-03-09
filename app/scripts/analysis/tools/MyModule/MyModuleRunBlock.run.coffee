@@ -4,8 +4,8 @@ module.exports = class MyModuleRunBlock
   register: ->
     @module.run @myModuleRunBlock()
   myModuleRunBlock: ->
-    runBlock = (socrat_analysis_mymodule_myService) ->
-      socrat_analysis_mymodule_myService.showAlert()
+    runBlock = (socrat_analysis_myModule_myService) ->
+      socrat_analysis_myModule_myService.showAlert()
     # inject dependencies for run block
-    runBlock.$inject = ['socrat_analysis_mymodule_myService']
+    runBlock.$inject = ['socrat_analysis_myModule_myService']
     runBlock
