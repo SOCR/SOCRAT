@@ -20,7 +20,7 @@ module.exports = myModule = new Module
   # module state config
   state:
     # module name to show in UI
-    name: 'My Awesome Module'
+    name: 'Felix Module'
     url: '/tools/mymodule'
     mainTemplate: require 'partials/analysis/tools/MyModule/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/MyModule/sidebar.jade'
