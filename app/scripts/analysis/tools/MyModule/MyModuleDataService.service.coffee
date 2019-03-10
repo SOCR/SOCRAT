@@ -4,7 +4,7 @@ BaseModuleDataService = require 'scripts/BaseClasses/BaseModuleDataService.coffe
 # export custom data service class 
 module.exports = class MyModuleDataService extends BaseModuleDataService
   # requires injection of $q and message service
-  @inject '$q', 'socrat_analysis_mymodule_msgService'
+  @inject '$q', 'socrat_analysis_myModule_msgService'
   # requires renaming message service injection to @msgService
   initialize: () ->
     @msgManager = @socrat_analysis_cluster_msgService

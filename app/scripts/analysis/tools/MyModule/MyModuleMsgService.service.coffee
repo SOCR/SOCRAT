@@ -8,4 +8,4 @@ module.exports = class MyModuleMsgService extends BaseModuleMessageService
     outgoing: []
     incoming: []
     # required to be the same as module id
-    scope: ['socrat_analysis_mymodule']
+    scope: ['socrat_analysis_myModule']
