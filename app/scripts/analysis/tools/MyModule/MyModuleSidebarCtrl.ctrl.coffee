@@ -3,16 +3,16 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class MyModuleSidebarCtrl extends BaseCtrl
-  @inject 'app_analysis_myModule_dataService',
-    'app_analysis_myModule_msgService'
-    'app_analysis_myModule_algorithms'
+  @inject 'socrat_analysis_myModule_dataService',
+    'socrat_analysis_myModule_msgService'
+    'socrat_analysis_myModule_algorithms'
     '$scope'
     '$timeout'
 
   initialize: ->
-    @dataService = @app_analysis_myModule_dataService
-    @msgService = @app_analysis_myModule_msgService
-    @algorithmsService = @app_analysis_myModule_algorithms
+    @dataService = @socrat_analysis_myModule_dataService
+    @msgService = @socrat_analysis_myModule_msgService
+    @algorithmsService = @socrat_analysis_myModule_algorithms
     @algorithms = @algorithmsService.getNames()
     @DATA_TYPES = @dataService.getDataTypes()
     # set up data and algorithm-agnostic controls
