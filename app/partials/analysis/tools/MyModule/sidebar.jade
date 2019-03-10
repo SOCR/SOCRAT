@@ -1,18 +1,26 @@
 div(ng-controller="myModuleSidebarCtrl as sidebar")
   form
-    legend Parameters &nbsp;
-      div.form-group(ng-disabled="sidebar.clusterRunning")
-        fieldset
-          label(
+    button(
+      type='submit'
+      ng-click = "siderbar.detectK()"
+      ng-disabled = "!sidebar.labelCol"
+      uib-tooltip = "Use labels to get number of clusters"
+      tooltip-placement="right"
+    )
+      | buttonName
+    //- legend Parameters &nbsp;
+      //- div.form-group(ng-disabled="sidebar.clusterRunning")
+        //- fieldset
+          //- label(
             uib-tooltip="Choose an algorithm from the list below"
             tooltip-placement="right"
-          ) Algorithm &nbsp;
-          select.form-control(
-          ng-model="sidebar.selectedAlgorithm"
-          ng-options="method for method in sidebar.algorithms"
-          ng-change="sidebar.updateAlgControls()"
-          )
-          div.form-group(ng-show="sidebar.algParams.k")
+          //- ) Algorithm &nbsp;
+          //- select.form-control(
+          //- ng-model="sidebar.selectedAlgorithm"
+          //- ng-options="method for method in sidebar.algorithms"
+          //- ng-change="sidebar.updateAlgControls()"
+          //- )
+          //- div.form-group(ng-show="sidebar.algParams.k")
             fieldset.form-inline
               label Number of clusters &nbsp;
               select.form-control(
@@ -29,22 +37,22 @@ div(ng-controller="myModuleSidebarCtrl as sidebar")
                 tooltip-placement="right"
               )
                 | Detect k
-          div.form-group(ng-show="sidebar.algParams.distance")
+          //- div.form-group(ng-show="sidebar.algParams.distance")
             label Distance &nbsp;
             select.form-control(
               ng-model="sidebar.distance"
               ng-options="dist for dist in sidebar.algParams.distance"
               ng-init="sidebar.distance = sidebar.algParams.distance[0]"
             )
-          div.form-group(ng-show="sidebar.algParams.init")
+          //- div.form-group(ng-show="sidebar.algParams.init")
             label Initialization &nbsp;
             select.form-control(
             ng-model="sidebar.initMethod"
             ng-options="init for init in sidebar.algParams.init"
             ng-init="sidebar.initMethod = sidebar.algParams.init[0]"
             )
-          hr
-        fieldset(ng-show="sidebar.dataFrame")
+          //- hr
+        //- fieldset(ng-show="sidebar.dataFrame")
           legend Dataset
           div(uib-tooltip="2D projection is always visualized")
             select.form-control(
@@ -79,11 +87,11 @@ div(ng-controller="myModuleSidebarCtrl as sidebar")
             ng-options="col for col in sidebar.chosenCols"
             ng-change="sidebar.updateDataPoints(sidebar.dataFrame)"
             )
-        div.form-group.btn-group(
+        //- div.form-group.btn-group(
           role="group"
           area-label="Sidebar flow controls"
           uib-tooltip = "Choose at least 2 columns to start"
-        )
+        //- )
           button.btn.btn-info.btn-sm(
           ng-show="sidebar.dataFrame && sidebar.ready"
           type="submit"

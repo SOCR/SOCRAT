@@ -9,7 +9,7 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
     '$scope'
     '$timeout'
 
-  initialize: ->
+  initialize: -> 
     @dataService = @socrat_analysis_myModule_dataService
     @msgService = @socrat_analysis_myModule_msgService
     @algorithmsService = @socrat_analysis_myModule_algorithms
