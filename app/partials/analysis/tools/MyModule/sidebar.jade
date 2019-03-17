@@ -1,0 +1,8 @@
+div(ng-controller="mymoduleSidebarCtrl as sidebar")
+      button.btn.btn-info(
+            type="submit"
+            aria-label="Get data"
+            ng-click="sidebar.fetchData()"
+            tooltip-placement="right"
+      )
+            | Get Data
