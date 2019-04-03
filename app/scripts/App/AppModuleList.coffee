@@ -42,6 +42,8 @@ module.exports = class AppModuleList
     require 'scripts/analysis/Charts/Charts.module.coffee'
   ,
     Tools: [
+      require 'scripts/analysis/tools/DimReduction/DimReduction.module.coffee'
+    ,
       require 'scripts/analysis/tools/Cluster/Cluster.module.coffee'
     ,
       require 'scripts/analysis/tools/Reliability/Reliability.module.coffee'
@@ -50,7 +52,11 @@ module.exports = class AppModuleList
     ,
       require 'scripts/analysis/tools/PowerCalc/PowerCalc.module.coffee'
     ,
+      require 'scripts/analysis/tools/Classification/Classification.module.coffee'
+    ,
       require 'scripts/analysis/tools/Stats/Stats.module.coffee'
+    ,
+      require 'scripts/analysis/tools/DimensionReduction/DimensionReduction.module.coffee'
     ]
   ]
 

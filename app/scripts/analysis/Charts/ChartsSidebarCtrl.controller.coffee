@@ -11,7 +11,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     'app_analysis_charts_checkTime',
     'app_analysis_charts_dataService',
     'app_analysis_charts_msgService',
-    '$timeout'
+    '$timeout',
+    '$scope'
 
   initialize: ->
     @msgService = @app_analysis_charts_msgService
@@ -24,6 +25,42 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     @graphs = []
     @selectedGraph = null
     @maxColors = 10
+    @dl = require 'datalib'
+
+    # chart-specific flags (update dictionary as more flags added)
+    # general chart parameters
+
+    @chartParams =
+      flags:
+        # BarChart:
+        horizontal: false
+        stacked: false
+        normalized: false
+        threshold: 0
+        # BinnedHeatmap:
+        yBin: null
+        xBin: null
+        marginalHistogram: false
+        # ScatterPlot:
+        showSTDEV: false
+        binned: false
+        opacity: false
+        x_residual: false
+        y_residual: false
+        # WordCloud:
+        startAngle: 0
+        endAngle: 90
+        orientations: 1
+        text: "Input your text"
+        # pie chart
+        categorical: false
+        col: null
+      data: null
+      labels: null
+      graph: null
+
+    @$scope.chartParams =
+      flags: {}
 
     # dataset-specific
     @dataFrame = null
@@ -54,6 +91,10 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
       scheme: ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"]
     ]
 
+    # constants
+    @yearLowerBound = 1900
+    @yearUpperBound = new Date().getFullYear()
+
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType?
         dataFrame = obj.dataFrame
@@ -71,6 +112,11 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             @dataType = @DATA_TYPES.NESTED
             @header = {key: 0, value: "initiate"}
 
+    @$scope.$watch 'sidebar.chartParams.flags'
+    , =>
+      @updateDataPoints()
+    , true
+
   parseData: (data) ->
     df = data
     @dataService.inferDataTypes data, (resp) =>
@@ -85,6 +131,7 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
   updateSidebarControls: (data=@dataFrame) ->
+
     @cols = data.header
     @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
     @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
@@ -95,7 +142,8 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     # Determine a list of variables that has more than 20 unique values
     # This list will be excluded from zCols if zLabel is color
     forbiddenVarIdx = []
-    if @selectedGraph.zLabel is "Color"
+
+    if @selectedGraph.config.vars.zLabel is "Color"
 
       VarForChecking = []
       # VarForChecking only includes the variable idx that has the same
@@ -113,10 +161,37 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           forbiddenVarIdx.push(idx)
       )
     # end if
+    chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap', 'Histogram', 'Tukey Box Plot (1.5 IQR)', 'Normal Distribution', 'Ranged Dot Plot', 'Cumulative Frequency']
+    if @selectedGraph.name in chartsWithParams
+      for param in @selectedGraph.config.params
+        @chartParams.flags[param] = @selectedGraph.config.params[param]
+      $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
-    if @selectedGraph.x
-      @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.x)
+    if @selectedGraph.config.vars.x
+      if @selectedGraph.config.vars.x.includes("date")
+        @xCols = []
+        colNameCounts = data.header.length
+        for nameIndex in [0..colNameCounts - 1]
+
+          randomeTestIndex1 = Math.floor(Math.random() * data.data.length)
+          dataValue1 = data.data[randomeTestIndex1][nameIndex]
+
+          randomeTestIndex2 = Math.floor(Math.random() * data.data.length)
+          dataValue2 = data.data[randomeTestIndex2][nameIndex]
+
+          randomeTestIndex3 = Math.floor(Math.random() * data.data.length)
+          dataValue3 = data.data[randomeTestIndex3][nameIndex]
+
+          checkCount = 0
+          for dataValue in [dataValue1, dataValue2, dataValue3]
+            if (parseInt(dataValue) or dataValue == 0) and @yearLowerBound < dataValue < @yearUpperBound
+              checkCount++
+          if checkCount == 3
+            @xCols.push data.header[nameIndex]
+      else
+          @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
       @xCol = @xCols[0]
+
     # trellis chart
     else if @numericalCols.length > 1
       @chosenCols = @numericalCols.slice(0, 2)
@@ -125,11 +200,13 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     @originalXCols = @xCols
 
-    if @selectedGraph.y
+    if @selectedGraph.config.vars.y
       @yCols = []
-      for col, idx in @cols when data.types[idx] in @selectedGraph.y
+      for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.y
         @yCols.push(col)
-      @yCols.push("None")
+
+      if @selectedGraph.name in ['Scatter Plot', 'Histogram']
+        @yCols.push("Count")
       # Initialize the y variable
       for yCol in @yCols
         if yCol isnt @xCol
@@ -137,35 +214,48 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
           break
     @originalYCols = @yCols
 
-    if @selectedGraph.z
+    if @selectedGraph.config.vars.z
       @zCols = []
-      @zCols.push("None")
-      for col, idx in @cols when data.types[idx] in @selectedGraph.z
+      if @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst'
+        @zCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.z
         # if the variable idx is not in forbiddenVarIdx, put col in zCols list
         if $.inArray(idx, forbiddenVarIdx) is -1
           @zCols.push(col)
       # Initialize the z variable
-      @zCol = "None"
+      @zCol = @zCols[0]
     @originalZCols = @zCols
 
-    if @selectedGraph.r
+    chartsWithR = ['Bullet Chart', 'Treemap', 'Sunburst', 'Trellis Chart']
+    if @selectedGraph.config.vars.r
       @rCols = []
-      @rCols.push("None")
-      for col, idx in @cols when data.types[idx] in @selectedGraph.r
-        @rCols.push(col)
+
+      if @selectedGraph.name not in chartsWithR
+        @rCols.push("None")
+      for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.r
+        if $.inArray(idx, forbiddenVarIdx) is -1
+          @rCols.push(col)
       # Initialize the z variable
-      @rCol = "None"
+      @rCol = @rCols[0]
     @originalRCols = @rCols
 
     @$timeout =>
       @updateDataPoints()
 
   updateDataPoints: (data=@dataFrame) ->
-    if @selectedGraph.x
+
+    if @selectedGraph.config.vars
       [xCol, yCol, zCol, rCol] = [@xCol, @yCol, @zCol, @rCol].map (x) -> data.header.indexOf x
       [xType, yType, zType, rType] = [xCol, yCol, zCol, rCol].map (x) -> data.types[x]
-      data = ([row[xCol], row[yCol], row[zCol], row[rCol]] for row in data.data)
 
+    transformed_data = []
+    for row in data.data
+      obj = {}
+      for h, index in data.header
+        obj[h] = row[index]
+      transformed_data.push obj
+
+    if @selectedGraph.config.vars.x
       # Remove the variables that are already chosen for one field
       # isX is a boolean. This is used to determine if to include 'None' or not
       removeFromList = (variables, list) ->
@@ -178,6 +268,15 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
       @xCols = removeFromList([@yCol], @originalXCols)
       @yCols = removeFromList([@xCol], @originalYCols)
+
+      if xType is 'string'
+        @chartParams.flags.categorical = true
+        for col, idx in @cols
+          if @chartParams.flags.col is null and data.types[idx] in ['number', 'integer']
+            @chartParams.flags.col = col
+            break
+      else
+        @chartParams.flags.categorical = false
 
       labels =
           xLab:
@@ -193,7 +292,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
             value: @rCol
             type: rType
 
-    # if trellis plot
+      data = transformed_data
+
+    # if scatter plot matrix
     else if @chosenCols.length > 1
       if @labelCol
         labels = (row[data.header.indexOf(@labelCol)] for row in data.data)
@@ -206,27 +307,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
     else data = null
 
+    @chartParams.data = data
+    @chartParams.labels = labels
+    @chartParams.graph = @selectedGraph
+
     @msgService.broadcast 'charts:updateGraph',
-      dataPoints: data
-      graph: @selectedGraph
-      labels: labels
-
-#  changeGraph: () ->
-#    if @graphSelect.name is "Stream Graph"
-#      @stream = true
-#    else
-#      @stream = false
-
-#    if @dataType is "NESTED"
-#      @graphInfo.x = "initiate"
-#      @sendData.createGraph @data, @graphInfo, {key: 0, value: "initiate"}, @dataType, @selector4.scheme
-#    else
-#      @sendData.createGraph @chartData, @graphInfo, @headers, @dataType, @selector4.scheme
-
-#  changeVar: (selector, headers, ind) ->
-#    console.log @selector4.scheme
-    #if scope.graphInfo.graph is one of the time series ones, test variables for time format and only allow those when ind = x
-    #only allow numerical ones for ind = y or z
-#    for h in headers
-#      if selector.value is h.value then @graphInfo[ind] = parseFloat h.key
-#    @sendData.createGraph(@chartData, @graphInfo, @headers, @dataType, @selector4.scheme)
+      chartParams: @chartParams

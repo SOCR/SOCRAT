@@ -357,7 +357,161 @@ div(ng-controller="modelerMainCtrl as mainArea")
                 name='MaxBolt'
                 )
               #MaxBolt
+
+    div(ng-show='mainArea.distribution == "Geometric"')
+      .row
+        .col-md-8
+          h6 Geometric Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a geometric distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Mean of the dataset"
+                tooltip-placement="left"
+                ) &nbsp;
+                | μ
+                sub 1
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.NormalMean"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.001"
+                name='NormalMean'
+                )
+              #NormalMean
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Variance of the sample"
+                tooltip-placement="left"
+                ) &nbsp;
+                | variance
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.NormalVariance"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.01"
+                name='NormalVariance'
+                )
+              #NormalVariance
+
+    div(ng-show='mainArea.distribution == "Beta"')
+      .row
+        .col-md-8
+          h6 Beta Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a beta distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Mean of the dataset"
+                tooltip-placement="left"
+                ) &nbsp;
+                | μ
+                sub 1
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.NormalMean"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.001"
+                name='NormalMean'
+                )
+              #NormalMean
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Variance of the sample"
+                tooltip-placement="left"
+                ) &nbsp;
+                | variance
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.NormalVariance"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.01"
+                name='NormalVariance'
+                )
+              #NormalVariance
     
+    div(ng-show='mainArea.distribution == "Logarithmic"')
+      .row
+        .col-md-8
+          h6 Logarithmic Distribution Modeler &nbsp;
+            span.glyphicon.glyphicon-question-sign(
+            aria-hidden="true"
+            uib-tooltip="This modeler plots a Logarithmic distribution."
+            tooltip-placement="bottom"
+            )
+          //modelerdir
+        .col-md-4
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Mean of the dataset"
+                tooltip-placement="left"
+                ) &nbsp;
+                | μ
+                sub 1
+                | &nbsp;
+                input.form-control.input-sm.flat(
+                string-to-number
+                ng-model="mainArea.NormalMean"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.001"
+                name='NormalMean'
+                )
+              #NormalMean
+            .row.form-inline
+              label
+                span.glyphicon.glyphicon-question-sign(
+                aria-hidden="true"
+                uib-tooltip="Variance of the sample"
+                tooltip-placement="left"
+                ) &nbsp;
+                | variance
+                input.form-control.input-sm.flat(
+                ng-model="mainArea.NormalVariance"
+                ng-click="mainArea.NormalSync()"
+                ng-keypress ="mainArea.NormalPress($event)"
+                ng-disabled="mainArea.deployed"
+                type="number"
+                step="0.01"
+                name='NormalVariance'
+                )
+              #NormalVariance
+
+
     div(ng-show='mainArea.distribution == "Kernel"')
         .row
           .col-md-8
