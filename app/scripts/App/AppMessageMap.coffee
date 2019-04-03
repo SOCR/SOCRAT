@@ -21,7 +21,6 @@ module.exports = class AppMessageMap
         'app_analysis_classification',
         'app_analysis_modeler',
         'app_analysis_dimReduction',
-        'socrat_analysis_myModule'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -40,7 +39,6 @@ module.exports = class AppMessageMap
         'app_analysis_classification',
         'app_analysis_modeler',
         'app_analysis_dimReduction',
-        'socrat_analysis_myModule'
       ]
     ,
       msgFrom: 'data summary'
@@ -53,7 +51,6 @@ module.exports = class AppMessageMap
         'app_analysis_powercalc',
         'app_analysis_classification',
         'app_analysis_stats',
-        'socrat_analysis_myModule'
       ]
       msgTo: 'summary'
       scopeTo: ['app_analysis_datalib']
@@ -70,7 +67,6 @@ module.exports = class AppMessageMap
         'app_analysis_powercalc',
         'app_analysis_classification',
         'app_analysis_stats',
-        'socrat_analysis_myModule'
       ]
     ,
       msgFrom: 'data histogram'
@@ -81,7 +77,6 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_classification',
         'app_analysis_reliability',
-        'socrat_analysis_myModule'
       ]
       msgTo: 'histogram'
       scopeTo: ['app_analysis_datalib']
@@ -96,7 +91,6 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_classification',
         'app_analysis_reliability',
-        'socrat_analysis_myModule'
       ]
     #    ,
     #      msgFrom: 'upload csv'
@@ -104,7 +98,7 @@ module.exports = class AppMessageMap
     #      msgTo: 'upload csv'
     #      scopeTo: ['app.utils.importer']
 #    ,
-    # TODO: make message mapping dynamic #SOCRFW-151
+  # TODO: make message mapping dynamic #SOCRFW-151
 #      msgFrom: 'get table'
 #      scopeFrom: ['instrPerfEval']
 #      msgTo: 'get table'
@@ -114,39 +108,47 @@ module.exports = class AppMessageMap
 #      scopeFrom: ['app_analysis_database']
 #      msgTo: 'take table'
 #      scopeTo: ['instrPerfEval']
-    ,
-      msgFrom: 'getData'
-      scopeFrom: ['app_analysis_cluster',
-        'app_analysis_getData',
-        'app_analysis_dataWrangler',
-        'app_analysis_charts',
-        'app_analysis_reliability',
-        'app_analysis_powercalc',
-        'app_analysis_stats',
-        'app_analysis_classification',
-        'app_analysis_modeler',
-        'app_analysis_dimReduction',
-        'socrat_analysis_myModule'
-      ]
-      msgTo: 'get table'
-      scopeTo: ['app_analysis_database']
-    ,
-      msgFrom: 'take table'
-      scopeFrom: ['app_analysis_database']
-      msgTo: 'takeTable'
-      scopeTo: ['app_analysis_cluster',
-        'app_analysis_getData',
-        'app_analysis_dataWrangler',
-        'app_analysis_charts',
-        'app_analysis_reliability',
-        'app_analysis_powercalc',
-        'app_analysis_stats',
-        'app_analysis_classification',
-        'app_analysis_modeler',
-        'app_analysis_dimReduction',
-        'socrat_analysis_myModule'
-      ]
+  ,
+    msgFrom: 'getData'
+    scopeFrom: ['app_analysis_cluster',
+      'app_analysis_getData',
+      'app_analysis_dataWrangler',
+      'app_analysis_charts',
+      'app_analysis_reliability',
+      'app_analysis_powercalc',
+      'app_analysis_stats',
+      'app_analysis_classification',
+      'app_analysis_modeler',
+      'app_analysis_dimReduction',
     ]
+    msgTo: 'get table'
+    scopeTo: ['app_analysis_database']
+  ,
+    msgFrom: 'take table'
+    scopeFrom: ['app_analysis_database']
+    msgTo: 'takeTable'
+    scopeTo: ['app_analysis_cluster',
+      'app_analysis_getData',
+      'app_analysis_dataWrangler',
+      'app_analysis_charts',
+      'app_analysis_reliability',
+      'app_analysis_powercalc',
+      'app_analysis_stats',
+      'app_analysis_classification',
+      'app_analysis_modeler',
+      'app_analysis_dimReduction',
+    ]
+    ,
+    msgFrom: 'mymodule:getData'
+    scopeFrom: ['socrat_analysis_mymodule']
+    msgTo: 'database:getData'
+    scopeTo: ['socrat_analysis_mymodule']
+    ,
+    msgFrom: 'database:receiveData'
+    scopeFrom: ['socrat_analysis_database']
+    msgTo: 'mymodule:receiveData'
+    scopeTo: ['socrat_analysis_mymodule']
+  ]
 
   getMap: ->
     @_msgMap
