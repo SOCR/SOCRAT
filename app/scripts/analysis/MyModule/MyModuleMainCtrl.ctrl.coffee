@@ -14,7 +14,7 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
     @transformation = ''
     @transformations = []
     @affinityMatrix = null
-
+    @title = "MyModule"
     @showresults = off
     @avgAccuracy = ''
     @accs = {}

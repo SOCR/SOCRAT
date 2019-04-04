@@ -15,8 +15,10 @@ module.exports = myModule = new Module
     controllers:
       'mymoduleMainCtrl': require 'scripts/analysis/MyModule/MyModuleMainCtrl.ctrl.coffee'
       'mymoduleSidebarCtrl': require 'scripts/analysis/MyModule/MyModuleSidebarCtrl.ctrl.coffee'
-    # directives:
-    #  'socratMyModuleDir': require 'scripts/analysis/MyModule/MyModuleDir.directive.coffee'
+    directives:
+      'socratMyModuleViz': require 'scripts/analysis/MyModule/MyModuleDir.directive.coffee'
+
+
   # module state config
   state:
     # module name to show in UI
