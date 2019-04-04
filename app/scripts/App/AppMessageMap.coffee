@@ -18,9 +18,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
-        'app_analysis_classification',
-        'app_analysis_modeler',
-        'app_analysis_dimReduction',
+        'app_analysis_modeler'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -36,9 +34,7 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
-        'app_analysis_classification',
-        'app_analysis_modeler',
-        'app_analysis_dimReduction',
+        'app_analysis_modeler'
       ]
     ,
       msgFrom: 'data summary'
@@ -49,8 +45,7 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability',
         'app_analysis_powercalc',
-        'app_analysis_classification',
-        'app_analysis_stats',
+        'app_analysis_stats'
       ]
       msgTo: 'summary'
       scopeTo: ['app_analysis_datalib']
@@ -65,8 +60,7 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability',
         'app_analysis_powercalc',
-        'app_analysis_classification',
-        'app_analysis_stats',
+        'app_analysis_stats'
       ]
     ,
       msgFrom: 'data histogram'
@@ -75,8 +69,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_classification',
-        'app_analysis_reliability',
+        'app_analysis_reliability'
       ]
       msgTo: 'histogram'
       scopeTo: ['app_analysis_datalib']
@@ -89,8 +82,7 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_classification',
-        'app_analysis_reliability',
+        'app_analysis_reliability'
       ]
     #    ,
     #      msgFrom: 'upload csv'
@@ -98,7 +90,7 @@ module.exports = class AppMessageMap
     #      msgTo: 'upload csv'
     #      scopeTo: ['app.utils.importer']
 #    ,
-  # TODO: make message mapping dynamic #SOCRFW-151
+    # TODO: make message mapping dynamic #SOCRFW-151
 #      msgFrom: 'get table'
 #      scopeFrom: ['instrPerfEval']
 #      msgTo: 'get table'
@@ -108,47 +100,43 @@ module.exports = class AppMessageMap
 #      scopeFrom: ['app_analysis_database']
 #      msgTo: 'take table'
 #      scopeTo: ['instrPerfEval']
-  ,
-    msgFrom: 'getData'
-    scopeFrom: ['app_analysis_cluster',
-      'app_analysis_getData',
-      'app_analysis_dataWrangler',
-      'app_analysis_charts',
-      'app_analysis_reliability',
-      'app_analysis_powercalc',
-      'app_analysis_stats',
-      'app_analysis_classification',
-      'app_analysis_modeler',
-      'app_analysis_dimReduction',
-    ]
-    msgTo: 'get table'
-    scopeTo: ['app_analysis_database']
-  ,
-    msgFrom: 'take table'
-    scopeFrom: ['app_analysis_database']
-    msgTo: 'takeTable'
-    scopeTo: ['app_analysis_cluster',
-      'app_analysis_getData',
-      'app_analysis_dataWrangler',
-      'app_analysis_charts',
-      'app_analysis_reliability',
-      'app_analysis_powercalc',
-      'app_analysis_stats',
-      'app_analysis_classification',
-      'app_analysis_modeler',
-      'app_analysis_dimReduction',
-    ]
     ,
-    msgFrom: 'mymodule:getData'
-    scopeFrom: ['socrat_analysis_mymodule']
-    msgTo: 'database:getData'
-    scopeTo: ['socrat_analysis_mymodule']
+      msgFrom: 'getData'
+      scopeFrom: ['app_analysis_cluster',
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_charts',
+        'app_analysis_reliability',
+        'app_analysis_powercalc',
+        'app_analysis_stats',
+        'app_analysis_modeler'
+      ]
+      msgTo: 'get table'
+      scopeTo: ['app_analysis_database']
     ,
-    msgFrom: 'database:receiveData'
-    scopeFrom: ['socrat_analysis_database']
-    msgTo: 'mymodule:receiveData'
-    scopeTo: ['socrat_analysis_mymodule']
-  ]
+      msgFrom: 'take table'
+      scopeFrom: ['app_analysis_database']
+      msgTo: 'takeTable'
+      scopeTo: ['app_analysis_cluster',
+        'app_analysis_getData',
+        'app_analysis_dataWrangler',
+        'app_analysis_charts',
+        'app_analysis_reliability',
+        'app_analysis_powercalc',
+        'app_analysis_stats',
+        'app_analysis_modeler'
+      ]
+    ,
+      msgFrom: 'getData'
+      scopeFrom: ['socrat_analysis_mymodule']
+      msgTo: 'get table'
+      scopeTo: ['app_analysis_database']
+    ,
+      msgFrom: 'take table'
+      scopeFrom: ['app_analysis_database']
+      msgTo: 'receiveData'
+      scopeTo: ['socrat_analysis_mymodule']
+    ]
 
   getMap: ->
     @_msgMap

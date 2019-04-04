@@ -8,7 +8,8 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
   initialize: ->
     @dataService = @socrat_analysis_mymodule_dataService
     @DATA_TYPES = @dataService.getDataTypes()
-    @receivedData = ""
+
+    @title = 'Roy new module'
     @dataType = ''
     @transforming = off
     @transformation = ''
