@@ -19,7 +19,6 @@ module.exports = class NormalDist extends BaseService
     @name = 'Normal'
 
 
-
   getName: () ->
     return @name
   getGaussianFunctionPoints: (leftBound, rightBound) ->
