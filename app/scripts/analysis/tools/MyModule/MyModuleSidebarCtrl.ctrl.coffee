@@ -64,6 +64,8 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
   updateAlgControls: () ->
     @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
+
+
   updateDataPoints: (data=null, means=null, labels=null) ->
     if data
       trueLabels = null
@@ -116,6 +118,23 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
     @updateDataPoints @dataFrame
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
+
+  getNum: () -> 
+    if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
+        if @dataType isnt obj.dataFrame.dataType
+          # update local data type
+          @dataType = obj.dataFrame.dataType
+          # send update to main are actrl
+          @msgService.broadcast 'myModule:updateDataType', obj.dataFrame.dataType
+        # make local copy of data
+        @dataFrame = obj.dataFrame
+        # parse dataFrame
+        @parseData obj.dataFrame
+      else
+        # TODO: add processing for nested object
+        console.log 'NESTED DATASET'
+
+    @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
   detectK: () ->
     detectedK = @detectKValue()
@@ -188,27 +207,27 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 
   ## Interface method to run clustering
 
-  runClustering: ->
-    clustData = @prepareData()
-    @kmeanson = on
-    @running = 'spinning'
-    res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
-      xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
-      @updateDataPoints null, xyMeans, res.labels
-      @$timeout =>
-        @kmeanson = off
-        @running = 'hidden'
+  # runClustering: ->
+  #   clustData = @prepareData()
+  #   @kmeanson = on
+  #   @running = 'spinning'
+  #   res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
+  #     xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
+  #     @updateDataPoints null, xyMeans, res.labels
+  #     @$timeout =>
+  #       @kmeanson = off
+  #       @running = 'hidden'
 
-  stepClustering: ->
-    clustData = @prepareData()
-    @kmeanson = on
-    @running = 'spinning'
-    res = @algorithmsService.clusterStep @selectedAlgorithm, clustData, @k, @initMethod, @distance
-    xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
-    @updateDataPoints null, xyMeans, res.labels
-    @$timeout =>
-      @kmeanson = off
-      @running = 'hidden'
+  # stepClustering: ->
+  #   clustData = @prepareData()
+  #   @kmeanson = on
+  #   @running = 'spinning'
+  #   res = @algorithmsService.clusterStep @selectedAlgorithm, clustData, @k, @initMethod, @distance
+  #   xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
+  #   @updateDataPoints null, xyMeans, res.labels
+  #   @$timeout =>
+  #     @kmeanson = off
+  #     @running = 'hidden'
 
   reset: ->
     @algorithmsService.reset @selectedAlgorithm

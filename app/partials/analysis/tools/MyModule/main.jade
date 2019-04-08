@@ -1,16 +1,9 @@
 div(ng-controller="myModuleMainCtrl as mainArea")
   h4 {{mainArea.title}}
-  div.lead.bg-danger(ng-hide="mainArea.dataType == mainArea.DATA_TYPES.FLAT")
-    | This module only supports tabular data (in my MyModule)
-  div(ng-hide="mainArea.dataType != mainArea.DATA_TYPES.FLAT")
-    div(ng-show="mainArea.showresults").cluster-results
-      p.lead <strong> Average accuracy: </strong> {{avgAccuracy}}
-      div.table-responsive
-        table.table.table-bordered.table-condensed
-          tr
-            th Label
-            th Accuracy
-          tr(ng-repeat="(label, acc) in mainArea.accs")
-            td {{mainArea.label}}
-            td {{mainArea.acc.toFixed(2)}}
+    tr
+      th Label
+      th Accuracy
+    tr(ng-repeat="(label, acc) in mainArea.accs")
+      td {{mainArea.label}}
+      td {{mainArea.acc.toFixed(2)}}
     socrat-my-module-viz
