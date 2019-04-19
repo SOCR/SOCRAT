@@ -23,8 +23,6 @@ module.exports = class MyModuleDir extends BaseDirective
       color = null
       meanLayer = null
       console.log(elem[0])
-      svg = d3.select(elem[0])
-      
       scope.$watch 'mainArea.receivedData', (receivedData) =>
         console.log(receivedData)
         textnode = document.createTextNode(receivedData)
