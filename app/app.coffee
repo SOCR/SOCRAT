@@ -1,6 +1,7 @@
 'use strict'
 
 # base libraries
+require '@babel/polyfill'
 $ = require 'jquery'
 require 'angular'
 require 'bootstrap/dist/css/bootstrap.css'
