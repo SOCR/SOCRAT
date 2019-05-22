@@ -1,5 +1,6 @@
 webpack = require 'webpack'
 path = require 'path'
+
 production = process.env.NODE_ENV is 'production'
 
 appRoot = path.resolve "#{__dirname}", "app"
@@ -23,9 +24,9 @@ module.exports =
 
   module:
     loaders: [
-      test: /\.jsx?$/
+      test: /\.m?js$/
       exclude: /(node_modules|bower_components)/
-      loader: 'babel'
+      loader: 'babel-loader'
     ,
       test: /\.less$/
       loader: 'style!css!less'
@@ -41,6 +42,9 @@ module.exports =
     ,
       test: /\.html$/,
       loader: 'html'
+    ,
+      test: /\.json$/,
+      loader: 'json-loader'
     ,
       # required for bootstrap icons
       test: /\.eot(\?v=\d+\.\d+\.\d+)?$/
@@ -69,12 +73,9 @@ module.exports =
     ,
       test: /[\/\\]flat-ui\.js$/
       loader: 'imports?this=>window'
-    # ,
-    #   test: require.resolve('vega'),
-    #   loaders: [
-    #     'transform?vega/scripts/strip-schema.js',
-    #     'transform?browserify-versionify'
-    #   ]
+    ,
+      test: /[\/\\]vega-dataflow\.js$|[\/\\]vega-view\.js$|[\/\\]vega-loader\.js$/i
+      loader: 'babel-loader'
     ,
       test: /[\/\\]vega-lite\.js$/
       loader: 'imports?vg=vega'
