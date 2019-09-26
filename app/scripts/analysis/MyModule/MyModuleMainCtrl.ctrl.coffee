@@ -30,7 +30,7 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
 
     @$scope.$on 'mymodule:updateDataType', (event, dataType) =>
       @dataType = dataType
-    
+
     @$scope.$on 'mymodule:updateData', (event, receivedData) =>
       @receivedData = receivedData
 
