@@ -77,6 +77,12 @@ module.exports =
       test: /[\/\\]vega-dataflow\.js$|[\/\\]vega-view\.js$|[\/\\]vega-loader\.js$/i
       loader: 'babel-loader'
     ,
+      test: /[\/\\]d3-delaunay\.js$/
+      loader: 'babel-loader'
+    ,
+      test: /[\/\\](ml-array-rescale).*\.js$/
+      loader: 'babel-loader'
+    ,
       test: /[\/\\]vega-lite\.js$/
       loader: 'imports?vg=vega'
     ,
