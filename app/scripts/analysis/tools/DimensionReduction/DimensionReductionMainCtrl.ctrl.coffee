@@ -7,7 +7,7 @@ module.exports = class DimensionReductionMainCtrl extends BaseCtrl
 
   initialize: ->
     @dataService = @app_analysis_dimension_reduction_dataService
-    @receivedLink = ""
+    @receivedLink = 'https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/SOCR_CountryRanking_projector_config.json'
 
     @$scope.$on 'dimensionReduction:link', (event, receivedLink) =>
       @receivedLink = receivedLink

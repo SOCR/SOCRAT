@@ -54,8 +54,6 @@ module.exports = class AppModuleList
     ,
       require 'scripts/analysis/tools/Stats/Stats.module.coffee'
     ,
-      require 'scripts/analysis/MyModule/MyModule.module.coffee'
-    ,
       require 'scripts/analysis/tools/DimensionReduction/DimensionReduction.module.coffee'
     ,
     ]
