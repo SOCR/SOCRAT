@@ -26,7 +26,7 @@ module.exports = dimReduction = new Module
   # module state config
   state:
     # module name to show in UI
-    name: 'Dimensionality Reduction'
-    url: '/tools/dimReduction'
+    name: 't-SNE 2D'
+    url: '/tools/dimred/tsne2d'
     mainTemplate: require 'partials/analysis/tools/DimReduction/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/DimReduction/sidebar.jade'

@@ -9,7 +9,7 @@ module.exports = class DimReductionMainCtrl extends BaseCtrl
     @dataService = @app_analysis_dimReduction_dataService
     @DATA_TYPES = @dataService.getDataTypes()
 
-    @title = 'Dimensionality Reduction module'
+    @title = '2D t-SNE'
     @dataType = ''
     @transforming = off
     @transformation = ''

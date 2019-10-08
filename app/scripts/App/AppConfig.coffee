@@ -20,7 +20,7 @@ module.exports = class AppConfig
     # create angular modules
     @addModuleComponents()
 
-  addModuleComponents: (modules = @moduleList.getAnalysisModules()) ->
+  addModuleComponents: (modules=@moduleList.getAnalysisModules()) ->
     # create modules components
     for module in modules
       # check if single module or group
