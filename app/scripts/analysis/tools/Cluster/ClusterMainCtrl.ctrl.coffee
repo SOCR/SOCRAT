@@ -9,7 +9,7 @@ module.exports = class ClusterMainCtrl extends BaseCtrl
     @dataService = @app_analysis_cluster_dataService
     @DATA_TYPES = @dataService.getDataTypes()
 
-    @title = 'Clustering module'
+    @title = 'Clustering'
     @dataType = ''
     @transforming = off
     @transformation = ''

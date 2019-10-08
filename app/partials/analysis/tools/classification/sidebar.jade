@@ -18,7 +18,7 @@ div(ng-controller="classificationSidebarCtrl as sidebar")
               select.form-control(
               ng-model="sidebar.selectedC"
               ng-options="val for val in sidebar.algParams.c"
-              ng-init="sidebar.selectedC = sidebar.algParams.c[0]"
+              ng-init="sidebar.selectedC = sidebar.algParams.c[4]"
               )
           div.form-group(ng-show="sidebar.algParams.kernel")
             label Kernel &nbsp;
