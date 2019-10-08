@@ -1,2 +1,17 @@
-div(ng-controller='ChartsSidebarCtrl as sidebar')
+div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
+  form
+    legend DataSets &nbsp;
+      .form-group
+        label(
+          style=''
+        ) Choose dataset &nbsp;
+        select.form-control(
+          ng-model="sidebar.selectedDataSet"
+          ng-options="dataSet for dataSet in sidebar.dataSets"
+          ng-change="sidebar.updateDataSet()"
+        )
+      .form-group(
+        ng-show="sidebar.selectedDataSet == 'CountryRanking' ||" +
+                "sidebar.selectedDataSet == 'UKBB'"
+      )
 

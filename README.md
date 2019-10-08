@@ -2,16 +2,15 @@
 
 A Dynamic Web Toolbox for Interactive Data Processing, Analysis, and Visualization
 
-* [Web site](http://socr.umich.edu)
 * [Relevant publications](#publications)
 * [Issue-tracking and project management](https://github.com/SOCR/SOCRAT-issues)
 * [Contribution guidelines](https://github.com/SOCR/SOCRAT/blob/master/CONTRIBUTE.md)
+* [SOCR web site](http://socr.umich.edu)
 * **Note: project is under development, new features are in pending Pull Requests, unit tests currently are not passing, bugs are possible**
 
 Installation
 ------------
-In case you wish to run SOCRAT locally, or create your own module, or contribute
-to the project, follow these steps to setup your environment.
+To run SOCRAT locally, or create your own module, or contribute to the project, follow these steps to setup your environment.
 
 First, install [Node.js](http://nodejs.org/) if you haven't yet. `npm` is the package manager for `Node.js` and comes bundled with it.
 
@@ -75,12 +74,9 @@ Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform
    location = {Chicago, IL, USA},
    pages = {1-6},
    articleno = {8},
-   numpages = {6},
    url = {http://doi.acm.org/10.1145/3077257.3077262},
    doi = {10.1145/3077257.3077262},
-   publisher = {ACM},
-   address = {New York, NY, USA},
-   keywords = {System Design, Visual Analytics, Web Platform Architecture},
+   publisher = {ACM}
 }
 ```
 
@@ -107,7 +103,7 @@ Copyright and License
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013-2018 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2019 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License
