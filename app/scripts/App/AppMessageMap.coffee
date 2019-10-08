@@ -18,7 +18,10 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
+        'app_analysis_dimReduction',
+        'socrat_analysis_myModule'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -34,7 +37,10 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
+        'app_analysis_dimReduction',
+        'socrat_analysis_myModule'
       ]
     ,
       msgFrom: 'data summary'
@@ -45,7 +51,9 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability',
         'app_analysis_powercalc',
-        'app_analysis_stats'
+        'app_analysis_classification',
+        'app_analysis_stats',
+        'socrat_analysis_myModule'
       ]
       msgTo: 'summary'
       scopeTo: ['app_analysis_datalib']
@@ -60,7 +68,9 @@ module.exports = class AppMessageMap
         'app_analysis_charts',
         'app_analysis_reliability',
         'app_analysis_powercalc',
-        'app_analysis_stats'
+        'app_analysis_classification',
+        'app_analysis_stats',
+        'socrat_analysis_myModule'
       ]
     ,
       msgFrom: 'data histogram'
@@ -69,7 +79,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_classification',
+        'app_analysis_reliability',
+        'socrat_analysis_myModule'
       ]
       msgTo: 'histogram'
       scopeTo: ['app_analysis_datalib']
@@ -82,7 +94,9 @@ module.exports = class AppMessageMap
         'app_analysis_dataWrangler',
         'app_analysis_cluster',
         'app_analysis_charts',
-        'app_analysis_reliability'
+        'app_analysis_classification',
+        'app_analysis_reliability',
+        'socrat_analysis_myModule'
       ]
     #    ,
     #      msgFrom: 'upload csv'
@@ -109,7 +123,10 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
+        'app_analysis_dimReduction',
+        'socrat_analysis_myModule'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -124,18 +141,21 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_stats',
+        'app_analysis_classification',
         'app_analysis_modeler'
+        'app_analysis_dimReduction',
+        'socrat_analysis_myModule'
       ]
     ,
       msgFrom: 'getData'
-      scopeFrom: ['socrat_analysis_mymodule']
+      scopeFrom: ['socrat_analysis_myModule']
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
     ,
       msgFrom: 'take table'
       scopeFrom: ['app_analysis_database']
       msgTo: 'receiveData'
-      scopeTo: ['socrat_analysis_mymodule']
+      scopeTo: ['socrat_analysis_myModule']
     ]
 
   getMap: ->

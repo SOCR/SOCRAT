@@ -17,7 +17,9 @@ module.exports = class ClusterAlgorithms extends BaseModuleDataService
 
   ############
 
-  getNames: -> @algorithms.map (alg) -> alg.getName()
+  getNames: ->
+    @algorithms.map (alg) -> alg.getName()
+    console.log alg
 
   getParamsByName: (algName) ->
     (alg.getParams() for alg in @algorithms when algName is alg.getName()).shift()

@@ -38,6 +38,9 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 
     @dataService.getData().then (obj) =>
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
+        console.log 'before data'
+        console.log obj.dataFrame
+        console.log 'this is data'
         if @dataType isnt obj.dataFrame.dataType
           # update local data type
           @dataType = obj.dataFrame.dataType
@@ -47,6 +50,8 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
         @dataFrame = obj.dataFrame
         # parse dataFrame
         @parseData obj.dataFrame
+        console.log 'MY sidebar getData'
+        console.log obj
       else
         # TODO: add processing for nested object
         console.log 'NESTED DATASET'
@@ -71,6 +76,25 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
       labels: labels
       trueLabels: trueLabels
 
+  # update data-driven sidebar controls
+  updateSidebarControls: (data) ->
+    @cols = data.header
+    @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
+    @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
+    # make sure number of unique labels is less than maximum number of clusters for visualization
+    if @algParams.k
+      [minK, ..., maxK] = @algParams.k
+      colData = d3.transpose(data.data)
+      @categoricalCols = @categoricalCols.filter (x, i) =>
+        @uniqueVals(colData[@cols.indexOf(x)]).length < maxK
+#    [@xCol, @yCol, ..., lastCol] = @numericalCols
+    @clusterRunning = off
+    if @labelCol
+      @uniqueLabels =
+        num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
+        labelCol: @labelCol
+    @$timeout =>
+      @updateDataPoints data
 
   updateChosenCols: () ->
     axis = [@xCol, @yCol]
@@ -88,9 +112,30 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
-  fetchData: () ->
-    @msgService.broadcast 'mymodule:updateData', @dataFrame.data[0][0]
-    console.log(@dataFrame.data[0][0])
+  getNum: () ->
+    if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
+        if @dataType isnt obj.dataFrame.dataType
+          # update local data type
+          @dataType = obj.dataFrame.dataType
+          # send update to main are actrl
+          @msgService.broadcast 'myModule:updateDataType', obj.dataFrame.dataType
+        # make local copy of data
+        @dataFrame = obj.dataFrame
+        # parse dataFrame
+        @parseData obj.dataFrame
+      else
+        # TODO: add processing for nested object
+        console.log 'NESTED DATASET'
+
+    @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
+
+  detectK: () ->
+    detectedK = @detectKValue()
+    @setDetectedKValue detectedK
+
+  # fetchData: () ->
+  #   @msgService.broadcast 'mymodule:updateData', @dataFrame.data[0][0]
+  #   console.log(@dataFrame.data[0][0])
 
   setDetectedKValue: (detectedK) ->
     if detectedK.num <= 10
@@ -110,6 +155,14 @@ module.exports = class MyModuleSidebarCtrl extends BaseCtrl
       uniqueLabels =
         labelCol: @labelCol
         num: uniqueLabels.length
+
+  ## Data preparation methods
+
+  acquireData: () ->
+    @msgService.broadcast 'myModule:updateData', @dataFrame.data
+    @newMessage = "In My Module Sidebar Acquire Data"
+    console.log '@@@@@@@@@@@@@@'
+    console.log(@dataFrame.data)
 
 ## Data preparation methods
 

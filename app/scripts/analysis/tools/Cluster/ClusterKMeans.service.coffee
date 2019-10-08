@@ -42,6 +42,9 @@ module.exports = class ClusterKMeans extends BaseService
       k: @ks
       distance: @metrics.getNames()
       init: @inits.map (init) -> init.name
+    console.log 'cluster k mean initialized'
+    console.log this
+
 
   getName: -> @name
   getParams: -> @params
@@ -70,11 +73,18 @@ module.exports = class ClusterKMeans extends BaseService
       centroids.push
         val: data[ctrIdx]
         idx: ctrIdx
+    console.log centroids
+    console.log 'CENTROIDS'
     centroids
+
+
 
   initLabels: (l, k) ->
     labels = []
     labels.push Math.floor(Math.random() * k) for i in [0..l]
+    console.log labels
+    console.log 'LABELS'
+
     labels
 
   updateMeans: (data, centroids, labels) ->

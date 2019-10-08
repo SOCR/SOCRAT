@@ -8,14 +8,13 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
   initialize: ->
     @dataService = @socrat_analysis_mymodule_dataService
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @title = 'Roy new module'
+    @receivedData = ""
     @dataType = ''
     @transforming = off
     @transformation = ''
     @transformations = []
     @affinityMatrix = null
-
+    @title = "MyModule"
     @showresults = off
     @avgAccuracy = ''
     @accs = {}
@@ -23,11 +22,6 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
     @dataPoints = null
     @means = null
     @assignments = null
-
-    @receivedData = ""
-
-    @linearModel = tf.Sequential
-    @prediction = null
 
     @$scope.$on 'mymodule:updateDataPoints', (event, data) =>
 #      @showresults = off if @showresults is on
@@ -39,8 +33,6 @@ module.exports = class MyModuleMainCtrl extends BaseCtrl
 
     @$scope.$on 'mymodule:updateData', (event, receivedData) =>
       @receivedData = receivedData
-
-  train: () ->
 
   prettifyArrayOutput: (arr) ->
     if arr?

@@ -2,19 +2,15 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
-module.exports = class ClusterSidebarCtrl extends BaseCtrl
-  @inject 'app_analysis_cluster_dataService',
-    'app_analysis_cluster_msgService'
-    'app_analysis_cluster_algorithms'
+module.exports = class MyModuleSidebarCtrl extends BaseCtrl
+  @inject 'socrat_analysis_mymodule_dataService',
+    'socrat_analysis_mymodule_msgService',
     '$scope'
     '$timeout'
 
   initialize: ->
-    console.log 'Cluster Siderbar Control Init'
-    @dataService = @app_analysis_cluster_dataService
-    @msgService = @app_analysis_cluster_msgService
-    @algorithmsService = @app_analysis_cluster_algorithms
-    @algorithms = @algorithmsService.getNames()
+    @dataService = @socrat_analysis_mymodule_dataService
+    @msgService = @socrat_analysis_mymodule_msgService
     @DATA_TYPES = @dataService.getDataTypes()
     # set up data and algorithm-agnostic controls
     @useLabels = off
@@ -40,38 +36,25 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     @yCol = null
     @labelCol = null
 
-    # choose first algorithm as default one
-    if @algorithms.length > 0
-      @selectedAlgorithm = @algorithms[0]
-      @updateAlgControls()
-
     @dataService.getData().then (obj) =>
-      console.log 'Cluster side bar get data'
       if obj.dataFrame and obj.dataFrame.dataType? and obj.dataFrame.dataType is @DATA_TYPES.FLAT
         if @dataType isnt obj.dataFrame.dataType
           # update local data type
           @dataType = obj.dataFrame.dataType
           # send update to main are actrl
-          console.log "TYPE!!!!"
-          console.log obj.dataFrame.dataType
-          @msgService.broadcast 'cluster:updateDataType', obj.dataFrame.dataType
+          @msgService.broadcast 'mymodule:updateDataType', obj.dataFrame.dataType
         # make local copy of data
         @dataFrame = obj.dataFrame
         # parse dataFrame
         @parseData obj.dataFrame
-        console.log 'CLUSTWER'
-        console.log obj
       else
         # TODO: add processing for nested object
         console.log 'NESTED DATASET'
 
     @$timeout -> $('input[type=checkbox]').bootstrapSwitch()
 
-  updateAlgControls: () ->
-    @algParams = @algorithmsService.getParamsByName @selectedAlgorithm
 
   updateDataPoints: (data=null, means=null, labels=null) ->
-    console.log 'SiderBar Controller:::Update Data Points'
     if data
       trueLabels = null
       if @labelCol
@@ -82,39 +65,14 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       xCol = data.header.indexOf @xCol unless !@xCol?
       yCol = data.header.indexOf @yCol unless !@yCol?
       data = ([row[xCol], row[yCol]] for row in data.data) unless @chosenCols.length < 2
-    result = @msgService.broadcast 'cluster:updateDataPoints',
+    @msgService.broadcast 'cluster:updateDataPoints',
       dataPoints: data
       means: means
       labels: labels
       trueLabels: trueLabels
-    console.log result
-    result
 
-  # update data-driven sidebar controls
-  updateSidebarControls: (data) ->
-
-    console.log 'SiderBar Controller:::Update Controls'
-
-    @cols = data.header
-    @numericalCols = (col for col, idx in @cols when data.types[idx] in ['integer', 'number'])
-    @categoricalCols = (col for col, idx in @cols when data.types[idx] in ['string', 'integer'])
-    # make sure number of unique labels is less than maximum number of clusters for visualization
-    if @algParams.k
-      [minK, ..., maxK] = @algParams.k
-      colData = d3.transpose(data.data)
-      @categoricalCols = @categoricalCols.filter (x, i) =>
-        @uniqueVals(colData[@cols.indexOf(x)]).length < maxK
-#    [@xCol, @yCol, ..., lastCol] = @numericalCols
-    @clusterRunning = off
-    if @labelCol
-      @uniqueLabels =
-        num: @uniqueVals (data.header.indexOf(@labelCol) for row in data.data)
-        labelCol: @labelCol
-    @$timeout =>
-      @updateDataPoints data
 
   updateChosenCols: () ->
-    console.log 'SiderBar Controller:::Update ChosenCols'
     axis = [@xCol, @yCol]
     presentCols = ([name, idx] for name, idx in @chosenCols when name in axis)
     # if current X and Y are not among selected anymore
@@ -130,13 +88,11 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
 
   uniqueVals: (arr) -> arr.filter (x, i, a) -> i is a.indexOf x
 
-  detectK: () ->
-    console.log 'SiderBar Controller:::DetectK'
-    detectedK = @detectKValue()
-    @setDetectedKValue detectedK
+  fetchData: () ->
+    @msgService.broadcast 'mymodule:updateData', @dataFrame.data[0][0]
+    console.log(@dataFrame.data[0][0])
 
   setDetectedKValue: (detectedK) ->
-    console.log 'SiderBar Controller:::set Detected K value'
     if detectedK.num <= 10
       @uniqueLabels = detectedK
       @k = detectedK.num
@@ -146,7 +102,6 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
       console.log 'KMEANS: k is more than 10'
 
   detectKValue: () ->
-    console.log 'SiderBar Controller:::detect K value'
     # extra check that labels are on
     if @dataFrame and @labelCol
       labelCol = @dataFrame.header.indexOf @labelCol
@@ -156,11 +111,10 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         labelCol: @labelCol
         num: uniqueLabels.length
 
-  ## Data preparation methods
+## Data preparation methods
 
   # get requested columns from data
   prepareData: () ->
-    console.log 'SiderBar Controller:::prepare Data'
     data = @dataFrame
 
     if @chosenCols.length > 1
@@ -193,7 +147,6 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
     else false
 
   parseData: (data) ->
-    console.log 'SiderBar Controller:::parse data'
     @dataService.inferDataTypes data, (resp) =>
       if resp? and resp.dataFrame? and resp.dataFrame.data?
         df = @dataFrame
@@ -203,31 +156,3 @@ module.exports = class ClusterSidebarCtrl extends BaseCtrl
         @updateSidebarControls(df)
         @updateDataPoints(df)
         @ready = on
-
-  ## Interface method to run clustering
-
-  runClustering: ->
-    clustData = @prepareData()
-    @kmeanson = on
-    @running = 'spinning'
-    res = @algorithmsService.cluster @selectedAlgorithm, clustData, @k, @initMethod, @distance, @iterDelay, (res) =>
-      xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
-      @updateDataPoints null, xyMeans, res.labels
-      @$timeout =>
-        @kmeanson = off
-        @running = 'hidden'
-
-  stepClustering: ->
-    clustData = @prepareData()
-    @kmeanson = on
-    @running = 'spinning'
-    res = @algorithmsService.clusterStep @selectedAlgorithm, clustData, @k, @initMethod, @distance
-    xyMeans = ([row.val[clustData.xCol], row.val[clustData.yCol]] for row in res.centroids)
-    @updateDataPoints null, xyMeans, res.labels
-    @$timeout =>
-      @kmeanson = off
-      @running = 'hidden'
-
-  reset: ->
-    @algorithmsService.reset @selectedAlgorithm
-    @updateDataPoints(@dataFrame, null, null)

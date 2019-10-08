@@ -10,5 +10,19 @@ module.exports = myModule = new Module
     services:
       'socrat_analysis_mymodule_initService': require 'scripts/analysis/MyModule/MyModuleInit.service.coffee'
       'socrat_analysis_mymodule_msgService': require 'scripts/analysis/MyModule/MyModuleMsgService.service.coffee'
+      'socrat_analysis_mymodule_dataService': require 'scripts/analysis/MyModule/MyModuleDataService.service.coffee'
       'socrat_analysis_mymodule_myService': require 'scripts/analysis/MyModule/MyModuleMyService.service.coffee'
-    runBlock: require 'scripts/analysis/MyModule/MyModuleRunBlock.run.coffee'
+    controllers:
+      'mymoduleMainCtrl': require 'scripts/analysis/MyModule/MyModuleMainCtrl.ctrl.coffee'
+      'mymoduleSidebarCtrl': require 'scripts/analysis/MyModule/MyModuleSidebarCtrl.ctrl.coffee'
+    directives:
+      'socratMyModuleViz': require 'scripts/analysis/tools/MyModule/MyModuleVizDir.directive.coffee'
+
+
+  # module state config
+  state:
+    # module name to show in UI
+    name: 'Roy Module'
+    url: '/tools/mymodule'
+    mainTemplate: require 'partials/analysis/tools/MyModule/main.jade'
+    sidebarTemplate: require 'partials/analysis/tools/MyModule/sidebar.jade'
