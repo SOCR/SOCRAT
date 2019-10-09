@@ -64,6 +64,8 @@ module.exports = class AppRoute
 
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
+    # addressing https://docs.angularjs.org/guide/migration#commit-aa077e8
+    $locationProvider.hashPrefix('')
 
     # fixing https://github.com/angular-ui/ui-router/issues/2889
     $qProvider.errorOnUnhandledRejections(false)
