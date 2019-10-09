@@ -51,7 +51,7 @@ module.exports = class AppRoute
                 template: module.state.sidebarTemplate()
       else @linkDynamic $stateProvider, (v for k, v of module)[0]
 
-  getRouter: ($locationProvider, $urlRouterProvider, $stateProvider) ->
+  getRouter: ($locationProvider, $urlRouterProvider, $stateProvider, $qProvider) ->
 
     $urlRouterProvider.when('/', '/')
     .otherwise('/home')
@@ -64,5 +64,8 @@ module.exports = class AppRoute
 
     # Without server side support html5 must be disabled.
     $locationProvider.html5Mode(false)
+
+    # fixing https://github.com/angular-ui/ui-router/issues/2889
+    $qProvider.errorOnUnhandledRejections(false)
 
     console.log 'app: routing is set up'

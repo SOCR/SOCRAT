@@ -68,10 +68,10 @@ module.exports = class AppConfig
     # create new router
     appRoute = new AppRoute @moduleList.getAnalysisModules()
     # workaround for dependency injection
-    config = ($locationProvider, $urlRouterProvider, $stateProvider) =>
-      appRoute.getRouter $locationProvider, $urlRouterProvider, $stateProvider
+    config = ($locationProvider, $urlRouterProvider, $stateProvider, $qProvider) =>
+      appRoute.getRouter $locationProvider, $urlRouterProvider, $stateProvider, $qProvider
     # dependencies for AppRoute
-    config.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider']
+    config.$inject = ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$qProvider']
     config
 
   getRunBlock: ->
