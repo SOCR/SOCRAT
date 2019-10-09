@@ -1,5 +1,7 @@
 ## SOCRAT: [SOCR](http://socr.umich.edu) Analytics Toolbox
 
+<a href="http://socr.umich.edu/HTML5/SOCRAT/"><img align="middle" src="http://www.socr.umich.edu/img/SOCR_SOCRAT_Carousel.png"></a>
+
 A Dynamic Web Toolbox for Interactive Data Processing, Analysis, and Visualization
 
 * [Relevant publications](#publications)
