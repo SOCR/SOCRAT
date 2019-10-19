@@ -102,6 +102,8 @@
   },
   "scripts": {
     "build": "node_modules/webpack/bin/webpack.js",
+    "start-server": "node server.js > out.socrat.log 2> err.socrat.log &",
+    "deploy": "npm run build && npm run start-server",
     "watch": "node_modules/webpack/bin/webpack.js --watch",
     "serve": "node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --inline --colors --content-base _build/ --host 127.0.0.1 --port 8080",
     "servewindows": "node node_modules\\webpack-dev-server\\bin\\webpack-dev-server.js --inline --hot -d --colors --content-base _build/ --host 127.0.0.1 --port 8080",
