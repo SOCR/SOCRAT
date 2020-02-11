@@ -21,7 +21,7 @@
   .main-content.container-fluid.socrat-content-wrap
     .row.container-fluid
       div(ng-controller="AppSidebarCtrl as sidebar")
-        div(ng-class="sidebar.getClass()").sub-menu.well
+        div#panel-space(ng-class="sidebar.getClass()").sub-menu.well
           span(ng-click="sidebar.toggle()", ng-class="sidebar.arrowDirection")
           div(ng-show="sidebar.view()")
             div(ui-view="sidebar", ng-animate="{enter:'fade-enter'}")
