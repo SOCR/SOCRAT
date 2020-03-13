@@ -12,6 +12,7 @@ module.exports = dimensionReduction = new Module
     services:
       'app_analysis_dimension_reduction_dataService': require 'scripts/analysis/tools/DimensionReduction/DimensionReductionDataService.service.coffee'
       'app_analysis_dimension_reduction_msgService': require 'scripts/analysis/tools/DimensionReduction/DimensionReductionMsgService.service.coffee'
+      'app_analysis_dimension_reduction_getDataSetConfig': require 'scripts/analysis/tools/DimensionReduction/GetDataSetConfig.service.coffee'
 
     controllers:
       'dimensionReductionSidebarCtrl': require 'scripts/analysis/tools/DimensionReduction/DimensionReductionSidebarCtrl.ctrl.coffee'
