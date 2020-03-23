@@ -3,7 +3,7 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class DimensionReductionSidebarCtrl extends BaseCtrl
-  @inject 'app_analysis_dimension_reduction_getDataSetConfig',
+  @inject 'app_analysis_dimension_reduction_dataSetConfig',
           'app_analysis_dimension_reduction_msgService',
           'app_analysis_dimension_reduction_dataService',
           '$scope',
@@ -13,7 +13,7 @@ module.exports = class DimensionReductionSidebarCtrl extends BaseCtrl
     # initializing all modules
     @dataService = @app_analysis_dimension_reduction_dataService
     @msgService = @app_analysis_dimension_reduction_msgService
-    @dataSet = @app_analysis_dimension_reduction_getDataSetConfig
+    @dataSet = @app_analysis_dimension_reduction_dataSetConfig
 
     # TODO: find a way to bypass same origin, and get the json names from github
     # $.ajax 'https://github.com/SOCR/HTML5_WebSite/tree/master/HTML5/SOCR_TensorBoard_UKBB/data/', {}, (response) -> 

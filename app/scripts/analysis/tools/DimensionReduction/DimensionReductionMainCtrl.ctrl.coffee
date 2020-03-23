@@ -3,14 +3,14 @@
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 
 module.exports = class DimensionReductionMainCtrl extends BaseCtrl
-  @inject 'app_analysis_dimension_reduction_getDataSetConfig',
+  @inject 'app_analysis_dimension_reduction_dataSetConfig',
           'app_analysis_dimension_reduction_dataService',
           '$timeout',
           '$scope'
 
   initialize: ->
     @dataService = @app_analysis_dimension_reduction_dataService
-    @dataSet = @app_analysis_dimension_reduction_getDataSetConfig
+    @dataSet = @app_analysis_dimension_reduction_dataSetConfig
 
     @receivedLink = @dataSet.getURLs()[0]
 
