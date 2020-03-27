@@ -24,7 +24,7 @@ module.exports = dimensionReduction = new Module
 # module state config
   state:
 # module name to show in UI
-    name: 'Embedding Projector'
+    name: 'Dimension Reduction'
     url: '/tools/dimred/embedproj'
     mainTemplate: require 'partials/analysis/tools/DimensionReduction/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/DimensionReduction/sidebar.jade'

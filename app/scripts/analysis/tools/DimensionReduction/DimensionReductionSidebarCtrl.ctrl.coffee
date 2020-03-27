@@ -31,7 +31,7 @@ module.exports = class DimensionReductionSidebarCtrl extends BaseCtrl
     names = @dataSet.getNames()
 
     @dataSets = names
-    @selectedDataSet = names[0]
+    # @selectedDataSet = names[0]
 
   # Once the dataSet is updated, broadcast new link to mainArea
   updateDataSet: () ->
