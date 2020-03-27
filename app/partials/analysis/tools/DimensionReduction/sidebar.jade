@@ -1,5 +1,7 @@
 div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
   form
+    span.glyphicon.glyphicon-arrow-up &nbsp;
+    | Hide panel for better experience
     legend DataSets &nbsp;
       .form-group
         label(
@@ -10,8 +12,3 @@ div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
           ng-options="dataSet for dataSet in sidebar.dataSets"
           ng-change="sidebar.updateDataSet()"
         )
-      .form-group(
-        ng-show="sidebar.selectedDataSet == 'CountryRanking' ||" +
-                "sidebar.selectedDataSet == 'UKBB'"
-      )
-
