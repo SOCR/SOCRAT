@@ -62,6 +62,9 @@ module.exports = class DataSetConfig extends BaseModuleDataService
       url: 'SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/knee_pain_data_projector_config.json'
     ]
 
+  allDataSetsURL: () ->
+    'https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/TomWBush/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/allDataSets.json'
+
   getNames: -> @DataSet.map (dataset) ->
     dataset.name
 
