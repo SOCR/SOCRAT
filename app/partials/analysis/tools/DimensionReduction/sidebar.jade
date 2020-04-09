@@ -1,14 +1,30 @@
+style(type="text/css").
+  .link { /* link color (black) */
+    color: #000000;
+  }
+
+  .link:hover { /* link hover (blue) */
+    color: #00FFFF;
+  }
+
 div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
-  form
-    span.glyphicon.glyphicon-arrow-up &nbsp;
-    | Hide panel for better experience
-    legend DataSets &nbsp;
-      .form-group
-        label(
-          style=''
-        ) Choose dataset &nbsp;
-        select.form-control(
-          ng-model="sidebar.selectedDataSet"
-          ng-options="dataSet for dataSet in sidebar.dataSets"
-          ng-change="sidebar.updateDataSet()"
-        )
+    legend Dimension Reduction &nbsp;
+      p(style='font-size: 57%') Hint: Use 
+        span.glyphicon.glyphicon-chevron-left
+        | to hide this panel for better experience
+      p In the projector:
+        br
+        | Click on the tensor dropdown menu 
+        | to select dataset
+      ul(ng-repeat="dataset in sidebar.datasetsName", style="padding-left: 4%; margin-bottom: 1%")
+        li(style='font-size: 60%')
+          a.link(href="{{dataset.description}}"){{dataset.name}}
+      //- .form-group
+      //-   label(
+      //-     style=''
+      //-   ) Choose dataset &nbsp;
+      //-   select.form-control(
+      //-     ng-model="sidebar.selectedDataSet"
+      //-     ng-options="dataSet for dataSet in sidebar.dataSets"
+      //-     ng-change="sidebar.updateDataSet()"
+      //-   )

@@ -28,14 +28,13 @@ module.exports = class DimensionReductionSidebarCtrl extends BaseCtrl
     #   console.log(o)
     #   return
 
-    names = @dataSet.getNames()
+    @datasetsName = @dataSet.getNames()
 
-    @dataSets = names
     # @selectedDataSet = names[0]
 
   # Once the dataSet is updated, broadcast new link to mainArea
-  updateDataSet: () ->
-    #broadcast dataSet to main controller
-    @link = @dataSet.getUrlByName(@selectedDataSet)
-    @msgService.broadcast 'dimensionReduction:link',
-      @link
+  # updateDataSet: () ->
+  #   #broadcast dataSet to main controller
+  #   @link = @dataSet.getUrlByName(@selectedDataSet)
+  #   @msgService.broadcast 'dimensionReduction:link',
+  #     @link
