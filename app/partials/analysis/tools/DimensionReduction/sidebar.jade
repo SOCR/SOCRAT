@@ -1,24 +1,50 @@
 style(type="text/css").
-  .link { /* link color (black) */
+  .link { /* link color (blue) */
+    color: #2C57A6;
+    text-decoration: underline; 
+  }
+
+  .link:hover { /* link hover (yellow) */
+    color: #F2EC18;
+  }
+
+  .desc_link { /* link color (black) */
     color: #000000;
   }
 
-  .link:hover { /* link hover (blue) */
+  .desc_link:hover { /* link hover (light blue) */
     color: #00FFFF;
   }
 
+  .hint {
+    font-size: 57%;
+  }
+
+  li {
+    font-size: 60%;
+  }
+
+  h6 {
+    font-size: 70%;
+    margin-top: 5%
+  }
+
+
 div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
     legend Dimension Reduction &nbsp;
-      p(style='font-size: 57%') Hint: Use 
+      p.hint Hint: Use 
         span.glyphicon.glyphicon-chevron-left
         | to hide this panel for better experience
-      p In the projector:
-        br
-        | Click on the tensor dropdown menu 
-        | to select dataset
+      h6 The Embedding Projector has three panels:
+      ul(style="padding-left: 4%; margin-bottom: 1%")
+        li Data panel on the top left, where you can choose the run, the embedding variable and data columns to color and label points by.
+        li Projections panel on the bottom left, where you can choose the type of projection.
+        li Inspector panel on the right side, where you can search for particular points and see a list of nearest neighbors.
+      p.hint Hint: You can find a detailed tutorial #[a.link(href="https://socr.umich.edu/HTML5/SOCR_TensorBoard_UKBB", target='_blank') here]
+      h6 Available datasets:
       ul(ng-repeat="dataset in sidebar.datasetsName", style="padding-left: 4%; margin-bottom: 1%")
-        li(style='font-size: 60%')
-          a.link(href="{{dataset.description}}", target="_blank"){{dataset.name}}
+        li
+          a.desc_link(href='{{dataset.description}}', target='_blank') {{dataset.name}}
       //- .form-group
       //-   label(
       //-     style=''
