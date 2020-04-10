@@ -18,7 +18,7 @@ div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
         | to select dataset
       ul(ng-repeat="dataset in sidebar.datasetsName", style="padding-left: 4%; margin-bottom: 1%")
         li(style='font-size: 60%')
-          a.link(href="{{dataset.description}}"){{dataset.name}}
+          a.link(href="{{dataset.description}}", target="_blank"){{dataset.name}}
       //- .form-group
       //-   label(
       //-     style=''
