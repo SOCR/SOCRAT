@@ -37,7 +37,7 @@ module.exports = class DataSetConfig extends BaseModuleDataService
     ,
       name: 'CSCD/SOCR Diabetes Case-Study'
       url: 'SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/CSCD_SOCR_TensorBoard_Diabetes_projector_config.json'
-      description: 'http://socr.umich.edu/CSCD/html/Cores/Macore2/CSCD_SOCR_Diabetes_CaseStudy'
+      description: 'https://umich.instructure.com/courses/38100/files/folder/Case_Studies/21_Diabetes_US_Hospitals_1999_2008'
     ,
       name: 'Neuroimaging study of 27 of Global Cortical Surface Curvedness (27 AD, 35 NC and 42 MCI)'
       url: 'SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/Global_Cortical_Surface_Curvedness_AD_NC_MCI_projector_config.json'
@@ -57,7 +57,7 @@ module.exports = class DataSetConfig extends BaseModuleDataService
     ,
       name: 'SOCR UKBB Tensor Data'
       url: 'SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/SOCR_UKBB_projector_config.json'
-      description: 'https://socr.umich.edu/HTML5/SOCR_TensorBoard_UKBB'
+      description: 'https://www.nature.com/articles/s41598-019-41634-y'
     ,
       name: 'Normal and Schizophrenia Neuroimaging Study of Children'
       url: 'SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/SchizophreniaNeuroimaging_projector_config.json'
