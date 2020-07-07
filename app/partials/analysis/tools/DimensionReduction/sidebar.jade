@@ -20,11 +20,11 @@ style(type="text/css").
     font-size: 57%;
   }
 
-  li {
+  .sidebar-li {
     font-size: 60%;
   }
 
-  h6 {
+  .sidebar-h6 {
     font-size: 70%;
     margin-top: 5%;
   }
@@ -35,15 +35,15 @@ div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
       p.hint Hint: Use 
         span.glyphicon.glyphicon-chevron-left
         | to hide this panel for better experience
-      h6 The Embedding Projector has three panels:
+      h6.sidebar-h6 The Embedding Projector has three panels:
       ul(style="padding-left: 4%; margin-bottom: 1%")
-        li Data panel on the top left, where you can choose the run, the embedding variable and data columns to color and label points by.
-        li Projections panel on the bottom left, where you can choose the type of projection.
-        li Inspector panel on the right side, where you can search for particular points and see a list of nearest neighbors.
+        li.sidebar-li Data panel on the top left, where you can choose the run, the embedding variable and data columns to color and label points by.
+        li.sidebar-li Projections panel on the bottom left, where you can choose the type of projection.
+        li.sidebar-li Inspector panel on the right side, where you can search for particular points and see a list of nearest neighbors.
       p.hint Hint: You can find a detailed tutorial #[a.link(href="https://socr.umich.edu/HTML5/SOCR_TensorBoard_UKBB", target='_blank') here]
-      h6 Available datasets:
+      h6.sidebar-h6 Available datasets:
       ul(ng-repeat="dataset in sidebar.datasetsName", style="padding-left: 4%; margin-bottom: 1%")
-        li
+        li.sidebar-li
           a.desc_link(href='{{dataset.description}}', target='_blank') {{dataset.name}}
       //- .form-group
       //-   label(
