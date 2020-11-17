@@ -15,27 +15,23 @@ module.exports = class DimensionReductionSidebarCtrl extends BaseCtrl
     @msgService = @app_analysis_dimension_reduction_msgService
     @dataSet = @app_analysis_dimension_reduction_dataSetConfig
 
-    # TODO: find a way to bypass same origin, and get the json names from github
-    # $.ajax 'https://github.com/SOCR/HTML5_WebSite/tree/master/HTML5/SOCR_TensorBoard_UKBB/data/', {}, (response) -> 
-    #   console.log(response)
-      
-    # url = 'https://github.com/SOCR/HTML5_WebSite/tree/master/HTML5/SOCR_TensorBoard_UKBB/data/'
+    @datasetsName = @dataSet.getNames()
 
-    # $.ajax(
-    #   type: 'GET'
-    #   url: url
-    #   ).done (o) ->
-    #   console.log(o)
-    #   return
 
-    names = @dataSet.getNames()
-
-    @dataSets = names
-    @selectedDataSet = names[0]
+  avalDatasetControl: ->
+    if document.getElementById("aval-dataset").style.display == "none" ||
+       document.getElementById("aval-dataset").style.display == ""
+        document.getElementById("aval-dataset").setAttribute("style", "display: block")
+        document.getElementById("menu-up").setAttribute("style", "display: inline-block")
+        document.getElementById("menu-down").setAttribute("style", "display: none")
+    else
+        document.getElementById("aval-dataset").setAttribute("style", "display: none")
+        document.getElementById("menu-up").setAttribute("style", "display: none")
+        document.getElementById("menu-down").setAttribute("style", "display: inline-block")
 
   # Once the dataSet is updated, broadcast new link to mainArea
-  updateDataSet: () ->
-    #broadcast dataSet to main controller
-    @link = @dataSet.getUrlByName(@selectedDataSet)
-    @msgService.broadcast 'dimensionReduction:link',
-      @link
+  # updateDataSet: () ->
+  #   #broadcast dataSet to main controller
+  #   @link = @dataSet.getUrlByName(@selectedDataSet)
+  #   @msgService.broadcast 'dimensionReduction:link',
+  #     @link
