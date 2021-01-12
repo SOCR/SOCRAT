@@ -2,7 +2,7 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 require 'handsontable/dist/handsontable.full.css'
-require 'imports?Handsontable=handsontable/dist/handsontable.full.js!ng-handsontable/dist/ngHandsontable.js'
+require 'imports-loader?type=commonjs&imports[]=single|handsontable/dist/handsontable.full.js|Handsontable!ng-handsontable/dist/ngHandsontable.js'
 
 module.exports = class GetDataMainCtrl extends BaseCtrl
   @inject '$scope',
@@ -195,6 +195,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
     Math.floor(Math.random() * (max - min)) + min
 
   ###
+    Saving data to Handsontable, see <hot-table> in getData/main.jade
     @return {Promise}
   ###
   saveTableData: () =>

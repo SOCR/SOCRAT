@@ -1,12 +1,14 @@
 'use strict'
 
 # base libraries
-require '@babel/polyfill'
+require 'core-js'
+require 'regenerator-runtime'
 $ = require 'jquery'
 require 'angular'
 require 'bootstrap/dist/css/bootstrap.css'
 require 'angular-ui-bootstrap'
-require 'imports?this=>window!bootstrap-switch'
+# require 'imports-loader?this=>window!bootstrap-switch'
+require 'bootstrap-switch'
 require 'holderjs'
 require 'typeahead.js'
 require 'select2'
@@ -28,8 +30,10 @@ require 'styles/app.less'
 require 'd3'
 
 # TODO: consider relocating to Charts
-require("expose?vega!vega")
-require("expose?vl!vega-lite")
+# require("expose-loader?vega!vega")
+# require("expose-loader?vl!vega-lite")
+require 'vega'
+require 'vega-lite'
 require 'vega-embed'
 
 # create app-level modules
@@ -50,7 +54,6 @@ bodyTemplate = require 'index.jade'
 document.body.innerHTML = bodyTemplate()
 
 # load app configs
-
 ModuleList = require 'scripts/App/AppModuleList.coffee'
 AppConfig = require 'scripts/App/AppConfig.coffee'
 # create an instance of Core
