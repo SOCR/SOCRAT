@@ -112,8 +112,7 @@ config =
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
       highlight: 'data-wrangler/lib/Highlight/highlight.js'
       'jquery-ui': 'jquery-ui/ui/widgets'
-      # 'vega-lite': 'vega-lite/build/vega-lite.js'
-      # 'vega-embed': 'vega-embed/build/vega-embed.js'
+      
   plugins: [
     new webpack.ContextReplacementPlugin /.*$/, /a^/
 
