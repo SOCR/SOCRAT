@@ -6,8 +6,7 @@ $ = require 'jquery'
 require 'angular'
 require 'bootstrap/dist/css/bootstrap.css'
 require 'angular-ui-bootstrap'
-require 'imports?this=>window!bootstrap-switch'
-require 'bootstrap-tagsinput'
+require 'imports-loader?this=>window!bootstrap-switch'
 require 'holderjs'
 require 'typeahead.js'
 require 'select2'
@@ -29,8 +28,8 @@ require 'styles/app.less'
 require 'd3'
 
 # TODO: consider relocating to Charts
-require("expose?vega!vega")
-require("expose?vl!vega-lite")
+require("expose-loader?vega!vega")
+require("expose-loader?vl!vega-lite")
 require 'vega-embed'
 
 # create app-level modules

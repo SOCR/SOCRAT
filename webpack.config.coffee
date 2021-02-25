@@ -7,7 +7,6 @@ appRoot = path.resolve "#{__dirname}", "app"
 
 module.exports =
   cache: true
-  debug: !production
   devtool: production ? false : 'eval'
 
   # The entry point
@@ -23,84 +22,158 @@ module.exports =
     chunkFilename: "[id].socrat.js"
 
   module:
-    loaders: [
+    rules: [
       test: /\.m?js$/
       exclude: /(node_modules|bower_components)/
-      loader: 'babel-loader'
+      use: [
+        {
+          loader: 'babel-loader'
+        }
+      ]
     ,
-      test: /\.less$/
-      loader: 'style!css!less'
+      test: /\.(sass|less|css)$/
+      loaders: ['style-loader', 'css-loader', 'less-loader']
     ,
-      test: /\.css$/
-      loader: 'style!css'
-    ,
+
       test: /\.coffee$/
-      loader: 'coffee'
+      use: [
+        {
+          loader: 'coffee-loader'
+        }
+      ]
     ,
       test: /\.jade$/
-      loader: 'jade-loader'
+      use: [
+        {
+          loader: 'jade-loader'
+        }
+      ]
     ,
       test: /\.html$/,
-      loader: 'html'
+      use: [
+        {
+          loader: 'html-loader'
+        }
+      ]
     ,
       test: /\.json$/,
-      loader: 'json-loader'
+      use: [
+        {
+          loader: 'json-loader'
+        }
+      ]
     ,
       # required for bootstrap icons
       test: /\.eot(\?v=\d+\.\d+\.\d+)?$/
-      loader: "file"
+      use: [
+        {
+          loader: "file-loader"
+        }
+      ]
     ,
       test: /\.(woff|woff2)$/
-      loader: 'url?prefix=font/&limit=5000&mimetype=application/font-woff'
+      use: [
+        {
+          loader: 'url-loader'
+          options: {
+            limit: 5000,
+            mimetype: 'application/font-woff'
+          }
+        }
+      ]
     ,
       test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/
-      loader: "url?limit=10000&mimetype=application/octet-stream"
+      use: [
+        {
+          loader: 'url-loader'
+          options: {
+            limit: 10000,
+            mimetype: 'application/octet-stream'
+          }
+        }
+      ]
     ,
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/
-      loader: "url?limit=10000&mimetype=image/svg+xml"
+      use: [
+        {
+          loader: 'url-loader'
+          options: {
+            limit: 10000,
+            mimetype: 'image/svg+xml'
+          }
+        }
+      ]
     ,
       test: /\.jpe?g$|\.gif$|\.png$/i
-      loader: "url"
+      use: [
+        {
+          loader: 'url-loader'
+        }
+      ]
     ,
       test: /[\/\\]datavore-d0\.1\.js$/
-      loader: 'exports?dv'
+      use: [
+        {
+          loader: 'exports-loader?dv'
+        }
+      ]
     ,
       test: /[\/\\]highlight\.js$/
-      loader: 'exports?Highlight'
+      use: [
+        {
+          loader: 'exports-loader?Highlight'
+        }
+      ]
     ,
       test: /[\/\\]dw\.js$/
-      loader: 'imports?dv=datavore!imports?Highlight=highlight!exports?dw'
+      loader: 'imports-loader?dv=datavore!imports-loader?Highlight=highlight!exports-loader?dw'
     ,
       test: /[\/\\]flat-ui\.js$/
-      loader: 'imports?this=>window'
+      use: [
+        {
+          loader: 'imports-loader?this=>window'
+        }
+      ]
     ,
       test: /[\/\\]vega-dataflow\.js$|[\/\\]vega-view\.js$|[\/\\]vega-loader\.js$/i
-      loader: 'babel-loader'
+      use: [
+        {
+          loader: 'babel-loader'
+        }
+      ]
     ,
       test: /[\/\\]d3-delaunay\.js$/
-      loader: 'babel-loader'
+      use: [
+        {
+          loader: 'babel-loader'
+        }
+      ]
     ,
       test: /[\/\\](ml-array-rescale).*\.js$/
-      loader: 'babel-loader'
+      use: [
+        {
+          loader: 'babel-loader'
+        }
+      ]
     ,
       test: /[\/\\]vega-lite\.js$/
-      loader: 'imports?vg=vega'
+      loader: 'imports-loader?vg=vega'
     ,
       test: /[\/\\]vega-embed\.js$/
-      loader: 'imports?vg=vega!imports?vl=vega-lite'
+      loader: 'imports-loader?vg=vega!imports-loader?vl=vega-lite'
    ]
 
   resolve:
 
     extensions: [
-      ''
       '.js'
       '.coffee'
       '.less'
       '.css'
     ]
 
-    root: appRoot
+    # resolve.root in webpack 2.0
+    modules: [appRoot, 'node_modules']
 
     alias:
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
@@ -118,4 +191,9 @@ module.exports =
       $: "jquery",
       jQuery: "jquery",
       'window.jQuery': "jquery"
+
+    # debug mode update for webpack 2+
+    new webpack.LoaderOptionsPlugin({
+       debug: !production
+    })
   ]

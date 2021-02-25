@@ -5,7 +5,6 @@ appRoot = "#{__dirname}/app"
 
 module.exports =
   cache: true
-  debug: !production
   devtool: production ? false : 'eval'
 
   # The entry point
@@ -23,25 +22,25 @@ module.exports =
   }
 
   module:
-    loaders: [
+    rules: [
       test: /\.jsx?$/
       exclude: /(node_modules|bower_components)/
-      loader: 'babel'
+      loader: 'babel-loader'
     ,
       test: /\.less$/
-      loader: 'style!css!less'
+      loader: 'style-loader!css!less'
     ,
       test: /\.css$/
-      loader: 'style!css'
+      loader: 'style-loader!css'
     ,
       test: /\.coffee$/
-      loader: 'coffee'
+      loader: 'coffee-loader'
     ,
       test: /\.jade$/
       loader: 'jade-loader'
     ,
       test: /\.html$/,
-      loader: 'html'
+      loader: 'html-loader'
     ,
       # required for bootstrap icons
       test: /\.eot(\?v=\d+\.\d+\.\d+)?$/
@@ -66,23 +65,23 @@ module.exports =
       loader: 'exports?Highlight'
     ,
       test: /[\/]dw\.js$/
-      loader: 'imports?dv=datavore!imports?Highlight=highlight!exports?dw'
+      loader: 'imports-loader?dv=datavore!imports-loader?Highlight=highlight!exports-loader?dw'
     ,
       test: /[\/]flat-ui\.js$/
-      loader: 'imports?this=>window'
+      loader: 'imports-loader?this=>window'
   ]
 
   resolve:
 
     extensions: [
-      ''
       '.js'
       '.coffee'
       '.less'
       '.css'
     ]
 
-    root: appRoot
+    # resolve.root in webpack 2.0
+    modules: [appRoot, 'node_modules']
 
     alias:
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
@@ -106,4 +105,9 @@ module.exports =
     new webpack.optimize.DedupePlugin()
     new webpack.optimize.UglifyJsPlugin()
     new webpack.optimize.AggressiveMergingPlugin()
+
+    # debug mode update for webpack 2+
+    new webpack.LoaderOptionsPlugin({
+       debug: !production
+    })
   ]

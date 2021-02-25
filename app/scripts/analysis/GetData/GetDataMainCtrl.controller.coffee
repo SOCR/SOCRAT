@@ -2,7 +2,7 @@
 
 BaseCtrl = require 'scripts/BaseClasses/BaseController.coffee'
 require 'handsontable/dist/handsontable.full.css'
-require 'imports?Handsontable=handsontable/dist/handsontable.full.js!ng-handsontable/dist/ngHandsontable.js'
+require 'imports-loader?Handsontable=handsontable/dist/handsontable.full.js!ng-handsontable/dist/ngHandsontable.js'
 
 module.exports = class GetDataMainCtrl extends BaseCtrl
   @inject '$scope',
