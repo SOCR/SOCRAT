@@ -82,15 +82,6 @@ config =
     ,
       test: /[\/\\]d3-delaunay\.js$/
       use: 'babel-loader'
-    # ,
-    #   test: /[\/\\](ml-array-rescale).*\.js$/
-    #   use: 'babel-loader'
-    # ,
-    #   test: /[\/\\]vega-lite\.js$/
-    #   use: 'imports-loader?vg=vega'
-    # ,
-    #   test: /[\/\\]vega-embed\.js$/
-    #   use: ['imports-loader?vg=vega, imports-loader?vl=vega-lite']
     ]
   resolve:
 
@@ -112,7 +103,7 @@ config =
       datavore: 'data-wrangler/lib/datavore/datavore-d0.1.js'
       highlight: 'data-wrangler/lib/Highlight/highlight.js'
       'jquery-ui': 'jquery-ui/ui/widgets'
-      
+
   plugins: [
     new webpack.ContextReplacementPlugin /.*$/, /a^/
 

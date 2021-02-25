@@ -14,7 +14,7 @@ module.exports = class ClassificationGraph extends BaseService
     @msgService = @app_analysis_classification_msgService
     @dataService = @app_analysis_classification_dataService
     @DATA_TYPES = @dataService.getDataTypes()
-    @ve = require 'vega-embed'
+    @ve = require('vega-embed').default
     @svm = require 'ml-svm'
 
   # Function creates a mesh grid for the background and data points

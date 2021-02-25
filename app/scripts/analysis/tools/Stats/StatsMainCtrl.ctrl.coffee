@@ -12,8 +12,8 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
     # required basic modules
     @d3 = require 'd3'
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @ve = require('vega-embed').default
+    @vt = require 'vega-tooltip'
     @distribution = require 'distributome'
     @msgService = @app_analysis_stats_msgService
     @algorithmService = @app_analysis_stats_algorithms
@@ -23,7 +23,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
     @selectedAlgorithm = "CI for One Mean"
 
     @loadData()
-
 
     @$scope.$on 'stats:alpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data)
