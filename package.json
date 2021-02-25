@@ -99,7 +99,7 @@
     "webpack-dev-server": "^3.11.1"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=0.10.13"
   },
   "scripts": {
     "build": "webpack",
