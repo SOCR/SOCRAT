@@ -96,7 +96,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
     vlSpec =
       {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "width": 550,
         "height": 200,
         "data": {"values": confidenceInterval},
@@ -124,7 +124,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
       }
     opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
     @ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )
 
   # call syncData

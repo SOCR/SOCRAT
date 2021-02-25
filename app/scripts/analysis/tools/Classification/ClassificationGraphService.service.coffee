@@ -88,12 +88,11 @@ module.exports = class ClassificationGraph extends BaseService
       #vegalite format to create a graph
       vSpec = {
 
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "width": 400,
         "height": 400,
         "data": {
           "values": values
-
         },
         "layer":[
             {

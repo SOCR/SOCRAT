@@ -36,9 +36,8 @@ module.exports = class DimReductionVizDir extends BaseDirective
             row_obj[ordinal] = dataPoints.labels[row_ind]
           d.push row_obj
 
-
         vlSpec =
-          "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
           "width": 500,
           "height": 500,
           "data": {"values": d},
