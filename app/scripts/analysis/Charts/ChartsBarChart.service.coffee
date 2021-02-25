@@ -21,8 +21,8 @@ module.exports = class ChartsBarChart extends BaseService
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
 
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @ve = require('vega-embed').default
+    @vt = require 'vega-tooltip'
 
   getName: () ->
     return 'Bar Graph'
@@ -78,7 +78,7 @@ module.exports = class ChartsBarChart extends BaseService
 
     if flags.stacked
       vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
         "width": 500,
         "height": 500,
         "data": {"values": data},
@@ -97,7 +97,7 @@ module.exports = class ChartsBarChart extends BaseService
       }
     else
       vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
         "layer": [
           {
             "data": {"values": data},

@@ -53,12 +53,12 @@ config =
         options:
           exports: 'dv'
     ,
-    #   test: /[\/\\]highlight\.js$/
-    #   use:
-    #     loader: 'exports-loader'
-    #     options:
-    #       exports: 'Highlight'
-    # ,
+      test: /[\/\\]highlight\.js$/
+      loader: 'exports-loader'
+      options:
+        type: 'commonjs'
+        exports: 'Highlight'
+    ,
       test: /[\/\\]dw\.js$/
       use: [
         loader: 'imports-loader'

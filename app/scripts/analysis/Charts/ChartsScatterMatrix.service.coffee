@@ -21,7 +21,7 @@ module.exports = class ChartsScatterMatrix extends BaseService
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
 
-    @ve = require 'vega-embed'
+    @ve = require('vega-embed').default
     @vt = require 'vega-tooltip'
 
   drawScatterMatrix: (data, labels, container) ->
@@ -56,51 +56,68 @@ module.exports = class ChartsScatterMatrix extends BaseService
       d.push row_obj
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-      "repeat": {
-        "row": fields,
-        "column": fields
+      "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+      "description": "A simple bar chart with embedded data.",
+      "data": {
+        "values": [
+          {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},
+          {"a": "D", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},
+          {"a": "G", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}
+        ]
       },
-      "spec": {
-        "data": {"values": d},
-        "mark": "point",
-        "selection": {
-          "brush": {
-            "type": "interval",
-            "encodings": ["x", "y"],
-            "on": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
-            "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel!",
-            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
-            "resolve": "global"
-          },
-          "grid": {
-            "type": "interval",
-            "bind": "scales",
-            "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "encodings": ["x", "y"],
-            "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-            "zoom": "wheel!",
-            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
-            "resolve": "global"
-          }
-        },
-        "encoding": {
-          "x": {"field": {"repeat": "column"}, "type": "quantitative"},
-          "y": {"field": {"repeat": "row"}, "type": "quantitative"}
-        }
+      "mark": "bar",
+      "encoding": {
+        "x": {"field": "a", "type": "nominal", "axis": {"labelAngle": 0}},
+        "y": {"field": "b", "type": "quantitative"}
       }
     }
 
-    if labels
-      vlSpec['spec']['encoding']['color'] = {
-        "condition": {
-          "selection": "brush",
-          "field": ordinal,
-          "type": "nominal"
-        },
-        "value": "grey"
-      }
+    # vlSpec = {
+    #   "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    #   "repeat": {
+    #     "row": fields,
+    #     "column": fields
+    #   },
+    #   "spec": {
+    #     "data": {"values": d},
+    #     "mark": "point",
+    #     "selection": {
+    #       "brush": {
+    #         "type": "interval",
+    #         "encodings": ["x", "y"],
+    #         "on": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+    #         "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+    #         "zoom": "wheel!",
+    #         "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+    #         "resolve": "global"
+    #       },
+    #       "grid": {
+    #         "type": "interval",
+    #         "bind": "scales",
+    #         "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+    #         "encodings": ["x", "y"],
+    #         "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+    #         "zoom": "wheel!",
+    #         "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+    #         "resolve": "global"
+    #       }
+    #     },
+    #     "encoding": {
+    #       "x": {"field": {"repeat": "column"}, "type": "quantitative"},
+    #       "y": {"field": {"repeat": "row"}, "type": "quantitative"}
+    #     }
+    #   }
+    # }
+
+    # if labels
+    #   vlSpec['spec']['encoding']['color'] = {
+    #     "condition": {
+    #       "selection": "brush",
+    #       "field": ordinal,
+    #       "type": "nominal"
+    #     },
+    #     "value": "grey"
+    #   }
 
 #    vlSpec["config"] =
 #      "axis":
