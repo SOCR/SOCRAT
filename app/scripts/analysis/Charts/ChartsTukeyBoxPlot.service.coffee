@@ -20,11 +20,12 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-    @DATA_TYPES = @dataService.getDataTypes()
     @scatterPlot = @app_analysis_charts_scatterPlot
 
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip'
+    @DATA_TYPES = @dataService.getDataTypes()
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawBoxPlot: (data, labels, container, flags) ->
 
@@ -46,7 +47,7 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
       labels.yLab.value = "residual_y"
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "$schema": @schema,
       "width": 500,
       "height": 500,
       "data": {"values": data},

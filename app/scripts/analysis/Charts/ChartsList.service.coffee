@@ -6,6 +6,15 @@ module.exports = class ChartsList extends BaseService
 
   initialize: ->
 
+  getVegaEmbed: () ->
+    require('vega-embed').default
+
+  getVegaTooltip: () ->
+    require 'vega-tooltip'
+
+  getVegaLiteSchema: () ->
+    "https://vega.github.io/schema/vega-lite/v5.json"
+
   getFlat: () ->
     flat = [
       name: 'Scatter Plot Matrix'
@@ -209,19 +218,22 @@ module.exports = class ChartsList extends BaseService
           x_residual: true
     ,
       name: 'Area Trellis Chart'
-      value: 11
-      v: false
-      w: false
-      x: ['date']
-      y: ['integer', 'number']
-      z: ['string']
-      message: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
-      xLabel: "X (date)"
-      yLabel: "Y"
-      zLabel: "Key"
+      config:
+        description: "Pick date variable for x, a numerical variable for y, and a grouping key variable for z"
+        value: 11
+        vars:
+          v: false
+          w: false
+          x: ['date']
+          y: ['integer', 'number']
+          z: ['string']
+          xLabel: "X (date)"
+          yLabel: "Y"
+          zLabel: "Key"
     ,
       name: 'Parallel Coordinates Chart'
-      value: 12
+      config:
+        value: 12
     ]
 
   getNested: () ->

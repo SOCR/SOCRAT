@@ -20,11 +20,12 @@ module.exports = class ChartsNormalChart extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-    @DATA_TYPES = @dataService.getDataTypes()
     @scatterPlot = @app_analysis_charts_scatterPlot
 
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @DATA_TYPES = @dataService.getDataTypes()
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawNormalCurve: (data, labels, container, flags) ->
 
@@ -47,7 +48,7 @@ module.exports = class ChartsNormalChart extends BaseService
       labels.xLab.value = "residual_x"
 
     vSpec = {
-      "$schema": "https://vega.github.io/schema/vega/v3.json",
+      "$schema": @schema,
       "width": 300,
       "height": 300,
       "padding": 5,

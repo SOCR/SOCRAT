@@ -143,101 +143,108 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
     # This list will be excluded from zCols if zLabel is color
     forbiddenVarIdx = []
 
-    if @selectedGraph.config.vars.zLabel is "Color"
+    if @selectedGraph?.config?.vars?
 
-      VarForChecking = []
-      # VarForChecking only includes the variable idx that has the same
-      # data type as Color variable, which defined in ChartsList.service.coffee
+      if @selectedGraph.config.vars.zLabel is "Color"
 
-      for typeIdx in [0..data.types.length-1] by 1
-        if data.types[typeIdx] == 'string' or data.types[typeIdx] == 'integer'
-          VarForChecking.push(typeIdx)
+        VarForChecking = []
+        # VarForChecking only includes the variable idx that has the same
+        # data type as Color variable, which defined in ChartsList.service.coffee
 
-      VarForChecking.map((idx) ->
-        colorValueSet = new Set()
-        for i in [0..data.data.length-1] by 1
-          colorValueSet.add(data.data[i][idx])
-        if colorValueSet.size > 20
-          forbiddenVarIdx.push(idx)
-      )
-    # end if
-    chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap', 'Histogram', 'Tukey Box Plot (1.5 IQR)', 'Normal Distribution', 'Ranged Dot Plot', 'Cumulative Frequency']
-    if @selectedGraph.name in chartsWithParams
-      for param in @selectedGraph.config.params
-        @chartParams.flags[param] = @selectedGraph.config.params[param]
-      $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
+        for typeIdx in [0..data.types.length-1] by 1
+          if data.types[typeIdx] == 'string' or data.types[typeIdx] == 'integer'
+            VarForChecking.push(typeIdx)
 
-    if @selectedGraph.config.vars.x
-      if @selectedGraph.config.vars.x.includes("date")
-        @xCols = []
-        colNameCounts = data.header.length
-        for nameIndex in [0..colNameCounts - 1]
+        VarForChecking.map((idx) ->
+          colorValueSet = new Set()
+          for i in [0..data.data.length-1] by 1
+            colorValueSet.add(data.data[i][idx])
+          if colorValueSet.size > 20
+            forbiddenVarIdx.push(idx)
+        )
+      # end if
+      
+      # TODO: do this automatically
+      chartsWithParams = ['Bar Graph', 'Scatter Plot', 'Binned Heatmap', 'Histogram', 'Tukey Box Plot (1.5 IQR)', 'Normal Distribution', 'Ranged Dot Plot', 'Cumulative Frequency']
+      if @selectedGraph.name in chartsWithParams
+        for param in @selectedGraph.config.params
+          @chartParams.flags[param] = @selectedGraph.config.params[param]
+        $("#" + id + "Switch").bootstrapSwitch() for id in @selectedGraph.config.params when @selectedGraph.config.params[id] != null
 
-          randomeTestIndex1 = Math.floor(Math.random() * data.data.length)
-          dataValue1 = data.data[randomeTestIndex1][nameIndex]
+      if @selectedGraph.config.vars.x
+        if @selectedGraph.config.vars.x.includes("date")
+          @xCols = []
+          colNameCounts = data.header.length
+          for nameIndex in [0..colNameCounts - 1]
 
-          randomeTestIndex2 = Math.floor(Math.random() * data.data.length)
-          dataValue2 = data.data[randomeTestIndex2][nameIndex]
+            randomeTestIndex1 = Math.floor(Math.random() * data.data.length)
+            dataValue1 = data.data[randomeTestIndex1][nameIndex]
 
-          randomeTestIndex3 = Math.floor(Math.random() * data.data.length)
-          dataValue3 = data.data[randomeTestIndex3][nameIndex]
+            randomeTestIndex2 = Math.floor(Math.random() * data.data.length)
+            dataValue2 = data.data[randomeTestIndex2][nameIndex]
 
-          checkCount = 0
-          for dataValue in [dataValue1, dataValue2, dataValue3]
-            if (parseInt(dataValue) or dataValue == 0) and @yearLowerBound < dataValue < @yearUpperBound
-              checkCount++
-          if checkCount == 3
-            @xCols.push data.header[nameIndex]
-      else
-          @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
-      @xCol = @xCols[0]
+            randomeTestIndex3 = Math.floor(Math.random() * data.data.length)
+            dataValue3 = data.data[randomeTestIndex3][nameIndex]
 
-    # trellis chart
-    else if @numericalCols.length > 1
-      @chosenCols = @numericalCols.slice(0, 2)
-      if @categoricalCols.length > 0
-        @labelCol = @categoricalCols[0]
+            checkCount = 0
+            for dataValue in [dataValue1, dataValue2, dataValue3]
+              if (parseInt(dataValue) or dataValue == 0) and @yearLowerBound < dataValue < @yearUpperBound
+                checkCount++
+            if checkCount == 3
+              @xCols.push data.header[nameIndex]
+        else
+            @xCols = (col for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.x)
+        @xCol = @xCols[0]
 
-    @originalXCols = @xCols
+      # trellis chart
+      else if @numericalCols.length > 1
+        @chosenCols = @numericalCols.slice(0, 2)
+        if @categoricalCols.length > 0
+          @labelCol = @categoricalCols[0]
 
-    if @selectedGraph.config.vars.y
-      @yCols = []
-      for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.y
-        @yCols.push(col)
+      @originalXCols = @xCols
 
-      if @selectedGraph.name in ['Scatter Plot', 'Histogram']
-        @yCols.push("Count")
-      # Initialize the y variable
-      for yCol in @yCols
-        if yCol isnt @xCol
-          @yCol = yCol
-          break
-    @originalYCols = @yCols
+      if @selectedGraph.config.vars.y
+        @yCols = []
+        for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.y
+          @yCols.push(col)
 
-    if @selectedGraph.config.vars.z
-      @zCols = []
-      if @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst'
-        @zCols.push("None")
-      for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.z
-        # if the variable idx is not in forbiddenVarIdx, put col in zCols list
-        if $.inArray(idx, forbiddenVarIdx) is -1
-          @zCols.push(col)
-      # Initialize the z variable
-      @zCol = @zCols[0]
-    @originalZCols = @zCols
+        if @selectedGraph.name in ['Scatter Plot', 'Histogram']
+          @yCols.push("Count")
+        # Initialize the y variable
+        for yCol in @yCols
+          if yCol isnt @xCol
+            @yCol = yCol
+            break
+      @originalYCols = @yCols
 
-    chartsWithR = ['Bullet Chart', 'Treemap', 'Sunburst', 'Trellis Chart']
-    if @selectedGraph.config.vars.r
-      @rCols = []
+      if @selectedGraph.config.vars.z
+        @zCols = []
+        if @selectedGraph.name isnt 'Treemap' and @selectedGraph.name isnt 'Sunburst'
+          @zCols.push("None")
+        for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.z
+          # if the variable idx is not in forbiddenVarIdx, put col in zCols list
+          if $.inArray(idx, forbiddenVarIdx) is -1
+            @zCols.push(col)
+        # Initialize the z variable
+        @zCol = @zCols[0]
+      @originalZCols = @zCols
 
-      if @selectedGraph.name not in chartsWithR
-        @rCols.push("None")
-      for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.r
-        if $.inArray(idx, forbiddenVarIdx) is -1
-          @rCols.push(col)
-      # Initialize the z variable
-      @rCol = @rCols[0]
-    @originalRCols = @rCols
+      chartsWithR = ['Bullet Chart', 'Treemap', 'Sunburst', 'Trellis Chart']
+      if @selectedGraph.config.vars.r
+        @rCols = []
+
+        if @selectedGraph.name not in chartsWithR
+          @rCols.push("None")
+        for col, idx in @cols when data.types[idx] in @selectedGraph.config.vars.r
+          if $.inArray(idx, forbiddenVarIdx) is -1
+            @rCols.push(col)
+        # Initialize the z variable
+        @rCol = @rCols[0]
+      @originalRCols = @rCols
+
+    else
+      console.log '%c CHARTS: chart config is not specified', 'color: red'
 
     @$timeout =>
       @updateDataPoints()

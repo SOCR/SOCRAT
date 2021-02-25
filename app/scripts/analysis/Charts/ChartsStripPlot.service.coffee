@@ -20,10 +20,11 @@ module.exports = class ChartsStripPlot extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-    @DATA_TYPES = @dataService.getDataTypes()
 
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip'
+    @DATA_TYPES = @dataService.getDataTypes()
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawStripPlot: (data, labels, container) ->
 
@@ -31,7 +32,7 @@ module.exports = class ChartsStripPlot extends BaseService
     container.select("#maxbins").remove()
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "$schema": @schema,
       "description": "Shows the relationship between X and Y using tick marks.",
       "width" : 500,
       "height" : 500,

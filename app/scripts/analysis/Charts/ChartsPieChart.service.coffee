@@ -20,11 +20,12 @@ module.exports = class ChartsPieChart extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-    @DATA_TYPES = @dataService.getDataTypes()
     @scatterPlot = @app_analysis_charts_scatterPlot
 
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @DATA_TYPES = @dataService.getDataTypes()
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawPie: (data, labels, container, flags) ->
 
@@ -33,12 +34,12 @@ module.exports = class ChartsPieChart extends BaseService
 
     sort = true
     field = labels.xLab.value
-    if flags.categorical
+    if flags?.categorical
       sort = false
       field = flags.col
 
     vSpec = {
-      "$schema": "https://vega.github.io/schema/vega/v4.json",
+      "$schema": @schema,
       "width": 300,
       "height": 300,
       "autosize": "none",

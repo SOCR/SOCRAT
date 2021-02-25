@@ -58,9 +58,9 @@
     "transform-loader": "~0.2.3",
     "tsne-js": "^1.0.3",
     "typeahead.js": "git+https://github.com/twitter/typeahead.js.git",
-    "vega": "^5.4.0",
-    "vega-embed": "^6.15.0",
-    "vega-lite": "^4.17.0",
+    "vega": "^5.19.1",
+    "vega-embed": "^6.15.1",
+    "vega-lite": "^5.0.0",
     "vega-tooltip": "^0.25.0"
   },
   "devDependencies": {

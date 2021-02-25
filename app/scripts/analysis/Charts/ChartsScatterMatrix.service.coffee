@@ -19,10 +19,11 @@ module.exports = class ChartsScatterMatrix extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
+    
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @ve = require('vega-embed').default
-    @vt = require 'vega-tooltip'
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawScatterMatrix: (data, labels, container) ->
 
@@ -56,80 +57,65 @@ module.exports = class ChartsScatterMatrix extends BaseService
       d.push row_obj
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-      "description": "A simple bar chart with embedded data.",
-      "data": {
-        "values": [
-          {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},
-          {"a": "D", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},
-          {"a": "G", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}
-        ]
+      "$schema": @schema,
+      "repeat": {
+        "row": fields,
+        "column": fields
       },
-      "mark": "bar",
-      "encoding": {
-        "x": {"field": "a", "type": "nominal", "axis": {"labelAngle": 0}},
-        "y": {"field": "b", "type": "quantitative"}
+      "spec": {
+        "data": {"values": d},
+        "mark": "point",
+        "selection": {
+          "brush": {
+            "type": "interval",
+            "encodings": ["x", "y"],
+            "on": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+            "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+            "zoom": "wheel!",
+            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+            "resolve": "global"
+          },
+          "grid": {
+            "type": "interval",
+            "bind": "scales",
+            "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            "encodings": ["x", "y"],
+            "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            "zoom": "wheel!",
+            "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
+            "resolve": "global"
+          }
+        },
+        "encoding": {
+          "x": {"field": {"repeat": "column"}, "type": "quantitative"},
+          "y": {"field": {"repeat": "row"}, "type": "quantitative"}
+        }
       }
     }
 
-    # vlSpec = {
-    #   "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    #   "repeat": {
-    #     "row": fields,
-    #     "column": fields
-    #   },
-    #   "spec": {
-    #     "data": {"values": d},
-    #     "mark": "point",
-    #     "selection": {
-    #       "brush": {
-    #         "type": "interval",
-    #         "encodings": ["x", "y"],
-    #         "on": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
-    #         "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
-    #         "zoom": "wheel!",
-    #         "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
-    #         "resolve": "global"
-    #       },
-    #       "grid": {
-    #         "type": "interval",
-    #         "bind": "scales",
-    #         "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-    #         "encodings": ["x", "y"],
-    #         "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-    #         "zoom": "wheel!",
-    #         "mark": {"fill": "#333", "fillOpacity": 0.125, "stroke": "white"},
-    #         "resolve": "global"
-    #       }
-    #     },
-    #     "encoding": {
-    #       "x": {"field": {"repeat": "column"}, "type": "quantitative"},
-    #       "y": {"field": {"repeat": "row"}, "type": "quantitative"}
-    #     }
-    #   }
-    # }
+    if labels?
+      vlSpec['spec']['encoding']['color'] = {
+        "condition": {
+          "selection": "brush",
+          "field": ordinal,
+          "type": "nominal"
+        },
+        "value": "grey"
+      }
 
-    # if labels
-    #   vlSpec['spec']['encoding']['color'] = {
-    #     "condition": {
-    #       "selection": "brush",
-    #       "field": ordinal,
-    #       "type": "nominal"
-    #     },
-    #     "value": "grey"
-    #   }
-
-#    vlSpec["config"] =
-#      "axis":
-#        "titleFontSize": 16
-#        "labelFontSize": 16
-#      "title":
-#        "titleFontSize": 16
-#      "legend":
-#          "labelFontSize": 16
-#          "titleFontSize": 16
-#      "point":
-#        "size": 80
+# TODO: create config with large fonts to use in publications
+  # if vlSpec?
+  #  vlSpec["config"] =
+  #    "axis":
+  #      "titleFontSize": 16
+  #      "labelFontSize": 16
+  #    "title":
+  #      "titleFontSize": 16
+  #    "legend":
+  #        "labelFontSize": 16
+  #        "titleFontSize": 16
+  #    "point":
+  #      "size": 80
 
     handler = new @vt.Handler()
     opt =

@@ -20,10 +20,11 @@ module.exports = class ChartsRangedDotPlot extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
+    
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip'
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawRangedDotPlot: (data, labels, container, flags) ->
 
@@ -45,7 +46,7 @@ module.exports = class ChartsRangedDotPlot extends BaseService
       labels.xLab.value = "residual_x"
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "$schema": @schema,
       "data": {"values": data},
       "encoding": {
         "x": {
@@ -97,7 +98,10 @@ module.exports = class ChartsRangedDotPlot extends BaseService
     }
 
     if labels["zLab"].value and labels["zLab"].value isnt "None"
-      vlSpec["layer"][1]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
+      vlSpec["layer"][1]["encoding"]["color"] =
+        "field": labels.zLab.value,
+        "type": "nominal",
+        "scale": {"scheme": "category20b"}
 
     handler = new @vt.Handler()
     opt =

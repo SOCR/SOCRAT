@@ -20,10 +20,12 @@ module.exports = class ChartsParallel extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-    @DATA_TYPES = @dataService.getDataTypes()
     @scatterPlot = @app_analysis_charts_scatterPlot
 
-    @ve = require 'vega-embed'
+    @DATA_TYPES = @dataService.getDataTypes()
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawParallel: (data, width, height, _graph, labels, container) ->
     fields = data.splice(0, 1)[0]
@@ -60,8 +62,9 @@ module.exports = class ChartsParallel extends BaseService
             group = group + 1
             count = 1
     console.log(datavals)
+    
     v1Spec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "$schema": @schema,
       "config": {"view": {"stroke": ""}},
       "data": datavals
       "layer": [{

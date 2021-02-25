@@ -19,10 +19,11 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-    @DATA_TYPES = @dataService.getDataTypes()
 
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip'
+    @DATA_TYPES = @dataService.getDataTypes()
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   getName: () ->
     return 'Binned Heatmap'
@@ -48,15 +49,15 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
       dic["residual_x"] = dic[x_] - mean_x
       dic["residual_y"] = dic[y_] - mean_y
 
-    if (flags.x_residual)
+    if flags?.x_residual
       x_ = "residual_x"
 
-    if (flags.y_residual)
+    if flags?.y_residual
       y_ = "residual_y"
 
-    if flags.marginalHistogram
+    if flags?.marginalHistogram
       vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": @schema,
         "data": {"values" : data},
         "spacing": 15,
         "bounds": "flush",
@@ -135,7 +136,7 @@ module.exports = class ChartsBinnedHeatmapChart extends BaseService
       }
     else
       vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": @schema,
         "data": {"values": data},
         "mark": "rect",
         "width": 500,
