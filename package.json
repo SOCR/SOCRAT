@@ -102,13 +102,13 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "build": "node_modules/webpack/bin/webpack.js",
+    "build": "webpack",
     "start-server": "node server.js > out.socrat.log 2> err.socrat.log &",
     "deploy": "npm run build && npm run start-server",
-    "watch": "node_modules/webpack/bin/webpack.js --watch",
-    "serve": "node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --inline --colors --content-base _build/ --host 127.0.0.1 --port 8080",
-    "servewindows": "node node_modules\\webpack-dev-server\\bin\\webpack-dev-server.js --inline --hot -d --colors --content-base _build/ --host 127.0.0.1 --port 8080",
-    "prod": "node_modules/webpack/bin/webpack.js -p --config ./webpack.production.config.coffee"
+    "watch": "webpack --watch",
+    "serve": "webpack serve --hot --inline --color --content-base _build/ --host 127.0.0.1 --port 8080",
+    "servewindows": "node node_modules\\.bin\\webpack serve --inline --hot -d --color --content-base _build/ --host 127.0.0.1 --port 8080",
+    "prod": "webpack -p --config ./webpack.production.config.coffee"
   },
   "license": "LGPL-3.0"
 }
