@@ -26,8 +26,8 @@ module.exports = class DataWranglerWrangler extends BaseService
     @table = []
     @csvData = []
     # TODO: make global?
-    @dv = require 'datavore'
-    @dw = require 'data-wrangler'
+    @dv = require('datavore').dv
+    @dw = require('data-wrangler').dw
 
     # workaround to make jquery-ui-layout work with jquery 3.0
     (($) ->

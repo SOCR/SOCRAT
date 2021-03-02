@@ -15,7 +15,7 @@ module.exports = class DatabaseDatavore extends BaseService
     @registry = []
     @listeners = {}
     @db = {}
-    @dv = require 'datavore'
+    @dv = require('datavore').dv
 
   ###
     @returns {string|boolean}

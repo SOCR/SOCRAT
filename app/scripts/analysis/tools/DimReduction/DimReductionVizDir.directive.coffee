@@ -11,7 +11,7 @@ module.exports = class DimReductionVizDir extends BaseDirective
     # @template = "<svg width='100%' height='600'></svg>"
     @replace = true # replace the directive element with the output of the template
 
-    @ve = require 'vega-embed'
+    @ve = require('vega-embed').default
 
     # The link method does the work of setting the directive
     #  up, things like bindings, jquery calls, etc are done in here
@@ -36,9 +36,8 @@ module.exports = class DimReductionVizDir extends BaseDirective
             row_obj[ordinal] = dataPoints.labels[row_ind]
           d.push row_obj
 
-
         vlSpec =
-          "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
           "width": 500,
           "height": 500,
           "data": {"values": d},

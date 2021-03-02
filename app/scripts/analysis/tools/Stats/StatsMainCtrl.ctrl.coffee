@@ -12,8 +12,8 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
     # required basic modules
     @d3 = require 'd3'
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @ve = require('vega-embed').default
+    @vt = require 'vega-tooltip'
     @distribution = require 'distributome'
     @msgService = @app_analysis_stats_msgService
     @algorithmService = @app_analysis_stats_algorithms
@@ -23,7 +23,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
     @selectedAlgorithm = "CI for One Mean"
 
     @loadData()
-
 
     @$scope.$on 'stats:alpha', (event, data)=>
       @algorithmService.passAlphaByName(@selectedAlgorithm, data)
@@ -97,7 +96,7 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
     vlSpec =
       {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "width": 550,
         "height": 200,
         "data": {"values": confidenceInterval},
@@ -125,7 +124,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
       }
     opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
     @ve('#visCIOM', vlSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vegaLite(result.view, vlSpec)
     )
 
   # call syncData

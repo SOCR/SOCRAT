@@ -20,10 +20,11 @@ module.exports = class ChartsHistogram extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
+    
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip'
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   plotHist: (bins, data, labels, flags) ->
 
@@ -43,14 +44,14 @@ module.exports = class ChartsHistogram extends BaseService
       dic["residual_x"] = dic[x_] - mean_x
       dic["residual_y"] = dic[y_] - mean_y
 
-    if (flags.x_residual)
+    if flags?.x_residual
       labels.xLab.value = "residual_x"
 
-    if (flags.y_residual)
+    if flags?.y_residual
       labels.yLab.value = "residual_y"
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "$schema": @schema,
       "width": 500,
       "height": 500,
       "data": {"values": data},

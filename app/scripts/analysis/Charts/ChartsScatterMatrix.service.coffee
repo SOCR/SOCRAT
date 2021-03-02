@@ -19,10 +19,11 @@ module.exports = class ChartsScatterMatrix extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
+    
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip'
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawScatterMatrix: (data, labels, container) ->
 
@@ -56,7 +57,7 @@ module.exports = class ChartsScatterMatrix extends BaseService
       d.push row_obj
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "$schema": @schema,
       "repeat": {
         "row": fields,
         "column": fields
@@ -92,7 +93,7 @@ module.exports = class ChartsScatterMatrix extends BaseService
       }
     }
 
-    if labels
+    if labels?
       vlSpec['spec']['encoding']['color'] = {
         "condition": {
           "selection": "brush",
@@ -102,17 +103,19 @@ module.exports = class ChartsScatterMatrix extends BaseService
         "value": "grey"
       }
 
-#    vlSpec["config"] =
-#      "axis":
-#        "titleFontSize": 16
-#        "labelFontSize": 16
-#      "title":
-#        "titleFontSize": 16
-#      "legend":
-#          "labelFontSize": 16
-#          "titleFontSize": 16
-#      "point":
-#        "size": 80
+# TODO: create config with large fonts to use in publications
+  # if vlSpec?
+  #  vlSpec["config"] =
+  #    "axis":
+  #      "titleFontSize": 16
+  #      "labelFontSize": 16
+  #    "title":
+  #      "titleFontSize": 16
+  #    "legend":
+  #        "labelFontSize": 16
+  #        "titleFontSize": 16
+  #    "point":
+  #      "size": 80
 
     handler = new @vt.Handler()
     opt =

@@ -12,6 +12,7 @@ module.exports = dimensionReduction = new Module
     services:
       'app_analysis_dimension_reduction_dataService': require 'scripts/analysis/tools/DimensionReduction/DimensionReductionDataService.service.coffee'
       'app_analysis_dimension_reduction_msgService': require 'scripts/analysis/tools/DimensionReduction/DimensionReductionMsgService.service.coffee'
+      'app_analysis_dimension_reduction_dataSetConfig': require 'scripts/analysis/tools/DimensionReduction/DataSetConfig.service.coffee'
 
     controllers:
       'dimensionReductionSidebarCtrl': require 'scripts/analysis/tools/DimensionReduction/DimensionReductionSidebarCtrl.ctrl.coffee'
@@ -23,7 +24,7 @@ module.exports = dimensionReduction = new Module
 # module state config
   state:
 # module name to show in UI
-    name: 'Embedding Projector'
+    name: 'Dimension Reduction'
     url: '/tools/dimred/embedproj'
     mainTemplate: require 'partials/analysis/tools/DimensionReduction/main.jade'
     sidebarTemplate: require 'partials/analysis/tools/DimensionReduction/sidebar.jade'

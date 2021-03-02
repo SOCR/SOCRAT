@@ -19,10 +19,11 @@ module.exports = class ChartsScatterPlot extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
+    
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip'
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   getName: () ->
     return 'Scatter Plot'
@@ -56,7 +57,7 @@ module.exports = class ChartsScatterPlot extends BaseService
 
     if flags.showSTDEV
       vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": @schema,
         "description": "A scatterplot",
         "data": {"values" : data},
         "width": 500,
@@ -165,7 +166,7 @@ module.exports = class ChartsScatterPlot extends BaseService
           vlSpec["layer"][1]["encoding"]["size"] = {"aggregate": "count", "type": "quantitative"}
     else
       vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+        "$schema": @schema,
         "width": 500,
         "height": 500,
         "data": {"values": data},

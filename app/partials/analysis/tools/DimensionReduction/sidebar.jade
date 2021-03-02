@@ -1,17 +1,78 @@
-div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
-  form
-    legend DataSets &nbsp;
-      .form-group
-        label(
-          style=''
-        ) Choose dataset &nbsp;
-        select.form-control(
-          ng-model="sidebar.selectedDataSet"
-          ng-options="dataSet for dataSet in sidebar.dataSets"
-          ng-change="sidebar.updateDataSet()"
-        )
-      .form-group(
-        ng-show="sidebar.selectedDataSet == 'CountryRanking' ||" +
-                "sidebar.selectedDataSet == 'UKBB'"
-      )
+style(type="text/css").
+  .link { /* link color (blue) */
+    color: #2C57A6;
+    text-decoration: underline; 
+  }
 
+  .link:hover { /* link hover (yellow) */
+    color: #F2EC18;
+  }
+
+  .desc_link { /* link color (black) */
+    color: #000000;
+  }
+
+  .desc_link:hover { /* link hover (light blue) */
+    color: #00FFFF;
+  }
+
+  .hint {
+    font-size: 57%;
+  }
+
+  .sidebar-h6 {
+    font-size: 80%;
+  }
+
+  .sidebar-li {
+    font-size: 60%;
+  }
+
+  #menu-up {
+    display: none;
+    top: 3px;
+    margin-left: 3px;
+  }
+
+  #menu-down {
+    top: 3px;
+    margin-left: 3px;
+  }
+  
+  #aval-dataset {
+    display: none;
+    padding-left: 4%;
+    margin-bottom: 1%;
+  }
+
+  .btn-link {
+    padding-left: 0 !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    font-size: 70% !important;
+    text-decoration: none !important;
+  }
+
+  #menu-up:hover, #menu-down:hover, .btn-link:hover {
+    color:	#00FF00 !important;
+    text-decoration: none !important;
+  }
+
+
+div(ng-controller='dimensionReductionSidebarCtrl as sidebar')
+    legend Dimension Reduction &nbsp;
+      p.hint Hint: Use 
+        span.glyphicon.glyphicon-chevron-left
+        | to hide this panel for better experience
+      h6.sidebar-h6 Embedding Projector brief overview
+      ul(style='padding-left: 4%; margin-bottom: 1%')
+        li.sidebar-li Data panel on the top left, where you can choose the run, the embedding variable and data columns to color and label points by.
+        li.sidebar-li Projections panel on the bottom left, where you can choose the type of projection.
+        li.sidebar-li Inspector panel on the right side, where you can search for particular points and see a list of nearest neighbors.
+      p.hint Hint: You can find a detailed tutorial #[a.link(href="https://socr.umich.edu/HTML5/SOCR_TensorBoard_UKBB", target='_blank') here]
+      button.btn.btn-link#aval-dataset-header(ng-click='sidebar.avalDatasetControl()') Available datasets  
+        span.glyphicon.glyphicon-menu-down#menu-down
+        span.glyphicon.glyphicon-menu-up#menu-up
+      ul#aval-dataset
+        li.sidebar-li(ng-repeat='dataset in sidebar.datasetsName')
+          a.desc_link(href='{{dataset.description}}', target='_blank') {{dataset.name}}

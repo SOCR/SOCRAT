@@ -20,10 +20,11 @@ module.exports = class ChartsAreaTrellisChart extends BaseService
     @list = @app_analysis_charts_list
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
-    @DATA_TYPES = @dataService.getDataTypes()
 
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+    @DATA_TYPES = @dataService.getDataTypes()
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   areaTrellisChart: (data, labels, container) ->
 
@@ -31,7 +32,7 @@ module.exports = class ChartsAreaTrellisChart extends BaseService
     container.select("#maxbins").remove()
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      "$schema": @schema,
       "width": 500,
       "height": 500,
       "data": {"values": data},
@@ -42,7 +43,7 @@ module.exports = class ChartsAreaTrellisChart extends BaseService
       }
     }
 
-    if labels["zLab"].value and labels["zLab"].value isnt "None"
+    if labels["zLab"]?.value?
       vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "legend": null}
       vlSpec["encoding"]["row"] = {"field": "labels.zLab.value", "type": "nominal", "header": {"title": "labels.zLab.value"}
       }
