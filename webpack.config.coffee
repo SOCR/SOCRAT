@@ -33,19 +33,19 @@ config =
     ,
       # required for bootstrap icons
       test: /\.eot(\?v=\d+\.\d+\.\d+)?$/
-      use: "file-loader"
+      type: 'asset/resource'
     ,
       test: /\.(woff|woff2)$/
-      use: 'url-loader?prefix=font/&limit=5000&mimetype=application/font-woff'
+      type: 'asset/inline'
     ,
       test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/
-      use: "url-loader?limit=10000&mimetype=application/octet-stream"
+      type: 'asset/inline'
     ,
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/
-      use: "url-loader?limit=10000&mimetype=image/svg+xml"
+      type: 'asset/inline'
     ,
       test: /\.jpe?g$|\.gif$|\.png$/i
-      use: "url-loader"
+      type: 'asset/inline'
     ,
       test: /[\/\\]datavore-d0\.1\.js$/
       use:
