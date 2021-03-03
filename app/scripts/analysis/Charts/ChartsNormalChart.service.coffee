@@ -25,7 +25,7 @@ module.exports = class ChartsNormalChart extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
     @ve = @list.getVegaEmbed()
     @vt = @list.getVegaTooltip()
-    @schema = @list.getVegaLiteSchema()
+    @schema = @list.getVegaSchema()
 
   drawNormalCurve: (data, labels, container, flags) ->
 
