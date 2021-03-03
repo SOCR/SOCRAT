@@ -32,11 +32,16 @@ module.exports = class ChartsAreaChart extends BaseService
     container.select("#maxbins").remove()
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      # Properties for top-level specification (e.g., standalone single view specifications)
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      
+      # Properties for any specifications
+      "data": {"values": data},
+
+      # Properties for any single view specifications
       "width": 500,
       "height": 500,
-      "data": {"values": data},
-      "mark": "area",
+      "mark": { "type": "area", "tooltip": null },
       "encoding": {
         "x": {
           "field": labels.xLab.value, "type": "temporal", "axis": {"title": labels.xLab.value}

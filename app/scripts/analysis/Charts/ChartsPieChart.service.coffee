@@ -25,7 +25,7 @@ module.exports = class ChartsPieChart extends BaseService
     @DATA_TYPES = @dataService.getDataTypes()
     @ve = @list.getVegaEmbed()
     @vt = @list.getVegaTooltip()
-    @schema = @list.getVegaLiteSchema()
+    @schema = @list.getVegaSchema()
 
   drawPie: (data, labels, container, flags) ->
 
@@ -122,5 +122,5 @@ module.exports = class ChartsPieChart extends BaseService
       "actions": {export: true, source: false, editor: true}
 
     @ve('#vis', vSpec, opt, (error, result) -> return).then((result) =>
-      @vt.vega(result.view)
+      # @vt.vega(result.view)
     )
