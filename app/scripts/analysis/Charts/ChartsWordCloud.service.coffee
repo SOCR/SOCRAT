@@ -20,9 +20,10 @@ module.exports = class ChartsWordCloud extends BaseService
     @sendData = @app_analysis_charts_sendData
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
-
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+  
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaSchema()
 
   drawWordCloud: (data,labels,container, flags) ->
 
@@ -35,7 +36,7 @@ module.exports = class ChartsWordCloud extends BaseService
     orientations = if flags.orientations then flags.orientations else 1
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega/v4.json",
+      "$schema": @schema,
       "width": 800,
       "height": 400,
       "padding": 0,

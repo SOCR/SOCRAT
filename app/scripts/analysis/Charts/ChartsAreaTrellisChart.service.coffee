@@ -27,6 +27,10 @@ module.exports = class ChartsAreaTrellisChart extends BaseService
     @schema = @list.getVegaLiteSchema()
 
   areaTrellisChart: (data, labels, container) ->
+    # parse the year if date is in the forme of YYYYMMDD
+    if data[0][labels.xLab.value].length == 8
+      for datum in data
+        datum[labels.xLab.value] = datum[labels.xLab.value].substr(0, 4)
 
     container.select("#slider").remove()
     container.select("#maxbins").remove()
@@ -36,10 +40,10 @@ module.exports = class ChartsAreaTrellisChart extends BaseService
       "width": 500,
       "height": 500,
       "data": {"values": data},
-      "mark": "line",
+      "mark": { "type": "line" },
       "encoding": {
-        "x": {"field": "x", "type": "temporal", "axis": {"title": labels.xLab.value}},
-        "y": {"field": "y", "type": "quantitative", "axis": {"title": labels.yLab.value}}
+        "x": {"field": labels.xLab.value, "type": "temporal", "axis": {"title": labels.xLab.value}},
+        "y": {"field": labels.yLab.value, "type": "quantitative", "axis": {"title": labels.yLab.value}}
       }
     }
 

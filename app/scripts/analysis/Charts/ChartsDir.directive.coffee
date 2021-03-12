@@ -103,7 +103,7 @@ module.exports = class ChartsDir extends BaseDirective
             when 'Trellis Chart'
               @trellis.drawTrellis(data, labels, container)
             when 'Area Trellis Chart'
-              @areaTrellis.areaTrellisChart(data,ranges,width,height,_graph,labels,container)
+              @areaTrellis.areaTrellisChart(data, labels, container)
             when 'Binned Heatmap'
               @binnedHeatmap.drawHeatmap(data, labels, container, flags)
             when 'Bar Graph'

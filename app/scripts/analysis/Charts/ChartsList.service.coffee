@@ -12,6 +12,9 @@ module.exports = class ChartsList extends BaseService
   getVegaTooltip: () ->
     require 'vega-tooltip'
 
+  getVegaSchema: () ->
+    "https://vega.github.io/schema/vega/v5.json"
+
   getVegaLiteSchema: () ->
     "https://vega.github.io/schema/vega-lite/v5.json"
 

@@ -22,9 +22,10 @@ module.exports = class ChartsAreaChart extends BaseService
     @checkTime = @app_analysis_charts_checkTime
     @DATA_TYPES = @dataService.getDataTypes()
     @scatterPlot = @app_analysis_charts_scatterPlot
-
-    @ve = require 'vega-embed'
-    @vt = require 'vega-tooltip/build/vega-tooltip.js'
+  
+    @ve = @list.getVegaEmbed()
+    @vt = @list.getVegaTooltip()
+    @schema = @list.getVegaLiteSchema()
 
   drawArea: (data, labels, container) ->
 
@@ -32,11 +33,16 @@ module.exports = class ChartsAreaChart extends BaseService
     container.select("#maxbins").remove()
 
     vlSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+      # Properties for top-level specification (e.g., standalone single view specifications)
+      "$schema": @schema,
+      
+      # Properties for any specifications
+      "data": {"values": data},
+
+      # Properties for any single view specifications
       "width": 500,
       "height": 500,
-      "data": {"values": data},
-      "mark": "area",
+      "mark": { "type": "area", "tooltip": null },
       "encoding": {
         "x": {
           "field": labels.xLab.value, "type": "temporal", "axis": {"title": labels.xLab.value}

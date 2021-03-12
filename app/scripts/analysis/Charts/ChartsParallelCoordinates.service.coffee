@@ -92,7 +92,11 @@ module.exports = class ChartsParallel extends BaseService
           "width": 600, 
           "mark": "rule",
           "encoding": {
-            "x": {"field": "vars", "type": "ordinal", "axis": {"title": ""}}
+            "x": {
+              "field": "vars",
+              "type": "ordinal",
+              "axis": {"title": ""}
+            }
           }
         }
       ]
