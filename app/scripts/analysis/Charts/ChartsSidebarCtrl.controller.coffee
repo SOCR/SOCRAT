@@ -188,8 +188,9 @@ module.exports = class ChartsSidebarCtrl extends BaseCtrl
 
             checkCount = 0
             for dataValue in [dataValue1, dataValue2, dataValue3]
-              if (parseInt(dataValue) or dataValue == 0) and @yearLowerBound < dataValue < @yearUpperBound
-                checkCount++
+              if parseInt(dataValue) or dataValue == 0
+                if @yearLowerBound < dataValue < @yearUpperBound or (dataValue.length == 8 and @yearLowerBound < dataValue.substr(0, 4) < @yearUpperBound)
+                  checkCount++
             if checkCount == 3
               @xCols.push data.header[nameIndex]
         else
