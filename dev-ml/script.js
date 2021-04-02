@@ -1,14 +1,18 @@
-// DEVEOLOPMENT PLANS FOR MAR 19
-// TODO: Implement a simple keras model
-// TODO: Implement a simple prediction interface
+// DEVELOPMENT PLANS FOR APRIL 1
+// TODO: Complete Prediction Input
+// TODO: Multiple Inputs
+// TODO: Layers Specifier (Make something that appears to work...)
+
 
 console.log("Hello SOCR!")
 
-
+// File upload button
 let inputField = document.getElementById('fileInput')
+// Preview of file attributes
 let infoField = document.getElementById('fileInfoContainer')
+// Submit file and load data
 let viewButton = document.getElementById('viewFile')
-let fileBox = document.getElementById('fileContentContainer')
+
 let featureField = document.getElementById('featureSelection')
 let labelField = document.getElementById('labelSelection')
 let confirmButton = document.getElementById('confirmSelection')
@@ -65,10 +69,8 @@ function loadAttributes() {
 	featureField.innerHTML = "";
 
 	labelField.innerHTML = "";
-	fileBox.innerText = "";
 
 	for (let i = 0; i < attributes.length; i++) {
-		// fileBox.innerText += (attributes[i] + "\n");
 		featureField.innerHTML += "<option value = \"" + attributes[i] +
 			"\">" + attributes[i] + "</option>";
 		labelField.innerHTML += "<option value = \"" + attributes[i] +
