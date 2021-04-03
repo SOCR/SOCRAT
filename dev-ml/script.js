@@ -183,32 +183,66 @@ function loadData() {
 		data.length + '\n';
 }
 
+
+/**
+ * Normalizes an array with its minimum and maximum values
+ * @param unnormalizedData A 1-D array of unnormalized data
+ * @returns Normalized array of the same dimension, as well as the minimum
+ * and maximum values for unnormalizing.
+ */
+function normalizeData(unnormalizedData) {
+  const minimum = Math.min(unnormalizedData)
+  const maximum = Math.max(unnormalizedData)
+  let normalizedData = unnormalizedData.map(item =>
+      (item - minimum) / (maximum - minimum))
+  return {
+    "normalizedData": normalizedData,
+    "max": maximum,
+    "min": minimum
+  }
+}
+
+
 // TODO: This may not be the most efficient way to loop through a f**kton of
 //  data
 function convertArrayToTensor(data, featureList, labelList) {
   // Step 0. Clean data
-  for (let inputItem = 0; inputItem < featureList.length; inputItem++) {
-    data = data.filter(item => item[featureList[inputItem]] != null);
+  for (let i = 0; i < data[0]['features'].length; i++) {
+    data = data.filter(item => (item['features'][i] != null))
   }
-  for (let labelItem = 0; labelItem < labelList.length; labelItem++) {
-    data = data.filter(item => item[labelList[labelItem]] != null);
+  for (let i = 0; i < data[0]['labels'].length; i++) {
+    data = data.filter(item => (item['features'][i] != null))
   }
 
   // Step 1. Shuffle the data
   tf.util.shuffle(data);
 
-  // Step 2. Map features and labels to separate arrays
-  const inputData = []; const labelData = [];
-  const inputs = []; const labels = [];
+  // Step 2 Convert data to tensor
+  const inputs = data.map(d => d['features'])
+  const labels = data.map(d => d['labels'])
+  // Normalize features by attribute
+  for (let i = 0; i < inputs[0].length; i++) {
+    // const {normalizedData, min, max} =
+        // normalizeData(inputs.map(item => ))
+  }
+  // Normalize labels by attribute
+  for (let i = 0; i < labels[0].length; i++) {
+    data = data.filter(item => (item['features'][i] != null))
+  }
 
-  // Step 2.1 Map features into the inputData array
-  for (let i = 0; i < featureList.length; i++) {
-    inputData.push(data.map(d => d[featureList[i]]));
-  }
-  // Step 2.2 Map labels into the labelData array
-  for (let i = 0; i < labelList.length; i++) {
-    labelData.push(data.map(d => d[labelList[i]]));
-  }
+
+
+
+  // Step 3. Normalize data
+  const inputMaxArray = [], inputMinArray = [];
+  const labelMaxArray = [], labelMinArray = [];
+
+
+
+
+  const inputTensor = tf.tensor(inputs, [inputs.length, inputs[0].length])
+  const labelTensor = tf.tensor(labels, [labels.length, labels[0].length])
+
   // Step 3 Convert arrays into multidimensional tensors
   const inputShape = []
 }
@@ -234,14 +268,13 @@ function convertToTensor(data, featureName, labelName) {
 		tf.util.shuffle(data);
 
 		// Step 2. Convert data to Tensor
-		const inputs = data.map(d => d['features'][0])
-		const labels = data.map(d => d['labels'][0]);
+		// const inputs = data.map(d => d['features'][0])
+		// const labels = data.map(d => d['labels'][0]);
+    const inputs = data.map(d => d['features'])
+    const labels = data.map(d => d['labels']);
 
 		const inputTensor = tf.tensor2d(inputs, [inputs.length, 1]);
 		const labelTensor = tf.tensor2d(labels, [labels.length, 1]);
-
-		console.log('input shape: ', inputTensor.shape)
-    console.log('label shape: ', labelTensor.shape)
 
 		// Step 3. Normalize the data to the range 0 - 1 using min-max scaling
 		const inputMax = inputTensor.max();
@@ -254,13 +287,9 @@ function convertToTensor(data, featureName, labelName) {
 
 		// If you want to return a f**kton of data, use a JS object!
 		return {
-			inputs: normalizedInputs,
-			labels: normalizedLabels,
+			inputs: normalizedInputs, labels: normalizedLabels,
 			// Return the min/max bounds so we can use them later.
-			inputMax,
-			inputMin,
-			labelMax,
-			labelMin
+			inputMax, inputMin, labelMax, labelMin
 		}
 	})
 }
@@ -283,6 +312,9 @@ function createLinearModel () {
 /**
  * Train a TensorFlow.JS model according to the specified model, features,
  * and labels.
+ *
+ * THIS IS JUST A WHOLE PIECE OF HORSESHIT CODE!!
+ * YOU DON'T JUST TEST OUT MPG AND HORSEPOWER!!
  */
 async function trainModel(model, inputs, labels) {
 
@@ -363,6 +395,7 @@ function testModel () {
 		return { x: val, y: preds[i] }
 	})
 
+  // REDO THIS!!!!!
 	const originalPoints = data.map(d => ({
 		x: d.horsepower, y: d.mpg,
 	}))
