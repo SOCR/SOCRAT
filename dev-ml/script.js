@@ -1,6 +1,3 @@
-// DEVELOPMENT PLANS FOR APRIL 1
-// TODO: Complete Prediction Input
-// TODO: Multiple Inputs
 /*
   Multiple inputs would undoubtedly have to account for the following:
   - Difference in data selection and extraction
@@ -8,10 +5,15 @@
   - Difference in tensor conversion
   - Difference in testing and data prediction UI.
  */
-// TODO: Layers Specifier (Make something that appears to work...)
+
+// DOES NOT WORK
+// import * as tbjs from './node_modules/@tensorflow/tfjs-node/dist/tensorboard.js'
 
 
-console.log("Hello SOCR!")
+fetch('README.md')
+  .then(response => response.text())
+  .then(text => console.log(text))
+
 
 // File upload button
 let inputField = document.getElementById('fileInput')
@@ -21,7 +23,6 @@ let infoField = document.getElementById('fileInfoContainer')
 let viewButton = document.getElementById('viewFile')
 
 // Set of fields for selecting and loading feature and label data
-// TODO: Set up multiple feature input
 let featureField = document.getElementById('featureSelection')
 let labelField = document.getElementById('labelSelection')
 let confirmButton = document.getElementById('confirmSelection')
@@ -44,12 +45,13 @@ let epochSelector = document.getElementById('epochNumber')
 let csvObject;
 let file, model, data = [], tensorData;
 
-let featureName, labelName;
+let featureSize, labelSize;
 let predictionInputTrackers = [];
 let predictionInputData = [];
 
 /** Operation to be completed when the user selects a file upload */
 function uploadOperation() {
+
 	file = this.files[0];
 	const timeModified = new Date(file.lastModified).toLocaleString('en-US');
 
@@ -58,7 +60,8 @@ function uploadOperation() {
 	infoField.innerText += ("size : " + file.size + "\n");
 	infoField.innerText += ("type : " + file.type + "\n");
 	infoField.innerText += ("date : " + timeModified + "\n");
-	console.log("Document uploaded!");
+  var n = new Date(Date.now());
+  console.log("Upload completed at " + n.toISOString());
 
 	// TODO: Implement all these parameters as customizable UI Interfaces!
 	Papa.parse(file, {
@@ -66,10 +69,11 @@ function uploadOperation() {
 		// TODO: Implement customizable dynamic typing in the near future
 		dynamicTyping : true,
 		complete: function(results) {
-			console.log(results);
+			// console.log(results);
 			csvObject = results;
 		}
 	});
+
 }
 
 
@@ -118,7 +122,8 @@ function getSelectValues(select) {
 
 /**
  * Load data into the feature and label fields according to the attributes
- * selected by the user
+ * selected by the user.
+ * FULLY OPTIMIZED FOR MULTIPLE INPUTS/OUTPUTS
  */
 function loadData() {
   data = [];
@@ -130,6 +135,8 @@ function loadData() {
 	// Indices of the features and labels in the first row of the dataset
   const featureIndices = featureList.map(x => csvObject['data'][0].indexOf(x))
   const labelIndices = labelList.map(x => csvObject['data'][0].indexOf(x))
+  featureSize = featureList.length;
+  labelSize = labelList.length;
 
 	console.log("featureList: ", featureList)
   console.log("labelList: ", labelList)
@@ -140,6 +147,7 @@ function loadData() {
   modelPredictionContainer.innerHTML = "";
   predictionInputTrackers = [];
   for (let i=0; i < featureList.length; i++) {
+    // Add lines looking like the following to
     modelPredictionContainer.innerHTML += "<div>"+ featureList[i] + "</div>" +
       "<input type=\"text\" id=\"" + featureList[i] +
       "\" name=\"" + featureList[i] + "\"/> ";
@@ -158,6 +166,9 @@ function loadData() {
    *   "features": [feature]
    *   "labels": [label]
    * }
+   *
+   * Meanwhile, the data object would contain a list of dataItems in the
+   *  above format.
    */
   // Extract data from the csv object by column
   // Skip first row with the string attributes
@@ -165,97 +176,118 @@ function loadData() {
     let dataItem = {}
     dataItem['features'] = featureIndices.map(x => csvObject['data'][i][x])
     dataItem['labels'] = labelIndices.map(x => csvObject['data'][i][x])
-    if (i == 1) console.log(dataItem) // for debugging
+    // if (i == 1) console.log(dataItem) // for debugging
     data.push(dataItem)
   }
-
-  // Ad-hoc solution for single input and output
-	// featureName = featureList[0]
-	// labelName = labelList[0]
-  // const featureIndex = csvObject['data'][0].indexOf(featureName);
-  // const labelIndex = csvObject['data'][0].indexOf(labelName);
-	// convertArrayToTensor(data, featureList, labelList)
 
 	// const datasetSize = data.length;
 	dataLoaded.innerText += 'Features and Labels loaded and converted to' +
 		' tensors. \n';
 	dataLoaded.innerText += 'Total number of feature-label pairs: ' +
 		data.length + '\n';
+
+	console.log(data)
 }
 
 
 /**
- * Normalizes an array with its minimum and maximum values
- * @param unnormalizedData A 1-D array of unnormalized data
- * @returns Normalized array of the same dimension, as well as the minimum
- * and maximum values for unnormalizing.
+ * Creates a tensor and normalizes its data from a JavaScript array
+ * @param list A one-dimensional JavaScript array
+ * @returns {object} An object containing the normalized tensor as well as
+ * its extreme values
  */
-function normalizeData(unnormalizedData) {
-  const minimum = Math.min(unnormalizedData)
-  const maximum = Math.max(unnormalizedData)
-  let normalizedData = unnormalizedData.map(item =>
-      (item - minimum) / (maximum - minimum))
+function normalizeData(list) {
+  let listTensor = tf.tensor2d(list, [list.length, 1])
+  const maximum = listTensor.max()
+  const minimum = listTensor.min()
   return {
-    "normalizedData": normalizedData,
-    "max": maximum,
-    "min": minimum
+    array: listTensor.sub(minimum).div(maximum.sub(minimum)).dataSync(),
+    max: maximum,
+    min: minimum
   }
 }
 
 
 // TODO: This may not be the most efficient way to loop through a f**kton of
 //  data
-function convertArrayToTensor(data, featureList, labelList) {
+function convertArrayToTensor(data) {
   // Step 0. Clean data
   for (let i = 0; i < data[0]['features'].length; i++) {
     data = data.filter(item => (item['features'][i] != null))
   }
   for (let i = 0; i < data[0]['labels'].length; i++) {
-    data = data.filter(item => (item['features'][i] != null))
+    data = data.filter(item => (item['labels'][i] != null))
   }
 
   // Step 1. Shuffle the data
-  tf.util.shuffle(data);
+  // tf.util.shuffle(data);
 
-  // Step 2 Convert data to tensor
-  const inputs = data.map(d => d['features'])
-  const labels = data.map(d => d['labels'])
-  // Normalize features by attribute
-  for (let i = 0; i < inputs[0].length; i++) {
-    // const {normalizedData, min, max} =
-        // normalizeData(inputs.map(item => ))
+  // Step 2 Convert data objects to tensors
+  /* Each of the data fields in inputs and labels follow the following format:
+   * {
+   *   tensor: a normalized tensor
+   *   max: its maximum value
+   *   min: its minimum value
+   * }
+   */
+  /** An array of the different tensors of the features. */
+  let inputs = [];
+  /** An array of the different tensors of the labels. */
+  let labels = [];
+
+  for (let i = 0; i < featureSize; i++) {
+    const list = data.map(d => d['features'][i])
+    inputs.push(normalizeData(list))
   }
-  // Normalize labels by attribute
-  for (let i = 0; i < labels[0].length; i++) {
-    data = data.filter(item => (item['features'][i] != null))
+  for (let i = 0; i < labelSize; i++) {
+    const list = data.map(d => d['labels'][i])
+    labels.push(normalizeData(list))
+  }
+
+  console.log(inputs)
+
+  const inputMax = inputs.map(item => item.max)
+  const inputMin = inputs.map(item => item.min)
+  const labelMax = labels.map(item => item.max)
+  const labelMin = labels.map(item => item.min)
+
+  let normalizedInputs = []; let normalizedLabels = [];
+  for (let i = 0; i < featureSize; i++) {
+    const dataItem = inputs.map(obj => obj['array'])
+    normalizedInputs.push(dataItem);
+  }
+  for (let i = 0; i < labelSize; i++) {
+    const dataItem = labels.map(obj => obj['array'])
+    normalizedLabels.push(dataItem);
+  }
+
+  console.log(normalizedInputs)
+  console.log(normalizedLabels)
+
+  const inputTensor = tf.tensor2d(normalizedInputs[0])
+  const labelTensor = tf.tensor2d(normalizedLabels[0])
+  inputTensor.print()
+  labelTensor.print()
+
+  return {
+    inputs: tf.reshape(inputTensor, [normalizedInputs[0][0].length, featureSize]),
+    labels: tf.reshape(labelTensor, [normalizedLabels[0][0].length, labelSize]),
+    inputMax, inputMin, labelMax, labelMin
   }
 
 
-
-
-  // Step 3. Normalize data
-  const inputMaxArray = [], inputMinArray = [];
-  const labelMaxArray = [], labelMinArray = [];
-
-
-
-
-  const inputTensor = tf.tensor(inputs, [inputs.length, inputs[0].length])
-  const labelTensor = tf.tensor(labels, [labels.length, labels[0].length])
-
-  // Step 3 Convert arrays into multidimensional tensors
-  const inputShape = []
 }
 
 
 /**
- * Convert the input data to tensors that we can use for machine
+ * Convert the 1-D input data to tensors that we can use for machine
  * learning. We will also do the important best practices of _shuffling_
  * the data and _normalizing_ the data
  * MPG on the y-axis.
  */
-function convertToTensor(data, featureName, labelName) {
+function convertToTensor(data) {
   // function convertToTensor(data, featureList, labelList)
+
 	// Wrapping these calculations in a tidy will dispose any
 	// intermediate tensors.
 
@@ -263,15 +295,16 @@ function convertToTensor(data, featureName, labelName) {
 	  // Step 0. Drop the null data
 		data = data.filter(item =>
 			(item['features'][0] != null && item['labels'][0] != null))
+    console.log(data)
 
 		// Step 1. Shuffle the data
-		tf.util.shuffle(data);
+		// tf.util.shuffle(data);
 
 		// Step 2. Convert data to Tensor
-		// const inputs = data.map(d => d['features'][0])
-		// const labels = data.map(d => d['labels'][0]);
-    const inputs = data.map(d => d['features'])
-    const labels = data.map(d => d['labels']);
+		const inputs = data.map(d => d['features'][0])
+		const labels = data.map(d => d['labels'][0]);
+    // const inputs = data.map(d => d['features'])
+    // const labels = data.map(d => d['labels']);
 
 		const inputTensor = tf.tensor2d(inputs, [inputs.length, 1]);
 		const labelTensor = tf.tensor2d(labels, [labels.length, 1]);
@@ -295,15 +328,17 @@ function convertToTensor(data, featureName, labelName) {
 }
 
 // Create a UI for this!
+// TODO: This only works for linear-regression like supervised learning at
+//  this point!
 function createLinearModel () {
 	// Create a sequential model
 	const model = tf.sequential();
 
 	// Add a single input layer
-	model.add(tf.layers.dense({ inputShape: [1], units: 1, useBias: true }));
+	model.add(tf.layers.dense({ inputShape: [featureSize], units: featureSize, useBias: true }));
 
 	// Add an output layer
-	model.add(tf.layers.dense({ units: 1, useBias: true }));
+	model.add(tf.layers.dense({ units: labelSize, useBias: true }));
 
 	return model;
 }
@@ -327,22 +362,21 @@ async function trainModel(model, inputs, labels) {
 	console.log(trainingMetric)
 
 	let compileParameters = {}
-	compileParameters.optimizer = optimizerType
-	compileParameters.loss = lossFunction
-	compileParameters.metrics = trainingMetric
-	console.log(compileParameters)
+	compileParameters.optimizer = optimizerType // adam by default
+	compileParameters.loss = lossFunction // mse by default
+	compileParameters.metrics = trainingMetric // mse by default
+	// console.log(compileParameters)
 
 	model.compile(compileParameters)
 
-	// Prepare the model for training.
-	// model.compile({
-		// optimizer: tf.train.adam(), // adam by default
-		// loss: tf.losses.meanSquaredError, // mse by default
-		// metrics: ['mse'] // mse by default
-	// })
-
 	const batchSize = parseInt(batchSizeSelector.value); // 32 by default
 	const epochs = parseInt(epochSelector.value); // 50 by default
+
+  // For tensorboard visualization -- doesn't seem to work without node
+  // const currentTime = new Date(Date.now())
+  // const timestamp = currentTime.toISOString()
+  // const logDir = "logs/fit/" + timestamp
+  // const tensorBoardCallback = tf.node.tensorBoard(logDir)
 
 	// THIS IS ASYNCHRONOUS!
 	return await model.fit(inputs, labels, {
@@ -350,15 +384,46 @@ async function trainModel(model, inputs, labels) {
 		epochs,
 		shuffle: true,
 		// Visualize training performance with loss and mse
-		callbacks: tfvis.show.fitCallbacks(
-			{ name: 'Training Performance' },
-			['loss', 'mse'],
-			{ height: 200, callbacks: ['onEpochEnd'] }
-		)
+		callbacks:
+        // tensorBoardCallback // DOES NOT WORK
+      tfvis.show.fitCallbacks(
+        { name: 'Training Performance' },
+        ['loss', 'mse'],
+        { height: 200, callbacks: ['onEpochEnd'] }
+		  )
 	})
 }
 
-// THIS IS A SYNCHRONOUS FUNCTION!
+
+
+
+function generateTestingData() {
+  /**
+   * Works just like the linspace() function in TensorFlow.JS or MATLAB
+   * @param startValue The least value in the series, inclusive
+   * @param stopValue The greatest value in the series, inclusive
+   * @param cardinality Size of array to be generated
+   * @returns {[]}
+   */
+  function linspace(startValue, stopValue, cardinality) {
+    var arr = [];
+    var step = (stopValue - startValue) / (cardinality - 1);
+    for (var i = 0; i < cardinality; i++) {
+      arr.push(startValue + (step * i));
+    }
+    return arr;
+  }
+
+  const testArr = linspace(0, 1, 100).map(item => {
+    let itemVec = [];
+    for (let i = 0; i < featureSize; i++) itemVec.push(item);
+    return itemVec;
+  })
+  let testTensor = tf.tensor2d(testArr);
+  return testTensor;
+}
+
+
 function testModel () {
 	// normalizationData generated from convertToTensor
 	const { inputMax, inputMin, labelMin, labelMax } = tensorData;
@@ -369,10 +434,14 @@ function testModel () {
 	const [xs, preds] = tf.tidy(() => {
 		// linspace returns a tensor, not a list
 		// ... quite unlike in MATLAB
-		const xs = tf.linspace(0, 1, 100)
+    // TODO: Generate multiple xs-es for multiple inputs
+		const xs = generateTestingData();
 		// Note that the tensor needs to have a similar shape
 		// ([num_examples, num_features_per_example]) as when we did training.
-		const preds = model.predict(xs.reshape([100, 1]))
+    // TODO: The shape has to change!
+    tf.reshape(xs, [100, featureSize])
+    xs.print()
+		const preds = model.predict(xs)
 
 		const unNormXs = xs.mul(inputMax.sub(inputMin)).add(inputMin)
 
@@ -397,9 +466,10 @@ function testModel () {
 
   // REDO THIS!!!!!
 	const originalPoints = data.map(d => ({
-		x: d.horsepower, y: d.mpg,
+		x: d.features[0], y: d.labels[0],
 	}))
 
+  // TODO: HOW DO YOU PLOT MULTIDIMENSIONAL LABELS?
 	tfvis.render.scatterplot(
 		{ name: 'Model Predictions vs Original Data' },
 		{
@@ -407,8 +477,8 @@ function testModel () {
 			series: ['original', 'predicted']
 		},
 		{
-			xLabel: 'Horsepower',
-			yLabel: 'MPG',
+			xLabel: 'Features',
+			yLabel: 'Labels',
 			height: 300
 		}
 	)
@@ -422,7 +492,8 @@ async function run() {
 	// Prepare data
 	// Try figure out the ins and outs of the tfvis module later on!
 	// Convert the data to a form we can use for training.
-	tensorData = convertToTensor(data, featureName, labelName)
+	// tensorData = convertToTensor(data)
+  tensorData = convertArrayToTensor(data)
 	const { inputs, labels } = tensorData // Read values of properties from the object
 
 	// Train the model
@@ -434,12 +505,39 @@ async function run() {
 
 // Try to reformat this...
 async function predictValue() {
+  predictionOutput.innerText = ""
+  const { inputMax, inputMin, labelMin, labelMax } = tensorData;
   predictionInputData = [];
+  const inputShape = [1, predictionInputTrackers.length]
   for (let i = 0; i < predictionInputTrackers.length; i++) {
     // Load input values
     predictionInputData.push(parseFloat(predictionInputTrackers[i].value))
   }
-  console.log(predictionInputData)
+  // console.log(predictionInputData)
+
+  // Single value prediction only!
+  // Generate predictions for a uniform range of numbers between 0 and 1;
+  // We un-normalize the data by doing the inverse of the min-max scaling
+  // that we did earlier.
+  const preds = tf.tidy(() => {
+    const xs = tf.tensor(predictionInputData, inputShape)
+        .sub(inputMin).div(inputMax.sub(inputMin));
+    const preds = model.predict(xs)
+    // const unNormXs = xs.mul(inputMax.sub(inputMin)).add(inputMin)
+    const unNormPreds = preds.mul(labelMax.sub(labelMin)).add(labelMin)
+
+    /*
+     * Un-normalize the data
+     * .dataSync() is a method we can use to get a typedarray of the
+     * values stored in a tensor. This allows us to process those values in
+     * regular JavaScript. This is a synchronous version of the .data() method
+     * which is generally preferred.
+     */
+    return unNormPreds.dataSync()
+  })
+
+  console.log(preds)
+  predictionOutput.innerText += preds;
 }
 
 inputField.addEventListener('change', uploadOperation)

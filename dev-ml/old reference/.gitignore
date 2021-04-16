@@ -120,5 +120,7 @@ dist
 #.yarn/build-state.yml
 #.yarn/install-state.gz
 #.pnp.*
-/old reference/
-/node_modules/
+node_modules/csv-parse/lib/.DS_Store
+node_modules/papaparse/tests/verylong-sample.csv
+node_modules/papaparse/tests/sample.csv
+node_modules/papaparse/tests/sample-header.csv
