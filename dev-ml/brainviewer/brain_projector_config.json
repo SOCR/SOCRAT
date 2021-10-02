@@ -1,0 +1,20 @@
+{
+  "embeddings": [
+    {
+      "tensorName": "SOCR UKBB Tensor Data",
+      "tensorShape": [
+        9914,
+        208
+      ],
+      "tensorPath": "https://raw.githubusercontent.com/SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/SOCR_UKBB_tensor.tsv",
+      "metadataPath": "https://raw.githubusercontent.com/SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/SOCR_UKBB_Labels.tsv",
+      "sprite": {
+        "imagePath": "https://raw.githubusercontent.com/SOCR/HTML5_WebSite/master/HTML5/SOCR_TensorBoard_UKBB/data/SOCR_UKBB_Labels_Sprite_image.png",
+        "singleImageDim": [
+          28,
+          28
+        ]
+      }
+    }
+  ]
+}

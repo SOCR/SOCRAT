@@ -11,7 +11,7 @@ for U-M SOCR project data.
 1. Review TensorBoard Projector source code on [Github](https://github.com/tensorflow/tensorboard/blob/64d26670eafe974992dffc529718d741adb379e2/docs/tensorboard_projector_plugin.ipynb)
    and explore functionalities on [BrainViewer](https://socr.umich.edu/HTML5/SOCR_TensorBoard_UKBB/CSCD_tSNE_UKBB_Demo.html#Try)
 2. Extract projector and make it something that can be embedded in a 
-   HTML5/JavaScript browser-based interface.
+   HTML5/JavaScript browser-based interface. [Reference](https://socr.umich.edu/HTML5/SOCR_TensorBoard_UKBB/UsersData.html) 
 3. Include such projector into the Teachable Machine architecture and 
    develop a UI for the Teachable Machine.
 4. Incorporate the Teachable Machine into the SOCRAT website, enabling it to 

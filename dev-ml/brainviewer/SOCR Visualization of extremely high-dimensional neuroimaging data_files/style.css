@@ -1,0 +1,189 @@
+body{
+	background-color:#f4f4f4;
+	color:#555;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size:16px;
+	line-height:1.6em;
+	margin:0;
+}
+
+/*Navigator start*/
+ul.topnav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    width: 100%;
+}
+
+ul.topnav li {float: left;}
+
+ul.topnav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+
+}
+
+ul.topnav li a:hover:not(.active) {
+    background-color: grey;
+    cursor: pointer;
+    
+}
+
+ul.topnav li a.active {
+    background-color: green;
+    padding-right: 30px;
+}
+
+ul.topnav li.right {float: right;}
+
+@media screen and (max-width: 600px){
+    ul.topnav li.right, 
+    ul.topnav li {float: none;}
+}
+/*Navigator End*/
+
+.container{
+	width:80%;
+	margin:auto;
+	overflow:hidden;
+}
+.TensorBoard{
+	width: 90%
+	margin:0;
+	padding: 0;
+	border: 0;
+	overflow:hidden;
+}
+
+#main-header{
+	background-color:coral;
+	color:#fff;
+}
+
+mark {
+    background-color: yellow;
+    color: black;
+}
+
+#showcase{
+	background-image:url('../images/mri.gif');
+	background-position:center;
+	background-repeat: no-repeat;
+	background-color: black;
+	padding-bottom: 100px;
+	border-bottom: 130px solid black;
+	position: relative;
+
+
+	min-height:300px;
+	margin-bottom:30px;
+	padding: 50px;
+	text-align: center;
+}
+
+.bottom-left h1{
+	color: yellow;
+	font-size:40px;
+	line-height: 1.2em;
+	position: bottom;
+
+}
+.bottom-left p{
+	color:#fff;
+	font-size:20px;
+	line-height: 1.2em;
+
+}
+
+.bottom-left {
+    position: absolute;
+    top: 350px;
+    left: 150px;
+}
+
+
+
+
+#main-footer{
+	background: #333;
+	color:#fff;
+	text-align: center;
+	padding:20px;
+	margin-top:40px;
+}
+
+.main a{
+	color: #fff;
+}
+
+#PRE_1 {
+    height: 780px;
+    letter-spacing: 0.195px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: left;
+    width: 1001px;
+    perspective-origin: 508px 405px;
+    transform-origin: 508px 405px;
+    background: rgb(240, 240, 240) none repeat scroll 0% 0% / auto padding-box border-box;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 2px 2px 2px 2px;
+    font: normal normal 400 normal 13px / 15.6px Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", monospace;
+    margin: 13px 0px;
+    padding: 6.5px;
+}/*#PRE_1*/
+
+#SPAN_2 {
+    letter-spacing: 0.195px;
+    text-align: left;
+    white-space: pre;
+    font: normal normal 400 normal 13px / 15.6px Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", monospace;
+}/*#SPAN_2*/
+
+#PRE_2 {
+    height: 15px;
+    letter-spacing: 0.195px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: left;
+    width: 1001px;
+    perspective-origin: 508px 15px;
+    transform-origin: 508px 15px;
+    background: rgb(240, 240, 240) none repeat scroll 0% 0% / auto padding-box border-box;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 2px 2px 2px 2px;
+    font: normal normal 400 normal 13px / 15.6px Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", monospace;
+    margin: 13px 0px;
+    padding: 6.5px;
+}/*#PRE_1*/
+
+#SPAN_3 {
+    letter-spacing: 0.195px;
+    text-align: left;
+    white-space: pre;
+    font: normal normal 400 normal 13px / 15.6px Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", monospace;
+}/*#SPAN_2*/
+
+iframe {
+  display:block;
+  margin:auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
