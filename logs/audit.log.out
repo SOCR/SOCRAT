@@ -1,0 +1,789 @@
+E:\ENGR 255 SOCR WN 2021\SOCRAT>npm audit
+# npm audit report
+
+adm-zip  <0.4.11
+Severity: high
+Arbitrary File Write in adm-zip - https://github.com/advisories/GHSA-3v6h-hqm4-2rg6
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/adm-zip
+node_modules/phantomjs2-ext/node_modules/adm-zip
+  phantomjs2  *
+  Depends on vulnerable versions of adm-zip
+  node_modules/phantomjs2
+  phantomjs2-ext  *
+  Depends on vulnerable versions of adm-zip
+  Depends on vulnerable versions of request
+  node_modules/phantomjs2-ext
+    karma-phantomjs2-launcher  >=0.1.2
+    Depends on vulnerable versions of lodash
+    Depends on vulnerable versions of phantomjs2-ext
+    node_modules/karma-phantomjs2-launcher
+
+ansi-regex  >2.1.1 <5.0.1
+Severity: moderate
+ Inefficient Regular Expression Complexity in chalk/ansi-regex - https://github.com/advisories/GHSA-93q8-gq69-wqmw
+fix available via `npm audit fix --force`
+Will install webpack-dev-server@4.7.3, which is a breaking change
+node_modules/webpack-dev-server/node_modules/ansi-regex
+  strip-ansi  4.0.0 - 5.2.0
+  Depends on vulnerable versions of ansi-regex
+  node_modules/webpack-dev-server/node_modules/cliui/node_modules/strip-ansi
+  node_modules/webpack-dev-server/node_modules/string-width/node_modules/strip-ansi
+  node_modules/webpack-dev-server/node_modules/wrap-ansi/node_modules/strip-ansi
+    cliui  4.0.0 - 5.0.0
+    Depends on vulnerable versions of strip-ansi
+    Depends on vulnerable versions of wrap-ansi
+    node_modules/webpack-dev-server/node_modules/cliui
+      yargs  10.1.0 - 15.0.0
+      Depends on vulnerable versions of cliui
+      Depends on vulnerable versions of string-width
+      node_modules/webpack-dev-server/node_modules/yargs
+        webpack-dev-server  2.0.0-beta - 4.7.2
+        Depends on vulnerable versions of chokidar
+        Depends on vulnerable versions of selfsigned
+        Depends on vulnerable versions of yargs
+        node_modules/webpack-dev-server
+    string-width  2.1.0 - 4.1.0
+    Depends on vulnerable versions of strip-ansi
+    node_modules/webpack-dev-server/node_modules/string-width
+      wrap-ansi  3.0.0 - 6.1.0
+      Depends on vulnerable versions of string-width
+      Depends on vulnerable versions of strip-ansi
+      node_modules/webpack-dev-server/node_modules/wrap-ansi
+
+bl  <1.2.3
+Severity: high
+Remote Memory Exposure in bl - https://github.com/advisories/GHSA-pp7h-53gx-mx7r
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/bl
+  request  2.2.6 - 2.80.0
+  Depends on vulnerable versions of bl
+  Depends on vulnerable versions of form-data
+  Depends on vulnerable versions of hawk
+  Depends on vulnerable versions of qs
+  Depends on vulnerable versions of tunnel-agent
+  node_modules/phantomjs2-ext/node_modules/request
+  node_modules/phantomjs2/node_modules/request
+    phantomjs2-ext  *
+    Depends on vulnerable versions of adm-zip
+    Depends on vulnerable versions of request
+    node_modules/phantomjs2-ext
+      karma-phantomjs2-launcher  >=0.1.2
+      Depends on vulnerable versions of lodash
+      Depends on vulnerable versions of phantomjs2-ext
+      node_modules/karma-phantomjs2-launcher
+
+braces  <2.3.1
+Regular Expression Denial of Service (ReDoS) in braces - https://github.com/advisories/GHSA-cwfw-4gq5-mrqx
+fix available via `npm audit fix --force`
+Will install karma@6.3.11, which is a breaking change
+node_modules/braces
+node_modules/chokidar/node_modules/braces
+  expand-braces  *
+  Depends on vulnerable versions of braces
+  node_modules/expand-braces
+    karma  <=5.0.7
+    Depends on vulnerable versions of chokidar
+    Depends on vulnerable versions of expand-braces
+    Depends on vulnerable versions of lodash
+    Depends on vulnerable versions of log4js
+    Depends on vulnerable versions of optimist
+    node_modules/karma
+  micromatch  0.2.0 - 2.3.11
+  Depends on vulnerable versions of braces
+  Depends on vulnerable versions of parse-glob
+  node_modules/chokidar/node_modules/micromatch
+    anymatch  1.2.0 - 1.3.2
+    Depends on vulnerable versions of micromatch
+    node_modules/chokidar/node_modules/anymatch
+      chokidar  1.0.0-rc1 - 2.1.8
+      Depends on vulnerable versions of anymatch
+      Depends on vulnerable versions of glob-parent
+      node_modules/chokidar
+      node_modules/webpack-dev-server/node_modules/chokidar
+        webpack-dev-server  2.0.0-beta - 4.7.2
+        Depends on vulnerable versions of chokidar
+        Depends on vulnerable versions of selfsigned
+        Depends on vulnerable versions of yargs
+        node_modules/webpack-dev-server
+
+clean-css  <4.1.11
+Regular Expression Denial of Service in clean-css - https://github.com/advisories/GHSA-wxhq-pm8v-cw75
+fix available via `npm audit fix --force`
+Will install jade@1.9.2, which is a breaking change
+node_modules/jade/node_modules/clean-css
+  jade  >=0.30.0
+  Depends on vulnerable versions of clean-css
+  Depends on vulnerable versions of constantinople
+  Depends on vulnerable versions of transformers
+  node_modules/jade
+
+color-string  <1.5.5
+Severity: moderate
+Regular Expression Denial of Service (ReDOS) - https://github.com/advisories/GHSA-257v-vj4p-3w2h
+fix available via `npm audit fix`
+node_modules/color-string
+  color  <=0.11.4
+  Depends on vulnerable versions of color-string
+  node_modules/color
+    colormin  *
+    Depends on vulnerable versions of color
+    node_modules/colormin
+      postcss-colormin  <=4.0.3
+      Depends on vulnerable versions of colormin
+      Depends on vulnerable versions of postcss
+      node_modules/postcss-colormin
+
+constantinople  <3.1.1
+Severity: critical
+Sandbox Bypass Leading to Arbitrary Code Execution in constantinople - https://github.com/advisories/GHSA-4vmm-mhcq-4x9j
+fix available via `npm audit fix --force`
+Will install jade@1.9.2, which is a breaking change
+node_modules/constantinople
+  jade  >=0.30.0
+  Depends on vulnerable versions of clean-css
+  Depends on vulnerable versions of constantinople
+  Depends on vulnerable versions of transformers
+  node_modules/jade
+
+cryptiles  <=4.1.1
+Severity: critical
+Insufficient Entropy in cryptiles - https://github.com/advisories/GHSA-rq8g-5pc5-wrhr
+Depends on vulnerable versions of boom
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/cryptiles
+node_modules/phantomjs2/node_modules/cryptiles
+  hawk  <=6.0.2
+  Depends on vulnerable versions of boom
+  Depends on vulnerable versions of cryptiles
+  Depends on vulnerable versions of hoek
+  Depends on vulnerable versions of sntp
+  node_modules/hawk
+  node_modules/phantomjs2/node_modules/hawk
+    request  2.2.6 - 2.80.0
+    Depends on vulnerable versions of bl
+    Depends on vulnerable versions of form-data
+    Depends on vulnerable versions of hawk
+    Depends on vulnerable versions of qs
+    Depends on vulnerable versions of tunnel-agent
+    node_modules/phantomjs2-ext/node_modules/request
+    node_modules/phantomjs2/node_modules/request
+      phantomjs2-ext  *
+      Depends on vulnerable versions of adm-zip
+      Depends on vulnerable versions of request
+      node_modules/phantomjs2-ext
+        karma-phantomjs2-launcher  >=0.1.2
+        Depends on vulnerable versions of lodash
+        Depends on vulnerable versions of phantomjs2-ext
+        node_modules/karma-phantomjs2-launcher
+
+debug  <2.6.9
+Regular Expression Denial of Service in debug - https://github.com/advisories/GHSA-gxpj-cx7g-858c
+fix available via `npm audit fix`
+node_modules/engine.io-client/node_modules/debug
+node_modules/engine.io/node_modules/debug
+node_modules/socket.io-adapter/node_modules/debug
+node_modules/socket.io-client/node_modules/debug
+node_modules/socket.io-parser/node_modules/debug
+node_modules/socket.io/node_modules/debug
+  engine.io  <=3.0.0
+  Depends on vulnerable versions of debug
+  node_modules/engine.io
+  engine.io-client  <=3.1.1
+  Depends on vulnerable versions of debug
+  Depends on vulnerable versions of parsejson
+  node_modules/engine.io-client
+    socket.io-client  1.0.0-pre - 2.1.1
+    Depends on vulnerable versions of debug
+    Depends on vulnerable versions of engine.io-client
+    Depends on vulnerable versions of socket.io-parser
+    node_modules/socket.io-client
+      socket.io  <=2.3.0
+      Depends on vulnerable versions of debug
+      Depends on vulnerable versions of socket.io-client
+      Depends on vulnerable versions of socket.io-parser
+      node_modules/socket.io
+  socket.io-adapter  <=1.1.0
+  Depends on vulnerable versions of debug
+  Depends on vulnerable versions of socket.io-parser
+  node_modules/socket.io-adapter
+  socket.io-parser  <=3.3.1
+  Depends on vulnerable versions of debug
+  node_modules/socket.io-parser
+
+glob-parent  <5.1.2
+Severity: high
+Regular expression denial of service - https://github.com/advisories/GHSA-ww39-953v-wcq6
+fix available via `npm audit fix --force`
+Will install karma@6.3.11, which is a breaking change
+node_modules/glob-parent
+node_modules/webpack-dev-server/node_modules/glob-parent
+  chokidar  1.0.0-rc1 - 2.1.8
+  Depends on vulnerable versions of anymatch
+  Depends on vulnerable versions of glob-parent
+  node_modules/chokidar
+  node_modules/webpack-dev-server/node_modules/chokidar
+    karma  <=5.0.7
+    Depends on vulnerable versions of chokidar
+    Depends on vulnerable versions of expand-braces
+    Depends on vulnerable versions of lodash
+    Depends on vulnerable versions of log4js
+    Depends on vulnerable versions of optimist
+    node_modules/karma
+    webpack-dev-server  2.0.0-beta - 4.7.2
+    Depends on vulnerable versions of chokidar
+    Depends on vulnerable versions of selfsigned
+    Depends on vulnerable versions of yargs
+    node_modules/webpack-dev-server
+  glob-base  *
+  Depends on vulnerable versions of glob-parent
+  node_modules/glob-base
+    parse-glob  >=2.1.0
+    Depends on vulnerable versions of glob-base
+    node_modules/parse-glob
+      micromatch  0.2.0 - 2.3.11
+      Depends on vulnerable versions of braces
+      Depends on vulnerable versions of parse-glob
+      node_modules/chokidar/node_modules/micromatch
+        anymatch  1.2.0 - 1.3.2
+        Depends on vulnerable versions of micromatch
+        node_modules/chokidar/node_modules/anymatch
+
+handsontable  <10.0.0
+Severity: high
+Inefficient Regular Expression Complexity in handsontable - https://github.com/advisories/GHSA-hf66-r44g-p7j9
+No fix available
+node_modules/handsontable
+  ng-handsontable  *
+  Depends on vulnerable versions of handsontable
+  node_modules/ng-handsontable
+
+hawk  <=6.0.2
+Severity: critical
+Regular Expression Denial of Service in hawk - https://github.com/advisories/GHSA-jcpv-g9rr-qxrc
+Depends on vulnerable versions of boom
+Depends on vulnerable versions of cryptiles
+Depends on vulnerable versions of hoek
+Depends on vulnerable versions of sntp
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/hawk
+node_modules/phantomjs2/node_modules/hawk
+  request  2.2.6 - 2.80.0
+  Depends on vulnerable versions of bl
+  Depends on vulnerable versions of form-data
+  Depends on vulnerable versions of hawk
+  Depends on vulnerable versions of qs
+  Depends on vulnerable versions of tunnel-agent
+  node_modules/phantomjs2-ext/node_modules/request
+  node_modules/phantomjs2/node_modules/request
+    phantomjs2-ext  *
+    Depends on vulnerable versions of adm-zip
+    Depends on vulnerable versions of request
+    node_modules/phantomjs2-ext
+      karma-phantomjs2-launcher  >=0.1.2
+      Depends on vulnerable versions of lodash
+      Depends on vulnerable versions of phantomjs2-ext
+      node_modules/karma-phantomjs2-launcher
+
+hoek  <4.2.1
+Severity: moderate
+Prototype Pollution in hoek - https://github.com/advisories/GHSA-jp4x-w63m-7wgm
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/hoek
+node_modules/phantomjs2/node_modules/hoek
+  boom  <=3.1.2
+  Depends on vulnerable versions of hoek
+  node_modules/boom
+  node_modules/phantomjs2/node_modules/boom
+    cryptiles  <=4.1.1
+    Depends on vulnerable versions of boom
+    node_modules/cryptiles
+    node_modules/phantomjs2/node_modules/cryptiles
+      hawk  <=6.0.2
+      Depends on vulnerable versions of boom
+      Depends on vulnerable versions of cryptiles
+      Depends on vulnerable versions of hoek
+      Depends on vulnerable versions of sntp
+      node_modules/hawk
+      node_modules/phantomjs2/node_modules/hawk
+        request  2.2.6 - 2.80.0
+        Depends on vulnerable versions of bl
+        Depends on vulnerable versions of form-data
+        Depends on vulnerable versions of hawk
+        Depends on vulnerable versions of qs
+        Depends on vulnerable versions of tunnel-agent
+        node_modules/phantomjs2-ext/node_modules/request
+        node_modules/phantomjs2/node_modules/request
+          phantomjs2-ext  *
+          Depends on vulnerable versions of adm-zip
+          Depends on vulnerable versions of request
+          node_modules/phantomjs2-ext
+            karma-phantomjs2-launcher  >=0.1.2
+            Depends on vulnerable versions of lodash
+            Depends on vulnerable versions of phantomjs2-ext
+            node_modules/karma-phantomjs2-launcher
+  sntp  0.0.0 || 0.1.1 - 2.0.0
+  Depends on vulnerable versions of hoek
+  node_modules/phantomjs2/node_modules/sntp
+  node_modules/sntp
+
+is-svg  2.1.0 - 4.2.2
+Severity: high
+Regular Expression Denial of Service (ReDoS) - https://github.com/advisories/GHSA-7r28-3m3f-r2pr
+ReDOS in IS-SVG - https://github.com/advisories/GHSA-r8j5-h5cx-65gg
+fix available via `npm audit fix`
+node_modules/is-svg
+
+js-yaml  <=3.13.0
+Severity: high
+Denial of Service in js-yaml - https://github.com/advisories/GHSA-2pr6-76vf-7546
+Code Injection in js-yaml - https://github.com/advisories/GHSA-8j8c-7jfh-h6hx
+fix available via `npm audit fix --force`
+Will install css-loader@6.5.1, which is a breaking change
+node_modules/js-yaml
+  svgo  0.4.2 - 1.0.5
+  Depends on vulnerable versions of js-yaml
+  node_modules/svgo
+    postcss-svgo  <=4.0.3
+    Depends on vulnerable versions of postcss
+    Depends on vulnerable versions of svgo
+    node_modules/postcss-svgo
+      cssnano  <=4.1.11
+      Depends on vulnerable versions of postcss
+      Depends on vulnerable versions of postcss-calc
+      Depends on vulnerable versions of postcss-convert-values
+      Depends on vulnerable versions of postcss-discard-overridden
+      Depends on vulnerable versions of postcss-discard-unused
+      Depends on vulnerable versions of postcss-filter-plugins
+      Depends on vulnerable versions of postcss-merge-idents
+      Depends on vulnerable versions of postcss-merge-longhand
+      Depends on vulnerable versions of postcss-minify-gradients
+      Depends on vulnerable versions of postcss-normalize-charset
+      Depends on vulnerable versions of postcss-ordered-values
+      Depends on vulnerable versions of postcss-reduce-initial
+      Depends on vulnerable versions of postcss-reduce-transforms
+      Depends on vulnerable versions of postcss-svgo
+      Depends on vulnerable versions of postcss-unique-selectors
+      node_modules/cssnano
+        css-loader  0.15.0 - 4.3.0
+        Depends on vulnerable versions of cssnano
+        Depends on vulnerable versions of postcss
+        Depends on vulnerable versions of postcss-modules-values
+        node_modules/css-loader
+
+lodash  <=4.17.20
+Severity: critical
+Prototype Pollution in lodash - https://github.com/advisories/GHSA-p6mc-m468-83gw
+Prototype Pollution in lodash - https://github.com/advisories/GHSA-jf85-cpcp-j695
+Prototype Pollution in lodash - https://github.com/advisories/GHSA-4xc9-xhrj-v574
+Prototype Pollution in lodash - https://github.com/advisories/GHSA-fvqr-27wr-82fm
+Regular Expression Denial of Service (ReDoS) in lodash - https://github.com/advisories/GHSA-29mw-wpgm-hmr9
+fix available via `npm audit fix --force`
+Will install karma@6.3.11, which is a breaking change
+node_modules/karma-phantomjs2-launcher/node_modules/lodash
+node_modules/karma/node_modules/lodash
+  karma  <=5.0.7
+  Depends on vulnerable versions of chokidar
+  Depends on vulnerable versions of expand-braces
+  Depends on vulnerable versions of lodash
+  Depends on vulnerable versions of log4js
+  Depends on vulnerable versions of optimist
+  node_modules/karma
+  karma-phantomjs2-launcher  >=0.1.2
+  Depends on vulnerable versions of lodash
+  Depends on vulnerable versions of phantomjs2-ext
+  node_modules/karma-phantomjs2-launcher
+
+log4js  <6.4.0
+Severity: moderate
+Incorrect Default Permissions in log4js - https://github.com/advisories/GHSA-82v2-mx6x-wq7q
+fix available via `npm audit fix --force`
+Will install karma@6.3.11, which is a breaking change
+node_modules/log4js
+  karma  <=5.0.7
+  Depends on vulnerable versions of chokidar
+  Depends on vulnerable versions of expand-braces
+  Depends on vulnerable versions of lodash
+  Depends on vulnerable versions of log4js
+  Depends on vulnerable versions of optimist
+  node_modules/karma
+
+mime  <1.4.1
+Severity: moderate
+Regular Expression Denial of Service in mime - https://github.com/advisories/GHSA-wrvr-8mpx-r7pp
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/phantomjs2/node_modules/mime
+  form-data  0.0.2 - 0.1.4
+  Depends on vulnerable versions of mime
+  node_modules/phantomjs2/node_modules/form-data
+    request  2.2.6 - 2.80.0
+    Depends on vulnerable versions of bl
+    Depends on vulnerable versions of form-data
+    Depends on vulnerable versions of hawk
+    Depends on vulnerable versions of qs
+    Depends on vulnerable versions of tunnel-agent
+    node_modules/phantomjs2-ext/node_modules/request
+    node_modules/phantomjs2/node_modules/request
+      phantomjs2-ext  *
+      Depends on vulnerable versions of adm-zip
+      Depends on vulnerable versions of request
+      node_modules/phantomjs2-ext
+        karma-phantomjs2-launcher  >=0.1.2
+        Depends on vulnerable versions of lodash
+        Depends on vulnerable versions of phantomjs2-ext
+        node_modules/karma-phantomjs2-launcher
+
+minimatch  <3.0.2
+Severity: high
+Regular Expression Denial of Service in minimatch - https://github.com/advisories/GHSA-hxm2-r34f-qmc5
+fix available via `npm audit fix`
+node_modules/phantomjs2-ext/node_modules/minimatch
+  glob  3.0.0 - 5.0.14
+  Depends on vulnerable versions of minimatch
+  node_modules/phantomjs2-ext/node_modules/glob
+    rimraf  2.3.0 - 2.4.1
+    Depends on vulnerable versions of glob
+    node_modules/phantomjs2-ext/node_modules/rimraf
+
+minimist  <0.2.1
+Severity: moderate
+Prototype Pollution in minimist - https://github.com/advisories/GHSA-vh95-rmgr-6w4m
+fix available via `npm audit fix --force`
+Will install karma@6.3.11, which is a breaking change
+node_modules/cwise/node_modules/minimist
+node_modules/optimist/node_modules/minimist
+node_modules/phantomjs2-ext/node_modules/minimist
+  mkdirp  0.4.1 - 0.5.1
+  Depends on vulnerable versions of minimist
+  node_modules/phantomjs2-ext/node_modules/mkdirp
+  optimist  >=0.6.0
+  Depends on vulnerable versions of minimist
+  node_modules/optimist
+    karma  <=5.0.7
+    Depends on vulnerable versions of chokidar
+    Depends on vulnerable versions of expand-braces
+    Depends on vulnerable versions of lodash
+    Depends on vulnerable versions of log4js
+    Depends on vulnerable versions of optimist
+    node_modules/karma
+  quote-stream  <=1.0.0
+  Depends on vulnerable versions of minimist
+  node_modules/cwise/node_modules/quote-stream
+
+node-forge  <1.0.0
+Severity: moderate
+Open Redirect in node-forge - https://github.com/advisories/GHSA-8fr3-hfg3-gpgp
+fix available via `npm audit fix --force`
+Will install webpack-dev-server@4.7.3, which is a breaking change
+node_modules/node-forge
+  selfsigned  1.1.1 - 1.10.14
+  Depends on vulnerable versions of node-forge
+  node_modules/selfsigned
+    webpack-dev-server  2.0.0-beta - 4.7.2
+    Depends on vulnerable versions of chokidar
+    Depends on vulnerable versions of selfsigned
+    Depends on vulnerable versions of yargs
+    node_modules/webpack-dev-server
+
+npmconf  <2.1.3
+Severity: moderate
+Out-of-bounds Read in npmconf - https://github.com/advisories/GHSA-57cf-349j-352g
+fix available via `npm audit fix`
+node_modules/npmconf
+
+parsejson  *
+Severity: high
+Regular Expression Denial of Service in parsejson - https://github.com/advisories/GHSA-q75g-2496-mxpp
+fix available via `npm audit fix`
+node_modules/parsejson
+  engine.io-client  <=3.1.1
+  Depends on vulnerable versions of debug
+  Depends on vulnerable versions of parsejson
+  node_modules/engine.io-client
+    socket.io-client  1.0.0-pre - 2.1.1
+    Depends on vulnerable versions of debug
+    Depends on vulnerable versions of engine.io-client
+    Depends on vulnerable versions of socket.io-parser
+    node_modules/socket.io-client
+      socket.io  <=2.3.0
+      Depends on vulnerable versions of debug
+      Depends on vulnerable versions of socket.io-client
+      Depends on vulnerable versions of socket.io-parser
+      node_modules/socket.io
+
+postcss  <8.2.13
+Severity: moderate
+Regular Expression Denial of Service in postcss - https://github.com/advisories/GHSA-566m-qj78-rww5
+fix available via `npm audit fix --force`
+Will install css-loader@6.5.1, which is a breaking change
+node_modules/postcss
+node_modules/postcss-modules-extract-imports/node_modules/postcss
+node_modules/postcss-modules-local-by-default/node_modules/postcss
+node_modules/postcss-modules-scope/node_modules/postcss
+node_modules/postcss-modules-values/node_modules/postcss
+  autoprefixer  1.0.20131222 - 9.8.8
+  Depends on vulnerable versions of postcss
+  node_modules/autoprefixer
+  css-loader  0.15.0 - 4.3.0
+  Depends on vulnerable versions of cssnano
+  Depends on vulnerable versions of postcss
+  Depends on vulnerable versions of postcss-modules-values
+  node_modules/css-loader
+  cssnano  <=4.1.11
+  Depends on vulnerable versions of postcss
+  Depends on vulnerable versions of postcss-calc
+  Depends on vulnerable versions of postcss-convert-values
+  Depends on vulnerable versions of postcss-discard-overridden
+  Depends on vulnerable versions of postcss-discard-unused
+  Depends on vulnerable versions of postcss-filter-plugins
+  Depends on vulnerable versions of postcss-merge-idents
+  Depends on vulnerable versions of postcss-merge-longhand
+  Depends on vulnerable versions of postcss-minify-gradients
+  Depends on vulnerable versions of postcss-normalize-charset
+  Depends on vulnerable versions of postcss-ordered-values
+  Depends on vulnerable versions of postcss-reduce-initial
+  Depends on vulnerable versions of postcss-reduce-transforms
+  Depends on vulnerable versions of postcss-svgo
+  Depends on vulnerable versions of postcss-unique-selectors
+  node_modules/cssnano
+  postcss-calc  4.1.0 - 7.0.5
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-calc
+  postcss-colormin  <=4.0.3
+  Depends on vulnerable versions of colormin
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-colormin
+  postcss-convert-values  <=4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-convert-values
+  postcss-discard-comments  <=4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-discard-comments
+  postcss-discard-duplicates  1.1.0 - 4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-discard-duplicates
+  postcss-discard-empty  1.1.0 - 4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-discard-empty
+  postcss-discard-overridden  <=4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-discard-overridden
+  postcss-discard-unused  <=4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-discard-unused
+  postcss-filter-plugins  *
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-filter-plugins
+  postcss-merge-idents  <=4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-merge-idents
+  postcss-merge-longhand  <=4.0.11
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-merge-longhand
+  postcss-merge-rules  <=4.0.3
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-merge-rules
+  postcss-minify-font-values  <=4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-minify-font-values
+  postcss-minify-gradients  <=4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-minify-gradients
+  postcss-minify-params  <=4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-minify-params
+  postcss-minify-selectors  <=4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-minify-selectors
+  postcss-modules-extract-imports  <=2.0.0
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-modules-extract-imports
+  postcss-modules-local-by-default  <=3.0.3
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-modules-local-by-default
+  postcss-modules-scope  <=2.2.0
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-modules-scope
+  postcss-modules-values  <=3.0.0
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-modules-values
+  postcss-normalize-charset  <=4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-normalize-charset
+  postcss-normalize-url  1.1.0 - 4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-normalize-url
+  postcss-ordered-values  <=4.1.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-ordered-values
+  postcss-reduce-idents  <=4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-reduce-idents
+  postcss-reduce-initial  <=4.0.3
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-reduce-initial
+  postcss-reduce-transforms  <=4.0.2
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-reduce-transforms
+  postcss-svgo  <=4.0.3
+  Depends on vulnerable versions of postcss
+  Depends on vulnerable versions of svgo
+  node_modules/postcss-svgo
+  postcss-unique-selectors  <=4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-unique-selectors
+  postcss-zindex  1.1.1 - 4.0.1
+  Depends on vulnerable versions of postcss
+  node_modules/postcss-zindex
+
+qs  <6.0.4
+Severity: high
+Prototype Pollution Protection Bypass in qs - https://github.com/advisories/GHSA-gqgv-6jq5-jjj9
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/phantomjs2-ext/node_modules/qs
+node_modules/phantomjs2/node_modules/qs
+  request  2.2.6 - 2.80.0
+  Depends on vulnerable versions of bl
+  Depends on vulnerable versions of form-data
+  Depends on vulnerable versions of hawk
+  Depends on vulnerable versions of qs
+  Depends on vulnerable versions of tunnel-agent
+  node_modules/phantomjs2-ext/node_modules/request
+  node_modules/phantomjs2/node_modules/request
+    phantomjs2-ext  *
+    Depends on vulnerable versions of adm-zip
+    Depends on vulnerable versions of request
+    node_modules/phantomjs2-ext
+      karma-phantomjs2-launcher  >=0.1.2
+      Depends on vulnerable versions of lodash
+      Depends on vulnerable versions of phantomjs2-ext
+      node_modules/karma-phantomjs2-launcher
+
+request  2.2.6 - 2.80.0
+Severity: high
+Remote Memory Exposure in request - https://github.com/advisories/GHSA-7xfp-9c55-5vqj
+Remote Memory Exposure in request - https://github.com/advisories/GHSA-7xfp-9c55-5vqj
+Depends on vulnerable versions of bl
+Depends on vulnerable versions of form-data
+Depends on vulnerable versions of hawk
+Depends on vulnerable versions of qs
+Depends on vulnerable versions of tunnel-agent
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/phantomjs2-ext/node_modules/request
+node_modules/phantomjs2/node_modules/request
+  phantomjs2-ext  *
+  Depends on vulnerable versions of adm-zip
+  Depends on vulnerable versions of request
+  node_modules/phantomjs2-ext
+    karma-phantomjs2-launcher  >=0.1.2
+    Depends on vulnerable versions of lodash
+    Depends on vulnerable versions of phantomjs2-ext
+    node_modules/karma-phantomjs2-launcher
+
+socket.io  <=2.3.0
+Severity: high
+Insecure defaults due to CORS misconfiguration in socket.io - https://github.com/advisories/GHSA-fxwf-4rqh-v8g3
+Depends on vulnerable versions of debug
+Depends on vulnerable versions of socket.io-client
+Depends on vulnerable versions of socket.io-parser
+fix available via `npm audit fix`
+node_modules/socket.io
+
+socket.io-parser  <=3.3.1
+Severity: high
+Resource exhaustion in socket.io-parser - https://github.com/advisories/GHSA-xfhh-g9f5-x4m4
+Depends on vulnerable versions of debug
+fix available via `npm audit fix`
+node_modules/socket.io-parser
+  socket.io  <=2.3.0
+  Depends on vulnerable versions of debug
+  Depends on vulnerable versions of socket.io-client
+  Depends on vulnerable versions of socket.io-parser
+  node_modules/socket.io
+  socket.io-adapter  <=1.1.0
+  Depends on vulnerable versions of debug
+  Depends on vulnerable versions of socket.io-parser
+  node_modules/socket.io-adapter
+  socket.io-client  1.0.0-pre - 2.1.1
+  Depends on vulnerable versions of debug
+  Depends on vulnerable versions of engine.io-client
+  Depends on vulnerable versions of socket.io-parser
+  node_modules/socket.io-client
+
+static-eval  <=2.0.1
+Severity: high
+Sandbox Breakout / Arbitrary Code Execution in static-eval - https://github.com/advisories/GHSA-x9hc-rw35-f44h
+Sandbox Breakout / Arbitrary Code Execution in static-eval - https://github.com/advisories/GHSA-5mjw-6jrh-hvfq
+No fix available
+node_modules/cwise/node_modules/static-eval
+  static-module  <=1.5.0
+  Depends on vulnerable versions of static-eval
+  node_modules/cwise/node_modules/static-module
+    cwise  >=1.0.0
+    Depends on vulnerable versions of static-module
+    node_modules/cwise
+      ndarray-unpack  >=1.0.0
+      Depends on vulnerable versions of cwise
+      node_modules/ndarray-unpack
+      tsne-js  *
+      Depends on vulnerable versions of cwise
+      node_modules/tsne-js
+
+tunnel-agent  <0.6.0
+Severity: moderate
+Memory Exposure in tunnel-agent - https://github.com/advisories/GHSA-xc7v-wxcw-j472
+fix available via `npm audit fix --force`
+Will install karma-phantomjs2-launcher@0.1.6, which is a breaking change
+node_modules/phantomjs2-ext/node_modules/tunnel-agent
+node_modules/phantomjs2/node_modules/tunnel-agent
+  request  2.2.6 - 2.80.0
+  Depends on vulnerable versions of bl
+  Depends on vulnerable versions of form-data
+  Depends on vulnerable versions of hawk
+  Depends on vulnerable versions of qs
+  Depends on vulnerable versions of tunnel-agent
+  node_modules/phantomjs2-ext/node_modules/request
+  node_modules/phantomjs2/node_modules/request
+    phantomjs2-ext  *
+    Depends on vulnerable versions of adm-zip
+    Depends on vulnerable versions of request
+    node_modules/phantomjs2-ext
+      karma-phantomjs2-launcher  >=0.1.2
+      Depends on vulnerable versions of lodash
+      Depends on vulnerable versions of phantomjs2-ext
+      node_modules/karma-phantomjs2-launcher
+
+uglify-js  <=2.5.0
+Severity: critical
+Incorrect Handling of Non-Boolean Comparisons During Minification in uglify-js - https://github.com/advisories/GHSA-34r7-q49f-h37c
+Regular Expression Denial of Service in uglify-js - https://github.com/advisories/GHSA-c9f4-xj24-8jqx
+fix available via `npm audit fix --force`
+Will install jade@1.9.2, which is a breaking change
+node_modules/transformers/node_modules/uglify-js
+  transformers  >=2.0.0
+  Depends on vulnerable versions of uglify-js
+  node_modules/transformers
+    jade  >=0.30.0
+    Depends on vulnerable versions of clean-css
+    Depends on vulnerable versions of constantinople
+    Depends on vulnerable versions of transformers
+    node_modules/jade
+
+102 vulnerabilities (6 low, 59 moderate, 31 high, 6 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
