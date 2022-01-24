@@ -1,4 +1,4 @@
-## SOCRAT: [SOCR](http://socr.umich.edu) Analytics Toolbox
+# SOCRAT: [SOCR](http://socr.umich.edu) Analytics Toolbox
 
 <a href="http://socr.umich.edu/HTML5/SOCRAT/"><img align="middle" src="http://www.socr.umich.edu/img/SOCR_SOCRAT_Carousel.png"></a>
 
@@ -10,47 +10,56 @@ A Dynamic Web Toolbox for Interactive Data Processing, Analysis, and Visualizati
 * [SOCR web site](http://socr.umich.edu)
 * **Note: project is under development, new features are in pending Pull Requests, unit tests currently are not passing, bugs are possible**
 
-Installation
-------------
+## Installation
+
 To run SOCRAT locally, or create your own module, or contribute to the project, follow these steps to setup your environment.
 
 First, install [Node.js](http://nodejs.org/) if you haven't yet. `npm` is the package manager for `Node.js` and comes bundled with it.
 
 Clone the repository:
 
-    $> git clone https://github.com/SOCR/SOCRAT.git
-    $> cd SOCRAT
+```bash
+$> git clone https://github.com/SOCR/SOCRAT.git
+$> cd SOCRAT
+```
 
 [optional] To see latest changes or to contribute to the project you can switch to the `dev` branch:
 
-    $> git checkout dev
-    $> git pull
+```bash
+$> git checkout dev
+$> git pull
+```
 
 Now, install all the dependencies:
 
-    $> npm install
+```bash
+$> npm install
+```
 
-Some errors and warnings may appear during the installation – they can be ignored
-as long as the project compiles.
+Some errors and warnings may appear during the installation – they can be ignored as long as the project compiles.
 
 [optional] Start the development server with:
 
-    $> npm run serve
+```bash
+$> npm run serve
+```
 
 You will see the application running at `localhost:8080` and the page will live
 reload on saved changes in source code.
 
 To build the project and start the web-server:
 
-    $> npm run build
-    $> node server.js
+```bash
+$> npm run build
+$> node server.js
+```
 
 Now you should be able to access SOCRAT at `localhost:3000`.
 
 Also see how to [add test datasets](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md#socr-datasets-for-testing) and general [contribution instructions](https://github.com/SOCR/SOCRAT/blob/dev/CONTRIBUTE.md).
 
-Motivation
---------------
+## Motivation
+
 The modern web is a successful platform for large scale interactive web applications, including visualizations. Statistics Online Computational Resource ([SOCR](http://socr.umich.edu)) provides a
 web-based collection of tools for interactive modeling and visual data analysis that has a large user base. However, most of SOCR applets eventually became practically unavailable to end users as new versions of browsers disabled Java by default as a response to numerous vulnerability reports.
 Thus, we designed an open-source platform to build Statistics Online Computational Resource
@@ -58,14 +67,13 @@ Analytical Toolbox (SOCRAT). Platform design defines: (1) a specification for an
 interaction, re-usage, and extension. SOCRAT relies on this platform for integration of a number of data management, analysis, and visualization modules into an easily customizable web application including interfaces for merging third-party components. This ability allows SOCRAT to balance expressive, interactive and processing capabilities, efficiency, compatibility, and accessibility. Multi-level modularity and declarative specifications enable easy customizations of the application, for instance, for a specific project. Online demo demonstrates how SOCRAT can be used for data input, display, and storage, with interactive visualization and analysis.
 For more details see the publication list below.
 
-Publications
-------
+## Publications
 
 If you find our work useful, please cite our paper:
 
 Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017, 6 pages. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
 
-```
+```bibtex
 @inproceedings{kalinin2017socrat,
    author = {Kalinin, Alexandr A. and Palanimalai, Selvam and Dinov, Ivo D.},
    title = {SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications},
@@ -82,16 +90,16 @@ Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform
 }
 ```
 
-Technologies/Packages
-----------------
+## Technologies/Packages
+
  [`CoffeeScript`](http://coffeescript.org/)
  [`Jade`](http://jade-lang.com/)
  [`Less`](http://lesscss.org/)
  [`Webpack`](https://webpack.github.io/)
  [`Node.js`](http://nodejs.org/)
 
-Dependencies
---------------
+## Dependencies
+
  [`Bootstrap`](http://getbootstrap.com/)
  [`jQuery`](https://jquery.com/)
  [`AngularJS`](http://angularjs.org) with [`AngularUI`](https://angular-ui.github.io/)
@@ -100,10 +108,9 @@ Dependencies
  [`jStat`](https://jstat.github.io/)
  [`Wrangler`](http://vis.stanford.edu/wrangler/)
 
-Copyright and License
-----------------------
+## Copyright and License
 
-**The LGPL v3.0 License**
+### **The LGPL v3.0 License**
 
 Copyright (c) 2013-2019 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
