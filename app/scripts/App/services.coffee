@@ -8,4 +8,4 @@ module.exports = class AppVersion extends BaseService
   @register appServices
 
   initialize: ->
-    @version = '0.2.0'
+    @version = '0.2.1'
