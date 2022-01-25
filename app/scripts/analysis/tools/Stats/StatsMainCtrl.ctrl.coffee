@@ -272,7 +272,6 @@ module.exports = class StatsMainCtrl extends BaseCtrl
 
   #Chart Visualization
   CIOPChart:() ->
-    @ve = require 'vega-embed'
     nums = [{"lower" : @lowbound}, {"upper" : @upbound}, {"center" : @CIOPP}]
     title = "LowerBound: ".concat (@lowbound.toFixed(3)).toString()
     title = title.concat " Center: "
@@ -307,9 +306,11 @@ module.exports = class StatsMainCtrl extends BaseCtrl
         }
       }]
     }
-    opt = "actions": {export: true, source: false, editor: false}
     #Embed the visualization in the container with id `vis`
-    @ve '#visCIOP', vlSpec, opt, (error, result) ->
+    opt = {mode: "vega-lite", "actions": {export: true, source: false, editor: true}}
+    @ve('#visCIOP', vlSpec, opt, (error, result) -> return).then((result) =>
+    )
+    
 
   #example update function in chi squared service update
   PilotStudyRetrieve:() ->
