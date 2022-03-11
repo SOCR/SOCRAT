@@ -56,6 +56,8 @@ module.exports = class AppModuleList
     ,
       require 'scripts/analysis/tools/Stats/Stats.module.coffee'
     ]
+  ,
+    require 'scripts/analysis/JiaruiLiu/JiaruiLiu.module.coffee'
   ]
 
   ##### access methods #####
