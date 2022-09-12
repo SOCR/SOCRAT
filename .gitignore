@@ -1,6 +1,5 @@
 /node_modules
 /.sass-cache
-/bower_components
 /.idea
 /test/test-results.xml
 *.log
@@ -17,7 +16,7 @@ _build/
 /_build/*.ttf
 /_build/*.svg
 /_build/*.woff
-/_build/datasets
+/_build/datasets/*
 
 #OS generated files #
 =====================

@@ -72,7 +72,6 @@ Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform
    booktitle = {Proceedings of the 2Nd Workshop on Human-In-the-Loop Data Analytics},
    series = {HILDA'17},
    year = {2017},
-   isbn = {978-1-4503-5029-7},
    location = {Chicago, IL, USA},
    pages = {1-6},
    articleno = {8},
@@ -105,7 +104,7 @@ Copyright and License
 
 **The LGPL v3.0 License**
 
-Copyright (c) 2013-2019 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
+Copyright (c) 2013-2022 Statistics Online Computational Resource [(SOCR)](http://www.StatisticsResource.org)
 
 All SOCR programs, materials, tools and resources are developed by and freely disseminated to the entire community.
 Users may revise, extend, redistribute, modify under the terms of the Lesser GNU General Public License
