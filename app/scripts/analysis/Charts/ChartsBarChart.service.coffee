@@ -68,6 +68,11 @@ module.exports = class ChartsBarChart extends BaseService
     if (flags.y_residual)
       labels.yLab.value = "residual_y"
 
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
+      z_num_unique = (dict[labels["zLab"].value] for dict in data).filter((v, i, a) => a.indexOf(v) == i)
+      color_scheme = if z_num_unique > 10 then "category20" else "category10"
+      z_encoding = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": color_scheme}, "legend": {"title": labels.zLab.value}}
+
     if !flags.horizontal
       y = "y"
       x = "x"
@@ -194,11 +199,11 @@ module.exports = class ChartsBarChart extends BaseService
 
     if labels["zLab"].value and labels["zLab"].value isnt "None"
       if flags.stacked
-        vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
+        vlSpec["encoding"]["color"] = z_encoding
         if flags.normalized
           vlSpec["encoding"]["#{y}"]["stack"] = "normalize"
       else
-        vlSpec["layer"][0]["layer"][0]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}, "legend": {"title": labels.zLab.value}}
+        vlSpec["layer"][0]["layer"][0]["encoding"]["color"] = z_encoding
 
     handler = new @vt.Handler()
     opt =

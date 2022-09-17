@@ -83,7 +83,9 @@ module.exports = class ChartsBubbleChart extends BaseService
     }
 
     if labels["zLab"].value and labels["zLab"].value isnt "None"
-      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
+      z_num_unique = (dict[labels["zLab"].value] for dict in data).filter((v, i, a) => a.indexOf(v) == i)
+      color_scheme = if z_num_unique > 10 then "category20" else "category10"
+      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": color_scheme}}
 
     if labels["rLab"].value and labels["rLab"].value isnt "None"
       vlSpec["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}

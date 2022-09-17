@@ -98,10 +98,9 @@ module.exports = class ChartsRangedDotPlot extends BaseService
     }
 
     if labels["zLab"].value and labels["zLab"].value isnt "None"
-      vlSpec["layer"][1]["encoding"]["color"] =
-        "field": labels.zLab.value,
-        "type": "nominal",
-        "scale": {"scheme": "category20b"}
+      z_num_unique = (dict[labels["zLab"].value] for dict in data).filter((v, i, a) => a.indexOf(v) == i)
+      color_scheme = if z_num_unique > 10 then "category20" else "category10"
+      vlSpec["layer"][1]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": color_scheme}}
 
     handler = new @vt.Handler()
     opt =

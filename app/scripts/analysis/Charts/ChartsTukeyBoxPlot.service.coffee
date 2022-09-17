@@ -66,7 +66,7 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
         "y": {
           "field": labels.yLab.value,
           "type": "quantitative",
-          "axis": {"title": labels.yLab.value}
+          "axis": {"title": labels.yLab.value, "titleFontSize": 20, "labelFontSize": 20}
         },
         "size": {"value": 5}
       }

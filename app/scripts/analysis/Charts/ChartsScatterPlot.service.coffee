@@ -55,6 +55,11 @@ module.exports = class ChartsScatterPlot extends BaseService
     if (flags.y_residual)
       y_ = "residual_y"
 
+    if labels["zLab"].value and labels["zLab"].value isnt "None"
+      z_num_unique = (dict[labels["zLab"].value] for dict in data).filter((v, i, a) => a.indexOf(v) == i)
+      color_scheme = if z_num_unique > 10 then "category20" else "category10"
+      z_encoding = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": color_scheme}}
+
     if flags.showSTDEV
       vlSpec = {
         "$schema": @schema,
@@ -90,13 +95,13 @@ module.exports = class ChartsScatterPlot extends BaseService
       rule_x = {
         "mark": "rule",
         "encoding": {
-          "x": {"field": "mean_x", "type": "quantitative", "axis": null}
+          "x": {"field": "mean_x", "type": "quantitative", "axis": "title": x_}
         }
       }
       rect_x = {
         "mark": "rect",
         "encoding": {
-          "x": {"field": "lower_x", "type": "quantitative", "axis": null},
+          "x": {"field": "lower_x", "type": "quantitative", "axis": "title": x_},
           "x2": {"field": "upper_x", "type": "quantitative"},
           "opacity": {"value": 0.2}
         }
@@ -109,7 +114,7 @@ module.exports = class ChartsScatterPlot extends BaseService
           "type": "quantitative"
         }
       if labels["zLab"].value and labels["zLab"].value isnt "None"
-        vlSpec["layer"][1]["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
+        vlSpec["layer"][1]["encoding"]["color"] = z_encoding
       if labels["rLab"].value and labels["rLab"].value isnt "None"
         vlSpec["layer"][1]["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
 
@@ -127,7 +132,7 @@ module.exports = class ChartsScatterPlot extends BaseService
         rule_y = {
           "mark": "rule",
           "encoding": {
-            "y": {"field": "mean_y", "type": "quantitative", "axis": null}
+            "y": {"field": "mean_y", "type": "quantitative", "axis": "title": y_}
           }
         }
         rect_y = {
@@ -154,8 +159,8 @@ module.exports = class ChartsScatterPlot extends BaseService
           },
           "mark": "rect",
           "encoding": {
-            "y": {"field": "lower_y", "type": "quantitative", "axis": null},
-            "y2": {"field": "upper_y", "type": "quantitative"},
+            "y": {"field": "lower_y", "type": "quantitative", "axis": "title": y_},
+            "y2": {"field": "upper_y", "type": "quantitative", "axis": "title": y_},
             "opacity": {"value": 0.2}
           }
         }
@@ -204,7 +209,7 @@ module.exports = class ChartsScatterPlot extends BaseService
           "type": "quantitative"
         }
       if labels["zLab"].value and labels["zLab"].value isnt "None"
-        vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": "category20b"}}
+        vlSpec["encoding"]["color"] = z_encoding
       if labels["rLab"].value and labels["rLab"].value isnt "None"
         vlSpec["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
 
