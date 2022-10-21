@@ -120,7 +120,7 @@ module.exports = class ClassificationGraph extends BaseService
       #vegalite format to create a graph
       vSpec = {
 
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.0.json",
         "width": 400,
         "height": 400,
         "data": {
@@ -138,12 +138,23 @@ module.exports = class ClassificationGraph extends BaseService
             }
             },
             {
-            "mark": {"type": "point", "filled": true, "opacity": 1, "size": 75},
+            "mark": {"type": "point", "filled": true, "opacity": 0.9, "size": 75},
             "encoding": {
-            "x": {"field": '' +data.xCol.toString(),"type": "quantitative", "scale":{"domain": [minX, maxX], "type":"linear" } },
-            "y": {"field": '' +data.yCol.toString(),"type": "quantitative", "scale":{"domain": [minY, maxY], "type":"linear" } },
-            "color": {"field": "class", "type": "nominal"}
-            "tooltip": {"field": "class", "type": "ordinal"}
+              "x":
+                  "field": '' +data.xCol.toString()
+                  "type": "quantitative"
+                  "scale":{"domain": [minX, maxX], "type":"linear" }
+                  # "axis": {"titleFontSize": 20, "labelFontSize": 20}
+              "y":
+                "field": '' +data.yCol.toString()
+                "type": "quantitative"
+                "scale":{"domain": [minY, maxY], "type":"linear" }
+                # "axis": {"titleFontSize": 20, "labelFontSize": 20}
+              "color":
+                "field": "class"
+                "type": "nominal"
+                # "legend": {"titleFontSize": 20, "labelFontSize": 20}
+              "tooltip": {"field": "class", "type": "ordinal"}
             }
             }
           ],
