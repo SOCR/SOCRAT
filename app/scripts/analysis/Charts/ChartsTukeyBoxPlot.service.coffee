@@ -46,31 +46,39 @@ module.exports = class ChartsTukeyBoxPlot extends BaseService
     if (flags.y_residual)
       labels.yLab.value = "residual_y"
 
-    vlSpec = {
+    vlSpec =
       "$schema": @schema,
       "width": 500,
       "height": 500,
-      "data": {"values": data},
-      "selection": {
-        "brush": {
+      "data": "values": data,
+      "selection":
+        "brush":
           "type": "interval",
           "encodings": ["x", "y"]
-        }
-      },
-      "mark": {
+      "mark":
         "type": "boxplot",
         "extent": 1.5
-      },
-      "encoding": {
-        "x": {"field": labels.xLab.value,"type": "ordinal"},
-        "y": {
+      "encoding":
+        "x":
+          "field": labels.xLab.value
+          "type": "ordinal"
+          # "axis": {"titleFontSize": 20, "labelFontSize": 20}
+        "y":
           "field": labels.yLab.value,
           "type": "quantitative",
-          "axis": {"title": labels.yLab.value, "titleFontSize": 20, "labelFontSize": 20}
-        },
-        "size": {"value": 5}
-      }
-    }
+          "axis":
+            "title": labels.yLab.value
+            # "titleFontSize": 20
+            # "labelFontSize": 20
+        "color": 
+          "field": labels.xLab.value
+          "type": "nominal"
+          "scale": {"scheme": "category10"}
+          "legend":
+            "title": labels.xLab.value
+        #     "titleFontSize": 20
+        #     "labelFontSize": 20
+        # "size": "value": 20
 
     handler = new @vt.Handler()
     opt =
