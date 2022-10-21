@@ -68,7 +68,7 @@ module.exports = class ChartsDir extends BaseDirective
     @parallelCoordinates = @app_analysis_charts_parallelCoordinates
 
     @restrict = 'E'
-    @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 600px'></div>"
+    @template = "<div id='vis' class='graph-container' style='overflow:auto; height: 800px'></div>"
 
     @link = (scope, elem) =>
       data = null
