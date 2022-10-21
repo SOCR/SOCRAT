@@ -22,7 +22,7 @@ module.exports = class GetDataShowState extends BaseService
         enabled: true
       ,
         key: "worldBank",
-        label:"WORLDBANK datasets",
+        label:"WorldBank datasets",
         enabled: true
       ,
         key: "generate",
