@@ -52,7 +52,7 @@ module.exports = class GetDataDataAdaptor extends BaseService
       tableData = @extractData tableData
 
     if header.length is 0
-      for i in [0...tableData[0].length-1]
+      for i in [0...tableData[0].length]
         header.push(i.toString())
 
     #generating types for all columns
