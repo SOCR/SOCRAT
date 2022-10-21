@@ -168,6 +168,7 @@ module.exports = class GetDataMainCtrl extends BaseCtrl
         .then( (dataFrame)=>
           @passReceivedData dataFrame
         )
+        @$scope.mainArea.file = null
     )
 
   ## Other instance methods
