@@ -87,8 +87,18 @@ module.exports = class ChartsScatterMatrix extends BaseService
           }
         },
         "encoding": {
-          "x": {"field": {"repeat": "column"}, "type": "quantitative"},
-          "y": {"field": {"repeat": "row"}, "type": "quantitative"}
+          "x":
+            "field": {"repeat": "column"},
+            "type": "quantitative",
+            # "axis":
+            #   "titleFontSize": 20,
+            #   "labelFontSize": 20,
+          "y":
+            "field": {"repeat": "row"},
+            "type": "quantitative",
+            # "axis":
+            #   "titleFontSize": 20,
+            #   "labelFontSize": 20
         }
       }
     }
@@ -101,21 +111,8 @@ module.exports = class ChartsScatterMatrix extends BaseService
           "type": "nominal"
         },
         "value": "grey"
+        # "legend": {"labelFontSize": 20}
       }
-
-# TODO: create config with large fonts to use in publications
-  # if vlSpec?
-  #  vlSpec["config"] =
-  #    "axis":
-  #      "titleFontSize": 16
-  #      "labelFontSize": 16
-  #    "title":
-  #      "titleFontSize": 16
-  #    "legend":
-  #        "labelFontSize": 16
-  #        "titleFontSize": 16
-  #    "point":
-  #      "size": 80
 
     handler = new @vt.Handler()
     opt =

@@ -41,11 +41,17 @@ module.exports = class ChartsStackedBar extends BaseService
         "x": {
           "field": labels.xLab.value,
           "type": "ordinal",
-          "axis": {"title": labels.xLab.value}
+          "axis":
+            "title": labels.xLab.value
+            # "titleFontSize": 20
+            # "labelFontSize": 20
         },
         "y": {
           "aggregate": "count",
-          "type": "quantitative"
+          "type": "quantitative",
+          # "axis":
+          #   "titleFontSize": 20
+          #   "labelFontSize": 20
         }
       }
     }
@@ -53,7 +59,13 @@ module.exports = class ChartsStackedBar extends BaseService
     if labels["zLab"].value and labels["zLab"].value isnt "None"
       z_num_unique = (dict[labels["zLab"].value] for dict in data).filter((v, i, a) => a.indexOf(v) == i)
       color_scheme = if z_num_unique > 10 then "category20" else "category10"
-      vlSpec["encoding"]["color"] = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": color_scheme}, "legend": {"title": labels.zLab.value}}
+      vlSpec["encoding"]["color"] =
+        "field": labels.zLab.value
+        "type": "nominal"
+        "scale": {"scheme": color_scheme}
+        "legend":
+          "title": labels.zLab.value
+          # "labelFontSize": 20
 
     handler = new @vt.Handler()
     opt =

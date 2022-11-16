@@ -58,7 +58,11 @@ module.exports = class ChartsScatterPlot extends BaseService
     if labels["zLab"].value and labels["zLab"].value isnt "None"
       z_num_unique = (dict[labels["zLab"].value] for dict in data).filter((v, i, a) => a.indexOf(v) == i)
       color_scheme = if z_num_unique > 10 then "category20" else "category10"
-      z_encoding = {"field": labels.zLab.value, "type": "nominal", "scale": {"scheme": color_scheme}}
+      z_encoding =
+        "field": labels.zLab.value
+        "type": "nominal"
+        "scale": {"scheme": color_scheme}
+        # "legend": {"labelFontSize": 20}
 
     if flags.showSTDEV
       vlSpec = {
@@ -95,14 +99,28 @@ module.exports = class ChartsScatterPlot extends BaseService
       rule_x = {
         "mark": "rule",
         "encoding": {
-          "x": {"field": "mean_x", "type": "quantitative", "axis": "title": x_}
+          "x":
+            "field": "mean_x"
+            "type": "quantitative"
+            "axis":
+              "title": x_
+              # "titleFontSize": 20
+              # "labelFontSize": 20
         }
       }
       rect_x = {
         "mark": "rect",
         "encoding": {
-          "x": {"field": "lower_x", "type": "quantitative", "axis": "title": x_},
-          "x2": {"field": "upper_x", "type": "quantitative"},
+          "x":
+            "field": "lower_x"
+            "type": "quantitative"
+            "axis":
+              "title": x_
+              # "titleFontSize": 20
+              # "labelFontSize": 20,
+          "x2":
+            "field": "upper_x"
+            "type": "quantitative",
           "opacity": {"value": 0.2}
         }
       }
@@ -118,11 +136,17 @@ module.exports = class ChartsScatterPlot extends BaseService
       if labels["rLab"].value and labels["rLab"].value isnt "None"
         vlSpec["layer"][1]["encoding"]["size"] = {"field": labels.rLab.value, "type": "quantitative", "scale": {"scheme": "category20b"}}
 
-
       if labels.yLab.value is "Count"
         vlSpec["layer"][1]["encoding"]["y"] = {"aggregate": "count", "field": x_, "type": "quantitative", "title": "Count"}
       else
-        vlSpec["layer"][1]["encoding"]["y"] = {"field": y_,"type": "quantitative", "axis": {"title": y_}}
+        vlSpec["layer"][1]["encoding"]["y"] =
+          "field": y_
+          "type": "quantitative"
+          "axis":
+            "title": y_
+            # "titleFontSize": 20
+            # "labelFontSize": 20
+
         mean_y = {"op": "mean", "field": y_, "as": "mean_y"}
         stdev_y = {"op": "stdev", "field": y_, "as": "stdev_y"}
         vlSpec["layer"][0]["transform"][0]["aggregate"].push(mean_y, stdev_y)
@@ -132,7 +156,13 @@ module.exports = class ChartsScatterPlot extends BaseService
         rule_y = {
           "mark": "rule",
           "encoding": {
-            "y": {"field": "mean_y", "type": "quantitative", "axis": "title": y_}
+            "y":
+              "field": "mean_y"
+              "type": "quantitative"
+              "axis":
+                "title": y_
+                # "titleFontSize": 20
+                # "labelFontSize": 20
           }
         }
         rect_y = {
@@ -159,8 +189,20 @@ module.exports = class ChartsScatterPlot extends BaseService
           },
           "mark": "rect",
           "encoding": {
-            "y": {"field": "lower_y", "type": "quantitative", "axis": "title": y_},
-            "y2": {"field": "upper_y", "type": "quantitative", "axis": "title": y_},
+            "y":
+              "field": "lower_y"
+              "type": "quantitative"
+              "axis":
+                "title": y_
+                # "titleFontSize": 20
+                # "labelFontSize": 20,
+            "y2":
+              "field": "upper_y"
+              "type": "quantitative"
+              "axis":
+                "title": y_
+                # "titleFontSize": 20
+                # "labelFontSize": 20,
             "opacity": {"value": 0.2}
           }
         }

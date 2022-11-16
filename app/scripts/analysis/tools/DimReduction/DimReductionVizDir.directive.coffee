@@ -47,14 +47,28 @@ module.exports = class DimReductionVizDir extends BaseDirective
           "mark": "circle",
           "encoding":
             "x":
-              "field": "x t-SNE", "type": "quantitative", "axis": {"title": 'x t-SNE'}
+              "field": "x t-SNE"
+              "type": "quantitative"
+              "axis":
+                "title": 'x t-SNE'
+                # "titleFontSize": 20
+                # "labelFontSize": 20
             "y":
-              "field": "y t-SNE", "type": "quantitative", "axis": {"title": 'y t-SNE'}
+              "field": "y t-SNE"
+              "type": "quantitative"
+              "axis":
+                "title": 'y t-SNE'
+                # "titleFontSize": 20
+                # "labelFontSize": 20
+            "size": "value": 80
 
         if dataPoints.labels
           vlSpec['encoding']['color'] =
             "field": ordinal
             "type": "nominal"
+            # "legend":
+            #   "titleFontSize": 20
+            #   "labelFontSize": 20
 
         opt =
           "actions": {export: true, source: false, editor: false}
