@@ -61,9 +61,25 @@ For more details see the publication list below.
 Publications
 ------
 
-If you find our work useful, please cite our paper:
+If you find our work useful, please cite our papers:
 
-Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017, 6 pages. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
+1. Alexandr A Kalinin, Selvam Palanimalai, Junqi Zhu, Wenyi Wu, Nikhil Devraj, Chunchun Ye, Nellie Ponarul, Syed S Husain, Ivo D Dinov. 2022. SOCRAT: A Dynamic Web Toolbox for Interactive Data Processing, Analysis and Visualization. Information 13, no. 11: 547. [DOI:10.3390/info13110547](https://doi.org/10.3390/info13110547)
+
+```
+@article{kalinin2022socrat,
+  title={SOCRAT: A Dynamic Web Toolbox for Interactive Data Processing, Analysis and Visualization},
+  author={Kalinin, Alexandr A and Palanimalai, Selvam and Zhu, Junqi and Wu, Wenyi and Devraj, Nikhil and Ye, Chunchun and Ponarul, Nellie and Husain, Syed S and Dinov, Ivo D},
+  journal={Information},
+  volume={13},
+  number={11},
+  pages={547},
+  year={2022},
+  doi = {10.3390/info13110547},
+  publisher={Multidisciplinary Digital Publishing Institute}
+}
+```
+
+2. Alexandr A. Kalinin, Selvam Palanimalai, and Ivo D. Dinov. 2017. SOCRAT Platform Design: A Web Architecture for Interactive Visual Analytics Applications. In Proceedings of HILDA’17, Chicago, IL, USA, May 14, 2017. [DOI:10.1145/3077257.3077262](http://dx.doi.org/10.1145/3077257.3077262)
 
 ```
 @inproceedings{kalinin2017socrat,
