@@ -19,8 +19,9 @@ module.exports = class AppMessageMap
         'app_analysis_powercalc',
         'app_analysis_stats',
         'app_analysis_classification',
-        'app_analysis_modeler'
-        'app_analysis_dimReduction'
+        'app_analysis_modeler',
+        'app_analysis_dimReduction',
+        'app_analysis_projector'
       ]
       msgTo: 'type.inferAll'
       scopeTo: ['app_analysis_datalib']
@@ -37,8 +38,9 @@ module.exports = class AppMessageMap
         'app_analysis_powercalc',
         'app_analysis_stats',
         'app_analysis_classification',
-        'app_analysis_modeler'
-        'app_analysis_dimReduction'
+        'app_analysis_modeler',
+        'app_analysis_dimReduction',
+        'app_analysis_projector'
       ]
     ,
       msgFrom: 'data summary'
@@ -50,7 +52,8 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_classification',
-        'app_analysis_stats'
+        'app_analysis_stats',
+        'app_analysis_projector'
       ]
       msgTo: 'summary'
       scopeTo: ['app_analysis_datalib']
@@ -66,7 +69,8 @@ module.exports = class AppMessageMap
         'app_analysis_reliability',
         'app_analysis_powercalc',
         'app_analysis_classification',
-        'app_analysis_stats'
+        'app_analysis_stats',
+        'app_analysis_projector'
       ]
     ,
       msgFrom: 'data histogram'
@@ -76,7 +80,8 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_classification',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_projector'
       ]
       msgTo: 'histogram'
       scopeTo: ['app_analysis_datalib']
@@ -90,7 +95,8 @@ module.exports = class AppMessageMap
         'app_analysis_cluster',
         'app_analysis_charts',
         'app_analysis_classification',
-        'app_analysis_reliability'
+        'app_analysis_reliability',
+        'app_analysis_projector'
       ]
     #    ,
     #      msgFrom: 'upload csv'
@@ -118,8 +124,9 @@ module.exports = class AppMessageMap
         'app_analysis_powercalc',
         'app_analysis_stats',
         'app_analysis_classification',
-        'app_analysis_modeler'
-        'app_analysis_dimReduction'
+        'app_analysis_modeler',
+        'app_analysis_dimReduction',
+        'app_analysis_projector'
       ]
       msgTo: 'get table'
       scopeTo: ['app_analysis_database']
@@ -135,8 +142,9 @@ module.exports = class AppMessageMap
         'app_analysis_powercalc',
         'app_analysis_stats',
         'app_analysis_classification',
-        'app_analysis_modeler'
-        'app_analysis_dimReduction'
+        'app_analysis_modeler',
+        'app_analysis_dimReduction',
+        'app_analysis_projector'
       ]
     ]
 
